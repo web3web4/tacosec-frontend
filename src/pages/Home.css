@@ -1,0 +1,134 @@
+/* src/pages/Home.css */
+
+.home-container {
+    position: relative;
+    min-height: 100vh;
+    background-color: #f0f4f8;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 70px; /* space for bottom nav if you have one */
+    overflow: hidden; /* Avoids overflow in case of animations */
+  }
+  
+  /* ---------- Top Bar ---------- */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    height: 60px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 0 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .top-bar:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .add-button {
+    background-color: #0288d1;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-button:hover {
+    background-color: #0277bd;
+  }
+  
+  /* ---------- Tabs ---------- */
+  .tabs-row {
+    display: flex;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    border-bottom: 2px solid #e0e0e0;
+    background-color: #ffffff;
+  }
+  
+  .tab-btn {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    color: #666;
+    transition: all 0.3s ease;
+  }
+  
+  .tab-btn:hover {
+    background-color: #f5f5f5;
+    color: #0288d1;
+  }
+  
+  .tab-btn.active {
+    color: #0288d1;
+    font-weight: bold;
+    border-bottom: 3px solid #0288d1;
+  }
+  
+  /* ---------- Tab Content ---------- */
+  .tab-content {
+    padding: 1rem;
+  }
+  
+  .data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem; /* space between items */
+  }
+  
+  /* Each data item in a card-like box */
+  .data-item {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  
+  .data-item:hover {
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transform: translateY(-4px);
+  }
+  
+  .item-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+  
+  .item-status {
+    margin: 0.5rem 0 0;
+    color: #777;
+    font-size: 1rem;
+  }
+  
+  /* Animation for tabs and content */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .tab-content {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  /* Add a smooth transition effect on the background color */
+  .home-container {
+    transition: background-color 0.3s ease;
+  }
+  
