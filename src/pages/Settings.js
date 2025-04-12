@@ -13,8 +13,7 @@ function Settings() {
   const handleProfilePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfilePhoto(URL.createObjectURL(file)); // preview
-      // In a real app, you might upload to server or store locally
+      setProfilePhoto(URL.createObjectURL(file));
       console.log("Photo selected:", file.name);
     }
   };

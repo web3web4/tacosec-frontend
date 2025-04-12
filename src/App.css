@@ -28,9 +28,9 @@
   color: #61dafb;
 }
 
-/* src/App.css */
+
 .app-container {
-  max-width: 400px; /* or whatever phone width you prefer */
+  max-width: 400px;
   margin: 0 auto;
   border: 1px solid #ccc;
   min-height: 100vh;

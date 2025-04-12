@@ -15,7 +15,6 @@ function AddData() {
   };
 
   const handleSave = () => {
-    // In real app: Save data to backend or local storage
     console.log({
       name,
       description,

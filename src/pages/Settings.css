@@ -1,5 +1,3 @@
-/* src/pages/Settings.css */
-
 .settings-container {
     padding: 1.5rem;
     margin-bottom: 70px;
@@ -30,8 +28,7 @@
     color: #666;
     margin-bottom: 1.5rem;
   }
-  
-  /* Toggle switch styles */
+
   .toggle-switch {
     position: relative;
     display: inline-block;
@@ -139,8 +136,7 @@
   .support-button:hover {
     background-color: #0277bd;
   }
-  
-  /* Animation for fadeIn */
+
   @keyframes fadeIn {
     from {
       opacity: 0;

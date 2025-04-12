@@ -1,4 +1,3 @@
-/* src/pages/AddData.css */
 .add-data-container {
     padding: 1.5rem;
     margin-bottom: 70px;
@@ -92,7 +91,7 @@
     background-color: #0056b3;
   }
   
-  /* Animation for fadeIn */
+
   @keyframes fadeIn {
     from {
       opacity: 0;

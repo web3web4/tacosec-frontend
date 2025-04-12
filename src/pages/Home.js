@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 function Home() {
-  // Basic data sets for "My Data" and "Shared With Me"
   const myDataList = [
     { id: 1, title: "Facebook Pass", status: "Private" },
     { id: 2, title: "Gmail Password", status: "Private" },
@@ -14,10 +13,8 @@ function Home() {
     { id: 4, title: "Netflix Login", status: "Shared by Amy" },
   ];
 
-  // Manage which tab is active: "mydata" or "shared"
   const [activeTab, setActiveTab] = useState("mydata");
   
-  // Use react-router to navigate to /add on button click
   const navigate = useNavigate();
 
   const handleAddClick = () => {
@@ -26,14 +23,12 @@ function Home() {
 
   return (
     <div className="home-container">
-      {/* Top bar with Add button */}
       <div className="top-bar">
         <button className="add-button" onClick={handleAddClick}>
           + Add
         </button>
       </div>
 
-      {/* Tabs */}
       <div className="tabs-row">
         <button
           className={`tab-btn ${activeTab === "mydata" ? "active" : ""}`}
@@ -48,8 +43,7 @@ function Home() {
           Shared With Me
         </button>
       </div>
-
-      {/* Tab content */}
+      
       <div className="tab-content">
         {activeTab === "mydata" && (
           <div className="data-list">

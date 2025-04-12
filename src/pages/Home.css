@@ -1,15 +1,15 @@
-/* src/pages/Home.css */
+
 
 .home-container {
     position: relative;
     min-height: 100vh;
     background-color: #f0f4f8;
     font-family: 'Roboto', sans-serif;
-    margin-bottom: 70px; /* space for bottom nav if you have one */
-    overflow: hidden; /* Avoids overflow in case of animations */
+    margin-bottom: 70px;
+    overflow: hidden; 
   }
   
-  /* ---------- Top Bar ---------- */
+
   .top-bar {
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@
     background-color: #0277bd;
   }
   
-  /* ---------- Tabs ---------- */
+
   .tabs-row {
     display: flex;
     margin-top: 1rem;
@@ -73,7 +73,7 @@
     border-bottom: 3px solid #0288d1;
   }
   
-  /* ---------- Tab Content ---------- */
+
   .tab-content {
     padding: 1rem;
   }
@@ -81,10 +81,10 @@
   .data-list {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem; /* space between items */
+    gap: 1.2rem;
   }
   
-  /* Each data item in a card-like box */
+
   .data-item {
     background-color: #ffffff;
     border-radius: 12px;
@@ -111,7 +111,7 @@
     font-size: 1rem;
   }
   
-  /* Animation for tabs and content */
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -127,7 +127,7 @@
     animation: fadeIn 0.5s ease-out;
   }
   
-  /* Add a smooth transition effect on the background color */
+
   .home-container {
     transition: background-color 0.3s ease;
   }
