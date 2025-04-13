@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import "./AddData.css";
 
-function AddData() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState("text");
-  const [shareWith, setShareWith] = useState("");
-  const [shareList, setShareList] = useState([]);
+type DataType = "text" | "number" | "password";
 
-  const handleAddShare = () => {
+const AddData: React.FC = () => {
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [type, setType] = useState<DataType>("text");
+  const [shareWith, setShareWith] = useState<string>("");
+  const [shareList, setShareList] = useState<string[]>([]);
+
+  const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
     setShareList([...shareList, shareWith]);
     setShareWith("");
   };
 
-  const handleSave = () => {
-    // In real app: Save data to backend or local storage
+  const handleSave = (): void => {
     console.log({
       name,
       description,
@@ -47,7 +48,7 @@ function AddData() {
       />
 
       <label>Type</label>
-      <select value={type} onChange={(e) => setType(e.target.value)} className="input-field">
+      <select value={type} onChange={(e) => setType(e.target.value as DataType)} className="input-field">
         <option value="text">Text</option>
         <option value="number">Number</option>
         <option value="password">Password</option>
@@ -77,6 +78,6 @@ function AddData() {
       <button className="save-button" onClick={handleSave}>Save</button>
     </div>
   );
-}
+};
 
-export default AddData;
+export default AddData; 

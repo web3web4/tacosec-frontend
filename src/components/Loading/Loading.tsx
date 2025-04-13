@@ -1,22 +1,99 @@
 import React, { useEffect, useState } from "react";
-import "./Loading.css"; // Import the corresponding CSS
+import "./Loading.css";
 import styled from 'styled-components';
 
-  function Loading() {
-    const [isLoading, setIsLoading] = useState(true);
-  
-    useEffect(() => {
-      // Simulate loading for 3 seconds before hiding the loader
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000); // Adjust the time as needed
-    }, []);
-  
-    if (!isLoading) return null;
+const StyledWrapper = styled.div`
+  #svg_svg {
+    zoom: 0.3;
+  }
+  .estrobo_animation {
+    animation:
+      floatAndBounce 4s infinite ease-in-out,
+      strobe 0.8s infinite;
+  }
 
-  const Loader = () => {
-    return (
-      <StyledWrapper>
+  .estrobo_animationV2 {
+    animation:
+      floatAndBounce 4s infinite ease-in-out,
+      strobev2 0.8s infinite;
+  }
+
+  #float_server {
+    animation: floatAndBounce 4s infinite ease-in-out;
+  }
+
+  @keyframes floatAndBounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes strobe {
+    0%,
+    50%,
+    100% {
+      fill: #17e300;
+    }
+
+    25%,
+    75% {
+      fill: #17e300b4;
+    }
+  }
+
+  @keyframes strobev2 {
+    0%,
+    50%,
+    100% {
+      fill: rgb(255, 95, 74);
+    }
+
+    25%,
+    75% {
+      fill: rgb(16, 53, 115);
+    }
+  }
+
+  /* Animación de los colores del gradiente */
+  @keyframes animateGradient {
+    0% {
+      stop-color: #313f8773;
+    }
+
+    50% {
+      stop-color: #040d3a;
+    }
+
+    100% {
+      stop-color: #313f8773;
+    }
+  }
+
+  /* Animación aplicada a los puntos del gradiente */
+  #paint13_linear_163_1030 stop {
+    animation: animateGradient 4s infinite alternate;
+  }`;
+
+const Loading: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isLoading) return null;
+
+  return (
+    <StyledWrapper>
       <svg id="svg_svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 477 578" height={578} width={477}>
         <g filter="url(#filter0_i_163_1030)">
           <path fill="#E9E9E9" d="M235.036 304.223C236.949 303.118 240.051 303.118 241.964 304.223L470.072 435.921C473.898 438.13 473.898 441.712 470.072 443.921L247.16 572.619C242.377 575.38 234.623 575.38 229.84 572.619L6.92817 443.921C3.10183 441.712 3.10184 438.13 6.92817 435.921L235.036 304.223Z" />
@@ -171,86 +248,7 @@ import styled from 'styled-components';
         </defs>
       </svg>
     </StyledWrapper>
- );
-  
-}
+  );
+};
 
-const StyledWrapper = styled.div`
-  #svg_svg {
-    zoom: 0.3;
-  }
-  .estrobo_animation {
-    animation:
-      floatAndBounce 4s infinite ease-in-out,
-      strobe 0.8s infinite;
-  }
-
-  .estrobo_animationV2 {
-    animation:
-      floatAndBounce 4s infinite ease-in-out,
-      strobev2 0.8s infinite;
-  }
-
-  #float_server {
-    animation: floatAndBounce 4s infinite ease-in-out;
-  }
-
-  @keyframes floatAndBounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-
-  @keyframes strobe {
-    0%,
-    50%,
-    100% {
-      fill: #17e300;
-    }
-
-    25%,
-    75% {
-      fill: #17e300b4;
-    }
-  }
-
-  @keyframes strobev2 {
-    0%,
-    50%,
-    100% {
-      fill: rgb(255, 95, 74);
-    }
-
-    25%,
-    75% {
-      fill: rgb(16, 53, 115);
-    }
-  }
-
-  /* Animación de los colores del gradiente */
-  @keyframes animateGradient {
-    0% {
-      stop-color: #313f8773;
-    }
-
-    50% {
-      stop-color: #040d3a;
-    }
-
-    100% {
-      stop-color: #313f8773;
-    }
-  }
-
-  /* Animación aplicada a los puntos del gradiente */
-  #paint13_linear_163_1030 stop {
-    animation: animateGradient 4s infinite alternate;
-  }`;
-  
-  }
-export default Loading;
+export default Loading; 
