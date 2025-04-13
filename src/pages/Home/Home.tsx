@@ -2,38 +2,38 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
-function Home() {
-  // Basic data sets for "My Data" and "Shared With Me"
-  const myDataList = [
+interface DataItem {
+  id: number;
+  title: string;
+  status: string;
+}
+
+const Home: React.FC = () => {
+  const myDataList: DataItem[] = [
     { id: 1, title: "Facebook Pass", status: "Private" },
     { id: 2, title: "Gmail Password", status: "Private" },
   ];
 
-  const sharedDataList = [
+  const sharedDataList: DataItem[] = [
     { id: 3, title: "ID", status: "Shared by Joe" },
     { id: 4, title: "Netflix Login", status: "Shared by Amy" },
   ];
 
-  // Manage which tab is active: "mydata" or "shared"
-  const [activeTab, setActiveTab] = useState("mydata");
-  
-  // Use react-router to navigate to /add on button click
+  const [activeTab, setActiveTab] = useState<string>("mydata");
   const navigate = useNavigate();
 
-  const handleAddClick = () => {
+  const handleAddClick = (): void => {
     navigate("/add");
   };
 
   return (
     <div className="home-container">
-      {/* Top bar with Add button */}
       <div className="top-bar">
         <button className="add-button" onClick={handleAddClick}>
           + Add
         </button>
       </div>
 
-      {/* Tabs */}
       <div className="tabs-row">
         <button
           className={`tab-btn ${activeTab === "mydata" ? "active" : ""}`}
@@ -49,7 +49,6 @@ function Home() {
         </button>
       </div>
 
-      {/* Tab content */}
       <div className="tab-content">
         {activeTab === "mydata" && (
           <div className="data-list">
@@ -75,6 +74,6 @@ function Home() {
       </div>
     </div>
   );
-}
+};
 
-export default Home;
+export default Home; 
