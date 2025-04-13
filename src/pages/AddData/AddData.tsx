@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./AddData.css";
+import CustomPopup from "../../components/CustomPopup/CustomPopup";
+import defaultImage from "../../assets/images/no-User.png";
 
 type DataType = "text" | "number" | "password";
 
@@ -9,10 +11,17 @@ const AddData: React.FC = () => {
   const [type, setType] = useState<DataType>("text");
   const [shareWith, setShareWith] = useState<string>("");
   const [shareList, setShareList] = useState<string[]>([]);
+  const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
+
 
   const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
+    setIsOpenPopup(true);
+  };
+
+  const handleConfirmClick = (): void => {
     setShareList([...shareList, shareWith]);
+    setIsOpenPopup(false);
     setShareWith("");
   };
 
@@ -28,8 +37,14 @@ const AddData: React.FC = () => {
 
   return (
     <div className="add-data-container">
+      {isOpenPopup && <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
+          <div className="popup-content">
+            <img src={defaultImage} alt="user icon" width={80} height={80}/>
+            {shareWith}
+            <button onClick={handleConfirmClick}>confirmation</button>
+          </div>
+        </CustomPopup>}
       <h2 className="page-title">Add New Data</h2>
-
       <label>Name of Data</label>
       <input
         type="text"
