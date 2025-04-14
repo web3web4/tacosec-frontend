@@ -22,7 +22,7 @@ export default function UserWallet(user?: TelegramUser) {
     try {
       return generateWalletFromTelegramUser(user);
     } catch (e) {
-      console.error("❌ Failed to generate wallet", e);
+      console.error("Failed to generate wallet", e);
       return null;
     }
   }, [user]);
