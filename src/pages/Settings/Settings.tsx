@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import "./Settings.css";
 
-function Settings() {
-  const [notificationsOn, setNotificationsOn] = useState(true);
-  const [profilePhoto, setProfilePhoto] = useState(null);
+const Settings: React.FC = () => {
+  const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
 
-  const handleToggleNotifications = () => {
+  const handleToggleNotifications = (): void => {
     setNotificationsOn(!notificationsOn);
     console.log("Notifications toggled:", !notificationsOn);
   };
 
-  const handleProfilePhotoChange = (e) => {
-    const file = e.target.files[0];
+  const handleProfilePhotoChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
     if (file) {
       setProfilePhoto(URL.createObjectURL(file));
       console.log("Photo selected:", file.name);
@@ -58,6 +58,6 @@ function Settings() {
       </div>
     </div>
   );
-}
+};
 
-export default Settings;
+export default Settings; 

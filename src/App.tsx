@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import AddData from "./pages/AddData/AddData";
+import Settings from "./pages/Settings/Settings";
+import BottomNav from "./components/BottomNav/BottomNav";
+import Loading from "./components/Loading/Loading";
 
-import Home from "./pages/Home";
-import AddData from "./pages/AddData";
-import Settings from "./pages/Settings";
-import BottomNav from "./components/BottomNav";
-import Loading from "./components/Loading";
-
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
+const App: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
     <Router>
       <div className="app-container">
-
         {isLoading && <Loading />}
 
         {!isLoading && (
@@ -37,6 +36,6 @@ function App() {
       </div>
     </Router>
   );
-}
+};
 
-export default App;
+export default App; 

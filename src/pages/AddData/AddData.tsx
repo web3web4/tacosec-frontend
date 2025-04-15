@@ -1,20 +1,31 @@
 import React, { useState } from "react";
 import "./AddData.css";
+import CustomPopup from "../../components/CustomPopup/CustomPopup";
+import defaultImage from "../../assets/images/no-User.png";
 
-function AddData() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState("text");
-  const [shareWith, setShareWith] = useState("");
-  const [shareList, setShareList] = useState([]);
+type DataType = "text" | "number" | "password";
 
-  const handleAddShare = () => {
+const AddData: React.FC = () => {
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [type, setType] = useState<DataType>("text");
+  const [shareWith, setShareWith] = useState<string>("");
+  const [shareList, setShareList] = useState<string[]>([]);
+  const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
+
+
+  const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
+    setIsOpenPopup(true);
+  };
+
+  const handleConfirmClick = (): void => {
     setShareList([...shareList, shareWith]);
+    setIsOpenPopup(false);
     setShareWith("");
   };
 
-  const handleSave = () => {
+  const handleSave = (): void => {
     console.log({
       name,
       description,
@@ -26,8 +37,14 @@ function AddData() {
 
   return (
     <div className="add-data-container">
+      {isOpenPopup && <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
+          <div className="popup-content">
+            <img src={defaultImage} alt="user icon" width={80} height={80}/>
+            {shareWith}
+            <button onClick={handleConfirmClick}>confirmation</button>
+          </div>
+        </CustomPopup>}
       <h2 className="page-title">Add New Data</h2>
-
       <label>Name of Data</label>
       <input
         type="text"
@@ -46,7 +63,7 @@ function AddData() {
       />
 
       <label>Type</label>
-      <select value={type} onChange={(e) => setType(e.target.value)} className="input-field">
+      <select value={type} onChange={(e) => setType(e.target.value as DataType)} className="input-field">
         <option value="text">Text</option>
         <option value="number">Number</option>
         <option value="password">Password</option>
@@ -76,6 +93,6 @@ function AddData() {
       <button className="save-button" onClick={handleSave}>Save</button>
     </div>
   );
-}
+};
 
-export default AddData;
+export default AddData; 

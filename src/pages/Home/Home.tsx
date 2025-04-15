@@ -2,22 +2,27 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
-function Home() {
-  const myDataList = [
+interface DataItem {
+  id: number;
+  title: string;
+  status: string;
+}
+
+const Home: React.FC = () => {
+  const myDataList: DataItem[] = [
     { id: 1, title: "Facebook Pass", status: "Private" },
     { id: 2, title: "Gmail Password", status: "Private" },
   ];
 
-  const sharedDataList = [
+  const sharedDataList: DataItem[] = [
     { id: 3, title: "ID", status: "Shared by Joe" },
     { id: 4, title: "Netflix Login", status: "Shared by Amy" },
   ];
 
-  const [activeTab, setActiveTab] = useState("mydata");
-  
+  const [activeTab, setActiveTab] = useState<string>("mydata");
   const navigate = useNavigate();
 
-  const handleAddClick = () => {
+  const handleAddClick = (): void => {
     navigate("/add");
   };
 
@@ -43,7 +48,6 @@ function Home() {
           Shared With Me
         </button>
       </div>
-      
       <div className="tab-content">
         {activeTab === "mydata" && (
           <div className="data-list">
@@ -69,6 +73,6 @@ function Home() {
       </div>
     </div>
   );
-}
+};
 
-export default Home;
+export default Home; 

@@ -91,7 +91,30 @@
     background-color: #0056b3;
   }
   
+  .popup-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 20px;
+  }
 
+  .popup-content img{
+    border-radius: 50%;
+  }
+
+  .popup-content button{
+    padding: 12px;
+    width: 60%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  /* Animation for fadeIn */
   @keyframes fadeIn {
     from {
       opacity: 0;
