@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import { useWallet } from "../../wallet/walletContext";
 
 interface DataItem {
   id: number;
@@ -8,7 +9,11 @@ interface DataItem {
   status: string;
 }
 
+
 const Home: React.FC = () => {
+  const { signer   } = useWallet();
+  console.log("this wallet for user", signer);
+
   const myDataList: DataItem[] = [
     { id: 1, title: "Facebook Pass", status: "Private" },
     { id: 2, title: "Gmail Password", status: "Private" },
