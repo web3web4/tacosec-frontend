@@ -62,6 +62,12 @@ const AddData: React.FC = () => {
         className="input-field"
       />
 
+      <label>Value</label>
+      <textarea
+        placeholder="New Data ..."
+        className="input-field"
+      />
+
       <label>Type</label>
       <select value={type} onChange={(e) => setType(e.target.value as DataType)} className="input-field">
         <option value="text">Text</option>
