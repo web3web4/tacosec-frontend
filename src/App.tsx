@@ -7,6 +7,7 @@ import Encyptyingg from "./pages/Encyptyingg/Encyptyingg";
 import BottomNav from "./components/BottomNav/BottomNav";
 import Loading from "./components/Loading/Loading";
 import { WalletProvider } from "./wallet/walletContext";
+import { UserProvider } from "./context/UserContext";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -20,26 +21,28 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <WalletProvider>
-    <Router>
-      <div className="app-container">
-        {isLoading && <Loading />}
+    <UserProvider>
+      <WalletProvider>
+        <Router>
+          <div className="app-container">
+            {isLoading && <Loading />}
 
-        {!isLoading && (
-          <>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/add" element={<AddData />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/encyptyingg" element={<Encyptyingg />} />
-            </Routes>
+            {!isLoading && (
+              <>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/add" element={<AddData />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/encyptyingg" element={<Encyptyingg />} />
+                </Routes>
 
-            <BottomNav />
-          </>
-        )}
-      </div>
-    </Router>
-    </WalletProvider>
+                <BottomNav />
+              </>
+            )}
+          </div>
+        </Router>
+      </WalletProvider>
+    </UserProvider>
   );
 };
 
