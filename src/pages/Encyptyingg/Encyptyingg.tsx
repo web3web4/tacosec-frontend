@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import useTaco from '../../hooks/useTaco';
 import { useWallet } from '../../wallet/walletContext';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -22,7 +23,7 @@ function App() {
   );
 
   const { provider  , signer } = useWallet();
-  
+  const navigate = useNavigate();
 
 
   const { isInit, encryptDataToBytes, decryptDataFromBytes } = useTaco({
@@ -100,6 +101,11 @@ function App() {
 
   return (
     <div>
+      {/* ========= For Test ========== */}
+      <button className="add-button" onClick={() => navigate("/")}>
+      go to Home
+        </button>
+      {/* ========= For Test ========== */}
       <h2>
         Secret message:{' '}
         <input
