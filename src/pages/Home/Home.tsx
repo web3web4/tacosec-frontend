@@ -38,6 +38,11 @@ const Home: React.FC = () => {
           + Add
         </button>
       </div>
+      {/* ========= For Test ========== */}
+      <button className="add-button" onClick={() => navigate("/encyptyingg")}>
+      go to encyptying
+        </button>
+      {/* ========= For Test ========== */}
 
       <div className="tabs-row">
         <button
