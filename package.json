@@ -51,6 +51,9 @@
       "last 1 safari version"
     ]
   },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
   "resolutions": {
     "ethers": "5.7.2"
   },
