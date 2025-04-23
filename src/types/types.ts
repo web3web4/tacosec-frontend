@@ -4,5 +4,7 @@ export interface initDataType {
     username?: string;
     first_name?: string;
     last_name?: string;
+    auth_date?: string;
+    hash?: string;
   };
 }
