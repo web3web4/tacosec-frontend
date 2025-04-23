@@ -25,7 +25,6 @@
     "react-scripts": "5.0.1",
     "stream-browserify": "^3.0.0",
     "styled-components": "^6.1.17",
-    "typescript": "5.1.6",
     "web-vitals": "^2.1.4"
   },
 "scripts": {
@@ -51,6 +50,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   },
   "resolutions": {
     "ethers": "5.7.2"

@@ -46,25 +46,28 @@ const Home: React.FC = () => {
 
       <div className="tabs-row">
         <button
-          className={`tab-btn ${activeTab === "mydata" ? "active" : ""}`}
+          className={`tab-button ${activeTab === "mydata" ? "active" : ""}`}
           onClick={() => setActiveTab("mydata")}
         >
           My Data
         </button>
         <button
-          className={`tab-btn ${activeTab === "shared" ? "active" : ""}`}
+          className={`tab-button ${activeTab === "shared" ? "active" : ""}`}
           onClick={() => setActiveTab("shared")}
         >
           Shared With Me
         </button>
       </div>
+
       <div className="tab-content">
         {activeTab === "mydata" && (
           <div className="data-list">
             {myDataList.map((item) => (
               <div key={item.id} className="data-item">
                 <p className="item-title">{item.title}</p>
-                <p className="item-status">Status: {item.status}</p>
+                <p className="item-status" data-status={item.status}>
+                  {item.status}
+                </p>
               </div>
             ))}
           </div>
@@ -75,7 +78,9 @@ const Home: React.FC = () => {
             {sharedDataList.map((item) => (
               <div key={item.id} className="data-item">
                 <p className="item-title">{item.title}</p>
-                <p className="item-status">Status: {item.status}</p>
+                <p className="item-status" data-status={item.status}>
+                  {item.status}
+                </p>
               </div>
             ))}
           </div>
@@ -85,4 +90,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home; 
+export default Home;
