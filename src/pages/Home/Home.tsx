@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import { useWallet } from "../../wallet/walletContext";
+import { useUser } from "../../context/UserContext";
 
 interface DataItem {
   id: number;
@@ -26,6 +27,7 @@ const Home: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<string>("mydata");
   const navigate = useNavigate();
+  const {error} = useUser();
 
   const handleAddClick = (): void => {
     navigate("/add");
@@ -37,6 +39,7 @@ const Home: React.FC = () => {
         <button className="add-button" onClick={handleAddClick}>
           + Add
         </button>
+        <h1>{error}</h1>
       </div>
       {/* ========= For Test ========== */}
       <button className="add-button" onClick={() => navigate("/encyptyingg")}>
