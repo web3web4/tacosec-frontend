@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initDataType } from '../types/types';
 import { signupUser } from '../apiService';
+import Swal from 'sweetalert2';
 
 interface UserContextType {
   userData: initDataType | null;
   error: string | null;
-  verifyUserData: (initData: initDataType) => Promise<void>;
+  signUserData: (initData: initDataType) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -14,27 +15,37 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const verifyUserData = async () => {
+  const signUserData = async () => {
     setError(null);
     try {
+      if (typeof window === "undefined" || !window.Telegram?.WebApp) {
+        setError("Telegram WebApp is not supported");
+        return;
+      }
+      
       const tg = window.Telegram.WebApp;
-        tg.expand();
-        const initData = tg.initData;
+      tg.ready();
+      tg.expand();
+      const initData = tg.initData;
       const response = await signupUser(initData);
       setUserData(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    }
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error!,
+      });    }
   };
 
   useEffect(() => {
-    verifyUserData();
+    signUserData();
   },[]);
 
   const value = {
     userData,
     error,
-    verifyUserData,
+    signUserData,
   };
 
   return (
