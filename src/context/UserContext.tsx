@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initDataType } from '../types/types';
-
-// import { verifyUser } from '../apiService';
+import { signupUser } from '../apiService';
 
 interface UserContextType {
   userData: initDataType | null;
@@ -18,11 +17,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const verifyUserData = async () => {
     setError(null);
     try {
-      // const tg = window.Telegram.WebApp;
-      //   tg.expand();
-      //   const initData = tg.initData;
-      // const response = await verifyUser(initData);
-      const response = {user: { username: "fade_sarakpe1", id: 12345564324742}}; // For Test
+      const tg = window.Telegram.WebApp;
+        tg.expand();
+        const initData = tg.initData;
+      const response = await signupUser(initData);
       setUserData(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
