@@ -27,7 +27,6 @@ const Home: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<string>("mydata");
   const navigate = useNavigate();
-  const {error} = useUser();
 
   const handleAddClick = (): void => {
     navigate("/add");
@@ -39,7 +38,6 @@ const Home: React.FC = () => {
         <button className="add-button" onClick={handleAddClick}>
           + Add
         </button>
-        <h1>{error}</h1>
       </div>
       {/* ========= For Test ========== */}
       <button className="add-button" onClick={() => navigate("/encyptyingg")}>
