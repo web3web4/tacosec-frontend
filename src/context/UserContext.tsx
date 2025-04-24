@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initDataType } from '../types/types';
 import { signupUser } from '../apiService';
+import Swal from 'sweetalert2';
 
 interface UserContextType {
   userData: initDataType | null;
@@ -10,50 +11,67 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | null>(null);
 
-const waitForTelegramWebApp = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const maxWaitTime = 5000;
-    const startTime = Date.now();
-
-    const check = () => {
-      if (window.Telegram?.WebApp) {
-        resolve();
-      } else if (Date.now() - startTime > maxWaitTime) {
-        reject(new Error('Telegram WebApp is not available'));
-      } else {
-        setTimeout(check, 100); 
-      }
-    };
-
-    check();
-  });
-};
-
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false); 
 
   const signUserData = async () => {
     setError(null);
     try {
-      await waitForTelegramWebApp();
+      if (typeof window === "undefined" || !window.Telegram?.WebApp) {
+        setError("Telegram WebApp is not supported");
+        return;
+      }
 
       const tg = window.Telegram.WebApp;
       tg.ready();
-      tg.expand();
-
       const initData = tg.initData;
-      const response = await signupUser(initData);
+      if (!initData) {
+        throw new Error("Telegram WebApp data is missing");
+      }
 
+      const response = await signupUser(initData);
       setUserData(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error!,
+      });
     }
   };
 
   useEffect(() => {
-    signUserData();
-  }, []);
+    const checkWebAppReady = () => {
+      if (typeof window !== "undefined" && window.Telegram?.WebApp) {
+        const tg = window.Telegram.WebApp;
+        if (tg && tg.initData) {
+          setIsReady(true);
+        }
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      checkWebAppReady();
+    }, 1000);
+
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId);
+      setError("WebApp took too long to load");
+    }, 100000);
+
+    if (isReady) {
+      signUserData();
+      clearInterval(intervalId);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [isReady]);
 
   const value = {
     userData,
