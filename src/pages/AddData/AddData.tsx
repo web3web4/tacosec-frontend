@@ -75,10 +75,11 @@ const AddData: React.FC = () => {
         setEncryptedText(encryptedHex);
         Swal.fire({
           icon: 'success',
-          title: `Encryption successful! ${encryptedText}`,
-          showConfirmButton: false,
-          timer: 1500
+          title: `Encryption successful!`,
+          showCancelButton: true,
+          //timer: 1500
         });
+        console.log('Encrypted message:', encryptedText);
       }
     } catch (e) {
       console.log(e);
@@ -143,8 +144,8 @@ const AddData: React.FC = () => {
       />
 
     {encrypting && (
-      <div style={{ marginTop: '5px', color: 'blue', fontWeight: 'bold' }}>
-        Encrypting...
+      <div style={{ marginTop: '5px', color: '#ba1b5d', fontWeight: 'bold' }}>
+        Please Wait For Encrypting...
       </div>
     )}
 
