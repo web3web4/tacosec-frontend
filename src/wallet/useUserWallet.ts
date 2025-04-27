@@ -6,7 +6,7 @@ const SALT = process.env.REACT_APP_TG_SECRET_SALT;
 
 interface TelegramUser {
   username?: string;
-  id?: number;
+  id?: string | number;
 }
 
 function generateWalletFromTelegramUser(user: TelegramUser, provider: providers.Provider) {
