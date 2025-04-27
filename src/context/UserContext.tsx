@@ -40,7 +40,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     signUserData();
-  },[]);
+  });
 
   const value = {
     userData,
