@@ -6,6 +6,9 @@ import useTaco from '../../hooks/useTaco';
 import { useWallet } from '../../wallet/walletContext';
 import { conditions,  toHexString } from '@nucypher/taco';
 import Swal from "sweetalert2";
+import { useUser } from "../../context/UserContext";
+import { storageEncryptedData } from "../../apiService"; 
+import { parseTelegramInitData } from "../../utils/tools";
 
 
 type DataType = "text" | "number" | "password";
@@ -23,6 +26,8 @@ const AddData: React.FC = () => {
   const [encrypting, setEncrypting] = useState(false);
   const [encryptedText, setEncryptedText] = useState<string | undefined>('');
   const { provider  , signer } = useWallet();
+  const { initDataRaw } = useUser();
+
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
@@ -51,8 +56,7 @@ const AddData: React.FC = () => {
         console.error("Signer not found", signer);
         return;
       }
-      const signerr = signer;
-      console.log(signerr);
+
       //condation
       const hasPositiveBalance = new conditions.base.rpc.RpcCondition({
         chain: 80002,
@@ -68,19 +72,20 @@ const AddData: React.FC = () => {
       const encryptedBytes = await encryptDataToBytes(
         message,
         hasPositiveBalance,
-        signerr,
+        signer,
       );
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         setEncryptedText(encryptedHex);
-        Swal.fire({
-          icon: 'success',
-          title: `Encryption successful!`,
-          showCancelButton: true,
-          //timer: 1500
-        });
-        console.log('Encrypted message:', encryptedText);
+        const parsedInitData = parseTelegramInitData(initDataRaw!);
+        const res = await storageEncryptedData({ key: name, description,type, value: encryptedHex! ,sharedWith: shareList , initData: parsedInitData} , initDataRaw!);
+        if (res) {
+          Swal.fire({
+            icon: 'success',
+            title: `Encryption successful!`,
+          });
       }
+    }
     } catch (e) {
       console.log(e);
     }
