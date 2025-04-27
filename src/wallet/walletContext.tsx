@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { ethers } from "ethers";
 import UserWallet from "./useUserWallet";
+import { useUser } from "../context/UserContext";
 
 const WalletContext = createContext<{
   signer: ethers.Signer | null;
@@ -10,7 +11,8 @@ const WalletContext = createContext<{
 } | null>(null);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const dataUser = { username: "testuser", id: 123456 };
+  const { userData   } = useUser();
+  const dataUser = { username: userData?.username, id: userData?.telegramId };
 
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(process.env.REACT_APP_RPC_PROVIDER_URL), []);
 

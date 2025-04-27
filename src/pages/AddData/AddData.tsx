@@ -1,18 +1,90 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import "./AddData.css";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import defaultImage from "../../assets/images/no-User.png";
+import useTaco from '../../hooks/useTaco';
+import { useWallet } from '../../wallet/walletContext';
+import { conditions,  toHexString } from '@nucypher/taco';
+import Swal from "sweetalert2";
+
 
 type DataType = "text" | "number" | "password";
+const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number; 
+const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 
 const AddData: React.FC = () => {
+  const [message, setMessage] = useState('');
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [type, setType] = useState<DataType>("text");
   const [shareWith, setShareWith] = useState<string>("");
   const [shareList, setShareList] = useState<string[]>([]);
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
+  const [encrypting, setEncrypting] = useState(false);
+  const [encryptedText, setEncryptedText] = useState<string | undefined>('');
+  const { provider  , signer } = useWallet();
 
+  const { isInit, encryptDataToBytes } = useTaco({
+    domain,
+    provider,
+    ritualId,
+  });
+
+  useEffect(() => {
+    if (encryptedText) {
+      console.log("encrypt text from:", encryptedText);
+    }
+  }, [encryptedText]);
+
+  if (!isInit || !provider) {
+    return <div>Loading...</div>;
+  }
+
+
+  const encryptMessage = async () => {
+    if (!provider) {
+      return;
+    }
+    setEncrypting(true);
+    try {
+      if (!signer) {
+        console.error("Signer not found", signer);
+        return;
+      }
+      const signerr = signer;
+      console.log(signerr);
+      //condation
+      const hasPositiveBalance = new conditions.base.rpc.RpcCondition({
+        chain: 80002,
+        method: 'eth_getBalance',
+        parameters: [':userAddress', 'latest'],
+        returnValueTest: {
+          comparator: '>=',
+          value: 0,
+        },
+      });
+
+      console.log('Encrypting message...');
+      const encryptedBytes = await encryptDataToBytes(
+        message,
+        hasPositiveBalance,
+        signerr,
+      );
+      if (encryptedBytes) {
+        const encryptedHex = toHexString(encryptedBytes);
+        setEncryptedText(encryptedHex);
+        Swal.fire({
+          icon: 'success',
+          title: `Encryption successful! ${encryptedText}`,
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setEncrypting(false);
+  };
 
   const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
@@ -24,7 +96,7 @@ const AddData: React.FC = () => {
     setIsOpenPopup(false);
     setShareWith("");
   };
-
+/*
   const handleSave = (): void => {
     console.log({
       name,
@@ -34,7 +106,7 @@ const AddData: React.FC = () => {
     });
     alert("Data saved (console.log)!");
   };
-
+*/
   return (
     <div className="add-data-container">
       {isOpenPopup && <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
@@ -66,7 +138,15 @@ const AddData: React.FC = () => {
       <textarea
         placeholder="New Data ..."
         className="input-field"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
       />
+
+    {encrypting && (
+      <div style={{ marginTop: '5px', color: 'blue', fontWeight: 'bold' }}>
+        Encrypting...
+      </div>
+    )}
 
       <label>Type</label>
       <select value={type} onChange={(e) => setType(e.target.value as DataType)} className="input-field">
@@ -96,7 +176,7 @@ const AddData: React.FC = () => {
         </div>
       )}
 
-      <button className="save-button" onClick={handleSave}>Save</button>
+      <button className="save-button" onClick={encryptMessage}>Save</button>
     </div>
   );
 };
