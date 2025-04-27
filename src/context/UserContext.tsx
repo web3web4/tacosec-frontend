@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 
 interface UserContextType {
   userData: initDataType | null;
+  initDataRaw: string | null;
   error: string | null;
   signUserData: (initData: initDataType) => Promise<void>;
 }
@@ -14,6 +15,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
 
   const signUserData = async () => {
     setError(null);
@@ -27,6 +29,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       tg.ready();
       tg.expand();
       const initData = tg.initData;
+      setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
     } catch (err) {
@@ -40,10 +43,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     signUserData();
-  });
+  },[]);
 
   const value = {
     userData,
+    initDataRaw,
     error,
     signUserData,
   };
