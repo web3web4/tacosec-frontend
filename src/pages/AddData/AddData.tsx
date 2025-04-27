@@ -75,7 +75,7 @@ const AddData: React.FC = () => {
         setEncryptedText(encryptedHex);
         Swal.fire({
           icon: 'success',
-          title: 'تم التشفير بنجاح!',
+          title: `Encryption successful! ${encryptedText}`,
           showConfirmButton: false,
           timer: 1500
         });
