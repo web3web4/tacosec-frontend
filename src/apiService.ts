@@ -1,6 +1,7 @@
 "use server";
 
 import { initDataType } from "./types/types";
+import { parseTelegramInitData } from "./utils/tools";
 
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -13,6 +14,7 @@ export async function signupUser(initData: string): Promise<initDataType> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Telegram-Init-Data" : JSON.stringify(data)
         },
         body: JSON.stringify(data),
       }
@@ -42,28 +44,5 @@ export async function signupUser(initData: string): Promise<initDataType> {
     }
   
     return await response.json();
-  }
-
-  export function parseTelegramInitData(initData: string){
-    const params = new URLSearchParams(initData);
-    const userJson = params.get("user");
-    let user: any = {};
-  
-    try {
-      if (userJson) {
-        user = JSON.parse(decodeURIComponent(userJson));
-      }
-    } catch (e) {
-      console.error("Field To Get User Data:", e);
-    }
-  
-    return {
-      telegramId: user.id,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      username: user.username,
-      authDate: params.get("auth_date"),
-      hash: params.get("hash")
-    };
   }
   
