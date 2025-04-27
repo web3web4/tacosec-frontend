@@ -14,7 +14,7 @@ export async function signupUser(initData: string): Promise<initDataType> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Telegram-Init-Data" : JSON.stringify(data)
+          "X-Telegram-Init-Data" : initData
         },
         body: JSON.stringify(data),
       }
