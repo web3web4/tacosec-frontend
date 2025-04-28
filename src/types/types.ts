@@ -17,3 +17,10 @@ export type TelegramUser = {
   last_name?: string;
   username?: string;
 };
+
+export interface DataItem{
+  key: string,
+  value: string
+}
+  
+export type TabType = "mydata" | "shared";
