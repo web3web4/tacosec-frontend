@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import { useWallet } from "../../wallet/walletContext";
 import { useUser } from "../../context/UserContext";
+import useHome from "../../hooks/useHome";
 
 interface DataItem {
   id: number;
@@ -10,18 +11,12 @@ interface DataItem {
   status: string;
 }
 
-
 const Home: React.FC = () => {
-  
-  const { signer   } = useWallet();
+  const { myData } = useHome();
+  const { signer } = useWallet();
   console.log("this wallet for user", signer);
-  const { userData   } = useUser();
-  console.log ("this is data user telegram", userData); 
-  
-  const myDataList: DataItem[] = [
-    { id: 1, title: "Facebook Pass", status: "Private" },
-    { id: 2, title: "Gmail Password", status: "Private" },
-  ];
+  const { userData } = useUser();
+  console.log("this is data user telegram", userData);
 
   const sharedDataList: DataItem[] = [
     { id: 3, title: "ID", status: "Shared by Joe" },
@@ -44,8 +39,8 @@ const Home: React.FC = () => {
       </div>
       {/* ========= For Test ========== */}
       <button className="add-button" onClick={() => navigate("/encyptyingg")}>
-      go to encyptying
-        </button>
+        go to encyptying
+      </button>
       {/* ========= For Test ========== */}
 
       <div className="tabs-row">
@@ -66,11 +61,11 @@ const Home: React.FC = () => {
       <div className="tab-content">
         {activeTab === "mydata" && (
           <div className="data-list">
-            {myDataList.map((item) => (
-              <div key={item.id} className="data-item">
-                <p className="item-title">{item.title}</p>
-                <p className="item-status" data-status={item.status}>
-                  {item.status}
+            {myData.map((item, i) => (
+              <div key={i} className="data-item">
+                <p className="item-title">{item.key}</p>
+                <p className="item-status" data-status={"Private"}>
+                  {"Private"}
                 </p>
               </div>
             ))}

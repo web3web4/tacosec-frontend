@@ -27,15 +27,15 @@ export async function signupUser(initData: string): Promise<initDataType> {
     return await response.json();
   }
 
-  export async function GetUserPhoto(initData: initDataType): Promise<any> {
+  export async function GetMyData(initData: string): Promise<any> {
     const response = await fetch(
-      `${API_BASE_URL}/`,
+      `${API_BASE_URL}/users/passwords`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "X-Telegram-Init-Data" : initData
         },
-        body: JSON.stringify({ initData: initData }),
       }
     );
   
