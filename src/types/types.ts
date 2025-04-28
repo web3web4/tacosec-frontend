@@ -22,3 +22,5 @@ export interface DataItem{
   key: string,
   value: string
 }
+  
+export type TabType = "mydata" | "shared";

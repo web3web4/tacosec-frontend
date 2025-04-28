@@ -1,17 +1,45 @@
 import { useEffect, useState } from "react";
 import { GetMyData } from "../apiService";
 import { useUser } from "../context/UserContext";
-import { DataItem } from "../types/types";
+import { useNavigate } from "react-router-dom";
+import { DataItem, TabType } from "../types/types";
 import Swal from "sweetalert2";
 
 export default function useHome() {
+  const navigate = useNavigate();
   const { initDataRaw } = useUser();
-  const [myData, setMyData] = useState<DataItem[]>([]);
+  const [data, setData] = useState<DataItem[]>([]);
+  const [activeTab, setActiveTab] = useState<TabType>("mydata");
 
-  const fetchData = async () => {
+
+  const handleAddClick = (): void => {
+    navigate("/add");
+  };
+
+  const handlesetActiveTabClick = (tabActive: TabType): void => {
+    setData([]);
+    tabActive === "mydata" ? fetchMyData() : fetchSharedData();
+    setActiveTab(tabActive);
+  };
+
+  const fetchMyData = async () => {
     try {
       const data = await GetMyData(initDataRaw!);
-      setMyData(data);
+      setData(data);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err instanceof Error ? err.message : "An error occurred",
+      });
+    }
+  };
+
+  const fetchSharedData = async () => {
+    try {
+      // const data = await GetMyData(initDataRaw!);
+      const data = [{ key: "test" , value: "test"}];
+      setData(data);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -22,8 +50,9 @@ export default function useHome() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchMyData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return { myData };
+
+  return { data, activeTab, handleAddClick, handlesetActiveTabClick };
 }
