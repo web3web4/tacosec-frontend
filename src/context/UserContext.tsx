@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initDataType } from '../types/types';
-import { signupUser } from '../apiService';
-import Swal from 'sweetalert2';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { initDataType } from "../types/types";
+import { signupUser } from "../apiService";
+import Swal from "sweetalert2";
 
 interface UserContextType {
   userData: initDataType | null;
@@ -24,7 +24,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setError("Telegram WebApp is not supported");
         return;
       }
-      
+
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
@@ -33,17 +33,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const response = await signupUser(initData);
       setUserData(response);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error!,
-      });    }
+        text: err instanceof Error ? err.message : "An error occurred",
+      });
+    }
   };
 
   useEffect(() => {
     signUserData();
-  },[]);
+  }, []);
 
   const value = {
     userData,
@@ -52,17 +53,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     signUserData,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 export function useUser() {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
-} 
+}
