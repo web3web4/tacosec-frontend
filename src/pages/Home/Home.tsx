@@ -101,12 +101,15 @@ const Home: React.FC = () => {
 
               {expandedIndex === i && (
                 <div className="expanded-box">
-                  <p className="password-text">
-                    Password:{" "}
-                    {decrypting
-                      ? "Decrypting..."
-                      : decryptedMessages[i] || "Failed to decrypt"}
-                  </p>
+                    <p className="password-text">
+                      Password:{" "}
+                      {decrypting ? (
+                        <span className="decrypting-animation">Decrypting<span className="dots"><span>.</span><span>.</span><span>.</span></span></span>
+                      ) : (
+                        decryptedMessages[i] || "Failed to decrypt"
+                      )}
+                    </p>
+
                   <div className="button-group">
                     <button
                       className="copy-button"
