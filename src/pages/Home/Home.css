@@ -167,6 +167,38 @@
   cursor: pointer;
 }
 
+.decrypting-animation {
+  color: #ba1b5d;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dots span {
+  animation: bounce 1s infinite;
+  display: inline-block;
+  margin-left: 2px;
+}
+
+.dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
 
 .item-status::before {
   content: '';
