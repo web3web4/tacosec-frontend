@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState  } from "react";
 import "./AddData.css";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import defaultImage from "../../assets/images/no-User.png";
@@ -34,13 +34,13 @@ const AddData: React.FC = () => {
     provider,
     ritualId,
   });
-
+/*
   useEffect(() => {
     if (encryptedText) {
       console.log("encrypt text from:", encryptedText);
     }
   }, [encryptedText]);
-
+*/
   if (!isInit || !provider) {
     return <div>Loading...</div>;
   }
