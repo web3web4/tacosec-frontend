@@ -132,6 +132,42 @@
   margin: 0;
 }
 
+.expanded-box {
+  margin-top: 10px;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.password-text {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.copy-button {
+  background-color: #d33;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
 .item-status::before {
   content: '';
   width: 8px;
