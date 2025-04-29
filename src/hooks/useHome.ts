@@ -38,7 +38,7 @@ export default function useHome() {
   const fetchSharedData = async () => {
     try {
       // const data = await GetMyData(initDataRaw!);
-      const data = [{ key: "test" , value: "test"}];
+      const data = [{ key: "test" , value: "test" , id: "123"}];
       setData(data);
     } catch (err) {
       Swal.fire({
