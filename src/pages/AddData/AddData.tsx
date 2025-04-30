@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./AddData.css";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import useTaco from "../../hooks/useTaco";
@@ -30,13 +30,13 @@ const AddData: React.FC = () => {
     provider,
     ritualId,
   });
-
+/*
   useEffect(() => {
     if (encryptedText) {
       console.log("encrypt text from:", encryptedText);
     }
   }, [encryptedText]);
-
+*/
   if (!isInit || !provider) {
     return <div>Loading...</div>;
   }

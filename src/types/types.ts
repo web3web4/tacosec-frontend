@@ -19,6 +19,7 @@ export type TelegramUser = {
 };
 
 export interface DataItem{
+  id : string
   key: string,
   value: string,
   sharedWith: string[]
