@@ -33,16 +33,20 @@ const Home: React.FC = () => {
       </div>
 
       <div className="tab-content">
-          <div className="data-list">
-            {data.map((item, i) => (
+        <div className="data-list">
+          {data.length > 0 ? (
+            data.map((item, i) => (
               <div key={i} className="data-item">
                 <p className="item-title">{item.key}</p>
-                <p className="item-status" data-status={"Private"}>
-                  {"Private"}
+                <p className="item-status" data-status={item.sharedWith.length > 0 ? "Shared" : "Private"}>
+                  {item.sharedWith.length > 0 ? "Shared" : "Private"}
                 </p>
               </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <p className="no-data-message">No data available.</p>
+          )}
+        </div>
       </div>
     </div>
   );
