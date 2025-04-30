@@ -92,13 +92,13 @@ const Home: React.FC = () => {
 
       <div className="tab-content">
         <div className="data-list">
-          {data.map((item, i) => (
+          {data.length > 0 ?
+          data.map((item, i) => (
             <div key={i} className="data-item" onClick={() => toggleExpand(i, item.value)}>
               <p className="item-title">{item.key}</p>
-              <p className="item-status" data-status={"Private"}>
-                {"Private"}
+              <p className="item-status" data-status={item.sharedWith.length > 0 ? "Shared" : "Private"}>
+              {item.sharedWith.length > 0 ? "Shared" : "Private"}
               </p>
-
               {expandedIndex === i && (
                 <div className="expanded-box">
                     <p className="password-text">
@@ -133,7 +133,9 @@ const Home: React.FC = () => {
                 </div>
               )}
             </div>
-          ))}
+          )) : (
+            <p className="no-data-message">No data available.</p>
+          )}
         </div>
       </div>
     </div>

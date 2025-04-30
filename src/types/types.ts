@@ -21,7 +21,13 @@ export type TelegramUser = {
 export interface DataItem{
   id : string
   key: string,
-  value: string
+  value: string,
+  sharedWith: string[]
 }
   
 export type TabType = "mydata" | "shared";
+
+export interface UserProfileType{
+  image: string,
+  error: string | null
+}

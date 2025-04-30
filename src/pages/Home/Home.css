@@ -36,7 +36,7 @@
 }
 
 .add-button:hover {
-  background: linear-gradient(45deg, var(--primary-color), #3B7FC2);
+  background: linear-gradient(45deg, var(--primary-color), #3b7fc2);
   box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
@@ -64,7 +64,7 @@
 }
 
 .tab-button.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -102,7 +102,7 @@
 }
 
 .data-item::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -201,7 +201,7 @@
 
 
 .item-status::before {
-  content: '';
+  content: "";
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -214,6 +214,12 @@
 
 .item-status[data-status^="Shared"]::before {
   background: var(--success);
+}
+
+.no-data-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes fadeIn {

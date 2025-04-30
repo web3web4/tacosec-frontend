@@ -66,3 +66,21 @@ export async function signupUser(initData: string): Promise<initDataType> {
     return await response.json();
   }
   
+  export async function getUserProfile(username: string): Promise<any> {
+    const response = await fetch(
+      `${API_BASE_URL}/users/telegram/profile?username=${username}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+   return  await response.text();
+  
+  }
