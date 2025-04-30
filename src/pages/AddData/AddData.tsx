@@ -1,33 +1,29 @@
-import React, { useState  } from "react";
+import React, { useState } from "react";
 import "./AddData.css";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
-import defaultImage from "../../assets/images/no-User.png";
-import useTaco from '../../hooks/useTaco';
-import { useWallet } from '../../wallet/walletContext';
-import { conditions,  toHexString } from '@nucypher/taco';
+import useTaco from "../../hooks/useTaco";
+import { useWallet } from "../../wallet/walletContext";
+import { conditions, toHexString } from "@nucypher/taco";
 import Swal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
-import { storageEncryptedData } from "../../apiService"; 
+import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
-
+import useAddData from "../../hooks/useAddData";
 
 type DataType = "text" | "number" | "password";
-const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number; 
+const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 
 const AddData: React.FC = () => {
-  const [message, setMessage] = useState('');
+  const {userProfile, isOpenPopup, shareList, shareWith, setIsOpenPopup, setShareWith, handleConfirmClick, handleAddShare} = useAddData();
+  const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [type, setType] = useState<DataType>("text");
-  const [shareWith, setShareWith] = useState<string>("");
-  const [shareList, setShareList] = useState<string[]>([]);
-  const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
   const [encrypting, setEncrypting] = useState(false);
-  const [encryptedText, setEncryptedText] = useState<string | undefined>('');
-  const { provider  , signer } = useWallet();
+  const [encryptedText, setEncryptedText] = useState<string | undefined>("");
+  const { provider, signer } = useWallet();
   const { initDataRaw } = useUser();
-
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
@@ -45,7 +41,6 @@ const AddData: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-
   const encryptMessage = async () => {
     if (!provider) {
       return;
@@ -60,49 +55,52 @@ const AddData: React.FC = () => {
       //condation
       const hasPositiveBalance = new conditions.base.rpc.RpcCondition({
         chain: 80002,
-        method: 'eth_getBalance',
-        parameters: [':userAddress', 'latest'],
+        method: "eth_getBalance",
+        parameters: [":userAddress", "latest"],
         returnValueTest: {
-          comparator: '>=',
+          comparator: ">=",
           value: 0,
         },
       });
 
-      console.log('Encrypting message...');
+      console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
         hasPositiveBalance,
-        signer,
+        signer
       );
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         setEncryptedText(encryptedHex);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
-        const res = await storageEncryptedData({ key: name, description,type, value: encryptedHex! ,sharedWith: shareList , initData: parsedInitData} , initDataRaw!);
+        const res = await storageEncryptedData(
+          {
+            key: name,
+            description,
+            type,
+            value: encryptedHex!,
+            sharedWith: shareList,
+            initData: parsedInitData,
+          },
+          initDataRaw!
+        );
         if (res) {
           Swal.fire({
-            icon: 'success',
+            icon: "success",
             title: `Encryption successful!`,
           });
+        }
       }
-    }
     } catch (e) {
       console.log(e);
     }
     setEncrypting(false);
   };
 
-  const handleAddShare = (): void => {
-    if (!shareWith.trim()) return;
-    setIsOpenPopup(true);
-  };
+  
 
-  const handleConfirmClick = (): void => {
-    setShareList([...shareList, shareWith]);
-    setIsOpenPopup(false);
-    setShareWith("");
-  };
-/*
+  
+  /*
   const handleSave = (): void => {
     console.log({
       name,
@@ -115,13 +113,16 @@ const AddData: React.FC = () => {
 */
   return (
     <div className="add-data-container">
-      {isOpenPopup && <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
+      {isOpenPopup && (
+        <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
           <div className="popup-content">
-            <img src={defaultImage} alt="user icon" width={80} height={80}/>
-            {shareWith}
-            <button onClick={handleConfirmClick}>confirmation</button>
+            <img src={userProfile?.image} alt="user icon" width={80} height={80} />
+            <p>{userProfile.error ? userProfile.error : shareWith}</p>
+            {!userProfile.error && <button onClick={handleConfirmClick}>Confirmation</button>}
+            <button onClick={() => setIsOpenPopup(false)}>Cancel</button>
           </div>
-        </CustomPopup>}
+        </CustomPopup>
+      )}
       <h2 className="page-title">Add New Data</h2>
       <label>Name of Data</label>
       <input
@@ -148,14 +149,18 @@ const AddData: React.FC = () => {
         onChange={(e) => setMessage(e.target.value)}
       />
 
-    {encrypting && (
-      <div style={{ marginTop: '5px', color: '#ba1b5d', fontWeight: 'bold' }}>
-        Please Wait For Encrypting...
-      </div>
-    )}
+      {encrypting && (
+        <div style={{ marginTop: "5px", color: "#ba1b5d", fontWeight: "bold" }}>
+          Please Wait For Encrypting...
+        </div>
+      )}
 
       <label>Type</label>
-      <select value={type} onChange={(e) => setType(e.target.value as DataType)} className="input-field">
+      <select
+        value={type}
+        onChange={(e) => setType(e.target.value as DataType)}
+        className="input-field"
+      >
         <option value="text">Text</option>
         <option value="number">Number</option>
         <option value="password">Password</option>
@@ -170,7 +175,9 @@ const AddData: React.FC = () => {
           placeholder="@user-name"
           className="input-field"
         />
-        <button className="add-share-button" onClick={handleAddShare}>+</button>
+        <button className="add-share-button" onClick={handleAddShare}>
+          +
+        </button>
       </div>
 
       {shareList.length > 0 && (
@@ -182,9 +189,11 @@ const AddData: React.FC = () => {
         </div>
       )}
 
-      <button className="save-button" onClick={encryptMessage}>Save</button>
+      <button className="save-button" onClick={encryptMessage}>
+        Save
+      </button>
     </div>
   );
 };
 
-export default AddData; 
+export default AddData;

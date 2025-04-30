@@ -121,6 +121,7 @@
   padding: 2rem;
   background: var(--surface);
   border-radius: var(--border-radius);
+  text-align: center;
 }
 
 .popup-content img {
