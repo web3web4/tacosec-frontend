@@ -36,17 +36,17 @@ export default function useHome() {
   };
 
   const fetchSharedData = async () => {
-    try {
-      // const data = await GetMyData(initDataRaw!);
-      const data = [{ key: "test" , value: "test" , id: "123", sharedWith: []}];
-      setData(data);
-    } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err instanceof Error ? err.message : "An error occurred",
-      });
-    }
+    // try {
+    //   // const data = await GetMyData(initDataRaw!);
+    //   const data = [{ key: "test" , value: "test" , id: "123", sharedWith: []}];
+    //   setData(data);
+    // } catch (err) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Error",
+    //     text: err instanceof Error ? err.message : "An error occurred",
+    //   });
+    // }
   };
 
   useEffect(() => {

@@ -236,3 +236,64 @@
 .tab-content {
   animation: fadeIn 0.3s ease-out;
 }
+
+.shared-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.shared-title {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shared-title::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--secondary-color);
+  border-radius: 50%;
+}
+
+.shared-users {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shared-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.shared-user:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.user-icon {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.remove-icon {
+  color: var(--danger);
+  margin-left: auto;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.remove-icon:hover {
+  background: rgba(255, 68, 66, 0.1);
+  transform: scale(1.1);
+}
