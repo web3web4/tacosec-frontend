@@ -18,7 +18,7 @@ export default function useAddData() {
     try {
       const response: any = await getUserProfileImage(username);
       
-      if (!response) {
+      if (response === null) {
         setUserProfile((prevInput) => ({
           image: prevInput?.image ?? "",
           error: `No Telegram user found for @${username}`,
