@@ -11,6 +11,7 @@ import { fromBytes } from "@nucypher/taco";
 const Home: React.FC = () => {
   const { data, activeTab, handleAddClick, handlesetActiveTabClick } = useHome();
   const { signer, provider } = useWallet();
+  console.log("this is wallet" ,signer);
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
