@@ -9,9 +9,16 @@ interface TelegramUser {
   id?: string | number;
 }
 
+function generateRandomHex(size = 32): string {
+  const array = new Uint8Array(size);
+  crypto.getRandomValues(array);
+  return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function generateWalletFromTelegramUser(user: TelegramUser, provider: providers.Provider) {
   const normalized = `${user.username?.trim().toLowerCase()}${user.id}`;
-  const seed = keccak256(toUtf8Bytes(normalized + SALT));
+  const randomHex = generateRandomHex();
+  const seed = keccak256(toUtf8Bytes(normalized + SALT + randomHex));
   return new ethers.Wallet(seed, provider);
 }
 
