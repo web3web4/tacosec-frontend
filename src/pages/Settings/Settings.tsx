@@ -1,27 +1,22 @@
-import React, { useState, ChangeEvent } from "react";
+import useSetting from "../../hooks/useSetting";
 import "./Settings.css";
 
 const Settings: React.FC = () => {
-  const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-
-  const handleToggleNotifications = (): void => {
-    setNotificationsOn(!notificationsOn);
-    console.log("Notifications toggled:", !notificationsOn);
-  };
-
-  const handleProfilePhotoChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfilePhoto(URL.createObjectURL(file));
-      console.log("Photo selected:", file.name);
-    }
-  };
+  const { profileImage, notificationsOn, handleToggleNotifications } = useSetting();
+ 
 
   return (
     <div className="settings-container">
       <h2 className="page-title">Settings</h2>
-
+      <div className="profile-photo-section">
+              <div className="photo-preview">
+                {profileImage ? (
+                  <img src={profileImage} alt="Profile" />
+                ) : (
+                  <div className="placeholder">No Photo</div>
+                )}
+              </div>
+            </div>
       <div className="notifications-row">
         <span>Turn on Notifications</span>
         <label className="toggle-switch">
@@ -35,22 +30,7 @@ const Settings: React.FC = () => {
       </div>
       <p className="desc">Enable to receive updates and alerts.</p>
 
-      <div className="profile-photo-section">
-        <p>Change Profile Photo</p>
-        <div className="photo-preview">
-          {profilePhoto ? (
-            <img src={profilePhoto} alt="Profile" />
-          ) : (
-            <div className="placeholder">No Photo</div>
-          )}
-        </div>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleProfilePhotoChange}
-          className="upload-input"
-        />
-      </div>
+      
 
       <div className="support-section">
         <p>Support and Help</p>
