@@ -86,5 +86,5 @@ export async function getUserProfileImage(username: string): Promise<string | nu
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
   const img: any = doc.querySelector(".tgme_page_photo_image");
-  return img;
+  return img === null ? "" : img;
 }
