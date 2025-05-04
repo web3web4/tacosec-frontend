@@ -25,7 +25,7 @@ export async function signupUser(initData: string): Promise<initDataType> {
 }
 
 export async function GetMyData(initData: string): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/users/passwords`, {
+  const response = await fetch(`${API_BASE_URL}/passwords`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +47,7 @@ export async function storageEncryptedData(
   data: DataPayload,
   initData: string
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/users/passwords`, {
+  const response = await fetch(`${API_BASE_URL}/passwords`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
