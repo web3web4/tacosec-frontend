@@ -10,7 +10,7 @@ import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
 
-type DataType = "text" | "number" | "password";
+//type DataType = "text" | "number" | "password";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 
@@ -28,7 +28,7 @@ const AddData: React.FC = () => {
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
   // const [description, setDescription] = useState<string>("");
-  const [type, setType] = useState<DataType>("text");
+  //const [type, setType] = useState<DataType>("text");
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw } = useUser();
@@ -88,7 +88,7 @@ const AddData: React.FC = () => {
           {
             key: name,
             description: "",
-            type,
+            type:"",
             value: encryptedHex!,
             sharedWith: usernames,
             initData: parsedInitData,
@@ -158,7 +158,7 @@ const AddData: React.FC = () => {
         className="input-field"
       /> */}
 
-      <label>Value</label>
+      <label>Secret</label>
       <textarea
         placeholder="New Data ..."
         className="input-field"
@@ -171,18 +171,20 @@ const AddData: React.FC = () => {
           Please Wait For Encrypting...
         </div>
       )}
-
-      <label>Type</label>
-      <select
-        value={type}
-        onChange={(e) => setType(e.target.value as DataType)}
-        className="input-field"
-      >
-        <option value="text">Text</option>
-        <option value="number">Number</option>
-        <option value="password">Password</option>
-      </select>
-
+  {/*
+  
+  
+        <label>Type</label>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value as DataType)}
+          className="input-field"
+        >
+          <option value="text">Text</option>
+          <option value="number">Number</option>
+          <option value="password">Password</option>
+        </select>
+  */}
       <label>Share with</label>
       <div className="share-with-row">
         <input
