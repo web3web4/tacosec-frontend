@@ -201,25 +201,7 @@ const AddData: React.FC = () => {
         <div className="share-list">
           <p>Sharing with:</p>
           {shareList.map((user, i) => (
-            <>
             <div key={i}>- {user.data.name}</div>
-            <a
-            href={`https://t.me/${user.data.username}?text=${encodeURIComponent('مرحباً! أريد دعوتك لاستخدام التطبيق. 🚀')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button>دعوة</button>
-            <p>--------</p>
-            <a
-  href={`https://t.me/share/url?text=${encodeURIComponent('مرحباً! جرّب هذا التطبيق الرائع 🚀')}`}
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <button>دعوة عبر تيليجرام</button>
-</a>
-          </a>
-            </>
-            
           ))}
         </div>
       )}
