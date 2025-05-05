@@ -110,7 +110,7 @@ const Home: React.FC = () => {
                 {expandedIndex === i && (
                   <div className="expanded-box">
                     <p className="password-text">
-                      Password:{" "}
+                      Secret:{" "}
                       {decrypting ? (
                         <span className="decrypting-animation">
                           Decrypting
