@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./AddData.css";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
@@ -9,19 +8,28 @@ import { useUser } from "../../context/UserContext";
 import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
+import "./AddData.css";
 
 type DataType = "text" | "number" | "password";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 
 const AddData: React.FC = () => {
-  const {userProfile, isOpenPopup, shareList, shareWith, setIsOpenPopup, setShareWith, handleConfirmClick, handleAddShare} = useAddData();
+  const {
+    userProfile,
+    isOpenPopup,
+    shareList,
+    shareWith,
+    setIsOpenPopup,
+    setShareWith,
+    handleConfirmClick,
+    handleAddShare,
+  } = useAddData();
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  // const [description, setDescription] = useState<string>("");
   const [type, setType] = useState<DataType>("text");
   const [encrypting, setEncrypting] = useState(false);
-  const [encryptedText, setEncryptedText] = useState<string | undefined>("");
   const { provider, signer } = useWallet();
   const { initDataRaw } = useUser();
 
@@ -30,7 +38,7 @@ const AddData: React.FC = () => {
     provider,
     ritualId,
   });
-/*
+  /*
   useEffect(() => {
     if (encryptedText) {
       console.log("encrypt text from:", encryptedText);
@@ -71,15 +79,18 @@ const AddData: React.FC = () => {
       );
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
-        setEncryptedText(encryptedHex);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
+        const usernames: string[] = shareList
+          .map((item) => item.data.username)
+          .filter((username): username is string => username !== null);
+
         const res = await storageEncryptedData(
           {
             key: name,
-            description,
+            description: "",
             type,
             value: encryptedHex!,
-            sharedWith: shareList,
+            sharedWith: usernames,
             initData: parsedInitData,
           },
           initDataRaw!
@@ -97,9 +108,6 @@ const AddData: React.FC = () => {
     setEncrypting(false);
   };
 
-  
-
-  
   /*
   const handleSave = (): void => {
     console.log({
@@ -116,15 +124,24 @@ const AddData: React.FC = () => {
       {isOpenPopup && (
         <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
           <div className="popup-content">
-            <img src={userProfile?.image} alt="user icon" width={80} height={80} />
-            <p>{userProfile.error ? userProfile.error : shareWith}</p>
-            {!userProfile.error && <button onClick={handleConfirmClick}>Confirmation</button>}
+            <img
+              src={userProfile.data.img?.src}
+              alt="user icon"
+              width={80}
+              height={80}
+            />
+            <p>
+              {userProfile.error ? userProfile.error : userProfile.data.name}
+            </p>
+            {!userProfile.error && (
+              <button onClick={handleConfirmClick}>Confirmation</button>
+            )}
             <button onClick={() => setIsOpenPopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
       )}
       <h2 className="page-title">Add New Data</h2>
-      <label>Name of Data</label>
+      <label>Title</label>
       <input
         type="text"
         value={name}
@@ -133,13 +150,13 @@ const AddData: React.FC = () => {
         className="input-field"
       />
 
-      <label>Description</label>
+      {/* <label>Description</label>
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Short description here..."
         className="input-field"
-      />
+      /> */}
 
       <label>Value</label>
       <textarea
@@ -184,7 +201,7 @@ const AddData: React.FC = () => {
         <div className="share-list">
           <p>Sharing with:</p>
           {shareList.map((user, i) => (
-            <div key={i}>- {user}</div>
+            <div key={i}>- {user.data.name}</div>
           ))}
         </div>
       )}

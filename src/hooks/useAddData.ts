@@ -1,48 +1,46 @@
 import { useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
-import { UserProfileType } from "../types/types";
-import { getUserProfileImage } from "../apiService";
+import { GetUserProfileDetailsResponse, UserProfileType } from "../types/types";
+import { getUserProfileDetails } from "../apiService";
+
+const initProfileData = {img: { src: defaultProfileImage}, name: "", username: ""};
 
 export default function useAddData() {
-  const [userProfile, setUserProfile] = useState<UserProfileType>({image: defaultProfileImage, error: null});
+  const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
-  const [shareList, setShareList] = useState<string[]>([]);
+  const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [shareWith, setShareWith] = useState<string>("");
 
   const fetchUserProfile = async () => {
-    setUserProfile({ image: defaultProfileImage, error: shareWith });
+    setUserProfile({ data: initProfileData, error: shareWith });
     const username = shareWith.startsWith("@")
       ? shareWith.substring(1)
       : shareWith;
 
     try {
-      const response: any = await getUserProfileImage(username);
+      const response: GetUserProfileDetailsResponse = await getUserProfileDetails(username);
       
-      if (response === null) {
-        setUserProfile((prevInput) => ({
-          image: prevInput?.image ?? "",
+      if (!response) {
+        setUserProfile(() => ({
+          data: initProfileData,
           error: `No Telegram user found for @${username}`,
         }));
         return;
       }
-
       setUserProfile({
-        image: response ? response.src : defaultProfileImage,
+        data: {img: { src: response.img ? response.img.src : defaultProfileImage}, name: response.name, username: response.username},
         error: null,
       });
     } catch (error) {
       setUserProfile({
-        image: defaultProfileImage,
+        data: initProfileData,
         error: `Error On Fetch User: ${error}`,
       });
     }
   };
 
   const handleConfirmClick = (): void => {
-    const username = shareWith.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
-    setShareList([...shareList, username]);
+    setShareList([...shareList, userProfile]);
     setIsOpenPopup(false);
     setShareWith("");
   };
