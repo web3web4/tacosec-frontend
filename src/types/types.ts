@@ -22,12 +22,21 @@ export interface DataItem{
   id : string
   key: string,
   value: string,
-  sharedWith: string[]
+  sharedWith: string[],
+  shareWithDetails?: UserProfileDetailsType[]
 }
   
 export type TabType = "mydata" | "shared";
 
 export interface UserProfileType{
-  image: string,
+  data: UserProfileDetailsType,
   error: string | null
 }
+
+export interface UserProfileDetailsType{
+  img: { src: string} | null,
+  name: string,
+  username: string | null
+}
+
+export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;
