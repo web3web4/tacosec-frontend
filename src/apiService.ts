@@ -1,6 +1,6 @@
 "use server";
 
-import { initDataType } from "./types/types";
+import { UserProfileDetailsType, initDataType } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
@@ -63,7 +63,7 @@ export async function storageEncryptedData(
   return await response.json();
 }
 
-export async function getUserProfileImage(username: string): Promise<string | null> {
+export async function getUserProfileDetails(username: string): Promise<UserProfileDetailsType | null> {
   const response = await fetch(
     `${API_BASE_URL}/users/telegram/profile?username=${username}`,
     {
@@ -85,6 +85,11 @@ export async function getUserProfileImage(username: string): Promise<string | nu
   if (tgDownloadLink || tgIconUser) return null;
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
-  const img: any = doc.querySelector(".tgme_page_photo_image");
-  return img === null ? "" : img;
+  const imgEl = doc.querySelector(".tgme_page_photo_image") as HTMLImageElement | null;
+  const nameEl = doc.querySelector(".tgme_page_title span") as HTMLElement | null;
+  const img = imgEl ? { src: imgEl.src } : null;
+  const name = nameEl?.textContent?.trim() ?? "";
+  const finalUsername = username.startsWith("@") ? username.substring(1) : username;
+  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername};
+  return res;
 }

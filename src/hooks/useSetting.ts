@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { getUserProfileImage } from "../apiService";
+import { getUserProfileDetails } from "../apiService";
 import { useUser } from "../context/UserContext";
+import { GetUserProfileDetailsResponse } from "../types/types";
 
 export default function useSetting() {
   const { userData } = useUser();
@@ -13,8 +14,8 @@ export default function useSetting() {
   };
 
   const fetchData = async () => {
-    const response: any = await getUserProfileImage(userData!.username);
-    setProfileImage(response ? response.src : null);
+    const response: GetUserProfileDetailsResponse = await getUserProfileDetails(userData!.username);
+    setProfileImage(response && response.img ? response.img.src : null);
   };
 
   useEffect(() => {

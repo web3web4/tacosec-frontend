@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "../../wallet/walletContext";
-import { FiUser, FiX } from "react-icons/fi";
 import useHome from "../../hooks/useHome";
-import "./Home.css";
 import useTaco from "../../hooks/useTaco";
 import { fromHexString } from "@nucypher/shared";
 import { fromBytes } from "@nucypher/taco";
+import "./Home.css";
 
 const Home: React.FC = () => {
   const { data, activeTab, handleAddClick, handlesetActiveTabClick } = useHome();
@@ -152,16 +151,10 @@ const Home: React.FC = () => {
                         {" "}
                         <h4 className="shared-title">Shared With:</h4>
                         <div className="shared-users">
-                          {item.sharedWith.map((user, index) => (
+                          {item.shareWithDetails?.map((user, index) => (
                             <div className="shared-user" key={index}>
-                              <FiUser className="user-icon" />
-                              <span>{user}</span>
-                              <FiX
-                                className="remove-icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              />
+                              <img src={user.img?.src} alt="img"/>
+                              <span>{user.name}</span>
                             </div>
                           ))}
                         </div>
