@@ -85,7 +85,7 @@ const AddData: React.FC = () => {
           {
             key: name,
             description: "",
-            type:"",
+            type: "text",
             value: encryptedHex!,
             sharedWith: sharedWithList,
             initData: parsedInitData,
