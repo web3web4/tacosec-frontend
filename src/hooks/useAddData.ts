@@ -3,7 +3,7 @@ import defaultProfileImage from "../assets/images/no-User.png";
 import { GetUserProfileDetailsResponse, UserProfileType } from "../types/types";
 import { getUserProfileDetails } from "../apiService";
 
-const initProfileData = {img: { src: defaultProfileImage}, name: "", username: ""};
+const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "", invited: false};
 
 export default function useAddData() {
   const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
@@ -28,7 +28,7 @@ export default function useAddData() {
         return;
       }
       setUserProfile({
-        data: {img: { src: response.img ? response.img.src : defaultProfileImage}, name: response.name, username: response.username},
+        data: {img: { src: response.img ? response.img.src : defaultProfileImage}, name: response.name, username: response.username, invited: false},
         error: null,
       });
     } catch (error) {
@@ -45,6 +45,16 @@ export default function useAddData() {
     setShareWith("");
   };
 
+  const handleInvite = (index: number) => {
+    setShareList((prevList) =>
+      prevList.map((user, i) =>
+        i === index
+          ? { ...user, data: { ...user.data, invited: true } }
+          : user
+      )
+    );
+  };
+
   const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
@@ -56,6 +66,7 @@ export default function useAddData() {
     isOpenPopup,
     shareList,
     shareWith,
+    handleInvite,
     setIsOpenPopup,
     setShareWith,
     handleAddShare,
