@@ -42,8 +42,8 @@ export default function useHome() {
       const enrichedData: DataItem[] = await Promise.all(
         data.map(async (item) => {
           const userDetails = await Promise.all(
-            item.sharedWith.map(async (username) => {
-              const profile = await getUserProfileDetails(username);
+            item.sharedWith.map(async (user) => {
+              const profile = await getUserProfileDetails(user.username);
     
               if (profile && (!profile.img || !profile.img.src || profile.img.src.trim() === "")) {
                 return {
