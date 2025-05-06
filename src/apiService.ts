@@ -64,6 +64,7 @@ export async function storageEncryptedData(
 }
 
 export async function getUserProfileDetails(username: string): Promise<UserProfileDetailsType | null> {
+  if (!username) return null;
   const response = await fetch(
     `${API_BASE_URL}/users/telegram/profile?username=${username}`,
     {

@@ -22,7 +22,7 @@ export interface DataItem{
   id : string
   key: string,
   value: string,
-  sharedWith: {username: string, invited: boolean}[],
+  sharedWith: {username: string, invited?: boolean}[],
   shareWithDetails?: UserProfileDetailsType[]
 }
 export interface SharedWithMyDataType{
