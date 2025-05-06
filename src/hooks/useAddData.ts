@@ -40,10 +40,23 @@ export default function useAddData() {
   };
 
   const handleConfirmClick = (): void => {
-    setShareList([...shareList, userProfile]);
+    const cleanedUsername = shareWith.startsWith("@")
+      ? shareWith.substring(1)
+      : shareWith;
+  
+    const updatedProfile = {
+      ...userProfile,
+      data: {
+        ...userProfile.data,
+        username: cleanedUsername
+      }
+    };
+  
+    setShareList([...shareList, updatedProfile]);
     setIsOpenPopup(false);
     setShareWith("");
   };
+  
 
   const handleInvite = (index: number) => {
     setShareList((prevList) =>
