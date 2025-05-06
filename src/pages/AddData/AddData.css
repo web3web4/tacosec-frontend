@@ -19,7 +19,7 @@
 }
 
 .page-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -143,6 +143,21 @@
 .popup-content button:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.user_container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.btn-invited {
+  background-color: transparent;
+  border: 1px solid;
+  color: var(--primary-color);
+  padding: 3px 6px;
+  border-radius: 20px;
+  cursor: pointer;
 }
 
 @keyframes fadeIn {

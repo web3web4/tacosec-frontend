@@ -25,6 +25,15 @@ export interface DataItem{
   sharedWith: string[],
   shareWithDetails?: UserProfileDetailsType[]
 }
+export interface SharedWithMyDataType{
+  sharedByDetails?: UserProfileDetailsType,
+  username : string,
+  passwords: {
+    id: string,
+    key: string,
+    value: string,
+  }[]
+}
   
 export type TabType = "mydata" | "shared";
 
@@ -36,7 +45,8 @@ export interface UserProfileType{
 export interface UserProfileDetailsType{
   img: { src: string} | null,
   name: string,
-  username: string | null
+  username: string | null,
+  invited?: boolean
 }
 
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;

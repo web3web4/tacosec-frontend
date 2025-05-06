@@ -1,20 +1,22 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useWallet } from "../../wallet/walletContext";
 import useHome from "../../hooks/useHome";
 import useTaco from "../../hooks/useTaco";
 import { fromHexString } from "@nucypher/shared";
 import { fromBytes } from "@nucypher/taco";
 import "./Home.css";
+import MyData from "../../section/Home/MyData/MyData";
+import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 
+
+// need refactor
 const Home: React.FC = () => {
-  const { data, activeTab, handleAddClick, handlesetActiveTabClick } = useHome();
+  const { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick } = useHome();
   const { signer, provider } = useWallet();
   console.log("this is wallet" ,signer);
-  const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
-  const [decrypting, setDecrypting] = useState(false);
+  const [decrypting, setDecrypting] = useState<boolean>(false);
 
   const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
   const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -27,15 +29,7 @@ const Home: React.FC = () => {
   if (!isInit || !provider) {
     return <div>Loading...</div>;
   }
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
-  };
-
-  const handleEdit = (id: string) => {
-    navigate(`/edit/${id}`);
-  };
-
+ 
   const toggleExpand = (index: number, value: string) => {
     if (expandedIndex === index) {
       setExpandedIndex(null);
@@ -90,83 +84,12 @@ const Home: React.FC = () => {
       </div>
 
       <div className="tab-content">
-        <div className="data-list">
-          {data.length > 0 ? (
-            data.map((item, i) => (
-              <div
-                key={i}
-                className="data-item"
-                onClick={() => toggleExpand(i, item.value)}
-              >
-                <p className="item-title">{item.key}</p>
-                <p
-                  className="item-status"
-                  data-status={
-                    item.sharedWith.length > 0 ? "Shared" : "Private"
-                  }
-                >
-                  {item.sharedWith.length > 0 ? "Shared" : "Private"}
-                </p>
-                {expandedIndex === i && (
-                  <div className="expanded-box">
-                    <p className="password-text">
-                      Password:{" "}
-                      {decrypting ? (
-                        <span className="decrypting-animation">
-                          Decrypting
-                          <span className="dots">
-                            <span>.</span>
-                            <span>.</span>
-                            <span>.</span>
-                          </span>
-                        </span>
-                      ) : (
-                        decryptedMessages[i] || "Failed to decrypt"
-                      )}
-                    </p>
-
-                    <div className="button-group">
-                      <button
-                        className="copy-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (decryptedMessages[i])
-                            handleCopy(decryptedMessages[i]);
-                        }}
-                      >
-                        Copy
-                      </button>
-                      <button
-                        className="edit-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(item.id);
-                        }}
-                      >
-                        Edit
-                      </button>
-                    </div>
-                    {item.sharedWith.length > 0 && (
-                      <div className="shared-section">
-                        {" "}
-                        <h4 className="shared-title">Shared With:</h4>
-                        <div className="shared-users">
-                          {item.shareWithDetails?.map((user, index) => (
-                            <div className="shared-user" key={index}>
-                              <img src={user.img?.src} alt="img"/>
-                              <span>{user.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="no-data-message">No data available.</p>
-          )}
+        <div>
+        {activeTab === "mydata" ? (
+          <MyData myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} />
+        ) : (
+          <SharedWithMy sharedWithMyData={sharedWithMyData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} />
+        )}
         </div>
       </div>
     </div>
