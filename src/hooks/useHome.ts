@@ -76,8 +76,8 @@ export default function useHome() {
   const fetchSharedWithMyData = async () => {
     try {
       const data = await GetDataSharedWithMy(initDataRaw!);
-      setSharedWithMyData(data);
-      if(data.length > 0) await getProfilesDetailsForUsersSharedBy(data);
+      setSharedWithMyData(data.sharedWithMe);
+      if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data);
     } catch (err) {
       Swal.fire({
         icon: "error",
