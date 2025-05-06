@@ -13,6 +13,7 @@ import "./AddData.css";
 //type DataType = "text" | "number" | "password";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
+const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
 
 const AddData: React.FC = () => {
   const {
@@ -24,11 +25,10 @@ const AddData: React.FC = () => {
     setShareWith,
     handleConfirmClick,
     handleAddShare,
+    handleInvite
   } = useAddData();
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
-  // const [description, setDescription] = useState<string>("");
-  //const [type, setType] = useState<DataType>("text");
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw } = useUser();
@@ -38,13 +38,7 @@ const AddData: React.FC = () => {
     provider,
     ritualId,
   });
-  /*
-  useEffect(() => {
-    if (encryptedText) {
-      console.log("encrypt text from:", encryptedText);
-    }
-  }, [encryptedText]);
-*/
+
   if (!isInit || !provider) {
     return <div>Loading...</div>;
   }
@@ -80,9 +74,12 @@ const AddData: React.FC = () => {
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
-        const usernames: string[] = shareList
-          .map((item) => item.data.username)
-          .filter((username): username is string => username !== null);
+        const sharedWithList: { username: string; invited: boolean }[] = shareList
+          .filter((item) => item.data.username !== null)
+          .map((item) => ({
+            username: item.data.username!,
+            invited: item.data.invited ?? false,
+          }));
 
         const res = await storageEncryptedData(
           {
@@ -90,7 +87,7 @@ const AddData: React.FC = () => {
             description: "",
             type:"",
             value: encryptedHex!,
-            sharedWith: usernames,
+            sharedWith: sharedWithList,
             initData: parsedInitData,
           },
           initDataRaw!
@@ -108,17 +105,6 @@ const AddData: React.FC = () => {
     setEncrypting(false);
   };
 
-  /*
-  const handleSave = (): void => {
-    console.log({
-      name,
-      description,
-      type,
-      sharedWith: shareList,
-    });
-    alert("Data saved (console.log)!");
-  };
-*/
   return (
     <div className="add-data-container">
       {isOpenPopup && (
@@ -149,14 +135,6 @@ const AddData: React.FC = () => {
         placeholder="e.g. Facebook Password"
         className="input-field"
       />
-
-      {/* <label>Description</label>
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Short description here..."
-        className="input-field"
-      /> */}
 
       <label>Secret</label>
       <textarea
@@ -203,7 +181,16 @@ const AddData: React.FC = () => {
         <div className="share-list">
           <p>Sharing with:</p>
           {shareList.map((user, i) => (
+            <div className="user_container">
             <div key={i}>- {user.data.name}</div>
+            <a
+            href={`https://t.me/${user.data.username}?text=${encodeURIComponent(`I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button className="btn-invited" disabled={user.data.invited} onClick={() => {handleInvite(i)}}>{user.data.invited ? "invited" : "invite"}</button>
+          </a>
+            </div>
           ))}
         </div>
       )}
