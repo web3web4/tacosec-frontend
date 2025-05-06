@@ -44,40 +44,40 @@ export default function useHome() {
           const userDetails = await Promise.all(
             item.sharedWith.map(async (user) => {
               const profile = await getUserProfileDetails(user.username);
-    
+
               if (profile && (!profile.img || !profile.img.src || profile.img.src.trim() === "")) {
                 return {
                   ...profile,
                   img: { src: defaultProfileImage },
                 };
               }
-    
+  
               return profile;
             })
           );
-    
+  
           const filteredDetails = userDetails.filter(
             (profile): profile is UserProfileDetailsType => profile !== null
           );
-    
+  
           return {
             ...item,
             shareWithDetails: filteredDetails,
           };
         })
       );
-    
+
       setMyData(enrichedData);
     } catch (error) {
       console.log(error);
     }
   };
-
+  
   const fetchSharedWithMyData = async () => {
     try {
       const data = await GetDataSharedWithMy(initDataRaw!);
       setSharedWithMyData(data.sharedWithMe);
-      if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data);
+      if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -91,7 +91,7 @@ export default function useHome() {
     const enrichedData = await Promise.all(
       data.map(async (item) => {
         const profile = await getUserProfileDetails(item.username);
-  
+        
         if (!profile) return item;
   
         const profileWithDefaultImg = {
