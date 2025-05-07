@@ -95,7 +95,9 @@ const AddData: React.FC = () => {
         if (res) {
           Swal.fire({
             icon: "success",
-            title: `Encryption successful!`,
+            title: `The data was successfully encrypted and securely stored`,
+            showConfirmButton: false,
+            timer: 2000
           });
         }
       }
