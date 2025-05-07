@@ -97,7 +97,7 @@ const AddData: React.FC = () => {
             icon: "success",
             title: `The data was successfully encrypted and securely stored`,
             showConfirmButton: false,
-            timer: 2000
+            timer: 4000
           });
         }
       }
