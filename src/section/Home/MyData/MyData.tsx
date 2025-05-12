@@ -81,7 +81,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                     {item.sharedWith.length > 0 && (
                       <div className="shared-section">
                         {" "}
-                        <h4 className="shared-title">Shared With:</h4>
+                        <h4 className="shared-title">Shared with:</h4>
                         <div className="shared-users">
                           {item.shareWithDetails?.map((user, index) => (
                             <div className="shared-user" key={index}>

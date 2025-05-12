@@ -48,7 +48,7 @@ export default function useAddData() {
       ...userProfile,
       data: {
         ...userProfile.data,
-        username: cleanedUsername
+        username: cleanedUsername.toLowerCase()
       }
     };
   

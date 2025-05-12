@@ -79,7 +79,7 @@ const Home: React.FC = () => {
           className={`tab-button ${activeTab === "shared" ? "active" : ""}`}
           onClick={() => handlesetActiveTabClick("shared")}
         >
-          Shared With Me
+          Shared with Me
         </button>
       </div>
 
