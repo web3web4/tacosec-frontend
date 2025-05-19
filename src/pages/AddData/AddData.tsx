@@ -14,6 +14,7 @@ import "./AddData.css";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
+const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 const AddData: React.FC = () => {
   const {
@@ -31,7 +32,7 @@ const AddData: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
-  const { initDataRaw } = useUser();
+  const { initDataRaw, userData } = useUser();
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
@@ -54,23 +55,32 @@ const AddData: React.FC = () => {
         return;
       }
 
-      //condation
-      const hasPositiveBalance = new conditions.base.rpc.RpcCondition({
-        chain: 80002,
-        method: "eth_getBalance",
-        parameters: [":userAddress", "latest"],
-        returnValueTest: {
-          comparator: ">=",
-          value: 0,
+      let usernames: string[] = [];
+      usernames.push(userData?.username.toLowerCase()!);
+      usernames = [...usernames, ...shareList
+        .filter((item) => item.data.username !== null)
+        .map((item) => (
+          item.data.username!.toLowerCase()
+        ))];
+
+      //condition
+      const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
+        endpoint: `${BACKEND}/telegram/verify`,
+        authorizationToken: ':authorizationToken',
+        parameters: {
+          TelegramUsernames : usernames,
         },
+        query: '$.isValid',
+        returnValueTest: { comparator: '==', value: true },
       });
 
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        hasPositiveBalance,
-        signer
+        checkUsersCondition,
+        signer!
       );
+
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);

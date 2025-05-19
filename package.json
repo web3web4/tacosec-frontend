@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
-    "@nucypher/taco": "^0.5.0",
+    "@nucypher/taco": "^0.6.0",
     "@nucypher/taco-auth": "^0.2.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
