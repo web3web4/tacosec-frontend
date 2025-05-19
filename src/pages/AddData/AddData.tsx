@@ -65,7 +65,7 @@ const AddData: React.FC = () => {
 
       //condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
-        endpoint: `${BACKEND}/telegram/verify-true`,
+        endpoint: `${BACKEND}/telegram/verify-test`,
         // authorizationToken: ':authorizationToken',
         parameters: {
           TelegramUsernames : usernames,
