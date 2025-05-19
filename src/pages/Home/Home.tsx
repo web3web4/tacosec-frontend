@@ -40,7 +40,6 @@ const Home: React.FC = () => {
       }
     }
   };
-
   const decryptMessage = async (index: number, encryptedText: string) => {
     if (!encryptedText || !provider || !signer) return;
     try {
@@ -79,7 +78,7 @@ const Home: React.FC = () => {
           className={`tab-button ${activeTab === "shared" ? "active" : ""}`}
           onClick={() => handlesetActiveTabClick("shared")}
         >
-          Shared With Me
+          Shared with Me
         </button>
       </div>
 
