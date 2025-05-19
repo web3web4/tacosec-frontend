@@ -40,7 +40,6 @@ const Home: React.FC = () => {
       }
     }
   };
-
   const decryptMessage = async (index: number, encryptedText: string) => {
     if (!encryptedText || !provider || !signer) return;
     try {

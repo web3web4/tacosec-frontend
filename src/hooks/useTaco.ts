@@ -8,10 +8,10 @@ import {
 } from '@nucypher/taco';
 import {
   EIP4361AuthProvider,
-  USER_ADDRESS_PARAM_DEFAULT,
 } from '@nucypher/taco-auth';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
+import { useUser } from '../context/UserContext';
 
 export default function useTaco({
   ritualId,
@@ -23,7 +23,7 @@ export default function useTaco({
   provider: ethers.providers.Provider | undefined;
 }) {
   const [isInit, setIsInit] = useState(false);
-
+  const { initDataRaw } = useUser();
   useEffect(() => {
     initialize().then(() => setIsInit(true));
   }, []);
@@ -33,16 +33,25 @@ export default function useTaco({
       if (!isInit || !provider) {
         return;
       }
+
+
       const messageKit = ThresholdMessageKit.fromBytes(encryptedBytes);
       const authProvider = new EIP4361AuthProvider(provider, signer);
-      const conditionContext =
+      const telegramConditionContext =
         conditions.context.ConditionContext.fromMessageKit(messageKit);
-      conditionContext.addAuthProvider(
-        USER_ADDRESS_PARAM_DEFAULT,
-        authProvider,
-      );
-      return decrypt(provider, domain, messageKit, conditionContext);
+        const contextParams = {
+          ':authorizationToken': initDataRaw!
+        };
+        
+        telegramConditionContext.addCustomContextParameterValues(contextParams);
+        
+        for (const param in contextParams) {
+          telegramConditionContext.addAuthProvider(param, authProvider);
+        }
+  
+        return decrypt(provider, domain, messageKit, telegramConditionContext);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isInit, provider, domain],
   );
 
