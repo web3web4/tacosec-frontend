@@ -1,4 +1,5 @@
 import { SharedWithMyDataType } from "../../../types/types";
+import defaultProfileImage from "../../../assets/images/no-User.png"
 
 interface MyDataType{
    sharedWithMyData: SharedWithMyDataType[],
@@ -73,7 +74,15 @@ export default function SharedWithMy({sharedWithMyData, toggleExpand, expandedIn
                       <h4 className="shared-title">Shared By:</h4>
                       <div className="shared-users">
                         <div className="shared-user">
-                          <img src={item.sharedByDetails.img?.src} alt="img" />
+                          <img 
+                                src={item.sharedByDetails.img?.src}
+                                alt="img" 
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.onerror = null;
+                                  target.src = defaultProfileImage;
+                                }}
+                              />
                           <span>{item.sharedByDetails.name}</span>
                         </div>
                       </div>
