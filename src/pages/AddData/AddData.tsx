@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
+import defaultProfileImage from "../../assets/images/no-User.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
 import { conditions, toHexString } from "@nucypher/taco";
@@ -10,7 +11,6 @@ import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
 
-//type DataType = "text" | "number" | "password";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
@@ -66,7 +66,6 @@ const AddData: React.FC = () => {
       //condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
-        // authorizationToken: ':authorizationToken',
         parameters: {
           TelegramUsernames : usernames,
           authorizationToken: ":authorizationToken"
@@ -128,7 +127,13 @@ const AddData: React.FC = () => {
               alt="user icon"
               width={80}
               height={80}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.src = defaultProfileImage;
+              }}
             />
+            
             <p>
               {userProfile.error ? userProfile.error : userProfile.data.name}
             </p>
