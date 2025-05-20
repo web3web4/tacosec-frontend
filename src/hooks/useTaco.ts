@@ -34,9 +34,7 @@ export default function useTaco({
         return;
       }
 
-
       const messageKit = ThresholdMessageKit.fromBytes(encryptedBytes);
-      // const authProvider = new EIP4361AuthProvider(provider, signer);
       const telegramConditionContext =
         conditions.context.ConditionContext.fromMessageKit(messageKit);
         const contextParams = {
@@ -44,11 +42,6 @@ export default function useTaco({
         };
         
         telegramConditionContext.addCustomContextParameterValues(contextParams);
-        
-        // for (const param in contextParams) {
-        //   telegramConditionContext.addAuthProvider(param, authProvider);
-        // }
-  
         return decrypt(provider, domain, messageKit, telegramConditionContext);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

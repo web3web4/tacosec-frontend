@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
 
 interface MyDataType{
@@ -10,17 +11,12 @@ interface MyDataType{
 }
 
 export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages} : MyDataType) {
-    const navigate = useNavigate();
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
         alert("Copied to clipboard!");
       };
     
-      const handleEdit = (id: string) => {
-        navigate(`/edit/${id}`);
-      };
-
   return (
     <div className="data-list">
       {myData.length > 0 ? (
@@ -68,15 +64,6 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                       >
                         Copy
                       </button>
-                      <button
-                        className="edit-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(item.id);
-                        }}
-                      >
-                        Edit
-                      </button>
                     </div>
                     {item.sharedWith.length > 0 && (
                       <div className="shared-section">
@@ -85,7 +72,15 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                         <div className="shared-users">
                           {item.shareWithDetails?.map((user, index) => (
                             <div className="shared-user" key={index}>
-                              <img src={user.img?.src} alt="img"/>
+                              <img 
+                                src={user.img?.src} 
+                                alt="img" 
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.onerror = null;
+                                  target.src = defaultProfileImage;
+                                }}
+                              />
                               <span>{user.name}</span>
                             </div>
                           ))}
