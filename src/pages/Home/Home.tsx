@@ -4,12 +4,11 @@ import useHome from "../../hooks/useHome";
 import useTaco from "../../hooks/useTaco";
 import { fromHexString } from "@nucypher/shared";
 import { fromBytes } from "@nucypher/taco";
-import "./Home.css";
 import MyData from "../../section/Home/MyData/MyData";
 import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
+import "./Home.css";
 
 
-// need refactor
 const Home: React.FC = () => {
   const { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick } = useHome();
   const { signer, provider } = useWallet();
