@@ -55,13 +55,13 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let usernames: string[] = [];
-      usernames.push(userData?.username.toLowerCase()!);
-      usernames = [...usernames, ...shareList
+      let usernames: string = "";
+      usernames = userData?.username.toLowerCase()!;
+      shareList
         .filter((item) => item.data.username !== null)
         .map((item) => (
-          item.data.username!.toLowerCase()
-        ))];
+          usernames += "," + item.data.username!.toLowerCase()
+        ));
 
       //condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
@@ -167,20 +167,6 @@ const AddData: React.FC = () => {
           Please Wait For Encrypting...
         </div>
       )}
-  {/*
-  
-  
-        <label>Type</label>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as DataType)}
-          className="input-field"
-        >
-          <option value="text">Text</option>
-          <option value="number">Number</option>
-          <option value="password">Password</option>
-        </select>
-  */}
       <label>Share with</label>
       <div className="share-with-row">
         <input
