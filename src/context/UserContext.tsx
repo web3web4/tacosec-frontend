@@ -35,7 +35,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       Swal.fire({
         icon: "success",
         title: "Welcome!",
-        text: `Hello, ${response.firstName}! We're glad to have you here.`,
+        text: `Hello, ${response.firstName} ${ " " } ${response.firstName}! We're glad to have you here.`,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
