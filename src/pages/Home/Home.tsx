@@ -46,8 +46,7 @@ const Home: React.FC = () => {
       setDecrypting(true);
       console.log("Decrypting message...");
       const decryptedBytes = await decryptDataFromBytes(
-        fromHexString(encryptedText),
-        signer
+        fromHexString(encryptedText)
       );
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
