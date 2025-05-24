@@ -7,7 +7,7 @@ import {
   ThresholdMessageKit,
 } from '@nucypher/taco';
 import {
-  EIP4361AuthProvider,
+  //EIP4361AuthProvider,
 } from '@nucypher/taco-auth';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
@@ -29,7 +29,7 @@ export default function useTaco({
   }, []);
 
   const decryptDataFromBytes = useCallback(
-    async (encryptedBytes: Uint8Array, signer: ethers.Signer) => {
+    async (encryptedBytes: Uint8Array) => {
       if (!isInit || !provider) {
         return;
       }
