@@ -32,11 +32,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
+      Swal.fire({
+        icon: "success",
+        title: "Welcome!",
+        text: `Hello, ${response.firstName}! We're glad to have you here.`,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       Swal.fire({
         icon: "error",
-        title: "Error",
+        title: "Error In Sign User",
         text: err instanceof Error ? err.message : "An error occurred",
       });
     }

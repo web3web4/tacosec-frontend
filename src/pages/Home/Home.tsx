@@ -7,6 +7,7 @@ import { fromBytes } from "@nucypher/taco";
 import MyData from "../../section/Home/MyData/MyData";
 import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 import "./Home.css";
+import { useUser } from "../../context/UserContext";
 
 
 const Home: React.FC = () => {
@@ -16,7 +17,7 @@ const Home: React.FC = () => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
   const [decrypting, setDecrypting] = useState<boolean>(false);
-
+  const { userData } = useUser();
   const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
   const domain = process.env.REACT_APP_TACO_DOMAIN as string;
   const { isInit, decryptDataFromBytes } = useTaco({
@@ -58,10 +59,11 @@ const Home: React.FC = () => {
       setDecrypting(false);
     }
   };
-
+  
   return (
     <div className="home-container">
       <div className="top-bar">
+        <div>{ userData?.firstName } { " " } { userData?.lastName }</div>
         <button className="add-button" onClick={handleAddClick}>
           + Add
         </button>
