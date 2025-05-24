@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import AddData from "./pages/AddData/AddData";
 import Settings from "./pages/Settings/Settings";
-import Encyptyingg from "./pages/Encyptyingg/Encyptyingg";
 import BottomNav from "./components/BottomNav/BottomNav";
 import Loading from "./components/Loading/Loading";
 import { WalletProvider } from "./wallet/walletContext";
@@ -33,9 +32,7 @@ const App: React.FC = () => {
                   <Route path="/" element={<Home />} />
                   <Route path="/add" element={<AddData />} />
                   <Route path="/settings" element={<Settings />} />
-                  <Route path="/encyptyingg" element={<Encyptyingg />} />
                 </Routes>
-
                 <BottomNav />
               </>
             )}
