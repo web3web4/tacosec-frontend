@@ -22,6 +22,7 @@ const AddData: React.FC = () => {
     isOpenPopup,
     shareList,
     shareWith,
+    isCanInvite,
     setIsOpenPopup,
     setShareWith,
     handleConfirmClick,
@@ -192,7 +193,7 @@ const AddData: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="btn-invited" disabled={user.data.invited} onClick={() => {handleInvite(i)}}>{user.data.invited ? "invited" : "invite"}</button>
+            <button className="btn-invited" disabled={user.data.invited || isCanInvite} onClick={() => {handleInvite(i)}}>{user.data.invited ? "invited" : "invite"}</button>
           </a>
             </div>
           ))}
