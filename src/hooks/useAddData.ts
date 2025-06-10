@@ -1,15 +1,18 @@
 import { useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { GetUserProfileDetailsResponse, UserProfileType } from "../types/types";
-import { getUserProfileDetails } from "../apiService";
+import { checkIfUserAvailable, getUserProfileDetails } from "../apiService";
+import { useUser } from "../context/UserContext";
 
 const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "", invited: false};
 
 export default function useAddData() {
   const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
+  const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [shareWith, setShareWith] = useState<string>("");
+  const { initDataRaw } = useUser();
 
   const fetchUserProfile = async () => {
     setUserProfile({ data: initProfileData, error: shareWith });
@@ -39,6 +42,19 @@ export default function useAddData() {
     }
   };
 
+  const checkIfUserExists = async () => {
+    try {
+      const username = shareWith.startsWith("@")
+      ? shareWith.substring(1)
+      : shareWith;
+
+      const response = await checkIfUserAvailable(initDataRaw!, username);
+      setIsCanInvite(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleConfirmClick = (): void => {
     const cleanedUsername = shareWith.startsWith("@")
       ? shareWith.substring(1)
@@ -54,6 +70,7 @@ export default function useAddData() {
   
     setShareList([...shareList, updatedProfile]);
     setIsOpenPopup(false);
+    setIsCanInvite(false);
     setShareWith("");
   };
   
@@ -72,6 +89,7 @@ export default function useAddData() {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
     fetchUserProfile();
+    checkIfUserExists();
   };
 
   return {
@@ -79,6 +97,7 @@ export default function useAddData() {
     isOpenPopup,
     shareList,
     shareWith,
+    isCanInvite,
     handleInvite,
     setIsOpenPopup,
     setShareWith,

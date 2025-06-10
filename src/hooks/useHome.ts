@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GetDataSharedWithMy, GetMyData, getUserProfileDetails } from "../apiService";
+import { getDataSharedWithMy, GetMyData, getUserProfileDetails } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -75,7 +75,7 @@ export default function useHome() {
   
   const fetchSharedWithMyData = async () => {
     try {
-      const data = await GetDataSharedWithMy(initDataRaw!);
+      const data = await getDataSharedWithMy(initDataRaw!);
       setSharedWithMyData(data.sharedWithMe);
       if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
     } catch (err) {
