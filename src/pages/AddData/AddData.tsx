@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import defaultProfileImage from "../../assets/images/no-User.png";
+import avilableIcon from "../../assets/icons/accept.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
 import { conditions, toHexString } from "@nucypher/taco";
@@ -188,13 +189,17 @@ const AddData: React.FC = () => {
           {shareList.map((user, i) => (
             <div className="user_container">
             <div key={i}>- {user.data.name}</div>
+            { isCanInvite ? 
+            (<img src={avilableIcon} alt="avilable icon" width={20} height={20}/>) : 
+            (
             <a
             href={`https://t.me/${user.data.username}?text=${encodeURIComponent(`I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="btn-invited" disabled={isCanInvite} onClick={() => {handleInvite(i)}}>{user.data.invited ? "invited" : "invite"}</button>
+            <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
           </a>
+            )}
             </div>
           ))}
         </div>

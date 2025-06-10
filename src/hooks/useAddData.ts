@@ -49,7 +49,6 @@ export default function useAddData() {
       : shareWith;
 
       const response = await checkIfUserAvailable(initDataRaw!, username);
-      console.log("response ======", response);
       setIsCanInvite(response);
     } catch (error) {
       console.log(error);
@@ -71,7 +70,6 @@ export default function useAddData() {
   
     setShareList([...shareList, updatedProfile]);
     setIsOpenPopup(false);
-    console.log("isCanInvite ======", isCanInvite);
     setIsCanInvite(false);
     setShareWith("");
   };
