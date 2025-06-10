@@ -9,6 +9,7 @@ const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "
 export default function useAddData() {
   const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
+  const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [shareWith, setShareWith] = useState<string>("");
   const { initDataRaw } = useUser();
@@ -49,13 +50,7 @@ export default function useAddData() {
       : shareWith;
 
       const response = await checkIfUserAvailable(initDataRaw!, username);
-      setUserProfile(prevState => ({
-        ...prevState,
-        data: {
-          ...prevState.data,
-          invited: response
-        }
-      }));
+      setIsCanInvite(response);
     } catch (error) {
       console.log(error);
     }
@@ -70,12 +65,14 @@ export default function useAddData() {
       ...userProfile,
       data: {
         ...userProfile.data,
-        username: cleanedUsername.toLowerCase()
+        username: cleanedUsername.toLowerCase(),
+        invited: isCanInvite
       }
     };
   
     setShareList([...shareList, updatedProfile]);
     setIsOpenPopup(false);
+    setIsCanInvite(false);
     setShareWith("");
   };
   
@@ -93,8 +90,8 @@ export default function useAddData() {
   const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
-    fetchUserProfile();
     checkIfUserExists();
+    fetchUserProfile();
   };
 
   return {
