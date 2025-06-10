@@ -23,7 +23,6 @@ const AddData: React.FC = () => {
     isOpenPopup,
     shareList,
     shareWith,
-    isCanInvite,
     setIsOpenPopup,
     setShareWith,
     handleConfirmClick,
@@ -189,7 +188,7 @@ const AddData: React.FC = () => {
           {shareList.map((user, i) => (
             <div className="user_container">
             <div key={i}>- {user.data.name}</div>
-            { isCanInvite ? 
+            { user.data.invited ? 
             (<img src={avilableIcon} alt="avilable icon" width={20} height={20}/>) : 
             (
             <a
