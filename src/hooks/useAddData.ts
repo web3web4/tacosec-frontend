@@ -34,6 +34,7 @@ export default function useAddData() {
         data: {img: { src: response.img ? response.img.src : defaultProfileImage}, name: response.name, username: response.username, invited: false},
         error: null,
       });
+
     } catch (error) {
       setUserProfile({
         data: initProfileData,
@@ -64,7 +65,8 @@ export default function useAddData() {
       ...userProfile,
       data: {
         ...userProfile.data,
-        username: cleanedUsername.toLowerCase()
+        username: cleanedUsername.toLowerCase(),
+        invited: isCanInvite
       }
     };
   
@@ -88,8 +90,8 @@ export default function useAddData() {
   const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
-    fetchUserProfile();
     checkIfUserExists();
+    fetchUserProfile();
   };
 
   return {
@@ -97,7 +99,6 @@ export default function useAddData() {
     isOpenPopup,
     shareList,
     shareWith,
-    isCanInvite,
     handleInvite,
     setIsOpenPopup,
     setShareWith,
