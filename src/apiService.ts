@@ -95,8 +95,24 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   return res;
 }
 
-export async function GetDataSharedWithMy(initData: string): Promise<any> {
+export async function getDataSharedWithMy(initData: string): Promise<any> {
   const response = await fetch(`${API_BASE_URL}/passwords/shared-with-me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+export async function checkIfUserAvailable(initData: string, username: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
