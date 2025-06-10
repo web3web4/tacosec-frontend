@@ -9,7 +9,6 @@ const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "
 export default function useAddData() {
   const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
-  const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [shareWith, setShareWith] = useState<string>("");
   const { initDataRaw } = useUser();
@@ -34,6 +33,7 @@ export default function useAddData() {
         data: {img: { src: response.img ? response.img.src : defaultProfileImage}, name: response.name, username: response.username, invited: false},
         error: null,
       });
+
     } catch (error) {
       setUserProfile({
         data: initProfileData,
@@ -49,7 +49,13 @@ export default function useAddData() {
       : shareWith;
 
       const response = await checkIfUserAvailable(initDataRaw!, username);
-      setIsCanInvite(response);
+      setUserProfile(prevState => ({
+        ...prevState,
+        data: {
+          ...prevState.data,
+          invited: response
+        }
+      }));
     } catch (error) {
       console.log(error);
     }
@@ -70,7 +76,6 @@ export default function useAddData() {
   
     setShareList([...shareList, updatedProfile]);
     setIsOpenPopup(false);
-    setIsCanInvite(false);
     setShareWith("");
   };
   
@@ -97,7 +102,6 @@ export default function useAddData() {
     isOpenPopup,
     shareList,
     shareWith,
-    isCanInvite,
     handleInvite,
     setIsOpenPopup,
     setShareWith,
