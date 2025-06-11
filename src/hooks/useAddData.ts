@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { GetUserProfileDetailsResponse, UserProfileType } from "../types/types";
 import { checkIfUserAvailable, getUserProfileDetails } from "../apiService";
 import { useUser } from "../context/UserContext";
+import Swal from "sweetalert2";
+import { useNavigationGuard } from "../context/NavigationGuardContext";
 
 const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "", invited: false};
 
@@ -11,8 +13,19 @@ export default function useAddData() {
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
   const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
+  const { setNavigationCheck } = useNavigationGuard();
   const [shareWith, setShareWith] = useState<string>("");
+  const [message, setMessage] = useState("");
+  const [name, setName] = useState<string>("");
   const { initDataRaw } = useUser();
+  
+  useEffect(() => {
+    setNavigationCheck(() => {
+      return shareWith.trim() !== "" || message.trim() !== "" || name.trim() !== "";
+    });
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shareWith, message, name]);
 
   const fetchUserProfile = async () => {
     setUserProfile({ data: initProfileData, error: shareWith });
@@ -94,15 +107,41 @@ export default function useAddData() {
     fetchUserProfile();
   };
 
+  const clraeFilds = () => {
+    setUserProfile({data: initProfileData, error: null});
+    setIsOpenPopup(false);
+    setIsCanInvite(false);
+    setShareWith("");
+    setShareList([]);
+  };
+
+  const checkEncrypting = () => {
+    if(shareWith.trim() !== "") {
+      Swal.fire({
+        icon: "warning",
+        title: "Pending Share Action",
+        text: "You entered a username to share with, but didn’t click the '+' button. Please share or clear the field before saving.",
+      });
+      return false;
+    }
+    return true;
+  };
+
   return {
     userProfile,
     isOpenPopup,
-    shareList,
+    shareList,  
     shareWith,
+    message,
+    name,
     handleInvite,
     setIsOpenPopup,
     setShareWith,
     handleAddShare,
     handleConfirmClick,
+    clraeFilds,
+    checkEncrypting,
+    setMessage,
+    setName,
   };
 }

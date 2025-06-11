@@ -1,40 +1,49 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { 
-  FiHome, 
-  FiPlusSquare, 
-  FiSettings 
-} from "react-icons/fi";
+import { useNavigationGuard } from "../../context/NavigationGuardContext";
+import { FiHome, FiPlusSquare, FiSettings } from "react-icons/fi";
+import { useNavigate, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
 import "./BottomNav.css";
 
-const BottomNav: React.FC = () => {
+export default function BottomNav() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { runNavigationCheck } = useNavigationGuard();
+
+  const handleNavClick = (path: string) => {
+    if (location.pathname === path) return;
+
+    if (runNavigationCheck()) {
+      Swal.fire({
+        icon: "warning",
+        title: "Unsaved Changes",
+        text: "You have unsaved data. Please save or clear them before navigating.",
+      });
+      return;
+    }
+
+    navigate(path);
+  };
 
   return (
     <nav className="bottom-nav">
-      <Link 
-        to="/" 
-        className={location.pathname === "/" ? "active" : ""}
-      >
+      <div
+        className={`nav-item ${location.pathname === "/" ? "active" : ""}`}
+        onClick={() => handleNavClick("/")}>
         <FiHome className="bottom-nav-icon" />
         <span>Home</span>
-      </Link>
-      <Link 
-        to="/add" 
-        className={location.pathname === "/add" ? "active" : ""}
-      >
+      </div>
+      <div
+        className={`nav-item ${location.pathname === "/add" ? "active" : ""}`}
+        onClick={() => handleNavClick("/add")}>
         <FiPlusSquare className="bottom-nav-icon" />
         <span>Add</span>
-      </Link>
-      <Link 
-        to="/settings" 
-        className={location.pathname === "/settings" ? "active" : ""}
-      >
+      </div>
+      <div
+        className={`nav-item ${location.pathname === "/settings" ? "active" : ""}`}
+        onClick={() => handleNavClick("/settings")}>
         <FiSettings className="bottom-nav-icon" />
         <span>Settings</span>
-      </Link>
+      </div>
     </nav>
   );
-};
-
-export default BottomNav;
+}
