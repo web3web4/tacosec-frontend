@@ -27,10 +27,15 @@ const AddData: React.FC = () => {
     setShareWith,
     handleConfirmClick,
     handleAddShare,
-    handleInvite
+    handleInvite,
+    clraeFilds,
+    checkEncrypting,
+    setMessage,
+    message,
+    setName,
+    name
   } = useAddData();
-  const [message, setMessage] = useState("");
-  const [name, setName] = useState<string>("");
+
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
@@ -49,6 +54,11 @@ const AddData: React.FC = () => {
     if (!provider) {
       return;
     }
+
+    if(!checkEncrypting()){
+      return;
+    }
+    
     setEncrypting(true);
     try {
       if (!signer) {
@@ -110,6 +120,7 @@ const AddData: React.FC = () => {
             showConfirmButton: false,
             timer: 4000
           });
+          clraeFilds();
         }
       }
     } catch (e) {
