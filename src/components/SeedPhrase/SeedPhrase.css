@@ -8,28 +8,31 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 16px; 
   z-index: 999;
 }
 
 .popup {
   background: white;
   border-radius: 12px;
-  padding: 30px;
-  width: 90%;
+  padding: 20px;
+  width: 100%;
   max-width: 500px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   text-align: center;
+  box-sizing: border-box;
 }
 
 .warning {
   color: #d9534f;
   font-weight: bold;
   margin-bottom: 20px;
+  font-size: 16px;
 }
 
 .seed-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 12px;
   margin: 20px 0;
 }
@@ -41,8 +44,10 @@
   font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   font-size: 14px;
+  flex-wrap: wrap;
 }
 
 .seed-word .index {
@@ -59,12 +64,12 @@
 
 .copy-btn,
 .confirm-btn {
-  padding: 10px 16px;
+  padding: 12px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   transition: background 0.3s;
 }
 
@@ -84,4 +89,21 @@
 
 .confirm-btn:hover {
   background: #1e7e34;
+}
+
+@media (max-width: 480px) {
+  .popup {
+    padding: 16px;
+  }
+
+  .seed-word {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .copy-btn,
+  .confirm-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
 }
