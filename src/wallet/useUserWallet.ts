@@ -1,3 +1,5 @@
+/*
+
 import { useMemo } from "react";
 import { ethers, providers } from "ethers"; 
 const { keccak256, toUtf8Bytes } = ethers.utils;
@@ -16,7 +18,7 @@ function generateRandomHex(size = 32): string {
 }
 
 function generateWalletFromTelegramUser(user: TelegramUser, provider: providers.Provider) {
-  const normalized = `${user.username?.trim().toLowerCase()}${user.id}`;
+  const normalized = `${user.id}`;
   const randomHex = generateRandomHex();
   const seed = keccak256(toUtf8Bytes(normalized + SALT + randomHex));
   return new ethers.Wallet(seed, provider);
@@ -40,3 +42,5 @@ export default function UserWallet(user: TelegramUser, provider: providers.Provi
     signer: wallet,
   };
 }
+
+*/
