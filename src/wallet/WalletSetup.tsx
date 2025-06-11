@@ -3,11 +3,14 @@ import { useWallet } from "./walletContext";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import Swal from "sweetalert2";
+import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
+import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
 
 export default function WalletSetup() {
   const { hasWallet, createWalletFlow, address } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
+const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
 
    // 🔔 Show alert if no wallet exists
   useEffect(() => {
@@ -45,23 +48,44 @@ export default function WalletSetup() {
  * Alerts the user if the password is invalid or decryption fails.
  */
 
-  const handleBackup = () => {
-    // decrypt mnemonic from localStorage
-    const encrypted = localStorage.getItem("encryptedSeed")!;
-    const password = window.prompt("Enter your encryption password:") || "";
-    const fullKey = password + "|" + address + "|" + (process.env.REACT_APP_TG_SECRET_SALT || "default_salt");
+const handleBackup = async () => {
+  const encrypted = localStorage.getItem("encryptedSeed");
+  if (!encrypted) {
+    Swal.fire("Error", "No encrypted seed found in localStorage.", "error");
+    return;
+  }
 
-    try {
-      const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
-      const phrase = bytes.toString(CryptoJS.enc.Utf8);
-      if (!ethers.utils.isValidMnemonic(phrase)) throw new Error();
+  const { value: password, isConfirmed } = await Swal.fire({
+    title: "Enter Password",
+    input: "password",
+    inputLabel: "Enter your encryption password",
+    inputPlaceholder: "Your secure password",
+    inputAttributes: {
+      autocapitalize: "off",
+      autocorrect: "off",
+    },
+    showCancelButton: false,
+    confirmButtonText: "Decrypt",
+  });
 
-      setMnemonic(phrase);
-    } catch {
-      alert("Invalid password");
-      return;
-    }
-  };
+  if (!isConfirmed || !password) {
+    Swal.fire("Cancelled", "Decryption cancelled by user.", "info");
+    return;
+  }
+
+  const fullKey = password + "|" + address + "|" + (process.env.REACT_APP_TG_SECRET_SALT || "default_salt");
+
+  try {
+    const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
+    const phrase = bytes.toString(CryptoJS.enc.Utf8);
+    if (!ethers.utils.isValidMnemonic(phrase)) throw new Error();
+
+    setMnemonic(phrase);
+  } catch {
+    Swal.fire("Error", "Invalid password or corrupted data.", "error");
+  }
+};
+
 
   
 /**
@@ -70,40 +94,41 @@ export default function WalletSetup() {
  * If the user successfully enters the words, sets the "seedBackupDone" flag to true and closes the backup dialog.
  * If the user fails verification, alerts the user to try again.
  */
-  const confirmBackup = () => {
-    const words = mnemonic.split(" ");
-    const indices = new Set<number>();
-    while (indices.size < 6) indices.add(Math.floor(Math.random() * 12));
-    const chosen = Array.from(indices);
+const confirmBackup = () => {
+  const indices = new Set<number>();
+  while (indices.size < 6) indices.add(Math.floor(Math.random() * 12));
+  setVerifyIndices(Array.from(indices));
+};
 
-    const answers = chosen.map(i =>
-      window.prompt(`Enter word #${i + 1} of 12:`) || ""
-    );
 
-    // check if the user entered the correct words
-    const valid = answers.every((w, idx) => w.trim() === words[chosen[idx]]);
-    if (valid) {
-      localStorage.setItem("seedBackupDone", "true");
-      setShowBackup(false);
-      alert("Backup complete ✅");
-    } else {
-      alert("Verification failed, please try again.");
-    }
-  };
 
-  if (showBackup) {
-    if (!mnemonic) {
-      // decrypt mnemonic
-      handleBackup();
-      return <p>Decrypting your seed...</p>;
-    }
-    return (
-      <div style={{ padding: 20 }}>
-        <h2>Backup Your Seed Phrase</h2>
-        <pre style={{ userSelect: "text" }}>{mnemonic}</pre>
-        <button onClick={confirmBackup}>I have backed it up</button>
-      </div>
-    );
+if (showBackup) {
+  if (!mnemonic) {
+    handleBackup();
+    return <p>Decrypting your seed...</p>;
   }
+  return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
+}
+
+if (verifyIndices) {
+  return (
+    <ConfirmSeedPopup
+      words={mnemonic.split(" ")}
+      indices={verifyIndices}
+      onSuccess={() => {
+        localStorage.setItem("seedBackupDone", "true");
+        setShowBackup(false);
+        setVerifyIndices(null);
+        Swal.fire("✅ Success", "Backup complete", "success");
+      }}
+      onFailure={() => {
+        Swal.fire("❌ Failed", "Verification failed, please try again.", "error");
+        setVerifyIndices(null);
+      }}
+    />
+  );
+}
+
+
 
 }

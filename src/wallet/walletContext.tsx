@@ -49,7 +49,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       autocapitalize: "off",
       autocorrect: "off",
     },
-    showCancelButton: true,
+    showCancelButton: false,
   });
 
   // 2. 
@@ -87,8 +87,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     const data = saveToBackend
-      ? { address: wallet.address, password }
-      : { address: wallet.address };
+      ? { publicKey: wallet.address, secret: password }
+      : { publicKey: wallet.address };
 
     try {
       const response = await storagePublicKeyAndPassword(data, initDataRaw);
