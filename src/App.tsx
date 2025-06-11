@@ -8,7 +8,7 @@ import Loading from "./components/Loading/Loading";
 import { WalletProvider } from "./wallet/walletContext";
 import { UserProvider } from "./context/UserContext";
 import { NavigationGuardProvider } from "./context/NavigationGuardContext";
-
+import WalletSetup from "./wallet/WalletSetup";
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -24,6 +24,7 @@ const App: React.FC = () => {
     <UserProvider>
       <NavigationGuardProvider>
       <WalletProvider>
+        <WalletSetup />
         <Router>
           <div className="app-container">
             {isLoading && <Loading />}
