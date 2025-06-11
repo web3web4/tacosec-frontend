@@ -7,6 +7,7 @@ import BottomNav from "./components/BottomNav/BottomNav";
 import Loading from "./components/Loading/Loading";
 import { WalletProvider } from "./wallet/walletContext";
 import { UserProvider } from "./context/UserContext";
+import { NavigationGuardProvider } from "./context/NavigationGuardContext";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -21,6 +22,7 @@ const App: React.FC = () => {
 
   return (
     <UserProvider>
+      <NavigationGuardProvider>
       <WalletProvider>
         <Router>
           <div className="app-container">
@@ -39,6 +41,7 @@ const App: React.FC = () => {
           </div>
         </Router>
       </WalletProvider>
+      </NavigationGuardProvider>
     </UserProvider>
   );
 };

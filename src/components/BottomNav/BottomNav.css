@@ -15,8 +15,6 @@
   padding-top: 20px;
 }
 
-
-
 .bottom-nav::before {
   content: '';
   position: absolute;
@@ -24,13 +22,10 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(74, 144, 226, 0.2), 
-    transparent);
+  background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.2), transparent);
 }
 
-.bottom-nav a {
+.bottom-nav .nav-item {
   text-decoration: none;
   color: var(--text-secondary);
   font-weight: 500;
@@ -43,9 +38,19 @@
   flex: 1;
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
 }
 
-.bottom-nav a::before {
+.bottom-nav .nav-item:hover {
+  color: var(--primary-color);
+}
+
+.bottom-nav .nav-item.active {
+  color: var(--primary-color);
+  transform: translateY(-5px);
+}
+
+.bottom-nav .nav-item::before {
   content: '';
   position: absolute;
   top: -8px;
@@ -57,18 +62,9 @@
   transition: all 0.2s ease;
 }
 
-.bottom-nav a.active {
-  color: var(--primary-color);
-  transform: translateY(-5px);
-}
-
-.bottom-nav a.active::before {
+.bottom-nav .nav-item.active::before {
   opacity: 1;
   top: -5px;
-}
-
-.bottom-nav a:hover {
-  color: var(--primary-color);
 }
 
 .bottom-nav-icon {
@@ -76,7 +72,7 @@
   transition: all 0.2s ease;
 }
 
-.bottom-nav a.active .bottom-nav-icon {
+.bottom-nav .nav-item.active .bottom-nav-icon {
   transform: scale(1.1);
 }
 
@@ -91,30 +87,13 @@
   z-index: -1;
 }
 
-.bottom-nav a::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  width: 30px;
-  height: 3px;
-  background: var(--primary-color);
-  border-radius: 2px;
-  opacity: 0;
-  transition: all 0.2s ease;
-}
-
-.bottom-nav a.active::before {
-  opacity: 1;
-  top: -3px;
-}
-
-.bottom-nav a svg {
+.bottom-nav .nav-item svg {
   width: 24px;
   height: 24px;
   margin-bottom: 2px;
   transition: all 0.2s ease;
 }
 
-.bottom-nav a.active svg {
+.bottom-nav .nav-item.active svg {
   transform: translateY(-3px);
 }
