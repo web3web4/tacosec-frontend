@@ -113,6 +113,8 @@ export default function useAddData() {
     setIsCanInvite(false);
     setShareWith("");
     setShareList([]);
+    setMessage("");
+    setName("");
   };
 
   const checkEncrypting = () => {
