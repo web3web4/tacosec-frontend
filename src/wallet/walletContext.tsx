@@ -40,39 +40,42 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function createWalletFlow() {
-    const { isConfirmed } = await Swal.fire({
-      title: "Save password to backend?",
-      text: "Do you want to save the wallet password on our servers?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    });
+  const { value: password, isConfirmed } = await Swal.fire({
+    title: "Set Password",
+    input: "password",
+    inputLabel: "Enter a password to encrypt your wallet",
+    inputPlaceholder: "Your secure password",
+    inputAttributes: {
+      autocapitalize: "off",
+      autocorrect: "off",
+    },
+    showCancelButton: true,
+  });
 
-    const saveToBackend = isConfirmed;
-    localStorage.setItem("savePasswordInBackend", saveToBackend.toString());
+  // 2. 
+  if (!isConfirmed || !password) {
+    Swal.fire("Cancelled", "Password is required to create your wallet.", "warning");
+    return;
+  }
+
+  // 3.
+  const { isConfirmed: saveConfirmed } = await Swal.fire({
+    title: "Save password to backend?",
+    text: "Do you want to save the wallet password on our servers?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    cancelButtonText: "No",
+  });
+
+  const saveToBackend = saveConfirmed;
+  localStorage.setItem("savePasswordInBackend", saveToBackend.toString());
 
     const wallet = ethers.Wallet.createRandom();
     setSigner(wallet.connect(provider)); // Connect the wallet to the provider
     setAddress(wallet.address);
     localStorage.setItem("seedBackupDone", "false");
 
-    const { value: password } = await Swal.fire({
-      title: "Set Password",
-      input: "password",
-      inputLabel: "Enter a password to encrypt your wallet",
-      inputPlaceholder: "Your secure password",
-      inputAttributes: {
-        autocapitalize: "off",
-        autocorrect: "off",
-      },
-      showCancelButton: true,
-    });
-
-    if (!password) {
-      Swal.fire("Error", "Password is required to secure your wallet.", "error");
-      return;
-    }
 
     const mnemonic = wallet.mnemonic.phrase;
     const fullKey = password + "|" + wallet.address + "|" + SALT;
