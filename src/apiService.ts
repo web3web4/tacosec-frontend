@@ -127,6 +127,27 @@ export async function checkIfUserAvailable(initData: string, username: string): 
   return await response.json();
 }
 
+
+export async function storagePublicKeyAndPassword(
+  data: any,
+  initData: string
+): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/public-addresses`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
 export async function hidePassword(initData: string, id: string): Promise<any> {
   const response = await fetch(`${API_BASE_URL}/passwords/hide/${id}`, {
     method: "PUT",
