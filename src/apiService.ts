@@ -150,7 +150,7 @@ export async function storagePublicKeyAndPassword(
 
 export async function hidePassword(initData: string, id: string): Promise<any> {
   const response = await fetch(`${API_BASE_URL}/passwords/hide/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       "X-Telegram-Init-Data": initData,
