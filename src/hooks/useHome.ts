@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDataSharedWithMy, GetMyData, getUserProfileDetails } from "../apiService";
+import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -114,5 +114,21 @@ export default function useHome() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick };
+  const handleDelete = async (id: string) => {
+    const result = await Swal.fire({
+      title: 'Do you want to delete this Secret?',
+      input: 'checkbox',
+      inputPlaceholder: 'Also delete for everyone it was shared with',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    });
+  
+    if (result.isConfirmed) {
+      const alsoDeleteForEveryone = result.value === 1; 
+      alsoDeleteForEveryone ? deletePassword(initDataRaw!, id) : hidePassword(initDataRaw!, id);
+    }
+  };
+
+  return { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick, handleDelete };
 }
