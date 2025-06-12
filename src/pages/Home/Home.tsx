@@ -11,7 +11,7 @@ import { useUser } from "../../context/UserContext";
 
 
 const Home: React.FC = () => {
-  const { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick } = useHome();
+  const { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick, handleDelete } = useHome();
   const { signer, provider } = useWallet();
   console.log("this is wallet" ,signer);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -85,7 +85,7 @@ const Home: React.FC = () => {
       <div className="tab-content">
         <div>
         {activeTab === "mydata" ? (
-          <MyData myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} />
+          <MyData myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleDelete={handleDelete} />
         ) : (
           <SharedWithMy sharedWithMyData={sharedWithMyData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} />
         )}
