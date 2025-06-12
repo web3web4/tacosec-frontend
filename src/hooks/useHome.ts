@@ -25,7 +25,13 @@ export default function useHome() {
 
   const fetchMyData = async () => {
     try {
-      const data = await GetMyData(initDataRaw!);
+      const response = await GetMyData(initDataRaw!);
+      const data: DataItem[] = response.map((item: any) => ({
+        id: item._id, 
+        key: item.key,
+        value: item.value,
+        sharedWith: item.sharedWith,
+      }));
       setMyData(data);
       if(data.length > 0) await getProfilesDetailsForUsers(data);
     } catch (err) {
