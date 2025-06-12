@@ -1,4 +1,3 @@
-// import { useNavigate } from "react-router-dom";
 import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
 
@@ -8,15 +7,16 @@ interface MyDataType{
     expandedIndex: number | null,
     decrypting: boolean,
     decryptedMessages: Record<number, string>,
+    handleDelete: (id: string) => void,
 }
 
-export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages} : MyDataType) {
+export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleDelete} : MyDataType) {
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);
         alert("Copied to clipboard!");
       };
-    
+
   return (
     <div className="data-list">
       {myData.length > 0 ? (
@@ -63,6 +63,12 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                         }}
                       >
                         Copy
+                      </button>
+                      <button
+                        className="delete-button"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Delete
                       </button>
                     </div>
                     {item.sharedWith.length > 0 && (
