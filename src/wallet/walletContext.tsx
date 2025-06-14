@@ -78,7 +78,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
 
     const mnemonic = wallet.mnemonic.phrase;
-    const fullKey = password + "|" + wallet.address + "|" + SALT;
+    const fullKey = password + "|" + SALT ;
     const encrypted = CryptoJS.AES.encrypt(mnemonic, fullKey).toString();
     localStorage.setItem("encryptedSeed", encrypted);
 

@@ -64,17 +64,14 @@ useEffect(() => {
  */
 
 const handleDecrypt = async () => {
-    if (!address) {
-    setPasswordError("Wallet address not loaded yet, please wait.");
-    return;
-  }
+
   const encrypted = localStorage.getItem("encryptedSeed");
   if (!encrypted) {
     Swal.fire("Error", "No encrypted seed found in localStorage.", "error");
     return;
   }
 
-  const fullKey = password + "|" + address + "|" + (process.env.REACT_APP_TG_SECRET_SALT || "default_salt");
+const fullKey = password + "|" + (process.env.REACT_APP_TG_SECRET_SALT );
 
   try {
     const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
