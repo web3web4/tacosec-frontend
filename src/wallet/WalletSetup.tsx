@@ -102,7 +102,7 @@ const fullKey = password + "|" + (process.env.REACT_APP_TG_SECRET_SALT );
  */
 const confirmBackup = () => {
   const indices = new Set<number>();
-  while (indices.size < 6) indices.add(Math.floor(Math.random() * 12));
+  while (indices.size < 4) indices.add(Math.floor(Math.random() * 12));
   setVerifyIndices(Array.from(indices));
 };
 
