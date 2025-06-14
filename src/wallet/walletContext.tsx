@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -12,8 +12,8 @@ import Swal from "sweetalert2";
 import { storagePublicKeyAndPassword } from "../apiService";
 import { useUser } from "../context/UserContext";
 
-const SALT = process.env.REACT_APP_TG_SECRET_SALT || "default_salt";
-const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL || "https://rpc.example.com";
+const SALT = process.env.REACT_APP_TG_SECRET_SALT ;
+const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL ;
 
 interface WalletContextProps {
   address: string | null;
@@ -60,7 +60,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   // 3.
   const { isConfirmed: saveConfirmed } = await Swal.fire({
-    title: "Save password to backend?",
+    title: "Save password",
     text: "Do you want to save the wallet password on our servers?",
     icon: "question",
     showCancelButton: true,
