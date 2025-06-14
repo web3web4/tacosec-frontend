@@ -1,5 +1,4 @@
-// src/components/SeedPhrase/SeedBackupPopup.tsx
-import React from "react";
+import { useState } from "react";
 import "./SeedPhrase.css";
 import { FaCopy } from "react-icons/fa";
 
@@ -11,9 +10,13 @@ export function SeedBackupPopup({
   onConfirm: () => void;
 }) {
   const words = mnemonic.split(" ");
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(mnemonic);
+    navigator.clipboard.writeText(mnemonic).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+    });
   };
 
   return (
@@ -33,7 +36,8 @@ export function SeedBackupPopup({
 
         <div className="popup-actions-row">
           <button className="copy-btn" onClick={handleCopy}>
-            <FaCopy /> Copy All
+            <FaCopy /> Copy
+             {copied && <span className="copy-feedback">✅ Copied!</span>}
           </button>
           <button className="confirm-btn" onClick={onConfirm}>
             ✅ Next
