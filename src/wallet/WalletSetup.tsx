@@ -36,13 +36,23 @@ export default function WalletSetup() {
 
 
 
-  useEffect(() => {
-    // invoked when the user is prompted to back up their wallet
-    // after wallet creation or password change.
-    const handler = () => setShowBackup(true);
-    window.addEventListener("wallet-backup", handler);
-    return () => window.removeEventListener("wallet-backup", handler);
-  }, []);
+useEffect(() => {
+  const checkBackup = () => {
+    const backupDone = localStorage.getItem("seedBackupDone") === "true";
+
+    if (hasWallet && !backupDone) {
+      setShowBackup(true);
+    }
+  };
+
+  checkBackup();
+  window.addEventListener("focus", checkBackup); 
+
+  return () => {
+    window.removeEventListener("focus", checkBackup);
+  };
+}, [hasWallet]);
+
 
   
 /**
