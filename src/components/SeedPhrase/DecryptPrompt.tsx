@@ -1,4 +1,5 @@
 import React from "react";
+import "./SeedPhrase.css";
 
 type Props = {
   password: string;
