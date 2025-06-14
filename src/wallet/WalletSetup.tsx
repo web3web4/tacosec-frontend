@@ -34,15 +34,8 @@ export default function WalletSetup() {
     }
   }, [hasWallet, createWalletFlow]);
 
-useEffect(() => {
-  const backupDone = localStorage.getItem("seedBackupDone") === "true";
 
-  if (hasWallet && !backupDone) {
-    setShowBackup(true);
-  }
-}, [hasWallet]);
 
-/*
   useEffect(() => {
     // invoked when the user is prompted to back up their wallet
     // after wallet creation or password change.
@@ -50,7 +43,7 @@ useEffect(() => {
     window.addEventListener("wallet-backup", handler);
     return () => window.removeEventListener("wallet-backup", handler);
   }, []);
-*/
+
   
 /**
  * Handles the backup process by decrypting the mnemonic seed phrase stored in localStorage.
@@ -61,6 +54,10 @@ useEffect(() => {
  */
 
 const handleDecrypt = async () => {
+    if (!address) {
+    setPasswordError("Wallet address not loaded yet, please wait.");
+    return;
+  }
   const encrypted = localStorage.getItem("encryptedSeed");
   if (!encrypted) {
     Swal.fire("Error", "No encrypted seed found in localStorage.", "error");
