@@ -6,9 +6,8 @@ import Swal from "sweetalert2";
 import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
 import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
-
 export default function WalletSetup() {
-  const { hasWallet, createWalletFlow, address } = useWallet();
+  const { hasWallet, createWalletFlow } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
@@ -32,6 +31,7 @@ export default function WalletSetup() {
         }
       });
     }
+    
   }, [hasWallet, createWalletFlow]);
 
 
@@ -54,7 +54,7 @@ useEffect(() => {
 }, [hasWallet]);
 
 
-  
+
 /**
  * Handles the backup process by decrypting the mnemonic seed phrase stored in localStorage.
  * Prompts the user to enter the encryption password and attempts decryption with the provided input.

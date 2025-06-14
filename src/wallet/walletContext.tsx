@@ -30,52 +30,23 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [hasWallet, setHasWallet] = useState<boolean>(false);
-
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-
+  const [passwordError, setPasswordError] = useState<string>("");
 
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
   const { initDataRaw } = useUser();
 
-useEffect(() => {
-  const encrypted = localStorage.getItem("encryptedSeed");
-  if (encrypted) {
-    setShowDecryptPrompt(true);
-  }
-}, []);
-
-
-async function handleDecrypt() {
-  const encrypted = localStorage.getItem("encryptedSeed");
-  if (!encrypted) return;
-
-  if (!password) {
-    setPasswordError("Password is required");
-    return;
-  }
-
-  try {
-    const fullKey = password + "|" + SALT;
-    const decrypted = CryptoJS.AES.decrypt(encrypted, fullKey).toString(CryptoJS.enc.Utf8);
-    if (!decrypted) throw new Error("Decryption failed");
-
-    const wallet = ethers.Wallet.fromMnemonic(decrypted);
-    setSigner(wallet.connect(provider));
-    setAddress(wallet.address);
-    setHasWallet(true);
-    setShowDecryptPrompt(false);
-    setPassword("");
-    setPasswordError("");
-  } catch (e) {
-    setPasswordError("Wrong password or failed to decrypt wallet.");
-  }
-}
-
-
-
+  useEffect(() => {
+    const encrypted = localStorage.getItem("encryptedSeed");
+    if (encrypted) {
+      setHasWallet(true);
+      setShowDecryptPrompt(true);
+    } else {
+      setHasWallet(false);
+    }
+  }, []);
 
   async function createWalletFlow() {
   const { value: password, isConfirmed } = await Swal.fire({
@@ -139,6 +110,39 @@ async function handleDecrypt() {
     promptBackup();
   }
 
+    function restoreWalletFromEncryptedSeed(encryptedSeed: string, password: string) {
+    try {
+      const fullKey = password + "|" + SALT;
+      const bytes = CryptoJS.AES.decrypt(encryptedSeed, fullKey);
+      const decryptedSeed = bytes.toString(CryptoJS.enc.Utf8);
+
+      if (!decryptedSeed) {
+        throw new Error("Failed to decrypt seed. Wrong password?");
+      }
+
+      const wallet = ethers.Wallet.fromMnemonic(decryptedSeed);
+      return wallet;
+    } catch (error) {
+      console.error("Error restoring wallet:", error);
+      return null;
+    }
+  }
+
+    function handleDecrypt() {
+    const encryptedSeed = localStorage.getItem("encryptedSeed")!;
+    const wallet = restoreWalletFromEncryptedSeed(encryptedSeed, password);
+
+    if (wallet) {
+      setSigner(wallet.connect(provider));
+      setAddress(wallet.address);
+      setHasWallet(true);
+      setShowDecryptPrompt(false);
+      setPasswordError("");
+    } else {
+      setPasswordError("Password incorrect or failed to restore wallet.");
+    }
+  }
+
   function promptBackup() {
     import("sweetalert2").then(Swal => {
       Swal.default.fire({
@@ -156,22 +160,22 @@ async function handleDecrypt() {
     });
   }
 
-return (
-  <>
-    <WalletContext.Provider value={{ address, signer, hasWallet, provider, createWalletFlow }}>
+  return (
+    <WalletContext.Provider
+      value={{ address, signer, hasWallet, provider, createWalletFlow }}
+    >
       {children}
-    </WalletContext.Provider>
 
-    {showDecryptPrompt && (
-      <DecryptPrompt
-        password={password}
-        passwordError={passwordError}
-        onChange={setPassword}
-        onSubmit={handleDecrypt}
-      />
-    )}
-  </>
-);
+      {showDecryptPrompt && (
+        <DecryptPrompt
+          password={password}
+          passwordError={passwordError}
+          onChange={setPassword}
+          onSubmit={handleDecrypt}
+        />
+      )}
+    </WalletContext.Provider>
+  );
 }
 
 export function useWallet() {
