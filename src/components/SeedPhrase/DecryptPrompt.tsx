@@ -13,7 +13,7 @@ export const DecryptPrompt = ({ password, passwordError, onChange, onSubmit }: P
     <div className="popup-container-seed">
       <div className="popup-seed">
         <h2>🔐 Decrypt Your Wallet</h2>
-        <p>Enter your encryption password to continue:</p>
+        <p>Enter your password to continue:</p>
         <input
           type="password"
           placeholder="Your encryption password"
@@ -24,7 +24,7 @@ export const DecryptPrompt = ({ password, passwordError, onChange, onSubmit }: P
         {passwordError && <p style={{ color: "red", marginTop: 10 }}>{passwordError}</p>}
         <div className="popup-actions">
           <button className="confirm-btn" onClick={onSubmit}>
-            🔓 Decrypt
+            🔓 UnLoack
           </button>
         </div>
       </div>
