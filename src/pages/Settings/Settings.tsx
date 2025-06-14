@@ -25,7 +25,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="profile-name">{ userData?.firstName } { " " } {userData?.lastName}</div>
-        <div className="profile-name">Address Wallet : { " " } {address}</div>
+        <div className="profile-name">Wallet Address : {address}</div>
 
       </div>
       <div className="notifications-row">
