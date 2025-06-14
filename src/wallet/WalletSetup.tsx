@@ -21,7 +21,7 @@ export default function WalletSetup() {
       Swal.fire({
         icon: "info",
         title: "No Wallet Found",
-        text: "You don't have a wallet yet. Would you like to create one?",
+        text: "Click on Create Wallet to securely generate your personal wallet and start using our service",
         showCancelButton: false,
         confirmButtonText: "Create Wallet",
         cancelButtonText: "Maybe Later",
