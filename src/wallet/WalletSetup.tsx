@@ -5,12 +5,16 @@ import { ethers } from "ethers";
 import Swal from "sweetalert2";
 import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
 import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
+import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
 
 export default function WalletSetup() {
   const { hasWallet, createWalletFlow, address } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
-const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
+  const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [password, setPassword] = useState("");
 
    // 🔔 Show alert if no wallet exists
   useEffect(() => {
@@ -30,7 +34,15 @@ const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
     }
   }, [hasWallet, createWalletFlow]);
 
+useEffect(() => {
+  const backupDone = localStorage.getItem("seedBackupDone") === "true";
 
+  if (hasWallet && !backupDone) {
+    setShowBackup(true);
+  }
+}, [hasWallet]);
+
+/*
   useEffect(() => {
     // invoked when the user is prompted to back up their wallet
     // after wallet creation or password change.
@@ -38,7 +50,7 @@ const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
     window.addEventListener("wallet-backup", handler);
     return () => window.removeEventListener("wallet-backup", handler);
   }, []);
-
+*/
   
 /**
  * Handles the backup process by decrypting the mnemonic seed phrase stored in localStorage.
@@ -48,28 +60,10 @@ const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
  * Alerts the user if the password is invalid or decryption fails.
  */
 
-const handleBackup = async () => {
+const handleDecrypt = async () => {
   const encrypted = localStorage.getItem("encryptedSeed");
   if (!encrypted) {
     Swal.fire("Error", "No encrypted seed found in localStorage.", "error");
-    return;
-  }
-
-  const { value: password, isConfirmed } = await Swal.fire({
-    title: "Enter Password",
-    input: "password",
-    inputLabel: "Enter your encryption password",
-    inputPlaceholder: "Your secure password",
-    inputAttributes: {
-      autocapitalize: "off",
-      autocorrect: "off",
-    },
-    showCancelButton: false,
-    confirmButtonText: "Decrypt",
-  });
-
-  if (!isConfirmed || !password) {
-    Swal.fire("Cancelled", "Decryption cancelled by user.", "info");
     return;
   }
 
@@ -81,8 +75,11 @@ const handleBackup = async () => {
     if (!ethers.utils.isValidMnemonic(phrase)) throw new Error();
 
     setMnemonic(phrase);
+    setPassword(""); // clear on success
+    setShowPasswordPrompt(false); // hide prompt
+    setPasswordError("");
   } catch {
-    Swal.fire("Error", "Invalid password or corrupted data.", "error");
+    setPasswordError("❌ Invalid password. Please try again.");
   }
 };
 
@@ -101,36 +98,39 @@ const confirmBackup = () => {
 };
 
 
+if (verifyIndices && mnemonic) {
+  return (
+    <ConfirmSeedPopup
+      words={mnemonic.split(" ")}
+      indices={verifyIndices}
+      onSuccess={() => {
+        localStorage.setItem("seedBackupDone", "true");
+        setShowBackup(false);
+        setVerifyIndices(null);
+        Swal.fire("✅ Success", "Backup complete", "success");
+      }}
+      onFailure={() => {
+        Swal.fire("❌ Failed", "Verification failed, please try again.", "error");
+        setVerifyIndices(null);
+      }}
+    />
+  );
+}
 
-  if (verifyIndices && mnemonic) {
-    return (
-      <ConfirmSeedPopup
-        words={mnemonic.split(" ")}
-        indices={verifyIndices}
-        onSuccess={() => {
-          localStorage.setItem("seedBackupDone", "true");
-          setShowBackup(false);
-          setVerifyIndices(null);
-          Swal.fire("✅ Success", "Backup complete", "success");
-        }}
-        onFailure={() => {
-          Swal.fire("❌ Failed", "Verification failed, please try again.", "error");
-          setVerifyIndices(null);
-        }}
-      />
-    );
-  }
+if (showBackup && !mnemonic) {
+  return (
+    <DecryptPrompt
+      password={password}
+      passwordError={passwordError}
+      onChange={setPassword}
+      onSubmit={handleDecrypt} 
+    />
+  );
+}
 
-  if (showBackup && mnemonic) {
-    return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
-  }
-
-  if (showBackup && !mnemonic) {
-    handleBackup();
-    return <p>Decrypting your seed...</p>;
-  }
-
-
+if (showBackup && mnemonic) {
+  return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
+}
 
 
 
