@@ -11,6 +11,7 @@ import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
 import { storagePublicKeyAndPassword } from "../apiService";
 import { useUser } from "../context/UserContext";
+import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
 
 const SALT = process.env.REACT_APP_TG_SECRET_SALT ;
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL ;
@@ -30,50 +31,49 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [hasWallet, setHasWallet] = useState<boolean>(false);
 
+  const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
   const { initDataRaw } = useUser();
 
 useEffect(() => {
   const encrypted = localStorage.getItem("encryptedSeed");
-
   if (encrypted) {
-    (async () => {
-      const { value: password } = await Swal.fire({
-        title: "Enter Password",
-        input: "password",
-        inputLabel: "Enter your wallet password",
-        inputPlaceholder: "Your secure password",
-        inputAttributes: {
-          autocapitalize: "off",
-          autocorrect: "off",
-        },
-        confirmButtonText: "Unlock",
-      });
-
-      if (!password) {
-        Swal.fire("Required", "Password is required to unlock wallet.", "warning");
-        return;
-      }
-
-      try {
-        const fullKey = password + "|" + SALT;
-        const decrypted = CryptoJS.AES.decrypt(encrypted, fullKey).toString(CryptoJS.enc.Utf8);
-
-        if (!decrypted) throw new Error("Decryption failed");
-
-        const wallet = ethers.Wallet.fromMnemonic(decrypted);
-        setSigner(wallet.connect(provider));
-        setAddress(wallet.address);
-        setHasWallet(true);
-      } catch (e) {
-        console.error("Failed to restore wallet:", e);
-        Swal.fire("Error", "Failed to unlock wallet. Wrong password?", "error");
-        setHasWallet(false);
-      }
-    })();
+    setShowDecryptPrompt(true);
   }
 }, []);
+
+
+async function handleDecrypt() {
+  const encrypted = localStorage.getItem("encryptedSeed");
+  if (!encrypted) return;
+
+  if (!password) {
+    setPasswordError("Password is required");
+    return;
+  }
+
+  try {
+    const fullKey = password + "|" + SALT;
+    const decrypted = CryptoJS.AES.decrypt(encrypted, fullKey).toString(CryptoJS.enc.Utf8);
+    if (!decrypted) throw new Error("Decryption failed");
+
+    const wallet = ethers.Wallet.fromMnemonic(decrypted);
+    setSigner(wallet.connect(provider));
+    setAddress(wallet.address);
+    setHasWallet(true);
+    setShowDecryptPrompt(false);
+    setPassword("");
+    setPasswordError("");
+  } catch (e) {
+    setPasswordError("Wrong password or failed to decrypt wallet.");
+  }
+}
+
 
 
 
@@ -156,13 +156,22 @@ useEffect(() => {
     });
   }
 
-  return (
-    <WalletContext.Provider
-      value={{ address, signer, hasWallet, provider, createWalletFlow }}
-    >
+return (
+  <>
+    <WalletContext.Provider value={{ address, signer, hasWallet, provider, createWalletFlow }}>
       {children}
     </WalletContext.Provider>
-  );
+
+    {showDecryptPrompt && (
+      <DecryptPrompt
+        password={password}
+        passwordError={passwordError}
+        onChange={setPassword}
+        onSubmit={handleDecrypt}
+      />
+    )}
+  </>
+);
 }
 
 export function useWallet() {
