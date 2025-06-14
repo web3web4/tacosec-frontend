@@ -128,7 +128,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }
 
-    function handleDecrypt() {
+    function handleDecryption() {
     const encryptedSeed = localStorage.getItem("encryptedSeed")!;
     const wallet = restoreWalletFromEncryptedSeed(encryptedSeed, password);
 
@@ -138,6 +138,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
+      Swal.fire("Success", "Wallet restored successfully.", "success");
     } else {
       setPasswordError("Password incorrect or failed to restore wallet.");
     }
@@ -171,7 +172,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           password={password}
           passwordError={passwordError}
           onChange={setPassword}
-          onSubmit={handleDecrypt}
+          onSubmit={handleDecryption}
         />
       )}
     </WalletContext.Provider>
