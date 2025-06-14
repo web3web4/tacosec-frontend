@@ -102,32 +102,35 @@ const confirmBackup = () => {
 
 
 
-if (showBackup) {
-  if (!mnemonic) {
+  if (verifyIndices && mnemonic) {
+    return (
+      <ConfirmSeedPopup
+        words={mnemonic.split(" ")}
+        indices={verifyIndices}
+        onSuccess={() => {
+          localStorage.setItem("seedBackupDone", "true");
+          setShowBackup(false);
+          setVerifyIndices(null);
+          Swal.fire("✅ Success", "Backup complete", "success");
+        }}
+        onFailure={() => {
+          Swal.fire("❌ Failed", "Verification failed, please try again.", "error");
+          setVerifyIndices(null);
+        }}
+      />
+    );
+  }
+
+  if (showBackup && mnemonic) {
+    return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
+  }
+
+  if (showBackup && !mnemonic) {
     handleBackup();
     return <p>Decrypting your seed...</p>;
   }
-  return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
-}
 
-if (verifyIndices) {
-  return (
-    <ConfirmSeedPopup
-      words={mnemonic.split(" ")}
-      indices={verifyIndices}
-      onSuccess={() => {
-        localStorage.setItem("seedBackupDone", "true");
-        setShowBackup(false);
-        setVerifyIndices(null);
-        Swal.fire("✅ Success", "Backup complete", "success");
-      }}
-      onFailure={() => {
-        Swal.fire("❌ Failed", "Verification failed, please try again.", "error");
-        setVerifyIndices(null);
-      }}
-    />
-  );
-}
+
 
 
 
