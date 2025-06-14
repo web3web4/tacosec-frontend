@@ -22,6 +22,7 @@ interface WalletContextProps {
   hasWallet: boolean;
   provider: ethers.providers.JsonRpcProvider;
   createWalletFlow: () => void;
+  decryptedPassword?: string;
 }
 
 const WalletContext = createContext<WalletContextProps | null>(null);
@@ -33,6 +34,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string>("");
+  const [decryptedPassword, setDecryptedPassword] = useState<string | undefined>("");
 
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
@@ -151,6 +153,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setShowDecryptPrompt(false);
       setPasswordError("");
       Swal.fire("Success", "Wallet restored successfully.", "success");
+      setDecryptedPassword(password);
     } else {
       setPasswordError("Password incorrect or failed to restore wallet.");
     }
@@ -180,7 +183,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   return (
     <WalletContext.Provider
-      value={{ address, signer, hasWallet, provider, createWalletFlow }}
+      value={{ address, signer, hasWallet, provider, createWalletFlow , decryptedPassword }}
     >
       {children}
 

@@ -7,7 +7,7 @@ import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
 import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
 export default function WalletSetup() {
-  const { hasWallet, createWalletFlow } = useWallet();
+  const { hasWallet, createWalletFlow , decryptedPassword } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
@@ -126,16 +126,25 @@ if (verifyIndices && mnemonic) {
   );
 }
 
+
 if (showBackup && !mnemonic) {
+  if (decryptedPassword) {
+    setPassword(decryptedPassword);
+    handleDecrypt(); // Use password directly if it's already available
+    return null; // prevent double render
+  }
+
   return (
     <DecryptPrompt
       password={password}
       passwordError={passwordError}
       onChange={setPassword}
-      onSubmit={handleDecrypt} 
+      onSubmit={handleDecrypt}
     />
   );
 }
+
+
 
 if (showBackup && mnemonic) {
   return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
