@@ -10,8 +10,8 @@ type Props = {
 
 export const DecryptPrompt = ({ password, passwordError, onChange, onSubmit }: Props) => {
   return (
-    <div className="popup-container">
-      <div className="popup">
+    <div className="popup-container-seed">
+      <div className="popup-seed">
         <h2>🔐 Decrypt Your Wallet</h2>
         <p>Enter your encryption password to continue:</p>
         <input
