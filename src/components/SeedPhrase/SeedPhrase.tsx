@@ -20,8 +20,8 @@ export function SeedBackupPopup({
   };
 
   return (
-    <div className="popup-container">
-      <div className="popup">
+    <div className="popup-container-seed">
+      <div className="popup-seed">
         <h2 className="popup-title">🔐 Backup Your Seed Phrase</h2>
         <p className="warning">Please store these words securely and privately.</p>
 

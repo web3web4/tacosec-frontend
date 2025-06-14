@@ -32,8 +32,8 @@ export const ConfirmSeedPopup: React.FC<ConfirmSeedPopupProps> = ({
   };
 
   return (
-    <div className="popup-container">
-      <div className="popup">
+    <div className="popup-container-seed">
+      <div className="popup-seed">
         <h2>🧪 Confirm Backup</h2>
         <p className="warning">Enter the correct word for each position:</p>
         <div className="input-group">
