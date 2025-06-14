@@ -17,7 +17,7 @@ export default function WalletSetup() {
 
    // 🔔 Show alert if no wallet exists
   useEffect(() => {
-    if (!hasWallet) {
+    if (typeof hasWallet === "boolean" && !hasWallet) {
       Swal.fire({
         icon: "info",
         title: "No Wallet Found",
@@ -37,6 +37,11 @@ export default function WalletSetup() {
 
 
 useEffect(() => {
+  /**
+   * Checks if the user has already backed up their wallet seed phrase.
+   * If no wallet exists or the user has already backed up their seed phrase, do nothing.
+   * If a wallet exists and the user has not backed up their seed phrase, show the backup prompt.
+   */
   const checkBackup = () => {
     const backupDone = localStorage.getItem("seedBackupDone") === "true";
 

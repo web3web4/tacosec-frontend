@@ -109,7 +109,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setHasWallet(true);
     promptBackup();
   }
-
+/**
+ * When you open the application and the SeedPhrase is in the local storage and encrypted, this function requests the password to re-decrypt the wallet for the user.
+ * @param encryptedSeed 
+ * @param password 
+ * @returns 
+ */
     function restoreWalletFromEncryptedSeed(encryptedSeed: string, password: string) {
     try {
       const fullKey = password + "|" + SALT;
@@ -128,6 +133,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  /**
+   * Tries to restore the wallet from the encrypted seed in local storage using the given password.
+   * If the decryption is successful, sets the signer, address, and hasWallet state,
+   * and shows a success message.
+   * If the decryption fails, sets the passwordError state.
+   */
+
     function handleDecryption() {
     const encryptedSeed = localStorage.getItem("encryptedSeed")!;
     const wallet = restoreWalletFromEncryptedSeed(encryptedSeed, password);
@@ -144,6 +156,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  /**
+   * Shows a warning dialog to the user that they must backup their wallet seed phrase.
+   * If the user clicks "Backup now", an event "wallet-backup" is emitted.
+   * If the user clicks "Later", the dialog is simply closed.
+   */
   function promptBackup() {
     import("sweetalert2").then(Swal => {
       Swal.default.fire({
