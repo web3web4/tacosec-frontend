@@ -113,13 +113,14 @@
 .copy-btn,
 .confirm-btn {
   flex: 1;
-  padding: 10px 10;
+  padding: 10px 10px;
   font-size: 14px;
   font-weight: bold;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.3s;
+  margin-top: 10px;
 }
 
 .copy-btn {
