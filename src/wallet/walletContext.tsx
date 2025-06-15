@@ -22,8 +22,17 @@ interface WalletContextProps {
   hasWallet: boolean;
   provider: ethers.providers.JsonRpcProvider;
   createWalletFlow: () => void;
+  restoreWalletFromEncryptedSeed: (
+    encryptedSeed: string,
+    password: string
+  ) => ethers.Wallet | null;
+  setSigner: React.Dispatch<React.SetStateAction<ethers.Signer | null>>;
+  setAddress: React.Dispatch<React.SetStateAction<string | null>>;
+  setHasWallet: React.Dispatch<React.SetStateAction<boolean>>;
   decryptedPassword?: string;
+  setDecryptedPassword: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
+
 
 const WalletContext = createContext<WalletContextProps | null>(null);
 
@@ -111,6 +120,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setHasWallet(true);
     promptBackup();
   }
+
+
+
 /**
  * When you open the application and the SeedPhrase is in the local storage and encrypted, this function requests the password to re-decrypt the wallet for the user.
  * @param encryptedSeed 
@@ -183,7 +195,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   return (
     <WalletContext.Provider
-      value={{ address, signer, hasWallet, provider, createWalletFlow , decryptedPassword }}
+      value={{ address, signer, hasWallet, provider, createWalletFlow , decryptedPassword ,restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, setDecryptedPassword }}
     >
       {children}
 

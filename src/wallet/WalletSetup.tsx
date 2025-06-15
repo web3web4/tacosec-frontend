@@ -6,34 +6,59 @@ import Swal from "sweetalert2";
 import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
 import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
+import { importWalletFlow } from "./ImportWallet";
+import { SeedImportPopup } from "../components/SeedPhrase/SeedImportPopup";
 export default function WalletSetup() {
-  const { hasWallet, createWalletFlow , decryptedPassword } = useWallet();
+  const { hasWallet, createWalletFlow, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, decryptedPassword, setDecryptedPassword } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
+    const [showImport, setShowImport] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  console.log("showPasswordPrompt", showPasswordPrompt);
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
 
    // 🔔 Show alert if no wallet exists
-  useEffect(() => {
-    if (typeof hasWallet === "boolean" && !hasWallet) {
-      Swal.fire({
-        icon: "info",
-        title: "No Wallet Found",
-        text: "Click on Create Wallet to securely generate your personal wallet and start using our service",
-        showCancelButton: false,
-        confirmButtonText: "Create Wallet",
-        cancelButtonText: "Maybe Later",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          createWalletFlow();
-        }
-      });
-    }
-    
-  }, [hasWallet, createWalletFlow]);
+useEffect(() => {
+  if (typeof hasWallet === "boolean" && !hasWallet) {
+    Swal.fire({
+      icon: "info",
+      title: "No Wallet Found",
+      html: `
+        <p>If you already have a wallet, you can import it using your secret phrase.</p>
+        <p>Or create a new one to start using our services.</p>
+      `,
+      showCancelButton: false,
+      showDenyButton: true,
+      confirmButtonText: "Create Wallet",
+      denyButtonText: "Import Wallet",
+      cancelButtonText: "Maybe Later",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        createWalletFlow();
+      } else if (result.isDenied) {
+       setShowImport(true);  // Import wallet logic here
+      }
+    });
+  }
+}, [hasWallet, createWalletFlow]);
 
+  const handleImport = (importedMnemonic: string) => {
+    importWalletFlow(importedMnemonic, (pwd) => {
+      setPassword(pwd);
+      const encrypted = localStorage.getItem("encryptedSeed")!;
+      const wallet = restoreWalletFromEncryptedSeed(encrypted, pwd);
+      if (wallet) {
+        setSigner(wallet.connect(provider));
+        setAddress(wallet.address);
+        setHasWallet(true);
+        setDecryptedPassword(pwd);
+        Swal.fire("Success", "Wallet restored successfully.", "success");
+      }
+    });
+    setShowImport(false);
+  };
 
 
 useEffect(() => {
@@ -150,6 +175,15 @@ if (showBackup && mnemonic) {
   return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
 }
 
+  if (showImport) {
+    return (
+      <SeedImportPopup
+        onImport={handleImport}
+        onCancel={() => setShowImport(false)}
+      />
+    );
+  }
 
+  return null;
 
 }
