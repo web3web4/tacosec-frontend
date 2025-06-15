@@ -26,14 +26,16 @@ useEffect(() => {
       icon: "info",
       title: "No Wallet Found",
       html: `
-        <p>If you already have a wallet, you can import it using your secret phrase.</p>
-        <p>Or create a new one to start using our services.</p>
+        <p style=font-size:14px;">If you already have a wallet, you can import it using your secret phrase.</p><br>
+        <p style=font-size:14px;>Or create a new one to start using our services.</p>
       `,
       showCancelButton: false,
       showDenyButton: true,
       confirmButtonText: "Create Wallet",
       denyButtonText: "Import Wallet",
       cancelButtonText: "Maybe Later",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     }).then((result) => {
       if (result.isConfirmed) {
         createWalletFlow();
