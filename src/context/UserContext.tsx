@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { initDataType } from "../types/types";
 import { signupUser } from "../apiService";
 import Swal from "sweetalert2";
+import { useWallet } from "../wallet/walletContext";
 
 interface UserContextType {
   userData: initDataType | null;
@@ -13,6 +14,7 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+  const { hasWallet } = useWallet();
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
@@ -32,11 +34,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
-      Swal.fire({
-        icon: "success",
-        title: "Welcome!",
-        text: `Hello, ${response.firstName} ${ " " } ${response.lastName}! We're glad to have you here.`,
-      });
+
+      if (hasWallet) {
+        Swal.fire({
+          icon: "success",
+          title: "Welcome!",
+          text: `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`,
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       Swal.fire({
