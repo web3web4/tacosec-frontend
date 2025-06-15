@@ -2,10 +2,12 @@ import useSetting from "../../hooks/useSetting";
 import defaultProfileImage from "../../assets/images/no-User.png";
 import "./Settings.css";
 import { useUser } from "../../context/UserContext";
+import { useWallet } from "../../wallet/walletContext";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, handleToggleNotifications } = useSetting();
   const { userData } = useUser();
+  const {address} = useWallet();
 
   return (
     <div className="settings-container">
@@ -23,6 +25,8 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="profile-name">{ userData?.firstName } { " " } {userData?.lastName}</div>
+        <div className="profile-name">Wallet Address : {address}</div>
+
       </div>
       <div className="notifications-row">
         <span>Turn on Notifications</span>
