@@ -21,19 +21,21 @@ const AddData: React.FC = () => {
   const {
     userProfile,
     isOpenPopup,
+    searchData,
     shareList,
     shareWith,
+    message,
+    name,
     setIsOpenPopup,
-    setShareWith,
+    handleSearch,
     handleConfirmClick,
+    handleSearchSelect,
     handleAddShare,
     handleInvite,
     clraeFilds,
     checkEncrypting,
     setMessage,
-    message,
     setName,
-    name
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
@@ -181,13 +183,30 @@ const AddData: React.FC = () => {
       )}
       <label>Share with</label>
       <div className="share-with-row">
-        <input
-          type="text"
-          value={shareWith}
-          onChange={(e) => setShareWith(e.target.value)}
-          placeholder="@user-name"
-          className="input-field"
-        />
+        <div className="autocomplete-wrapper">
+      <input
+        type="text"
+        value={shareWith}
+        onChange={(e) => handleSearch(e.target.value)}
+        placeholder="@user-name"
+        className="input-field"
+      />
+
+      {searchData.length > 0 && (
+        <ul 
+          className="autocomplete-list">
+          {searchData.map((item, index) => (
+            <li
+              key={index}
+              onClick={() => handleSearchSelect(item.username)}>
+              <p>{item.firstName} {" "} {item.lastName}</p>
+              <p>@{item.username}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+    </div>
         <button className="add-share-button" onClick={handleAddShare}>
           +
         </button>

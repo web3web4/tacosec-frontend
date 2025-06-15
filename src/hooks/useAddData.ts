@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
-import { GetUserProfileDetailsResponse, UserProfileType } from "../types/types";
-import { checkIfUserAvailable, getUserProfileDetails } from "../apiService";
+import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
+import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
 import { useUser } from "../context/UserContext";
 import Swal from "sweetalert2";
 import { useNavigationGuard } from "../context/NavigationGuardContext";
@@ -9,15 +9,16 @@ import { useNavigationGuard } from "../context/NavigationGuardContext";
 const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "", invited: false};
 
 export default function useAddData() {
+  const { initDataRaw } = useUser();
+  const { setNavigationCheck } = useNavigationGuard();
   const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
+  const [searchData, setSearchData] = useState<SearchDataType[]>([]);
+  const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
   const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
-  const [shareList, setShareList] = useState<UserProfileType[]>([]);
-  const { setNavigationCheck } = useNavigationGuard();
   const [shareWith, setShareWith] = useState<string>("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
-  const { initDataRaw } = useUser();
   
   useEffect(() => {
     setNavigationCheck(() => {
@@ -100,6 +101,19 @@ export default function useAddData() {
     );
   };
 
+  const handleSearch = async (username: string) => {
+    setSearchData([]);
+    setShareWith(username);
+    if(!username) return;
+    const response = await getAutoCompleteUsername(initDataRaw!, username);
+    setSearchData(response);
+  };
+
+  const handleSearchSelect = (username: string) => {
+    setShareWith(username);
+    setSearchData([]);
+  };
+
   const handleAddShare = (): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
@@ -132,15 +146,17 @@ export default function useAddData() {
   return {
     userProfile,
     isOpenPopup,
+    searchData,
     shareList,  
     shareWith,
     message,
     name,
     handleInvite,
     setIsOpenPopup,
-    setShareWith,
+    handleSearch,
     handleAddShare,
     handleConfirmClick,
+    handleSearchSelect,
     clraeFilds,
     checkEncrypting,
     setMessage,

@@ -49,4 +49,9 @@ export interface UserProfileDetailsType{
   invited?: boolean
 }
 
+export interface SearchDataType{
+  username: string;
+  firstName: string;
+  lastName: string;
+}
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;
