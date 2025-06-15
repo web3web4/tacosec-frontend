@@ -7,7 +7,7 @@ interface MyDataType{
     expandedIndex: number | null,
     decrypting: boolean,
     decryptedMessages: Record<number, string>,
-    handleDelete: (id: string) => void,
+    handleDelete: (id: string, isHasSharedWith: boolean) => void,
 }
 
 export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleDelete} : MyDataType) {
@@ -66,7 +66,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                       </button>
                       <button
                         className="delete-button"
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(item.id, item.sharedWith.length > 0)}
                       >
                         Delete
                       </button>
