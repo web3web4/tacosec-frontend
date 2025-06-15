@@ -70,6 +70,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       autocorrect: "off",
     },
     showCancelButton: false,
+    allowOutsideClick: false,
+    allowEscapeKey: false
   });
 
   // 2. 
@@ -86,6 +88,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     showCancelButton: true,
     confirmButtonText: "Yes",
     cancelButtonText: "No",
+    allowOutsideClick: false,
+    allowEscapeKey: false
   });
 
   const saveToBackend = saveConfirmed;

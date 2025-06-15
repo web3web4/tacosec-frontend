@@ -111,7 +111,8 @@
 }
 
 .copy-btn,
-.confirm-btn {
+.confirm-btn,
+.cancel-btn {
   flex: 1;
   padding: 10px 10px;
   font-size: 14px;
@@ -142,6 +143,11 @@
 
 .confirm-btn {
   background-color: #28a745;
+  color: white;
+}
+
+.cancel-btn{
+  background-color: #dc3545;
   color: white;
 }
 

@@ -19,7 +19,9 @@ export const importWalletFlow = async (
     inputLabel: "Enter a strong password to encrypt your wallet",
     inputPlaceholder: "Your password",
     inputAttributes: { autocapitalize: "off", autocorrect: "off" },
-    showCancelButton: true,
+    showCancelButton: false,
+    allowOutsideClick: false,
+    allowEscapeKey: false
   });
   if (!isConfirmed || !password) return;
 
@@ -27,7 +29,9 @@ export const importWalletFlow = async (
   const encrypted = CryptoJS.AES.encrypt(mnemonic, fullKey).toString();
 
   localStorage.setItem("encryptedSeed", encrypted);
-  localStorage.setItem("seedBackupDone", "false");
+  localStorage.setItem("seedBackupDone", "true");
+    localStorage.setItem("savePasswordInBackend", "false");
+
 
   if (onImported) {
     onImported(password);
