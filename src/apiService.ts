@@ -1,6 +1,6 @@
 "use server";
 
-import { UserProfileDetailsType, initDataType } from "./types/types";
+import { SearchDataType, UserProfileDetailsType, initDataType } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
@@ -178,4 +178,21 @@ export async function deletePassword(initData: string, id: string): Promise<any>
   }
 
   return await response.json();
+}
+
+export async function getAutoCompleteUsername(initData: string, username: string): Promise<SearchDataType[]> {
+  const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${username}&limit=5&searchType=contains`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const resault = await response.json();
+  return resault.data;
 }

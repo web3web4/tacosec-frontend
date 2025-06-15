@@ -120,21 +120,33 @@ export default function useHome() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDelete = async (id: string) => {
-    const result = await Swal.fire({
+  const handleDelete = async (id: string, isHasSharedWith: boolean) => {
+    const swalOptions: any = {
       title: 'Do you want to delete this Secret?',
-      input: 'checkbox',
-      inputPlaceholder: 'Also delete for everyone it was shared with',
       showCancelButton: true,
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel',
-    });
+      confirmButtonColor: `var(--primary-color)`
+    };
+    
+    if (isHasSharedWith) {
+      swalOptions.input = 'checkbox';
+      swalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
+    }
+  
+    const result = await Swal.fire(swalOptions);
   
     if (result.isConfirmed) {
-      const alsoDeleteForEveryone = result.value === 1; 
-      alsoDeleteForEveryone ? deletePassword(initDataRaw!, id) : hidePassword(initDataRaw!, id);
+      if (isHasSharedWith) {
+        const alsoDeleteForEveryone = result.value === 1;
+        alsoDeleteForEveryone ? deletePassword(initDataRaw!, id) : hidePassword(initDataRaw!, id);
+      } else {
+        deletePassword(initDataRaw!, id);
+      }
     }
   };
+  
+  
 
   return { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick, handleDelete };
 }
