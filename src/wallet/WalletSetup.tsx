@@ -20,31 +20,35 @@ export default function WalletSetup() {
   const [password, setPassword] = useState("");
 
    // 🔔 Show alert if no wallet exists
+
+const showInitialPrompt = () => {
+  Swal.fire({
+    icon: "info",
+    title: "No Wallet Found",
+    html: `
+      <p style="font-size:14px;">If you already have a wallet, you can import it using your secret phrase.</p>
+      <p style="font-size:14px;">Or create a new one to start using our services.</p>
+    `,
+    showCancelButton: false,
+    showDenyButton: true,
+    confirmButtonText: "Create Wallet",
+    denyButtonText: "Import Wallet",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      createWalletFlow();
+    } else if (result.isDenied) {
+      setShowImport(true);
+    }
+  });
+};
+
 useEffect(() => {
   if (typeof hasWallet === "boolean" && !hasWallet) {
-    Swal.fire({
-      icon: "info",
-      title: "No Wallet Found",
-      html: `
-        <p style=font-size:14px;">If you already have a wallet, you can import it using your secret phrase.</p><br>
-        <p style=font-size:14px;>Or create a new one to start using our services.</p>
-      `,
-      showCancelButton: false,
-      showDenyButton: true,
-      confirmButtonText: "Create Wallet",
-      denyButtonText: "Import Wallet",
-      cancelButtonText: "Maybe Later",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        createWalletFlow();
-      } else if (result.isDenied) {
-       setShowImport(true);  // Import wallet logic here
-      }
-    });
+    showInitialPrompt();
   }
-}, [hasWallet, createWalletFlow]);
+}, [hasWallet]);
 
   const handleImport = (importedMnemonic: string) => {
     importWalletFlow(importedMnemonic, (pwd) => {
@@ -181,7 +185,10 @@ if (showBackup && mnemonic) {
     return (
       <SeedImportPopup
         onImport={handleImport}
-        onCancel={() => setShowImport(false)}
+            onCancel={() => {
+              setShowImport(false);
+              showInitialPrompt();
+            }}
       />
     );
   }
