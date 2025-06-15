@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { initDataType } from "../types/types";
 import { signupUser } from "../apiService";
 import Swal from "sweetalert2";
-import { useWallet } from "../wallet/walletContext";
+
 
 interface UserContextType {
   userData: initDataType | null;
@@ -14,12 +14,14 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const { hasWallet } = useWallet();
+
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
 
-  const signUserData = async () => {
+  const hasWallet = typeof window !== "undefined" && localStorage.getItem("encryptedSeed");
+
+ const signUserData = async () => {
     setError(null);
     try {
       if (typeof window === "undefined" || !window.Telegram?.WebApp) {
