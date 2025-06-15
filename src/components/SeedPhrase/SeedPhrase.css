@@ -123,6 +123,14 @@
   margin-top: 10px;
 }
 
+.seed-input {
+  width: 100%;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
 .copy-btn {
   background-color: #007bff;
   color: white;
