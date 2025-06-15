@@ -22,3 +22,14 @@ export function parseTelegramInitData(initData: string){
       hash: params.get("hash")
     };
   }
+
+  export const debounce = function (
+    functionToDebounce: (...args: any[]) => any,
+    delay: number
+  ) {
+    let timeout: NodeJS.Timeout;
+    return function (...args: any[]) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => functionToDebounce(...args), delay);
+    };
+  };

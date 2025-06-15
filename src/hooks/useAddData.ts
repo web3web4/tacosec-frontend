@@ -1,17 +1,23 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
 import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
 import { useUser } from "../context/UserContext";
 import Swal from "sweetalert2";
 import { useNavigationGuard } from "../context/NavigationGuardContext";
+import { debounce } from "../utils/tools";
 
-const initProfileData = {img: { src: defaultProfileImage}, name: "", username: "", invited: false};
+const initProfileData = {
+  img: { src: defaultProfileImage },
+  name: "",
+  username: "",
+  invited: false,
+};
 
 export default function useAddData() {
   const { initDataRaw } = useUser();
   const { setNavigationCheck } = useNavigationGuard();
-  const [userProfile, setUserProfile] = useState<UserProfileType>({data: initProfileData, error: null});
+  const [userProfile, setUserProfile] = useState<UserProfileType>({ data: initProfileData, error: null });
   const [searchData, setSearchData] = useState<SearchDataType[]>([]);
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
@@ -19,13 +25,15 @@ export default function useAddData() {
   const [shareWith, setShareWith] = useState<string>("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
-  
+
   useEffect(() => {
     setNavigationCheck(() => {
-      return shareWith.trim() !== "" || message.trim() !== "" || name.trim() !== "";
+      return (
+        shareWith.trim() !== "" || message.trim() !== "" || name.trim() !== ""
+      );
     });
-    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareWith, message, name]);
 
   const fetchUserProfile = async () => {
@@ -35,33 +43,32 @@ export default function useAddData() {
       : shareWith;
 
     try {
-      const response: GetUserProfileDetailsResponse = await getUserProfileDetails(username);
-      
+      const response: GetUserProfileDetailsResponse =
+        await getUserProfileDetails(username);
+
       if (!response) {
-        setUserProfile(() => ({
-          data: initProfileData,
-          error: `No Telegram user found for @${username}`,
-        }));
+        setUserProfile(() => ({ data: initProfileData, error: `No Telegram user found for @${username}` }));
         return;
       }
       setUserProfile({
-        data: {img: { src: response.img ? response.img.src : defaultProfileImage}, name: response.name, username: response.username, invited: false},
+        data: {
+          img: { src: response.img ? response.img.src : defaultProfileImage },
+          name: response.name,
+          username: response.username,
+          invited: false,
+        },
         error: null,
       });
-
     } catch (error) {
-      setUserProfile({
-        data: initProfileData,
-        error: `Error On Fetch User: ${error}`,
-      });
+      setUserProfile({ data: initProfileData, error: `Error On Fetch User: ${error}` });
     }
   };
 
   const checkIfUserExists = async () => {
     try {
       const username = shareWith.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
+        ? shareWith.substring(1)
+        : shareWith;
 
       const response = await checkIfUserAvailable(initDataRaw!, username);
       setIsCanInvite(response);
@@ -74,29 +81,26 @@ export default function useAddData() {
     const cleanedUsername = shareWith.startsWith("@")
       ? shareWith.substring(1)
       : shareWith;
-  
+
     const updatedProfile = {
       ...userProfile,
       data: {
         ...userProfile.data,
         username: cleanedUsername.toLowerCase(),
-        invited: isCanInvite
-      }
+        invited: isCanInvite,
+      },
     };
-  
+
     setShareList([...shareList, updatedProfile]);
     setIsOpenPopup(false);
     setIsCanInvite(false);
     setShareWith("");
   };
-  
 
   const handleInvite = (index: number) => {
     setShareList((prevList) =>
       prevList.map((user, i) =>
-        i === index
-          ? { ...user, data: { ...user.data, invited: true } }
-          : user
+        i === index ? { ...user, data: { ...user.data, invited: true } } : user
       )
     );
   };
@@ -104,10 +108,21 @@ export default function useAddData() {
   const handleSearch = async (username: string) => {
     setSearchData([]);
     setShareWith(username);
-    if(!username) return;
-    const response = await getAutoCompleteUsername(initDataRaw!, username);
-    setSearchData(response);
+    getUsersAutoComplete(username);
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getUsersAutoComplete = useCallback(
+    debounce(async (username: string) => {
+      if (!username) {
+        setSearchData([]);
+        return;
+      }
+      const response = await getAutoCompleteUsername(initDataRaw!, username);
+      setSearchData(response);
+    }, 1000),
+    []
+  );
 
   const handleSearchSelect = (username: string) => {
     setShareWith(username);
@@ -122,7 +137,7 @@ export default function useAddData() {
   };
 
   const clraeFilds = () => {
-    setUserProfile({data: initProfileData, error: null});
+    setUserProfile({ data: initProfileData, error: null });
     setIsOpenPopup(false);
     setIsCanInvite(false);
     setShareWith("");
@@ -132,7 +147,7 @@ export default function useAddData() {
   };
 
   const checkEncrypting = () => {
-    if(shareWith.trim() !== "") {
+    if (shareWith.trim() !== "") {
       Swal.fire({
         icon: "warning",
         title: "Pending Share Action",
@@ -147,7 +162,7 @@ export default function useAddData() {
     userProfile,
     isOpenPopup,
     searchData,
-    shareList,  
+    shareList,
     shareWith,
     message,
     name,
