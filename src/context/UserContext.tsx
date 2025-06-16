@@ -19,7 +19,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
 
-  const hasWallet = typeof window !== "undefined" && localStorage.getItem("encryptedSeed");
+  //const hasWallet = typeof window !== "undefined" && localStorage.getItem("encryptedSeed");
 
  const signUserData = async () => {
     setError(null);
@@ -36,7 +36,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
-
+/*
       if (hasWallet) {
         Swal.fire({
           icon: "success",
@@ -44,6 +44,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           text: `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`,
         });
       }
+*/
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
       Swal.fire({
