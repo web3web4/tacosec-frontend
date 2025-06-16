@@ -9,6 +9,7 @@ import { ethers } from "ethers";
 import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSettingPage";
 import CryptoJS from "crypto-js";
 import { DecryptPrompt } from "../../components/SeedPhrase/DecryptPrompt";
+import { SeedImportPopup } from "../../components/SeedPhrase/SeedImportPopup";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, handleToggleNotifications } = useSetting();
@@ -18,7 +19,7 @@ const Settings: React.FC = () => {
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-
+  const [showSeedImport, setShowSeedImport] = useState(false);
 
 /**
  * Handles the decryption process by checking if an encrypted seed exists in local storage.
@@ -118,7 +119,22 @@ const submitDecryption = () => {
           passwordError={passwordError}
           onChange={setPassword}
           onSubmit={submitDecryption}
+          onForgotPassword={() => {
+          setShowDecryptPrompt(false);      
+          setShowSeedImport(true);
+        }}
         />
+      )}
+
+      {showSeedImport && (
+        <SeedImportPopup
+            onImport={(mnemonic) => {
+              setMnemonic(mnemonic);
+              setShowSeedImport(false);
+            }}
+            onCancel={() => setShowSeedImport(false)}
+        />
+
       )}
 
     </>

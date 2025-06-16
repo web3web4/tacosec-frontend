@@ -18,6 +18,8 @@ export default function WalletSetup() {
   console.log("showPasswordPrompt", showPasswordPrompt);
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
+  const [showSeedImport, setShowSeedImport] = useState(false);
+
 
    // 🔔 Show alert if no wallet exists
 
@@ -165,14 +167,27 @@ if (showBackup && !mnemonic) {
     return null; // prevent double render
   }
 
-  return (
+return (
+  <>
     <DecryptPrompt
       password={password}
       passwordError={passwordError}
       onChange={setPassword}
       onSubmit={handleDecrypt}
+      onForgotPassword={() => {
+        setShowPasswordPrompt(false);
+        setShowSeedImport(true);
+      }}
     />
-  );
+      {showSeedImport && (
+        <SeedImportPopup
+            onImport={handleImport}
+            onCancel={() => setShowSeedImport(false)}
+        />
+      )}
+  </>
+);
+
 }
 
 
