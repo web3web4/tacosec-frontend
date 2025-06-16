@@ -19,7 +19,6 @@ const Settings: React.FC = () => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-
 /**
  * Handles the decryption process by checking if an encrypted seed exists in local storage.
  * If no encrypted seed is found, displays an error message.
