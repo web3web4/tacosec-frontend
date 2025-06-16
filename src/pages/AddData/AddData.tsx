@@ -24,6 +24,7 @@ const AddData: React.FC = () => {
     searchData,
     shareList,
     shareWith,
+    isSearch,
     message,
     name,
     setIsOpenPopup,
@@ -184,13 +185,16 @@ const AddData: React.FC = () => {
       <label>Share with</label>
       <div className="share-with-row">
         <div className="autocomplete-wrapper">
-      <input
-        type="text"
-        value={shareWith}
-        onChange={(e) => handleSearch(e.target.value)}
-        placeholder="@user-name"
-        className="input-field"
-      />
+          <div className="input-wrapper">
+            <input
+              type="text"
+              value={shareWith}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="@user-name"
+              className="input-field"
+            />
+            {isSearch && <span className="spinner" />}
+          </div>
 
       {searchData.length > 0 && (
         <ul 
