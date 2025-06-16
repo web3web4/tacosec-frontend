@@ -22,6 +22,7 @@ export default function useAddData() {
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
   const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
+  const [isSearch, setIsSearch] = useState<boolean>(false);
   const [shareWith, setShareWith] = useState<string>("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
@@ -118,8 +119,15 @@ export default function useAddData() {
         setSearchData([]);
         return;
       }
-      const response = await getAutoCompleteUsername(initDataRaw!, username);
-      setSearchData(response);
+        setIsSearch(true);
+      try{
+        const response = await getAutoCompleteUsername(initDataRaw!, username);
+        setSearchData(response);
+      }catch(error){
+        console.log(error);
+      }finally{
+        setIsSearch(false);
+      }
     }, 1000),
     []
   );
@@ -164,6 +172,7 @@ export default function useAddData() {
     searchData,
     shareList,
     shareWith,
+    isSearch,
     message,
     name,
     handleInvite,

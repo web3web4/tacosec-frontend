@@ -59,7 +59,7 @@
   display: flex;
   gap: 0.75rem;
   margin-top: 1rem;
-  align-items: center;
+  align-items: baseline;
 }
 
 .autocomplete-wrapper{
@@ -204,6 +204,25 @@
   cursor: pointer;
 }
 
+.input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.spinner {
+  position: absolute;
+  top: 55%;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #c4357172;
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -212,5 +231,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
   }
 }
