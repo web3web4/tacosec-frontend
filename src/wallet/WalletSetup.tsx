@@ -11,7 +11,7 @@ import { SeedImportPopup } from "../components/SeedPhrase/SeedImportPopup";
 export default function WalletSetup() {
   const { hasWallet, createWalletFlow, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, decryptedPassword, setDecryptedPassword } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
-    const [showImport, setShowImport] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
