@@ -6,6 +6,7 @@ type Props = {
   passwordError: string;
   onChange: (val: string) => void;
   onSubmit: () => void;
+  //onForgotPassword: () => void;
 };
 
 export const DecryptPrompt = ({ password, passwordError, onChange, onSubmit }: Props) => {
@@ -26,6 +27,11 @@ export const DecryptPrompt = ({ password, passwordError, onChange, onSubmit }: P
           <button className="confirm-btn" onClick={onSubmit}>
             🔓 UnLoack
           </button>
+          {/*
+          <p className="forgot-password" onClick={onForgotPassword} style={{ cursor: "pointer", marginTop: 12, color: "#4CAF50", textAlign: "center", textDecoration: "underline" }}>
+            Forgot password?
+          </p>
+          */}
         </div>
       </div>
     </div>
