@@ -105,7 +105,7 @@ export default function WalletSetup() {
    * Prompts the user to enter the encryption password and attempts decryption with the provided input.
    * Validates the decrypted phrase to ensure it is a valid mnemonic.
    * If successful, sets the mnemonic state with the decrypted phrase.
-   * Alerts the user if the password is invalid or decryption fails.
+   * Alerts the user if the password is invalid or decryption fails...
    */
 
   const handleDecrypt = async () => {
