@@ -46,9 +46,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string>("");
-  const [decryptedPassword, setDecryptedPassword] = useState<
-    string | undefined
-  >("");
+  const [decryptedPassword, setDecryptedPassword] = useState<string | undefined>("");
   const [showResetFlow, setShowResetFlow] = useState(false);
 
   const provider = useMemo(
@@ -231,30 +229,29 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       {children}
 
       {showDecryptPrompt && (
-        <>
-          <DecryptPrompt
-            password={password}
-            passwordError={passwordError}
-            onChange={setPassword}
-            onSubmit={handleDecryption}
-            onForgotPassword={() => {
-              setShowDecryptPrompt(false);
-              setShowResetFlow(true);
-            }}
-          />
-          {showResetFlow && (
-            <ResetPasswordWithSeed
-              onSuccess={() => {
-                setShowResetFlow(false);
-                Swal.fire(
-                  "Success",
-                  "You can now unlock your wallet with your new password.",
-                  "success"
-                );
-              }}
-            />
-          )}
-        </>
+        <DecryptPrompt
+          password={password}
+          passwordError={passwordError}
+          onChange={setPassword}
+          onSubmit={handleDecryption}
+          onForgotPassword={() => {
+            setShowDecryptPrompt(false);
+            setShowResetFlow(true);
+          }}
+        />
+      )}
+
+      {showResetFlow && (
+        <ResetPasswordWithSeed
+          onSuccess={() => {
+            setShowResetFlow(false);
+            Swal.fire(
+              "Success",
+              "You can now unlock your wallet with your new password.",
+              "success"
+            );
+          }}
+        />
       )}
     </WalletContext.Provider>
   );
