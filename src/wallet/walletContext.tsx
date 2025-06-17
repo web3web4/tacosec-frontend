@@ -251,7 +251,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               "success"
             );
           }}
-          onCancel={() => setShowResetFlow(false)}
+          onCancel={() => {
+            setShowResetFlow(false);
+            setShowDecryptPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
+          }}
         />
       )}
     </WalletContext.Provider>
