@@ -3,7 +3,7 @@ import defaultProfileImage from "../../assets/images/no-User.png";
 import "./Settings.css";
 import { useUser } from "../../context/UserContext";
 import { useWallet } from "../../wallet/walletContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { ethers } from "ethers";
 import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSettingPage";
@@ -21,6 +21,17 @@ const Settings: React.FC = () => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+
+  // Hide the "Copied" message after 2 seconds
+  useEffect(() => {
+    if (showCopied) {
+      const timer = setTimeout(() => {
+        setShowCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showCopied]);
 
   /**
    * Handles the decryption process by checking if an encrypted seed exists in local storage.
@@ -64,6 +75,26 @@ const Settings: React.FC = () => {
     }
   };
 
+  // Function to copy address to clipboard
+  const copyAddressToClipboard = () => {
+    if (address) {
+      navigator.clipboard.writeText(address)
+        .then(() => {
+          setShowCopied(true);
+        })
+        .catch(err => {
+          console.error("Failed to copy address: ", err);
+          Swal.fire("Error", "Failed to copy address", "error");
+        });
+    }
+  };
+
+  // Format address to show only first 5 characters
+  const formatAddress = (addr: string | undefined) => {
+    if (!addr) return "";
+    return `${addr.substring(0, 5)}...`;
+  };
+
   return (
     <>
       <div className="settings-container">
@@ -83,7 +114,18 @@ const Settings: React.FC = () => {
           <div className="profile-name">
             {userData?.firstName} {userData?.lastName}
           </div>
-          <div className="profile-name">Address : {address}</div>
+          <div className="address-container">
+            <span>Address: </span>
+            <span className="address-value">{formatAddress(address || undefined)}</span>
+            <button 
+              className="copy-address-btn" 
+              onClick={copyAddressToClipboard}
+              title="Copy full address"
+            >
+              📋
+            </button>
+            {showCopied && <span className="copied-message">Copied</span>}
+          </div>
         </div>
         <div className="notifications-row">
           <span>Turn on Notifications</span>
