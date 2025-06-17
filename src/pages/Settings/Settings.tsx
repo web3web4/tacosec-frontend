@@ -182,7 +182,10 @@ const Settings: React.FC = () => {
               "success"
             );
           }}
-          onCancel={() => setShowResetFlow(false)}
+          onCancel={() => {
+            setShowResetFlow(false);
+            setShowDecryptPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
+          }}
         />
       )}
     </>

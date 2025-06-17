@@ -192,7 +192,10 @@ export default function WalletSetup() {
                 "success"
               );
             }}
-            onCancel={() => setShowResetFlow(false)}
+            onCancel={() => {
+              setShowResetFlow(false);
+              setShowPasswordPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
+            }}
           />
         )}
       </>
