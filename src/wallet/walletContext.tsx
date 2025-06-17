@@ -251,6 +251,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               "success"
             );
           }}
+          onCancel={() => setShowResetFlow(false)}
         />
       )}
     </WalletContext.Provider>
