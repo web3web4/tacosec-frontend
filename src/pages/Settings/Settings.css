@@ -199,3 +199,37 @@ input:checked + .slider:before {
     transform: translateY(0);
   }
 }
+
+/* Add these styles at the end of the file */
+.address-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+  position: relative;
+}
+
+.address-value {
+  margin: 0 5px;
+}
+
+.copy-address-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 5px;
+  transition: transform 0.2s ease;
+}
+
+.copy-address-btn:hover {
+  transform: scale(1.2);
+}
+
+.copied-message {
+  color: #4CAF50;
+  font-size: 14px;
+  margin-left: 5px;
+  animation: fadeIn 0.3s ease-out;
+}
