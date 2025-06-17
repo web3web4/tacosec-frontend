@@ -192,6 +192,7 @@ export default function WalletSetup() {
                 "success"
               );
             }}
+            onCancel={() => setShowResetFlow(false)}
           />
         )}
       </>

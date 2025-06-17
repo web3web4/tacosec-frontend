@@ -5,8 +5,10 @@ import Swal from "sweetalert2";
 
 export const ResetPasswordWithSeed = ({
   onSuccess,
+  onCancel, // Add onCancel prop
 }: {
   onSuccess: () => void;
+  onCancel: () => void; // Add type definition
 }) => {
   const [seed, setSeed] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -52,9 +54,14 @@ export const ResetPasswordWithSeed = ({
           placeholder="new password"
           className="input-field"
         />
-        <button className="confirm-btn" onClick={handleReset}>
-          🔐 Reset
-        </button>
+        <div className="popup-actions-row">
+          <button className="cancel-btn" onClick={onCancel}>
+            ❌ Cancel
+          </button>
+          <button className="confirm-btn" onClick={handleReset}>
+            🔐 Reset
+          </button>
+        </div>
       </div>
     </div>
   );
