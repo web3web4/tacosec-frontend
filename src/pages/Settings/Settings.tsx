@@ -140,6 +140,7 @@ const Settings: React.FC = () => {
               "success"
             );
           }}
+          onCancel={() => setShowResetFlow(false)}
         />
       )}
     </>
