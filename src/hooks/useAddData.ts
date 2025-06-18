@@ -83,16 +83,22 @@ export default function useAddData() {
       ? shareWith.substring(1)
       : shareWith;
 
-    const updatedProfile = {
-      ...userProfile,
-      data: {
-        ...userProfile.data,
-        username: cleanedUsername.toLowerCase(),
-        invited: isCanInvite,
-      },
-    };
+    const isAlreadyInList = shareList.some(
+      (user) => user.data.username?.toLowerCase() === cleanedUsername.trim().toLowerCase()
+    );
 
-    setShareList([...shareList, updatedProfile]);
+    if (!isAlreadyInList) {
+        const updatedProfile = {
+          ...userProfile,
+          data: {
+            ...userProfile.data,
+            username: cleanedUsername.toLowerCase(),
+            invited: isCanInvite,
+          },
+        };
+        setShareList([...shareList, updatedProfile]);
+    }
+    
     setIsOpenPopup(false);
     setIsCanInvite(false);
     setShareWith("");
@@ -121,7 +127,11 @@ export default function useAddData() {
       }
         setIsSearch(true);
       try{
-        const response = await getAutoCompleteUsername(initDataRaw!, username);
+        const cleanedUsername = username.startsWith("@")
+          ? username.substring(1)
+          : username;
+
+        const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
         setSearchData(response);
       }catch(error){
         console.log(error);
@@ -131,6 +141,10 @@ export default function useAddData() {
     }, 1000),
     []
   );
+
+  const handleDeleteUsername = (username: string) => {
+    setShareList((prevList) => prevList.filter((user) => user.data.username !== username));
+  };
 
   const handleSearchSelect = (username: string) => {
     setShareWith(username);
@@ -144,7 +158,7 @@ export default function useAddData() {
     fetchUserProfile();
   };
 
-  const clraeFilds = () => {
+  const cleanFields = () => {
     setUserProfile({ data: initProfileData, error: null });
     setIsOpenPopup(false);
     setIsCanInvite(false);
@@ -181,7 +195,8 @@ export default function useAddData() {
     handleAddShare,
     handleConfirmClick,
     handleSearchSelect,
-    clraeFilds,
+    handleDeleteUsername,
+    cleanFields,
     checkEncrypting,
     setMessage,
     setName,

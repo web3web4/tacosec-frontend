@@ -172,6 +172,17 @@
   box-shadow: var(--box-shadow);
 }
 
+.user-content-buttons{
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.delete-user-btn{
+  position: relative;
+  top: 3px;
+}
+
 .popup-content button {
   padding: 0.75rem 1.5rem;
   width: auto;
