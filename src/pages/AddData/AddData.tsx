@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import defaultProfileImage from "../../assets/images/no-User.png";
-import avilableIcon from "../../assets/icons/accept.png";
+import availableIcon from "../../assets/icons/accept.png";
+import DeleteIcon from "../../assets/icons/delete-icon.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
 import { conditions, toHexString } from "@nucypher/taco";
@@ -31,9 +32,10 @@ const AddData: React.FC = () => {
     handleSearch,
     handleConfirmClick,
     handleSearchSelect,
+    handleDeleteUsername,
     handleAddShare,
     handleInvite,
-    clraeFilds,
+    cleanFields,
     checkEncrypting,
     setMessage,
     setName,
@@ -123,7 +125,7 @@ const AddData: React.FC = () => {
             showConfirmButton: false,
             timer: 4000
           });
-          clraeFilds();
+          cleanFields();
         }
       }
     } catch (e) {
@@ -182,7 +184,7 @@ const AddData: React.FC = () => {
           Please Wait For Encrypting...
         </div>
       )}
-      <label>Share with</label>
+      <label>Share with (optional)</label>
       <div className="share-with-row">
         <div className="autocomplete-wrapper">
           <div className="input-wrapper">
@@ -222,17 +224,20 @@ const AddData: React.FC = () => {
           {shareList.map((user, i) => (
             <div className="user_container">
             <div key={i}>- {user.data.name}</div>
-            { user.data.invited ? 
-            (<img src={avilableIcon} alt="avilable icon" width={20} height={20}/>) : 
-            (
-            <a
-            href={`https://t.me/${user.data.username}?text=${encodeURIComponent(`I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
-          </a>
-            )}
+              <div className="user-content-buttons">
+                { user.data.invited ? 
+                (<img src={availableIcon} alt="available icon" width={20} height={20}/>) 
+                : 
+                (<a
+                href={`https://t.me/${user.data.username}?text=${encodeURIComponent(`I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`)}`}
+                target="_blank"
+                rel="noopener noreferrer">
+                  <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
+                </a>)}
+                <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username!)}>
+                  <img src={DeleteIcon} alt="delete icon" width={20} height={20} />
+                </div>  
+              </div>
             </div>
           ))}
         </div>
