@@ -36,7 +36,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
-
       if (hasWallet) {
         Swal.fire({
           icon: "success",
