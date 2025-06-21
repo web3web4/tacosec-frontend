@@ -56,14 +56,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const { initDataRaw , userData } = useUser();
 
   useEffect(() => {
-    if (!userData?.telegramId) {
-      setHasWallet(false);
-      setShowDecryptPrompt(false);
-      return;
-    }
-
+    if (!userData?.telegramId) return;
     const encrypted = localStorage.getItem(`encryptedSeed-${userData.telegramId}`);
-
     if (encrypted) {
       setHasWallet(true);
       setShowDecryptPrompt(true);
@@ -74,7 +68,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [userData?.telegramId]);
 
   async function createWalletFlow() {
-    
     if (!userData?.telegramId) {
       console.warn("User data not ready. Create wallet flow postponed.");
       return;
