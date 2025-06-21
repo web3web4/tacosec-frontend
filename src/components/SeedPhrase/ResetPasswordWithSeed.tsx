@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
+import { useUser } from "../../context/UserContext";
 
 export const ResetPasswordWithSeed = ({
   onSuccess,
@@ -12,7 +13,7 @@ export const ResetPasswordWithSeed = ({
 }) => {
   const [seed, setSeed] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
+  const {userData} = useUser();
   const handleReset = () => {
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {
@@ -27,8 +28,8 @@ export const ResetPasswordWithSeed = ({
 
     const fullKey = newPassword + "|" + process.env.REACT_APP_TG_SECRET_SALT;
     const encrypted = CryptoJS.AES.encrypt(trimmed, fullKey).toString();
-    localStorage.setItem("encryptedSeed", encrypted);
-    localStorage.setItem("seedBackupDone", "true");
+    localStorage.setItem(`encryptedSeed-${userData?.telegramId}`, encrypted);
+    localStorage.setItem(`seedBackupDone-${userData?.telegramId}`, "true");
 
     Swal.fire("✅ Success", "Password reset successfully", "success");
     onSuccess(); // go back to login or main screen
