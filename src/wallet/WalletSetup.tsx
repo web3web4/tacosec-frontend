@@ -31,6 +31,7 @@ export default function WalletSetup() {
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
+  const [initialPromptShown, setInitialPromptShown] = useState(false);
   const { userData } = useUser();
 
   // 🔔 Show alert if no wallet exists
@@ -59,7 +60,7 @@ export default function WalletSetup() {
   };
 
 useEffect(() => {
-
+  if (!userData?.telegramId) return;
   const allKeys = Object.keys(localStorage);
   const otherWalletKey = allKeys.find(
     (key) => key.startsWith("encryptedSeed-") && key !== `encryptedSeed-${userData?.telegramId}`
@@ -76,16 +77,17 @@ useEffect(() => {
     return;
   }
 
-  if (!hasWallet) {
-    showInitialPrompt();
+  if (!hasWallet && !initialPromptShown) {
+    createWalletFlow();
+    setInitialPromptShown(true);
   }
-}, [hasWallet]);
+}, [userData?.telegramId, hasWallet, initialPromptShown, createWalletFlow]);
 
 
   const handleImport = (importedMnemonic: string) => {
     importWalletFlow(importedMnemonic, userData, (pwd) => {
       setPassword(pwd);
-const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
+      const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
       const wallet = restoreWalletFromEncryptedSeed(encrypted, pwd);
       if (wallet) {
         setSigner(wallet.connect(provider));
