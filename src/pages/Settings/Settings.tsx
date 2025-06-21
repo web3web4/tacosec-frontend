@@ -40,7 +40,7 @@ const Settings: React.FC = () => {
    */
 
   const handleDecrypt = () => {
-    const encrypted = localStorage.getItem("encryptedSeed");
+    const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
     if (!encrypted) {
       Swal.fire("Error", "No encrypted seed found.", "error");
       return;
@@ -55,7 +55,7 @@ const Settings: React.FC = () => {
    */
 
   const submitDecryption = () => {
-    const encrypted = localStorage.getItem("encryptedSeed");
+    const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
     if (!encrypted) return;
 
     const fullKey = password + "|" + process.env.REACT_APP_TG_SECRET_SALT;
