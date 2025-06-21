@@ -9,6 +9,7 @@ import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
 import { importWalletFlow } from "./ImportWallet";
 import { SeedImportPopup } from "../components/SeedPhrase/SeedImportPopup";
 import { ResetPasswordWithSeed } from "../components/SeedPhrase/ResetPasswordWithSeed";
+import { useUser } from "../context/UserContext";
 export default function WalletSetup() {
   const {
     hasWallet,
@@ -30,6 +31,7 @@ export default function WalletSetup() {
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
+  const { userData } = useUser();
 
   // 🔔 Show alert if no wallet exists
 
@@ -56,16 +58,34 @@ export default function WalletSetup() {
     });
   };
 
-  useEffect(() => {
-    if (typeof hasWallet === "boolean" && !hasWallet) {
-      showInitialPrompt();
-    }
-  }, [hasWallet]);
+useEffect(() => {
+
+  const allKeys = Object.keys(localStorage);
+  const otherWalletKey = allKeys.find(
+    (key) => key.startsWith("encryptedSeed-") && key !== `encryptedSeed-${userData?.telegramId}`
+  );
+
+  if (otherWalletKey) {
+    Swal.fire({
+      icon: "error",
+      title: "Access Denied",
+      html: `<p style="font-size:14px;">You are not allowed to access this app using multiple Telegram accounts on the same device.</p>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+    return;
+  }
+
+  if (!hasWallet) {
+    showInitialPrompt();
+  }
+}, [hasWallet]);
+
 
   const handleImport = (importedMnemonic: string) => {
-    importWalletFlow(importedMnemonic, (pwd) => {
+    importWalletFlow(importedMnemonic, userData, (pwd) => {
       setPassword(pwd);
-      const encrypted = localStorage.getItem("encryptedSeed")!;
+const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
       const wallet = restoreWalletFromEncryptedSeed(encrypted, pwd);
       if (wallet) {
         setSigner(wallet.connect(provider));
@@ -85,7 +105,7 @@ export default function WalletSetup() {
      * If a wallet exists and the user has not backed up their seed phrase, show the backup prompt.
      */
     const checkBackup = () => {
-      const backupDone = localStorage.getItem("seedBackupDone") === "true";
+    const backupDone = localStorage.getItem(`seedBackupDone-${userData?.telegramId}`) === "true";
 
       if (hasWallet && !backupDone) {
         setShowBackup(true);
@@ -109,7 +129,7 @@ export default function WalletSetup() {
    */
 
   const handleDecrypt = async () => {
-    const encrypted = localStorage.getItem("encryptedSeed");
+const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
     if (!encrypted) {
       Swal.fire("Error", "No encrypted seed found in localStorage.", "error");
       return;
@@ -149,7 +169,7 @@ export default function WalletSetup() {
         words={mnemonic.split(" ")}
         indices={verifyIndices}
         onSuccess={() => {
-          localStorage.setItem("seedBackupDone", "true");
+          localStorage.setItem(`seedBackupDone-${userData?.telegramId}`, "true");
           setShowBackup(false);
           setVerifyIndices(null);
           Swal.fire("✅ Success", "Backup complete", "success");

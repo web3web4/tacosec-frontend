@@ -34,7 +34,6 @@ interface WalletContextProps {
   setDecryptedPassword: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
-  //onForgotPassword: () => void;
 }
 
 const WalletContext = createContext<WalletContextProps | null>(null);
@@ -54,17 +53,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const { initDataRaw } = useUser();
+  const { initDataRaw , userData } = useUser();
 
   useEffect(() => {
-    const encrypted = localStorage.getItem("encryptedSeed");
+    if (!userData?.telegramId) return;
+    const encrypted = localStorage.getItem(`encryptedSeed-${userData.telegramId}`);
     if (encrypted) {
       setHasWallet(true);
       setShowDecryptPrompt(true);
     } else {
       setHasWallet(false);
+      setShowDecryptPrompt(false);
     }
-  }, []);
+  }, [userData?.telegramId]);
 
   async function createWalletFlow() {
     const { value: password, isConfirmed } = await Swal.fire({
@@ -81,7 +82,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       allowEscapeKey: false,
     });
 
-    // 2.
     if (!isConfirmed || !password) {
       Swal.fire(
         "Cancelled",
@@ -91,7 +91,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // 3.
     const { isConfirmed: saveConfirmed } = await Swal.fire({
       title: "Save password",
       text: "Do you want to save the wallet password on our servers?",
@@ -107,18 +106,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("savePasswordInBackend", saveToBackend.toString());
 
     const wallet = ethers.Wallet.createRandom();
-    setSigner(wallet.connect(provider)); // Connect the wallet to the provider
+    setSigner(wallet.connect(provider));
     setAddress(wallet.address);
-    localStorage.setItem("seedBackupDone", "false");
+    localStorage.setItem(`seedBackupDone-${userData?.telegramId}`, "false");
 
     const mnemonic = wallet.mnemonic.phrase;
     const fullKey = password + "|" + SALT;
     const encrypted = CryptoJS.AES.encrypt(mnemonic, fullKey).toString();
-    localStorage.setItem("encryptedSeed", encrypted);
+    localStorage.setItem(`encryptedSeed-${userData?.telegramId}`, encrypted);
 
-    if (!initDataRaw) {
-      throw new Error("initData is required");
-    }
+    if (!initDataRaw) throw new Error("initData is required");
 
     const data = saveToBackend
       ? { publicKey: wallet.address, secret: password }
@@ -135,12 +132,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     promptBackup();
   }
 
-  /**
-   * When you open the application and the SeedPhrase is in the local storage and encrypted, this function requests the password to re-decrypt the wallet for the user.
-   * @param encryptedSeed
-   * @param password
-   * @returns
-   */
   function restoreWalletFromEncryptedSeed(
     encryptedSeed: string,
     password: string
@@ -149,28 +140,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const fullKey = password + "|" + SALT;
       const bytes = CryptoJS.AES.decrypt(encryptedSeed, fullKey);
       const decryptedSeed = bytes.toString(CryptoJS.enc.Utf8);
-
-      if (!decryptedSeed) {
-        throw new Error("Failed to decrypt seed. Wrong password?");
-      }
-
-      const wallet = ethers.Wallet.fromMnemonic(decryptedSeed);
-      return wallet;
+      if (!decryptedSeed) throw new Error("Failed to decrypt seed");
+      return ethers.Wallet.fromMnemonic(decryptedSeed);
     } catch (error) {
       console.error("Error restoring wallet:", error);
       return null;
     }
   }
 
-  /**
-   * Tries to restore the wallet from the encrypted seed in local storage using the given password.
-   * If the decryption is successful, sets the signer, address, and hasWallet state,
-   * and shows a success message.
-   * If the decryption fails, sets the passwordError state.
-   */
-
   function handleDecryption() {
-    const encryptedSeed = localStorage.getItem("encryptedSeed")!;
+    const encryptedSeed = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
     const wallet = restoreWalletFromEncryptedSeed(encryptedSeed, password);
 
     if (wallet) {
@@ -186,11 +165,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  /**
-   * Shows a warning dialog to the user that they must backup their wallet seed phrase.
-   * If the user clicks "Backup now", an event "wallet-backup" is emitted.
-   * If the user clicks "Later", the dialog is simply closed.
-   */
   function promptBackup() {
     import("sweetalert2").then((Swal) => {
       Swal.default
@@ -253,7 +227,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           }}
           onCancel={() => {
             setShowResetFlow(false);
-            setShowDecryptPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
+            setShowDecryptPrompt(true);
           }}
         />
       )}
