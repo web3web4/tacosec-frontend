@@ -68,6 +68,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [userData?.telegramId]);
 
   async function createWalletFlow() {
+    
+    if (!userData?.telegramId) {
+      Swal.fire("Warning", "Please wait for user data to load", "warning");
+      return;
+    }
+
     const { value: password, isConfirmed } = await Swal.fire({
       title: "Set Password",
       input: "password",
