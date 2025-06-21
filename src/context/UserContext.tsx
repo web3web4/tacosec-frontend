@@ -19,7 +19,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
 
-  const hasWallet = typeof window !== "undefined" && localStorage.getItem("encryptedSeed");
+  const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
 
  const signUserData = async () => {
     setError(null);
