@@ -198,7 +198,7 @@ export async function getAutoCompleteUsername(initData: string, username: string
 }
 
 export async function reportUser(initData: string, report: Report): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/passwords`, {
+  const response = await fetch(`${API_BASE_URL}/reports`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
