@@ -55,3 +55,12 @@ export interface SearchDataType{
   lastName: string;
 }
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;
+
+export interface Report {
+  reportedUsername: string;
+  report_type: ReportType;
+  secret_id: string;
+  reason: string;
+}
+
+export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';

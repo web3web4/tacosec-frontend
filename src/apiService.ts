@@ -1,6 +1,6 @@
 "use server";
 
-import { SearchDataType, UserProfileDetailsType, initDataType } from "./types/types";
+import { Report, SearchDataType, UserProfileDetailsType, initDataType } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
@@ -193,6 +193,23 @@ export async function getAutoCompleteUsername(initData: string, username: string
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  const resault = await response.json();
-  return resault.data;
+  const result = await response.json();
+  return result.data;
+}
+
+export async function reportUser(initData: string, report: Report): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/passwords`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+    body: JSON.stringify(report),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
 }

@@ -11,7 +11,7 @@ import { useUser } from "../../context/UserContext";
 
 
 const Home: React.FC = () => {
-  const { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick, handleDelete } = useHome();
+  const { myData, sharedWithMyData, activeTab, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret } = useHome();
   const { signer, provider } = useWallet();
   console.log("this is wallet" ,signer);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -70,13 +70,13 @@ const Home: React.FC = () => {
       <div className="tabs-row">
         <button
           className={`tab-button ${activeTab === "mydata" ? "active" : ""}`}
-          onClick={() => handlesetActiveTabClick("mydata")}
+          onClick={() => handleSetActiveTabClick("mydata")}
         >
           My Data
         </button>
         <button
           className={`tab-button ${activeTab === "shared" ? "active" : ""}`}
-          onClick={() => handlesetActiveTabClick("shared")}
+          onClick={() => handleSetActiveTabClick("shared")}
         >
           Shared with Me
         </button>
@@ -87,7 +87,7 @@ const Home: React.FC = () => {
         {activeTab === "mydata" ? (
           <MyData myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleDelete={handleDelete} />
         ) : (
-          <SharedWithMy sharedWithMyData={sharedWithMyData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} />
+          <SharedWithMy sharedWithMyData={sharedWithMyData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleReportUser={handleReportUser} handleViewReportsForSecret={handleViewReportsForSecret}/>
         )}
         </div>
       </div>
