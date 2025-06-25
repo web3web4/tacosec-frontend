@@ -208,8 +208,7 @@ export async function reportUser(initData: string, report: Report): Promise<any>
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Unknown error occurred');
   }
-
-  return await response.json();
 }

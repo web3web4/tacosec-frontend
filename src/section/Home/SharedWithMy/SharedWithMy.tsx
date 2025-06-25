@@ -1,4 +1,4 @@
-import { SharedWithMyDataType } from "../../../types/types";
+import { ReportsResponse, SharedWithMyDataType } from "../../../types/types";
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 
@@ -9,7 +9,7 @@ interface MyDataType {
   decrypting: boolean;
   decryptedMessages: Record<number, string>;
   handleReportUser: (secretId: string, reportedUsername: string) => void;
-  handleViewReportsForSecret: () => void;
+  handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => void;
 }
 
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret }: MyDataType) {
@@ -49,7 +49,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           },
                           {
                             label: "View Reports",
-                            onClick: handleViewReportsForSecret,
+                            onClick: () => handleViewReportsForSecret(pass.reports, pass.key),
                           },
                         ]}
                       />

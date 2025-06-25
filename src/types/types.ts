@@ -32,6 +32,7 @@ export interface SharedWithMyDataType{
     id: string,
     key: string,
     value: string,
+    reports: ReportsResponse[]
   }[]
 }
   
@@ -61,6 +62,14 @@ export interface Report {
   report_type: ReportType;
   secret_id: string;
   reason: string;
+}
+
+export interface ReportsResponse {
+  id: string;
+  reason: ReportType;
+  createdAt: string;
+  report_type: string
+  reporterUsername: string;
 }
 
 export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';

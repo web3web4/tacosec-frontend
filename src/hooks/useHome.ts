@@ -3,7 +3,7 @@ import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePasswor
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import { DataItem, Report, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
+import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
 import Swal from "sweetalert2";
 
 export default function useHome() {
@@ -289,8 +289,7 @@ export default function useHome() {
     }
   }; 
 
-  const handleViewReportsForSecret = async () => {
-    const data: any[] = [];
+  const handleViewReportsForSecret = async (data: ReportsResponse[], secretKey: string) => {
     if (data.length === 0) {
       Swal.fire({
         icon: 'info',
@@ -314,17 +313,17 @@ export default function useHome() {
     const reportsHtml = data.map((report, i) => `
       <div style="border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 8px; text-align: left; background: #f9f9f9;">
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 18px; margin-right: 8px;">${getTypeIcon(report.type)}</span>
+          <span style="font-size: 18px; margin-right: 8px;">${getTypeIcon(report.report_type)}</span>
           <div style="font-weight: bold; color: #333; text-transform: capitalize;">
-            ${report.type} Report #${i}
+            ${report.report_type} Report #${i + 1}
           </div>
         </div>
         <div style="color: #555; font-size: 14px; margin-bottom: 12px; line-height: 1.4;">
-          ${report.message}
+          ${report.reason}
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div style="color: #666; font-size: 12px;">
-            <strong>Reported by:</strong> ${report.username}<br>
+            <strong>Reported by:</strong> ${report.reporterUsername}<br>
             <strong>Date:</strong> ${new Date(report.createdAt).toLocaleDateString()}
           </div>
         </div>
@@ -332,7 +331,7 @@ export default function useHome() {
     `).join('');
 
     Swal.fire({
-      title: `Reports for Secret (${data.length} total)`,
+      title: `Reports for ${secretKey} (${data.length} total)`,
       html: `
         <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
           ${reportsHtml}
