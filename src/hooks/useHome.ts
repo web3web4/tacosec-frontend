@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 
 export default function useHome() {
   const navigate = useNavigate();
-  const { initDataRaw } = useUser();
+  const { initDataRaw, userData } = useUser();
   const [myData, setMyData] = useState<DataItem[]>([]);
   const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("mydata");
@@ -135,13 +135,21 @@ export default function useHome() {
     }
   
     const result = await Swal.fire(swalOptions);
-  
     if (result.isConfirmed) {
-      if (isHasSharedWith) {
-        const alsoDeleteForEveryone = result.value === 1;
-        alsoDeleteForEveryone ? deletePassword(initDataRaw!, id) : hidePassword(initDataRaw!, id);
-      } else {
-        deletePassword(initDataRaw!, id);
+      try {
+        if (isHasSharedWith) {
+          const alsoDeleteForEveryone = result.value === 1;
+          alsoDeleteForEveryone ? deletePassword(initDataRaw!, id) : hidePassword(initDataRaw!, id);
+        } else {
+          deletePassword(initDataRaw!, id);
+        }
+        setMyData((prev) => prev.filter((secret) => secret.id !== id));
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Delete Secret Error',
+          text: error instanceof Error ? error.message : "An error occurred",
+        });
       }
     }
   };
@@ -273,6 +281,28 @@ export default function useHome() {
       
       try {
         await reportUser(initDataRaw!, newReport);
+        const rep: ReportsResponse = {
+          id: "",
+          createdAt: Date.now().toString(),
+          reason: newReport.reason as ReportType,
+          report_type: newReport.report_type,
+          reporterUsername: userData?.username!,
+        };
+
+        setSharedWithMyData((prevData) =>
+          prevData.map((item) => ({
+            ...item,
+            passwords: item.passwords.map((pass) => {
+              if (pass.id === secretId) {
+                return {
+                  ...pass,
+                  reports: [...pass.reports, rep],
+                };
+              }
+              return pass;
+            }),
+          }))
+        );
         Swal.fire({
           icon: 'success',
           title: 'Report Submitted',
