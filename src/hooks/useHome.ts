@@ -354,7 +354,8 @@ export default function useHome() {
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div style="color: #666; font-size: 12px;">
             <strong>Reported by:</strong> ${report.reporterUsername}<br>
-            <strong>Date:</strong> ${new Date(report.createdAt).toLocaleDateString()}
+            <strong>Date:</strong> ${new Date(report.createdAt).toLocaleDateString('en-GB')}
+
           </div>
         </div>
       </div>
