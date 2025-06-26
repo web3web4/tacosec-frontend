@@ -283,7 +283,7 @@ export default function useHome() {
         await reportUser(initDataRaw!, newReport);
         const rep: ReportsResponse = {
           id: "",
-          createdAt: Date.now().toString(),
+          createdAt: new Date().toISOString(),
           reason: newReport.reason as ReportType,
           report_type: newReport.report_type,
           reporterUsername: userData?.username!,
