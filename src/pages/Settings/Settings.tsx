@@ -89,10 +89,11 @@ const Settings: React.FC = () => {
     }
   };
 
-  // Format address to show only first 5 characters
+  // Format address to show only first four and last four characters
   const formatAddress = (addr: string | undefined) => {
     if (!addr) return "";
-    return `${addr.substring(0, 5)}...`;
+    if (addr.length <= 8) return addr;
+    return `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`;
   };
 
   return (
