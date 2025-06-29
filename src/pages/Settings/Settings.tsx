@@ -93,7 +93,7 @@ const Settings: React.FC = () => {
   const formatAddress = (addr: string | undefined) => {
     if (!addr) return "";
     if (addr.length <= 8) return addr;
-    return `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`;
+    return `${addr.substring(0, 4)}......${addr.substring(addr.length - 4)}`;
   };
 
   return (
