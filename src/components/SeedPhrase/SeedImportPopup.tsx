@@ -53,6 +53,20 @@ export function SeedImportPopup({
                 onBlur={() =>
                   handleChange(index, words[index].trim())
                 }
+                onPaste={
+                  index === 0
+                    ? (e) => {
+                        e.preventDefault();
+                        const paste = e.clipboardData.getData("text");
+                        const split = paste.trim().split(/\s+/);
+                        if (split.length === 12) {
+                          setWords(split);
+                        } else {
+                          handleChange(index, paste); 
+                        }
+                      }
+                    : undefined
+                }
                 className="seed-input"
                 placeholder={`Word ${index + 1}`}
               />
