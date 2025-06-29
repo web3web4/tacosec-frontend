@@ -39,10 +39,10 @@ export default function useAddData() {
   }, [shareWith, message, name]);
 
   const fetchUserProfile = async (username: string) => {
-    setUserProfile({ data: initProfileData, error: shareWith });
+    setUserProfile({ data: initProfileData, error: username });
     const cleanedUsername = username.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
+      ? username.substring(1)
+      : username;
 
     try {
       const response: GetUserProfileDetailsResponse =
@@ -72,13 +72,13 @@ export default function useAddData() {
     }
   };
 
-  const checkIfUserExists = async () => {
+  const checkIfUserExists = async (username: string) => {
     try {
-      const username = shareWith.startsWith("@")
-        ? shareWith.substring(1)
-        : shareWith;
+      const cleanedUsername = username.startsWith("@")
+        ? username.substring(1)
+        : username;
 
-      const response = await checkIfUserAvailable(initDataRaw!, username);
+      const response = await checkIfUserAvailable(initDataRaw!, cleanedUsername);
       setIsCanInvite(response);
     } catch (error) {
       console.log(error);
@@ -163,7 +163,7 @@ export default function useAddData() {
   const handleAddShare = (username: string): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
-    checkIfUserExists();
+    checkIfUserExists(username);
     fetchUserProfile(username);
     setSearchData([]);
   };
