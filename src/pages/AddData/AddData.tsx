@@ -28,7 +28,7 @@ const AddData: React.FC = () => {
     isSearch,
     message,
     name,
-    setIsOpenPopup,
+    closePopup,
     handleSearch,
     handleConfirmClick,
     handleSearchSelect,
@@ -137,7 +137,7 @@ const AddData: React.FC = () => {
   return (
     <div className="add-data-container">
       {isOpenPopup && (
-        <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
+        <CustomPopup open={isOpenPopup} closed={closePopup}>
           <div className="popup-content">
             <img
               src={userProfile.data.img?.src}
@@ -157,7 +157,7 @@ const AddData: React.FC = () => {
             {!userProfile.error && (
               <button onClick={handleConfirmClick}>Confirmation</button>
             )}
-            <button onClick={() => setIsOpenPopup(false)}>Cancel</button>
+            <button onClick={() => closePopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
       )}
