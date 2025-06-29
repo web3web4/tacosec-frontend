@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
+import userNotFoundImage from "../assets/images/user-not-found.svg";
 import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
 import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
 import { useUser } from "../context/UserContext";
@@ -48,7 +49,13 @@ export default function useAddData() {
         await getUserProfileDetails(username);
 
       if (!response) {
-        setUserProfile(() => ({ data: initProfileData, error: `No Telegram user found for @${username}` }));
+        const profile = {
+          img: { src: userNotFoundImage },
+          name: "",
+          username: "",
+          invited: false,
+        };
+        setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${username}` }));
         return;
       }
       setUserProfile({
@@ -102,6 +109,7 @@ export default function useAddData() {
     setIsOpenPopup(false);
     setIsCanInvite(false);
     setShareWith("");
+    setSearchData([]);
   };
 
   const handleInvite = (index: number) => {
@@ -138,7 +146,7 @@ export default function useAddData() {
       }finally{
         setIsSearch(false);
       }
-    }, 1000),
+    }, 500),
     []
   );
 
@@ -148,6 +156,7 @@ export default function useAddData() {
 
   const handleSearchSelect = (username: string) => {
     setShareWith(username);
+    handleAddShare();
     setSearchData([]);
   };
 
@@ -156,6 +165,7 @@ export default function useAddData() {
     setIsOpenPopup(true);
     checkIfUserExists();
     fetchUserProfile();
+    setSearchData([]);
   };
 
   const cleanFields = () => {
@@ -174,6 +184,22 @@ export default function useAddData() {
         icon: "warning",
         title: "Pending Share Action",
         text: "You entered a username to share with, but didn’t click the '+' button. Please share or clear the field before saving.",
+      });
+      return false;
+    }
+    if (name.trim() === "") {
+      Swal.fire({
+        icon: "warning",
+        title: "Warning",
+        text: "The Title Field Is Required. Please Enter The Title.",
+      });
+      return false;
+    }
+    if (message.trim() === "") {
+      Swal.fire({
+        icon: "warning",
+        title: "Warning",
+        text: "The Secret Field Is Required. Please Enter The Secret.",
       });
       return false;
     }
