@@ -129,7 +129,7 @@ export default function useAddData() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getUsersAutoComplete = useCallback(
     debounce(async (username: string) => {
-      if (!username) {
+      if (!username && isOpenPopup) {
         setSearchData([]);
         return;
       }
