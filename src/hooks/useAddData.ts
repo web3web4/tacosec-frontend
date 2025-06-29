@@ -126,10 +126,15 @@ export default function useAddData() {
     getUsersAutoComplete(username);
   };
 
+  const closePopup = (value: boolean) => {
+    setIsOpenPopup(false);
+    setSearchData([]);
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getUsersAutoComplete = useCallback(
     debounce(async (username: string) => {
-      if (!username || isOpenPopup) {
+      if (!username) {
         setSearchData([]);
         return;
       }
@@ -225,6 +230,7 @@ export default function useAddData() {
     cleanFields,
     checkEncrypting,
     setMessage,
+    closePopup,
     setName,
   };
 }
