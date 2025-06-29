@@ -38,15 +38,15 @@ export default function useAddData() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareWith, message, name]);
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (username: string) => {
     setUserProfile({ data: initProfileData, error: shareWith });
-    const username = shareWith.startsWith("@")
+    const cleanedUsername = username.startsWith("@")
       ? shareWith.substring(1)
       : shareWith;
 
     try {
       const response: GetUserProfileDetailsResponse =
-        await getUserProfileDetails(username);
+        await getUserProfileDetails(cleanedUsername);
 
       if (!response) {
         const profile = {
@@ -156,15 +156,15 @@ export default function useAddData() {
 
   const handleSearchSelect = (username: string) => {
     setShareWith(username);
-    handleAddShare();
+    handleAddShare(username);
     setSearchData([]);
   };
 
-  const handleAddShare = (): void => {
+  const handleAddShare = (username: string): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
     checkIfUserExists();
-    fetchUserProfile();
+    fetchUserProfile(username);
     setSearchData([]);
   };
 
