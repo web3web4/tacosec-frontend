@@ -213,7 +213,7 @@ const AddData: React.FC = () => {
       )}
 
     </div>
-        <button className="add-share-button" onClick={handleAddShare}>
+        <button className="add-share-button" onClick={ () => handleAddShare(name)}>
           +
         </button>
       </div>
