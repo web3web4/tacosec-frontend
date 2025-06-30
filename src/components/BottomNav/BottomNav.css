@@ -1,18 +1,50 @@
 .bottom-nav {
   position: sticky;
   bottom: 0;
-  width: 100%;
-  height: 90px;
-  background: var(--background);
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(0, 20, 40, 0.98) 0%, rgba(0, 0, 0, 0.95) 100%);
+  backdrop-filter: blur(15px);
+  border-top: 2px solid var(--matrix-green);
+  padding: 1rem;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  padding-top: 20px;
+  z-index: 100;
+  box-shadow: 
+    0 -8px 32px rgba(0, 255, 65, 0.3),
+    0 -4px 16px rgba(0, 255, 65, 0.2),
+    inset 0 2px 4px rgba(0, 255, 65, 0.1);
+  overflow: hidden;
+  gap: 1rem;
+}
+
+.bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyber-blue), var(--matrix-green), var(--cyber-blue), transparent);
+  animation: matrixNavFlow 3s linear infinite;
+}
+
+.bottom-nav::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 20px,
+    rgba(0, 255, 65, 0.02) 20px,
+    rgba(0, 255, 65, 0.02) 22px
+  );
+  pointer-events: none;
 }
 
 .bottom-nav::before {
@@ -21,33 +53,150 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.2), transparent);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--matrix-green), transparent);
+  box-shadow: 0 0 10px var(--matrix-green);
 }
 
-.bottom-nav .nav-item {
+.nav-item {
   text-decoration: none;
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: var(--matrix-green);
+  font-family: 'Courier New', monospace;
   font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  transition: all 0.4s ease;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
-  padding: 0.75rem;
+  border: 1px solid transparent;
+  background: rgba(0, 20, 40, 0.3);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  animation: matrixNavItemGlow 3s ease-in-out infinite alternate;
+  /* Fixed width and height to ensure consistent sizing */
+  width: calc(33% - 1rem);
+  min-width: 80px;
+  height: 70px;
   flex: 1;
-  transition: all 0.2s ease;
-  position: relative;
-  cursor: pointer;
 }
 
-.bottom-nav .nav-item:hover {
-  color: var(--primary-color);
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+  transition: left 0.5s ease;
 }
 
-.bottom-nav .nav-item.active {
-  color: var(--primary-color);
-  transform: translateY(-5px);
+.nav-item:hover::before {
+  left: 100%;
+}
+
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyber-blue), var(--matrix-green), var(--cyber-blue));
+  transition: all 0.4s ease;
+  transform: translateX(-50%);
+}
+
+.nav-item:hover {
+  color: var(--cyber-blue);
+  text-shadow: 
+    0 0 10px var(--matrix-green),
+    0 0 20px var(--cyber-blue),
+    0 0 30px var(--matrix-green);
+  transform: translateY(-3px) scale(1.05);
+  border-color: var(--matrix-green);
+  background: rgba(0, 255, 65, 0.15);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 65, 0.4),
+    0 0 40px rgba(0, 255, 65, 0.2);
+}
+
+.nav-item:hover::after {
+  width: 80%;
+}
+
+.nav-item.active {
+  color: var(--cyber-blue);
+  text-shadow: 
+    0 0 15px var(--matrix-green),
+    0 0 25px var(--cyber-blue),
+    0 0 35px var(--matrix-green);
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.2), rgba(0, 212, 255, 0.1));
+  border-color: var(--cyber-blue);
+  box-shadow: 
+    0 0 25px rgba(0, 255, 65, 0.5),
+    0 0 50px rgba(0, 255, 65, 0.3),
+    inset 0 0 10px rgba(0, 255, 65, 0.1);
+  animation: matrixActiveNavPulse 2s ease-in-out infinite alternate;
+}
+
+.nav-item.active::after {
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--matrix-green), var(--cyber-blue), var(--matrix-green));
+  animation: matrixActiveUnderline 2s ease-in-out infinite;
+}
+
+@keyframes matrixNavFlow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes matrixNavItemGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.1);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2), 0 0 20px rgba(0, 255, 65, 0.1);
+  }
+}
+
+@keyframes matrixActiveNavPulse {
+  0% {
+    box-shadow: 
+      0 0 25px rgba(0, 255, 65, 0.5),
+      0 0 50px rgba(0, 255, 65, 0.3),
+      inset 0 0 10px rgba(0, 255, 65, 0.1);
+  }
+  100% {
+    box-shadow: 
+      0 0 35px rgba(0, 255, 65, 0.7),
+      0 0 70px rgba(0, 255, 65, 0.4),
+      inset 0 0 15px rgba(0, 255, 65, 0.2);
+  }
+}
+
+@keyframes matrixActiveUnderline {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .bottom-nav .nav-item::before {
@@ -56,10 +205,11 @@
   top: -8px;
   width: 30px;
   height: 3px;
-  background: var(--primary-color);
+  background: var(--matrix-green);
   border-radius: 2px;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px var(--matrix-green);
 }
 
 .bottom-nav .nav-item.active::before {
@@ -83,7 +233,7 @@
   left: 0;
   right: 0;
   height: 100%;
-  background: var(--background);
+  background: var(--surface);
   z-index: -1;
 }
 

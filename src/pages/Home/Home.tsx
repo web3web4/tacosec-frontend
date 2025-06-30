@@ -7,17 +7,15 @@ import { fromBytes } from "@nucypher/taco";
 import MyData from "../../section/Home/MyData/MyData";
 import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 import "./Home.css";
-import { useUser } from "../../context/UserContext";
 
 
 const Home: React.FC = () => {
-  const { myData, sharedWithMyData, activeTab, handleAddClick, handlesetActiveTabClick, handleDelete } = useHome();
+  const { myData, sharedWithMyData, activeTab, handleDelete, handlesetActiveTabClick } = useHome();
   const { signer, provider } = useWallet();
   console.log("this is wallet" ,signer);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
   const [decrypting, setDecrypting] = useState<boolean>(false);
-  const { userData } = useUser();
   const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
   const domain = process.env.REACT_APP_TACO_DOMAIN as string;
   const { isInit, decryptDataFromBytes } = useTaco({
@@ -61,12 +59,6 @@ const Home: React.FC = () => {
   
   return (
     <div className="home-container">
-      <div className="top-bar">
-        <div>{ userData?.firstName } { " " } { userData?.lastName }</div>
-        <button className="add-button" onClick={handleAddClick}>
-          + Add
-        </button>
-      </div>
       <div className="tabs-row">
         <button
           className={`tab-button ${activeTab === "mydata" ? "active" : ""}`}
@@ -81,7 +73,6 @@ const Home: React.FC = () => {
           Shared with Me
         </button>
       </div>
-
       <div className="tab-content">
         <div>
         {activeTab === "mydata" ? (
