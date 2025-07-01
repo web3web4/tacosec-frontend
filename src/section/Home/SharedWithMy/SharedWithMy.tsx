@@ -2,7 +2,7 @@ import { ReportsResponse, SharedWithMyDataType } from "../../../types/types";
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
-
+import "../../../components/SeedPhrase/SeedPhrase.css";
 interface MyDataType {
   sharedWithMyData: SharedWithMyDataType[];
   toggleExpand: (index: number, value: string) => void;

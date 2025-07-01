@@ -1,7 +1,7 @@
 import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
 import { useState } from "react";
-
+import "../../../components/SeedPhrase/SeedPhrase.css";
 interface MyDataType{
     myData: DataItem[],
     toggleExpand: (index: number, value: string) => void,
