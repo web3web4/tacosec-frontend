@@ -118,7 +118,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
               readOnly
               onFocus={e => e.target.select()}
             />
-            <button className="close-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+            <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
           </div>
         </div>
       )}
