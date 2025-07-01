@@ -10,6 +10,7 @@ import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSet
 import CryptoJS from "crypto-js";
 import { DecryptPrompt } from "../../components/SeedPhrase/DecryptPrompt";
 import { ResetPasswordWithSeed } from "../../components/SeedPhrase/ResetPasswordWithSeed";
+import "../../components/SeedPhrase/SeedPhrase.css";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, handleToggleNotifications } =
@@ -192,17 +193,17 @@ const Settings: React.FC = () => {
 
       {/* Manual Copy Modal Fallback */}
       {showManualCopy && (
-        <div className="manual-copy-modal" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', minWidth: 300 }}>
-            <h3 style={{ marginTop: 0 }}>Manual Copy</h3>
+          <div className="manual-copy-modal">
+          <div className="manual-copy-modal-content">
+            <h3>Manual Copy</h3>
             <p>Copy your address manually:</p>
             <textarea
+              className="manual-copy-textarea"
               value={address || ""}
               readOnly
-              style={{ width: '100%', minHeight: 40, marginBottom: 12 }}
               onFocus={e => e.target.select()}
             />
-            <button onClick={() => setShowManualCopy(false)} style={{ marginRight: 8 }}>Close</button>
+            <button className="close-btn" onClick={() => setShowManualCopy(false)}>Close</button>
           </div>
         </div>
       )}
