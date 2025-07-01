@@ -22,6 +22,7 @@ const Settings: React.FC = () => {
   const [passwordError, setPasswordError] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [showManualCopy, setShowManualCopy] = useState(false);
 
   // Hide the "Copied" message after 2 seconds
   useEffect(() => {
@@ -83,8 +84,7 @@ const Settings: React.FC = () => {
           setShowCopied(true);
         })
         .catch(err => {
-          console.error("Failed to copy address: ", err);
-          Swal.fire("Error", "Failed to copy address", "error");
+          setShowManualCopy(true); // Show manual copy modal if clipboard fails
         });
     }
   };
@@ -188,6 +188,23 @@ const Settings: React.FC = () => {
             setShowDecryptPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
           }}
         />
+      )}
+
+      {/* Manual Copy Modal Fallback */}
+      {showManualCopy && (
+        <div className="manual-copy-modal" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.2)', minWidth: 300 }}>
+            <h3 style={{ marginTop: 0 }}>Manual Copy</h3>
+            <p>Copy your address manually:</p>
+            <textarea
+              value={address || ""}
+              readOnly
+              style={{ width: '100%', minHeight: 40, marginBottom: 12 }}
+              onFocus={e => e.target.select()}
+            />
+            <button onClick={() => setShowManualCopy(false)} style={{ marginRight: 8 }}>Close</button>
+          </div>
+        </div>
       )}
     </>
   );
