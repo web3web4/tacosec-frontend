@@ -7,6 +7,7 @@ export default function useSetting() {
   const { userData } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
   const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
+  const [showSupportPopup, setShowSupportPopup] = useState(false);
 
   const handleToggleNotifications = (): void => {
     setNotificationsOn(!notificationsOn);
@@ -23,5 +24,5 @@ export default function useSetting() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { profileImage, notificationsOn, handleToggleNotifications };
+  return { showSupportPopup, setShowSupportPopup, profileImage, notificationsOn, handleToggleNotifications };
 }

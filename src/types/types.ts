@@ -73,3 +73,12 @@ export interface ReportsResponse {
 }
 
 export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';
+
+export interface ContactSupportProps {
+  setShowSupportPopup: (value: boolean) => void;
+}
+
+export interface SupportData {
+  subject: string;
+  message: string;
+}
