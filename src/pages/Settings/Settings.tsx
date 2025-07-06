@@ -10,10 +10,11 @@ import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSet
 import CryptoJS from "crypto-js";
 import { DecryptPrompt } from "../../components/SeedPhrase/DecryptPrompt";
 import { ResetPasswordWithSeed } from "../../components/SeedPhrase/ResetPasswordWithSeed";
+import CustomPopup from "../../components/CustomPopup/CustomPopup";
+import ContactSupport from "../../section/Setting/ContactSupport/ContactSupport";
 
 const Settings: React.FC = () => {
-  const { profileImage, notificationsOn, handleToggleNotifications } =
-    useSetting();
+  const { profileImage, notificationsOn, handleToggleNotifications, showSupportPopup, setShowSupportPopup } = useSetting();
   const { userData } = useUser();
   const { address } = useWallet();
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -148,7 +149,7 @@ const Settings: React.FC = () => {
 
         <div className="support-section">
           <p>Support and Help</p>
-          <button className="support-button">Contact Support</button>
+          <button className="support-button" onClick={() => setShowSupportPopup(true)}>Contact Support</button>
         </div>
       </div>
 
@@ -188,6 +189,10 @@ const Settings: React.FC = () => {
           }}
         />
       )}
+
+      <CustomPopup open={showSupportPopup} closed={setShowSupportPopup}>
+        <ContactSupport setShowSupportPopup={setShowSupportPopup}/>
+      </CustomPopup>
     </>
   );
 };

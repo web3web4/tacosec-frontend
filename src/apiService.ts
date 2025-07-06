@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, UserProfileDetailsType, initDataType } from "./types/types";
+import { Report, SearchDataType, SupportData, UserProfileDetailsType, initDataType } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
@@ -211,4 +211,22 @@ export async function reportUser(initData: string, report: Report): Promise<any>
     const errorData = await response.json();
     throw new Error(errorData.message || 'Unknown error occurred');
   }
+}
+
+export async function sendContractSupport(initData: string, supportData: SupportData): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/telegram/send-to-specific-admin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+    body: JSON.stringify(supportData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Unknown error occurred');
+  }
+
+  return await response.json();
 }
