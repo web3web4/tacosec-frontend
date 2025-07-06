@@ -28,12 +28,12 @@ export default function UseContactSupport({ setShowSupportPopup }: ContactSuppor
    
       const response = await sendContractSupport(initDataRaw!, {subject: supportForm.subject, message: supportForm.message});
 
-      if (response.ok && response.success) {
-        Swal.fire("Success", "Your support request has been sent successfully!", "success");
-        setSupportForm({ subject: "", message: ""});
-        setShowSupportPopup(false);
+      if (response.success) {
+          Swal.fire("Success", "Your support request has been sent successfully!", "success");
+          setSupportForm({ subject: "", message: ""});
+          setShowSupportPopup(false);
       } else {
-        throw new Error('Failed to send message to Telegram');
+          throw new Error('Failed to send message to Telegram');
       }
     } catch (error) {
       console.error('Error sending support request:', error);
