@@ -13,6 +13,34 @@
   max-width: 100%;
 }
 
+.manual-copy-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.manual-copy-modal-content {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  min-width: 300px;
+}
+
+
+.manual-copy-textarea {
+  width: 100%;
+  min-height: 40px;
+  margin-bottom: 12px;
+}
+
 .popup-seed {
   background: white;
   border-radius: 12px;

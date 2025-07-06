@@ -1,6 +1,7 @@
 import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
-
+import { useState } from "react";
+import "../../../components/SeedPhrase/SeedPhrase.css";
 interface MyDataType{
     myData: DataItem[],
     toggleExpand: (index: number, value: string) => void,
@@ -11,11 +12,17 @@ interface MyDataType{
 }
 
 export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleDelete} : MyDataType) {
+    const [showManualCopy, setShowManualCopy] = useState(false);
+    const [manualCopyText, setManualCopyText] = useState("");
 
     const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text);
-        alert("Copied to clipboard!");
-      };
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied to clipboard!");
+        }).catch(() => {
+            setManualCopyText(text);
+            setShowManualCopy(true);
+        });
+    };
 
   return (
     <div className="data-list">
@@ -100,6 +107,21 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
           ) : (
             <p className="no-data-message">No data available.</p>
           )}
+      {showManualCopy && (
+        <div className="manual-copy-modal">
+          <div className="manual-copy-modal-content">
+            <h3>Manual Copy</h3>
+            <p>Copy your secret manually:</p>
+            <textarea
+              className="manual-copy-textarea"
+              value={manualCopyText}
+              readOnly
+              onFocus={e => e.target.select()}
+            />
+            <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

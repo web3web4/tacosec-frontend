@@ -1,7 +1,8 @@
 import { ReportsResponse, SharedWithMyDataType } from "../../../types/types";
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
-
+import { useState } from "react";
+import "../../../components/SeedPhrase/SeedPhrase.css";
 interface MyDataType {
   sharedWithMyData: SharedWithMyDataType[];
   toggleExpand: (index: number, value: string) => void;
@@ -13,10 +14,16 @@ interface MyDataType {
 }
 
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret }: MyDataType) {
-  
+  const [showManualCopy, setShowManualCopy] = useState(false);
+  const [manualCopyText, setManualCopyText] = useState("");
+
   const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Copied to clipboard!");
+    }).catch(() => {
+      setManualCopyText(text);
+      setShowManualCopy(true);
+    });
   };
 
   return (
@@ -113,6 +120,21 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
         )
       ) : (
         <p className="no-data-message">No data available.</p>
+      )}
+      {showManualCopy && (
+        <div className="manual-copy-modal">
+          <div className="manual-copy-modal-content">
+            <h3>Manual Copy</h3>
+            <p>Copy your secret manually:</p>
+            <textarea
+              className="manual-copy-textarea"
+              value={manualCopyText}
+              readOnly
+              onFocus={e => e.target.select()}
+            />
+            <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -12,6 +12,7 @@ import { DecryptPrompt } from "../../components/SeedPhrase/DecryptPrompt";
 import { ResetPasswordWithSeed } from "../../components/SeedPhrase/ResetPasswordWithSeed";
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import ContactSupport from "../../section/Setting/ContactSupport/ContactSupport";
+import "../../components/SeedPhrase/SeedPhrase.css";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, handleToggleNotifications, showSupportPopup, setShowSupportPopup } = useSetting();
@@ -23,6 +24,7 @@ const Settings: React.FC = () => {
   const [passwordError, setPasswordError] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [showManualCopy, setShowManualCopy] = useState(false);
 
   // Hide the "Copied" message after 2 seconds
   useEffect(() => {
@@ -84,16 +86,16 @@ const Settings: React.FC = () => {
           setShowCopied(true);
         })
         .catch(err => {
-          console.error("Failed to copy address: ", err);
-          Swal.fire("Error", "Failed to copy address", "error");
+          setShowManualCopy(true); // Show manual copy modal if clipboard fails
         });
     }
   };
 
-  // Format address to show only first 5 characters
+  // Format address to show only first four and last four characters
   const formatAddress = (addr: string | undefined) => {
     if (!addr) return "";
-    return `${addr.substring(0, 5)}...`;
+    if (addr.length <= 8) return addr;
+    return `${addr.substring(0, 4)}......${addr.substring(addr.length - 4)}`;
   };
 
   return (
@@ -188,6 +190,23 @@ const Settings: React.FC = () => {
             setShowDecryptPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
           }}
         />
+      )}
+
+      {/* Manual Copy Modal Fallback */}
+      {showManualCopy && (
+          <div className="manual-copy-modal">
+          <div className="manual-copy-modal-content">
+            <h3>Manual Copy</h3>
+            <p>Copy your address manually:</p>
+            <textarea
+              className="manual-copy-textarea"
+              value={address || ""}
+              readOnly
+              onFocus={e => e.target.select()}
+            />
+            <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+          </div>
+        </div>
       )}
 
       <CustomPopup open={showSupportPopup} closed={setShowSupportPopup}>
