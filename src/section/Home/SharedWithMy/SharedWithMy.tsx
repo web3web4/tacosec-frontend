@@ -3,6 +3,8 @@ import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
+import ReplyPopup from "./ReplyPopup/ReplyPopup";
+
 interface MyDataType {
   sharedWithMyData: SharedWithMyDataType[];
   toggleExpand: (index: number, value: string) => void;
@@ -16,6 +18,7 @@ interface MyDataType {
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
+  const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -50,6 +53,10 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                     <div onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu
                         options={[
+                          {
+                            label: "Reply",
+                            onClick: () => setShowReplyPopup(true) 
+                          },
                           {
                             label: "Report",
                             onClick: () => handleReportUser(pass.id, item.sharedByDetails!.username!),
@@ -136,6 +143,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
           </div>
         </div>
       )}
+      {showReplyPopup && <ReplyPopup setShowReplyPopup={setShowReplyPopup} showReplyPopup={showReplyPopup} /> }
     </div>
   );
 }
