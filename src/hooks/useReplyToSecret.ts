@@ -6,13 +6,14 @@ import { toHexString } from "@nucypher/shared";
 import { parseTelegramInitData } from "../utils/tools";
 import { storageEncryptedData } from "../apiService";
 import { useUser } from "../context/UserContext";
+import { SelectedSecretType } from "../section/Home/SharedWithMy/SharedWithMy";
 import Swal from "sweetalert2";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
-export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPopup: React.Dispatch<React.SetStateAction<boolean>>) {
+export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPopup: React.Dispatch<React.SetStateAction<boolean>>, selectedSecret: SelectedSecretType) {
   const { signer, provider } = useWallet();
   const { initDataRaw, userData } = useUser();
   const [isSubmittingReply, setIsSubmittingReply] = useState<boolean>(false);
@@ -28,24 +29,14 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
     provider,
     ritualId,
   });
-
-  const openReplyPopup = async (
-    name: string,
-    message: string,
-    parentSecretId: string,
-    parentUsername: string
-  ) => {
-    setReplyParams({ name, message, parentSecretId, parentUsername });
-    setReplyForm({ title: "", reply: "" });
-    setShowReplyPopup(true);
-  };
+  
 
   const handleReplyFormChange = (field: "title" | "reply", value: string) => {
     setReplyForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleReplySubmit = async () => {
-    if (!replyForm.title.trim() || !replyForm.reply.trim() || !replyParams) {
+    if (!replyForm.title.trim() || !replyForm.reply.trim()) {
       Swal.fire({
         icon: "warning",
         title: "Warning",
@@ -58,10 +49,10 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
     setIsSubmittingReply(true);
     try {
       await handleReplayToSecret(
-        replyParams.name,
-        replyParams.message,
-        replyParams.parentSecretId,
-        replyParams.parentUsername
+        replyForm.title,
+        replyForm.reply,
+        selectedSecret.parentSecretId,
+        selectedSecret.parentUsername
       );
       setShowReplyPopup(false);
       setReplyForm({ title: "", reply: "" });
@@ -73,8 +64,8 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
     }
   };
   const handleReplayToSecret = async (
-    name: string,
-    message: string,
+    title: string,
+    reply: string,
     parentSecretId: string,
     parentUsername: string
   ) => {
@@ -91,7 +82,7 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
     });
 
     const encryptedBytes = await encryptDataToBytes(
-      message,
+      reply,
       checkUsersCondition,
       signer!
     );
@@ -100,7 +91,7 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
       const parsedInitData = parseTelegramInitData(initDataRaw!);
       const res = await storageEncryptedData(
         {
-          key: name,
+          key: title,
           description: "",
           type: "text",
           value: encryptedHex!,
@@ -127,7 +118,6 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
     replyForm,
     handleReplyFormChange,
     handleReplySubmit,
-    isSubmittingReply,
-    openReplyPopup
+    isSubmittingReply
   };
 }

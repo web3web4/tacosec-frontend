@@ -14,11 +14,16 @@ interface MyDataType {
   handleReportUser: (secretId: string, reportedUsername: string) => void;
   handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => void;
 }
+export interface SelectedSecretType{
+  parentSecretId: string,
+  parentUsername: string
+  }
 
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
+  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentUsername: ""});
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -55,7 +60,10 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                         options={[
                           {
                             label: "Reply",
-                            onClick: () => setShowReplyPopup(true) 
+                            onClick: () => {
+                              setSelectedSecret({parentSecretId: pass.id, parentUsername: item.username});
+                              setShowReplyPopup(true)
+                            } 
                           },
                           {
                             label: "Report",
@@ -143,7 +151,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
           </div>
         </div>
       )}
-      {showReplyPopup && <ReplyPopup setShowReplyPopup={setShowReplyPopup} showReplyPopup={showReplyPopup} /> }
+      {showReplyPopup && <ReplyPopup setShowReplyPopup={setShowReplyPopup} showReplyPopup={showReplyPopup} selectedSecret={selectedSecret}/> }
     </div>
   );
 }

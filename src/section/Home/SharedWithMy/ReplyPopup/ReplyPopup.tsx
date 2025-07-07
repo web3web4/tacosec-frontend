@@ -2,14 +2,16 @@ import React, { SetStateAction } from "react";
 import CustomPopup from "../../../../components/CustomPopup/CustomPopup";
 import useReplyToSecret from "../../../../hooks/useReplyToSecret";
 import "./ReplyPopup.css";
+import { SelectedSecretType } from "../SharedWithMy";
 
 interface ReplyPopupProps{
     showReplyPopup: boolean,
-    setShowReplyPopup: React.Dispatch<SetStateAction<boolean>>
+    setShowReplyPopup: React.Dispatch<SetStateAction<boolean>>,
+    selectedSecret: SelectedSecretType
 }
 
-export default function ReplyPopup({showReplyPopup, setShowReplyPopup}: ReplyPopupProps) {
-  const { replyForm, handleReplyFormChange, handleReplySubmit, isSubmittingReply } = useReplyToSecret(showReplyPopup, setShowReplyPopup);
+export default function ReplyPopup({showReplyPopup, setShowReplyPopup, selectedSecret}: ReplyPopupProps) {
+  const { replyForm, handleReplyFormChange, handleReplySubmit, isSubmittingReply } = useReplyToSecret(showReplyPopup, setShowReplyPopup, selectedSecret);
   
   return (
     <CustomPopup open={showReplyPopup} closed={setShowReplyPopup}>
