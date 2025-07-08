@@ -112,7 +112,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           if (decryptedMessages[uniqueKey])
                             handleCopy(decryptedMessages[uniqueKey]);
                         }}>
-                        {copied ? "✅ Copied!" : "Copy"}
+                        {copied ? "Copied!" : "Copy"}
                       </button>
                     </div>
 
@@ -143,7 +143,6 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                         expandedChildIndex={expandedChildIndex}
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
-                        onCopy={handleCopy}
                       />
                     )}
                   </div>
