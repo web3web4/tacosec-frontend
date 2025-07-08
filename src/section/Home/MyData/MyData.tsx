@@ -127,7 +127,6 @@ export default function MyData({
                         expandedChildIndex={expandedChildIndex}
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
-                        onCopy={handleCopy}
                       />
                     )}
                   </div>
