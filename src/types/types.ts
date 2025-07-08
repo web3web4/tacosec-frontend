@@ -23,22 +23,22 @@ export interface DataItem {
   key: string,
   value: string,
   sharedWith: ShareWith[],
-  shareWithDetails?: UserProfileDetailsType[],
-  children?: ChildDataItem[]
+  shareWithDetails?: UserProfileDetailsType[], // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
+  children?: ChildDataItem[] // also this for help my to store children for each secret
 }
-
 interface ShareWith {
   username: string, 
   invited?: boolean
 }
 
 export interface ChildDataItem {
-  id: string,
+  _id: string,
   key: string,
-  value: string
+  value: string,
+  username: string  
 }
 export interface SharedWithMyDataType{
-  sharedByDetails?: UserProfileDetailsType,
+  sharedByDetails?: UserProfileDetailsType, // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
   username : string,
   passwords: {
     id: string,
@@ -46,6 +46,7 @@ export interface SharedWithMyDataType{
     value: string,
     reports: ReportsResponse[],
     sharedWith: ShareWith[],
+    children?: ChildDataItem[] // also this for help my to store children for each secret
   }[]
 }
   

@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, SupportData, UserProfileDetailsType, initDataType } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
@@ -229,4 +229,21 @@ export async function sendContractSupport(initData: string, supportData: Support
   }
 
   return await response.json();
+}
+
+export async function getChildrenForSecret(initData: string, parentId: string): Promise<ChildDataItem[]> {
+  const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return result.passwords;
 }

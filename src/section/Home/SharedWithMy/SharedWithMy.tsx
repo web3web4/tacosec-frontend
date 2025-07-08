@@ -4,23 +4,28 @@ import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import ReplyPopup from "./ReplyPopup/ReplyPopup";
+import ChildrenSection from "../ChildrenSection/ChildrenSection";
 
 interface MyDataType {
   sharedWithMyData: SharedWithMyDataType[];
-  toggleExpand: (index: number, value: string) => void;
+  toggleExpand: (index: number, value: string, id: string) => void;
   expandedIndex: number | null;
   decrypting: boolean;
   decryptedMessages: Record<number, string>;
   handleReportUser: (secretId: string, reportedUsername: string) => void;
   handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => void;
+  toggleChildExpand: (parentIndex: number, childIndex: number, value: string, childId: string) => void,
+  expandedChildIndex: Record<number, number | null>,
+  decryptingChild: boolean,
+  decryptedChildMessages: Record<string, string>,
 }
 export interface SelectedSecretType{
   parentSecretId: string,
   parentUsername: string,
-  shareWith: {username: string, invited?:boolean}[]
+  shareWith: {username: string, invited?:boolean}[],
   }
-
-export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret }: MyDataType) {
+  
+export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret, toggleChildExpand, expandedChildIndex = {}, decryptingChild = false, decryptedChildMessages = {} }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
@@ -39,7 +44,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
     <div className="data-list">
       {sharedWithMyData.length > 0 ? (
         sharedWithMyData.map((item) =>
-          item.passwords.map((pass) => {
+          item.passwords.map((pass, i) => {
             const uniqueKey = Number(
               Array.from(pass.id)
                 .map((char) => char.charCodeAt(0))
@@ -51,7 +56,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
               <div
                 key={uniqueKey}
                 className="data-item"
-                onClick={() => toggleExpand(uniqueKey, pass.value)}
+                onClick={() => toggleExpand(uniqueKey, pass.value, pass.id)}
               >
                 <div className="item-container">
                   <p className="item-title">{pass.key}</p>
@@ -127,6 +132,17 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           </div>
                         </div>
                       </div>
+                    )}
+                    {pass.children && pass.children.length > 0 && (
+                      <ChildrenSection
+                        children={pass.children}
+                        parentIndex={i}
+                        toggleChildExpand={toggleChildExpand}
+                        expandedChildIndex={expandedChildIndex}
+                        decryptingChild={decryptingChild}
+                        decryptedChildMessages={decryptedChildMessages}
+                        onCopy={handleCopy}
+                      />
                     )}
                   </div>
                 )}
