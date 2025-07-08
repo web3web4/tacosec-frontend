@@ -87,7 +87,7 @@ export default function MyData({
                             handleCopy(decryptedMessages[i]);
                         }}
                       >
-                        {copied ? "✅ Copied!" : "Copy"}
+                        {copied ? "Copied!" : "Copy"}
                       </button>
                       <button
                         className="delete-button"
