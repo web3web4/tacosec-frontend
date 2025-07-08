@@ -18,21 +18,35 @@ export type TelegramUser = {
   username?: string;
 };
 
-export interface DataItem{
+export interface DataItem {
   id : string
   key: string,
   value: string,
-  sharedWith: {username: string, invited?: boolean}[],
-  shareWithDetails?: UserProfileDetailsType[]
+  sharedWith: ShareWith[],
+  shareWithDetails?: UserProfileDetailsType[], // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
+  children?: ChildDataItem[] // also this for help my to store children for each secret
+}
+interface ShareWith {
+  username: string, 
+  invited?: boolean
+}
+
+export interface ChildDataItem {
+  _id: string,
+  key: string,
+  value: string,
+  username: string  
 }
 export interface SharedWithMyDataType{
-  sharedByDetails?: UserProfileDetailsType,
+  sharedByDetails?: UserProfileDetailsType, // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
   username : string,
   passwords: {
     id: string,
     key: string,
     value: string,
-    reports: ReportsResponse[]
+    reports: ReportsResponse[],
+    sharedWith: ShareWith[],
+    children?: ChildDataItem[] // also this for help my to store children for each secret
   }[]
 }
   

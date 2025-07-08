@@ -2,22 +2,40 @@ import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
+import ChildrenSection from "../ChildrenSection/ChildrenSection";
 interface MyDataType{
     myData: DataItem[],
-    toggleExpand: (index: number, value: string) => void,
+    toggleExpand: (index: number, value: string, id: string) => void,
     expandedIndex: number | null,
     decrypting: boolean,
     decryptedMessages: Record<number, string>,
     handleDelete: (id: string, isHasSharedWith: boolean) => void,
+    toggleChildExpand: (parentIndex: number, childIndex: number, value: string, childId: string) => void,
+    expandedChildIndex: Record<number, number | null>,
+    decryptingChild: boolean,
+    decryptedChildMessages: Record<string, string>,
 }
 
-export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleDelete} : MyDataType) {
+export default function MyData({
+  myData, 
+  toggleExpand, 
+  expandedIndex, 
+  decrypting, 
+  decryptedMessages, 
+  handleDelete,
+  toggleChildExpand,
+  expandedChildIndex = {},
+  decryptingChild = false,
+  decryptedChildMessages = {},
+} : MyDataType) {
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
+    const [copied, setCopied] = useState(false);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
-            alert("Copied to clipboard!");
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         }).catch(() => {
             setManualCopyText(text);
             setShowManualCopy(true);
@@ -31,7 +49,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
               <div
                 key={i}
                 className="data-item"
-                onClick={() => toggleExpand(i, item.value)}
+                onClick={() => toggleExpand(i, item.value, item.id)}
               >
                 <p className="item-title">{item.key}</p>
                 <p
@@ -69,7 +87,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                             handleCopy(decryptedMessages[i]);
                         }}
                       >
-                        Copy
+                        {copied ? "✅ Copied!" : "Copy"}
                       </button>
                       <button
                         className="delete-button"
@@ -99,6 +117,18 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                           ))}
                         </div>
                       </div>
+                    )}
+                    
+                    {item.children && item.children.length > 0 && (
+                      <ChildrenSection
+                        children={item.children}
+                        parentIndex={i}
+                        toggleChildExpand={toggleChildExpand}
+                        expandedChildIndex={expandedChildIndex}
+                        decryptingChild={decryptingChild}
+                        decryptedChildMessages={decryptedChildMessages}
+                        onCopy={handleCopy}
+                      />
                     )}
                   </div>
                 )}

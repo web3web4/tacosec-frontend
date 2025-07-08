@@ -1,17 +1,36 @@
 import { useEffect, useState } from "react";
-import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser } from "../apiService";
+import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
+import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
 import Swal from "sweetalert2";
+import { useWallet } from "../wallet/walletContext";
+import useTaco from "./useTaco";
+import { fromHexString } from "@nucypher/shared";
+import { fromBytes } from "@nucypher/taco";
+
+const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
+const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 
 export default function useHome() {
   const navigate = useNavigate();
-  const { initDataRaw, userData } = useUser();
   const [myData, setMyData] = useState<DataItem[]>([]);
   const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("mydata");
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
+  const [decrypting, setDecrypting] = useState<boolean>(false);
+  const [expandedChildIndex, setExpandedChildIndex] = useState<Record<number, number | null>>({});
+  const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
+  const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
+  const { signer, provider } = useWallet();
+  const { initDataRaw, userData } = useUser();
+  const { isInit, decryptDataFromBytes } = useTaco({
+    domain,
+    provider,
+    ritualId,
+  });
 
   const handleAddClick = (): void => {
     navigate("/add");
@@ -378,7 +397,80 @@ export default function useHome() {
         popup: 'reports-popup'
       }
     });
-  }; 
+  };
+ 
+  const toggleExpand = async (index: number, value: string, id: string) => {
+    if (expandedIndex === index) {
+      setExpandedIndex(null);
+    } else {
+      setExpandedIndex(index);
+  
+      if (!decryptedMessages[index]) {
+        decryptMessage(index, value);
+      }
+  
+      const response: ChildDataItem[] = await getChildrenForSecret(initDataRaw!, id);
+      if (activeTab === "mydata") {
+        setMyData((prev) => prev.map((item) =>
+            item.id === id ? { ...item, children: response } : item ));
+      } else {
+        setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
+            passwords: item.passwords.map((pw) =>
+            pw.id === id ? { ...pw, children: response } : pw )}))
+        );
+      }
+    }
+  };
+  
+  
+  const decryptMessage = async (index: number, encryptedText: string) => {
+    if (!encryptedText || !provider || !signer) return;
+    try {
+      setDecrypting(true);
+      console.log("Decrypting message...");
+      const decryptedBytes = await decryptDataFromBytes(
+        fromHexString(encryptedText)
+      );
+      if (decryptedBytes) {
+        const decrypted = fromBytes(decryptedBytes);
+        setDecryptedMessages((prev) => ({ ...prev, [index]: decrypted }));
+      }
+    } catch (e) {
+      console.error("Error decrypting:", e);
+    } finally {
+      setDecrypting(false);
+    }
+  };
 
-  return { myData, sharedWithMyData, activeTab, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret };
+  const toggleChildExpand = (parentIndex: number, childIndex: number, value: string, childId: string) => {
+    const currentChild = expandedChildIndex[parentIndex];
+    if (currentChild === childIndex) {
+      setExpandedChildIndex(prev => ({ ...prev, [parentIndex]: null }));
+    } else {
+      setExpandedChildIndex(prev => ({ ...prev, [parentIndex]: childIndex }));
+      if (!decryptedChildMessages[childId]) {
+        decryptChildMessage(childId, value);
+      }
+    }
+  };
+
+  const decryptChildMessage = async (childId: string, encryptedText: string) => {
+    if (!encryptedText || !provider || !signer) return;
+    try {
+      setDecryptingChild(true);
+      const decryptedBytes = await decryptDataFromBytes(
+        fromHexString(encryptedText)
+      );
+      if (decryptedBytes) {
+        const decrypted = fromBytes(decryptedBytes);
+        setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
+      }
+    } catch (e) {
+      console.error("Error decrypting child:", e);
+    } finally {
+      setDecryptingChild(false);
+    }
+  };
+
+  return { myData, sharedWithMyData, activeTab, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret, isInit, provider, userData, decrypting, decryptedMessages, toggleExpand, expandedIndex, toggleChildExpand, expandedChildIndex, decryptingChild, decryptedChildMessages };
 }
