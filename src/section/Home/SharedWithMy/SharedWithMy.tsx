@@ -30,10 +30,12 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
   const [manualCopyText, setManualCopyText] = useState("");
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
   const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentUsername: "", shareWith: []});
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert("Copied to clipboard!");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }).catch(() => {
       setManualCopyText(text);
       setShowManualCopy(true);
@@ -110,7 +112,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           if (decryptedMessages[uniqueKey])
                             handleCopy(decryptedMessages[uniqueKey]);
                         }}>
-                        Copy
+                        {copied ? "✅ Copied!" : "Copy"}
                       </button>
                     </div>
 

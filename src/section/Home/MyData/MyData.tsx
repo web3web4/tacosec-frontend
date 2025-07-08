@@ -30,10 +30,12 @@ export default function MyData({
 } : MyDataType) {
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
+    const [copied, setCopied] = useState(false);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
-            alert("Copied to clipboard!");
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         }).catch(() => {
             setManualCopyText(text);
             setShowManualCopy(true);
@@ -85,7 +87,7 @@ export default function MyData({
                             handleCopy(decryptedMessages[i]);
                         }}
                       >
-                        Copy
+                        {copied ? "✅ Copied!" : "Copy"}
                       </button>
                       <button
                         className="delete-button"
