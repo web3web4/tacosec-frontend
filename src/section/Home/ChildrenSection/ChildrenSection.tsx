@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { ChildDataItem } from "../../../types/types";
 import "./ChildrenSection.css";
 
@@ -9,7 +9,6 @@ interface ChildrenSectionProps {
   expandedChildIndex: Record<number, number | null>;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
-  onCopy: (text: string) => void;
 }
 
 export default function ChildrenSection({
@@ -19,8 +18,17 @@ export default function ChildrenSection({
   expandedChildIndex,
   decryptingChild,
   decryptedChildMessages,
-  onCopy
 }: ChildrenSectionProps) {
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+  };
+
   return (
     <div className="children-section">
       <h4 className="children-title">Replys To Secret:</h4>
@@ -69,11 +77,11 @@ export default function ChildrenSection({
                     onClick={(e) => {
                       e.stopPropagation();
                       if (decryptedChildMessages[child._id]) {
-                        onCopy(decryptedChildMessages[child._id]);
+                        handleCopy(decryptedChildMessages[child._id]);
                       }
                     }}
                   >
-                    Copy
+                     {copied ? "Copied!" : "Copy"}
                   </button>
                 </div>
               </div>
