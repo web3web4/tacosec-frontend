@@ -18,12 +18,24 @@ export type TelegramUser = {
   username?: string;
 };
 
-export interface DataItem{
+export interface DataItem {
   id : string
   key: string,
   value: string,
-  sharedWith: {username: string, invited?: boolean}[],
-  shareWithDetails?: UserProfileDetailsType[]
+  sharedWith: ShareWith[],
+  shareWithDetails?: UserProfileDetailsType[],
+  children?: ChildDataItem[]
+}
+
+interface ShareWith {
+  username: string, 
+  invited?: boolean
+}
+
+export interface ChildDataItem {
+  id: string,
+  key: string,
+  value: string
 }
 export interface SharedWithMyDataType{
   sharedByDetails?: UserProfileDetailsType,
@@ -32,7 +44,8 @@ export interface SharedWithMyDataType{
     id: string,
     key: string,
     value: string,
-    reports: ReportsResponse[]
+    reports: ReportsResponse[],
+    sharedWith: ShareWith[],
   }[]
 }
   

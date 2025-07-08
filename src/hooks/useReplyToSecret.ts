@@ -15,15 +15,9 @@ const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPopup: React.Dispatch<React.SetStateAction<boolean>>, selectedSecret: SelectedSecretType) {
   const { signer, provider } = useWallet();
-  const { initDataRaw, userData } = useUser();
+  const { initDataRaw } = useUser();
   const [isSubmittingReply, setIsSubmittingReply] = useState<boolean>(false);
   const [replyForm, setReplyForm] = useState({ title: "", reply: "" });
-  const [replyParams, setReplyParams] = useState<{
-    name: string;
-    message: string;
-    parentSecretId: string;
-    parentUsername: string;
-  } | null>(null);
   const { encryptDataToBytes } = useTaco({
     domain,
     provider,
@@ -48,29 +42,20 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
 
     setIsSubmittingReply(true);
     try {
-      await handleReplayToSecret(
-        replyForm.title,
-        replyForm.reply,
-        selectedSecret.parentSecretId,
-        selectedSecret.parentUsername
-      );
+      await handleReplayToSecret();
       setShowReplyPopup(false);
       setReplyForm({ title: "", reply: "" });
-      setReplyParams(null);
     } catch (error) {
       console.error("Error submitting reply:", error);
     } finally {
       setIsSubmittingReply(false);
     }
   };
-  const handleReplayToSecret = async (
-    title: string,
-    reply: string,
-    parentSecretId: string,
-    parentUsername: string
-  ) => {
-    const usernames =
-      userData?.username.toLowerCase()! + "," + parentUsername.toLowerCase();
+
+  const handleReplayToSecret = async () => {
+    let usernames: string = selectedSecret.parentUsername;
+    selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
+
     const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
       endpoint: `${BACKEND}/telegram/verify-test`,
       parameters: {
@@ -82,7 +67,7 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
     });
 
     const encryptedBytes = await encryptDataToBytes(
-      reply,
+      replyForm.reply,
       checkUsersCondition,
       signer!
     );
@@ -91,13 +76,13 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
       const parsedInitData = parseTelegramInitData(initDataRaw!);
       const res = await storageEncryptedData(
         {
-          key: title,
+          key: replyForm.title,
           description: "",
           type: "text",
           value: encryptedHex!,
           sharedWith: [],
           initData: parsedInitData,
-          parent_secret_id: parentSecretId,
+          parent_secret_id: selectedSecret.parentSecretId,
         },
         initDataRaw!
       );

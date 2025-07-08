@@ -16,14 +16,15 @@ interface MyDataType {
 }
 export interface SelectedSecretType{
   parentSecretId: string,
-  parentUsername: string
+  parentUsername: string,
+  shareWith: {username: string, invited?:boolean}[]
   }
 
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
-  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentUsername: ""});
+  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentUsername: "", shareWith: []});
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -61,7 +62,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           {
                             label: "Reply",
                             onClick: () => {
-                              setSelectedSecret({parentSecretId: pass.id, parentUsername: item.username});
+                              setSelectedSecret({parentSecretId: pass.id, parentUsername: item.username, shareWith: pass.sharedWith});
                               setShowReplyPopup(true)
                             } 
                           },
