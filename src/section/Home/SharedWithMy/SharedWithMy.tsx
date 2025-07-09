@@ -1,4 +1,4 @@
-import { ReportsResponse, SharedWithMyDataType } from "../../../types/types";
+import { ReportsResponse, SelectedSecretType, SharedWithMyDataType } from "../../../types/types";
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
@@ -19,11 +19,7 @@ interface MyDataType {
   decryptingChild: boolean,
   decryptedChildMessages: Record<string, string>,
 }
-export interface SelectedSecretType{
-  parentSecretId: string,
-  parentUsername: string,
-  shareWith: {username: string, invited?:boolean}[],
-  }
+
   
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret, toggleChildExpand, expandedChildIndex = {}, decryptingChild = false, decryptedChildMessages = {} }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);

@@ -96,3 +96,9 @@ export interface SupportData {
   subject: string;
   message: string;
 }
+
+export interface SelectedSecretType{
+  parentSecretId: string,
+  parentUsername?: string,
+  shareWith: {username: string, invited?:boolean}[],
+  }

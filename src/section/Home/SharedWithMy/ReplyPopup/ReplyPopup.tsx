@@ -2,7 +2,7 @@ import React, { SetStateAction } from "react";
 import CustomPopup from "../../../../components/CustomPopup/CustomPopup";
 import useReplyToSecret from "../../../../hooks/useReplyToSecret";
 import "./ReplyPopup.css";
-import { SelectedSecretType } from "../SharedWithMy";
+import { SelectedSecretType } from "../../../../types/types";
 
 interface ReplyPopupProps{
     showReplyPopup: boolean,

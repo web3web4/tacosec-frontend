@@ -6,8 +6,8 @@ import { toHexString } from "@nucypher/shared";
 import { parseTelegramInitData } from "../utils/tools";
 import { storageEncryptedData } from "../apiService";
 import { useUser } from "../context/UserContext";
-import { SelectedSecretType } from "../section/Home/SharedWithMy/SharedWithMy";
 import Swal from "sweetalert2";
+import { SelectedSecretType } from "../types/types";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -15,7 +15,7 @@ const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPopup: React.Dispatch<React.SetStateAction<boolean>>, selectedSecret: SelectedSecretType) {
   const { signer, provider } = useWallet();
-  const { initDataRaw } = useUser();
+  const { initDataRaw, userData } = useUser();
   const [isSubmittingReply, setIsSubmittingReply] = useState<boolean>(false);
   const [replyForm, setReplyForm] = useState({ title: "", reply: "" });
   const { encryptDataToBytes } = useTaco({
@@ -53,7 +53,7 @@ export default function useReplyToSecret(showReplyPopup: boolean, setShowReplyPo
   };
 
   const handleReplayToSecret = async () => {
-    let usernames: string = selectedSecret.parentUsername;
+    let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
     selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
 
     const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
