@@ -31,7 +31,7 @@ export const DecryptPrompt = ({
     Swal.fire({
       icon: "warning",
       title: "Warning",
-      html: "When I click on the OK button, my wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
+      html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
       confirmButtonText: "OK",
       showCancelButton: true,
       cancelButtonText: "Cancel",
