@@ -9,6 +9,7 @@ type Props = {
   onChange: (val: string) => void;
   onSubmit: () => void;
   onForgotPassword: () => void;
+  onHidePrompt?: () => void; // New prop to hide the prompt
 };
 
 export const DecryptPrompt = ({
@@ -17,10 +18,16 @@ export const DecryptPrompt = ({
   onChange,
   onSubmit,
   onForgotPassword,
+  onHidePrompt,
 }: Props) => {
   const { userData } = useUser();
 
   const handleClearData = () => {
+    // Hide the decrypt prompt when Clear Data is clicked
+    if (onHidePrompt) {
+      onHidePrompt();
+    }
+    
     Swal.fire({
       icon: "warning",
       title: "Warning",
@@ -37,6 +44,13 @@ export const DecryptPrompt = ({
         
         // Reload the page to reflect changes
         window.location.reload();
+      } else {
+        // If Cancel is clicked, show the decrypt prompt again
+        if (onHidePrompt) {
+          // We need to show the prompt again, so we call onHidePrompt with false
+          // This assumes that in walletContext.tsx, we'll update it to toggle the state
+          onHidePrompt();
+        }
       }
     });
   };
