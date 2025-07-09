@@ -1,5 +1,7 @@
 import React from "react";
 import "./SeedPhrase.css";
+import Swal from "sweetalert2";
+import { useUser } from "../../context/UserContext";
 
 type Props = {
   password: string;
@@ -16,6 +18,29 @@ export const DecryptPrompt = ({
   onSubmit,
   onForgotPassword,
 }: Props) => {
+  const { userData } = useUser();
+
+  const handleClearData = () => {
+    Swal.fire({
+      icon: "warning",
+      title: "Warning",
+      html: "When I click on the OK button, my wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
+      confirmButtonText: "OK",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Delete the specified localStorage items
+        localStorage.removeItem("savePasswordInBackend");
+        localStorage.removeItem(`seedBackupDone-${userData?.telegramId}`);
+        localStorage.removeItem(`encryptedSeed-${userData?.telegramId}`);
+        
+        // Reload the page to reflect changes
+        window.location.reload();
+      }
+    });
+  };
+
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
@@ -48,6 +73,20 @@ export const DecryptPrompt = ({
             }}
           >
             Forgot password?
+          </p>
+          
+          <p
+            className="clear-data"
+            onClick={handleClearData}
+            style={{
+              cursor: "pointer",
+              marginTop: 8,
+              color: "#f44336",
+              textAlign: "center",
+              textDecoration: "underline",
+            }}
+          >
+            Clear Data
           </p>
         </div>
       </div>
