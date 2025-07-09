@@ -5,6 +5,7 @@ import "../../../components/SeedPhrase/SeedPhrase.css";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import ReplyPopup from "../SharedWithMy/ReplyPopup/ReplyPopup";
+import { formatDate } from "../../../utils/tools";
 
 interface MyDataType{
     myData: DataItem[],
@@ -57,7 +58,13 @@ export default function MyData({
                 onClick={() => toggleExpand(i, item.value, item.id)}
               >
                 <div className="item-container">
+                  <div className="item-header-info">
                   <p className="item-title">{item.key}</p>
+                  <div className="created-at-container">
+                    <strong>Created At:</strong>
+                    <span className="child-date">{formatDate(item.createdAt)}</span>
+                  </div>
+                  </div>
                   <div onClick={(e) => e.stopPropagation()}>
                     <div onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu

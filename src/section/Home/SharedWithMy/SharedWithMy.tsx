@@ -5,6 +5,7 @@ import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import ReplyPopup from "./ReplyPopup/ReplyPopup";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
+import { formatDate } from "../../../utils/tools";
 
 interface MyDataType {
   sharedWithMyData: SharedWithMyDataType[];
@@ -57,7 +58,13 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                 onClick={() => toggleExpand(uniqueKey, pass.value, pass.id)}
               >
                 <div className="item-container">
-                  <p className="item-title">{pass.key}</p>
+                  <div className="item-header-info">
+                    <p className="item-title">{pass.key}</p>
+                    <div className="created-at-container">
+                      <strong>Created At:</strong>
+                      <span className="child-date">{formatDate(pass.createdAt)}</span>
+                    </div>
+                  </div>
                   <div onClick={(e) => e.stopPropagation()}>
                     <div onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu
