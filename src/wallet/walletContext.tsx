@@ -223,7 +223,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             setShowResetFlow(true);
           }}
           onHidePrompt={() => {
-            setShowDecryptPrompt(!showDecryptPrompt);
+            setShowDecryptPrompt(true);
           }}
         />
       )}
