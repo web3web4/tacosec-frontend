@@ -4,7 +4,7 @@ import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
-import ReplyPopup from "../SharedWithMy/ReplyPopup/ReplyPopup";
+import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import { formatDate } from "../../../utils/tools";
 
 interface MyDataType{
@@ -34,8 +34,8 @@ export default function MyData({
 } : MyDataType) {
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
-    const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
     const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", shareWith: []});
+    const { handleReplyToSecret } = useReplyToSecret(selectedSecret);
     const [copied, setCopied] = useState(false);
 
     const handleCopy = (text: string) => {
@@ -73,7 +73,7 @@ export default function MyData({
                             label: "Reply",
                             onClick: () => {
                               setSelectedSecret({parentSecretId: item.id, shareWith: item.sharedWith});
-                              setShowReplyPopup(true)
+                              handleReplyToSecret();
                             } 
                           }
                         ]}
@@ -180,7 +180,7 @@ export default function MyData({
           </div>
         </div>
       )}
-      {showReplyPopup && <ReplyPopup setShowReplyPopup={setShowReplyPopup} showReplyPopup={showReplyPopup} selectedSecret={selectedSecret}/> }
+
     </div>
   )
 }

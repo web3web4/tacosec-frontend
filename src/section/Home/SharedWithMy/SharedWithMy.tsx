@@ -3,7 +3,7 @@ import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
-import ReplyPopup from "./ReplyPopup/ReplyPopup";
+import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import { formatDate } from "../../../utils/tools";
 
@@ -25,8 +25,8 @@ interface MyDataType {
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret, toggleChildExpand, expandedChildIndex = {}, decryptingChild = false, decryptedChildMessages = {} }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
-  const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
   const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentUsername: "", shareWith: []});
+  const { handleReplyToSecret } = useReplyToSecret(selectedSecret);
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (text: string) => {
@@ -73,7 +73,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                             label: "Reply",
                             onClick: () => {
                               setSelectedSecret({parentSecretId: pass.id, parentUsername: item.username, shareWith: pass.sharedWith});
-                              setShowReplyPopup(true)
+                              handleReplyToSecret();
                             } 
                           },
                           {
@@ -172,7 +172,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
           </div>
         </div>
       )}
-      {showReplyPopup && <ReplyPopup setShowReplyPopup={setShowReplyPopup} showReplyPopup={showReplyPopup} selectedSecret={selectedSecret}/> }
+
     </div>
   );
 }
