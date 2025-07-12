@@ -12,7 +12,7 @@ const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
-export default function useReplyToSecret(selectedSecret: SelectedSecretType) {
+export default function useReplyToSecret() {
   const { signer, provider } = useWallet();
   const { initDataRaw, userData } = useUser();
   const { encryptDataToBytes } = useTaco({
@@ -21,7 +21,7 @@ export default function useReplyToSecret(selectedSecret: SelectedSecretType) {
     ritualId,
   });
 
-  const handleReplyToSecret = async () => {
+  const handleReplyToSecret = async (selectedSecret: SelectedSecretType) => {
     const result = await Swal.fire({
       title: 'Reply to Secret',
       html: `
@@ -70,7 +70,7 @@ export default function useReplyToSecret(selectedSecret: SelectedSecretType) {
         }
 
         try {
-          await handleReplayToSecret(title.trim(), reply.trim());
+          await handleReplayToSecret(title.trim(), reply.trim(), selectedSecret);
           return { title: title.trim(), reply: reply.trim() };
         } catch (error) {
           console.error("Error submitting reply:", error);
@@ -92,7 +92,7 @@ export default function useReplyToSecret(selectedSecret: SelectedSecretType) {
     }
   };
 
-  const handleReplayToSecret = async (title: string, reply: string) => {
+  const handleReplayToSecret = async (title: string, reply: string, selectedSecret: SelectedSecretType) => {
     let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
     selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
 

@@ -1,5 +1,5 @@
 import defaultProfileImage from "../../../assets/images/no-User.png"
-import { DataItem, SelectedSecretType } from "../../../types/types";
+import { DataItem } from "../../../types/types";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
@@ -34,8 +34,7 @@ export default function MyData({
 } : MyDataType) {
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
-    const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", shareWith: []});
-    const { handleReplyToSecret } = useReplyToSecret(selectedSecret);
+    const { handleReplyToSecret } = useReplyToSecret();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = (text: string) => {
@@ -72,8 +71,7 @@ export default function MyData({
                           {
                             label: "Reply",
                             onClick: () => {
-                              setSelectedSecret({parentSecretId: item.id, shareWith: item.sharedWith});
-                              handleReplyToSecret();
+                              handleReplyToSecret({parentSecretId: item.id, shareWith: item.sharedWith});
                             } 
                           }
                         ]}
