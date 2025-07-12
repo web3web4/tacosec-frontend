@@ -120,7 +120,7 @@ export default function useReplyToSecret() {
           description: "",
           type: "text",
           value: encryptedHex!,
-          sharedWith: [],
+          sharedWith: selectedSecret.shareWith,
           initData: parsedInitData,
           parent_secret_id: selectedSecret.parentSecretId,
         },
