@@ -3,6 +3,10 @@ import { DataItem } from "../../../types/types";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
+import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
+import useReplyToSecret from "../../../hooks/useReplyToSecret";
+import { formatDate } from "../../../utils/tools";
+
 interface MyDataType{
     myData: DataItem[],
     toggleExpand: (index: number, value: string, id: string) => void,
@@ -30,6 +34,7 @@ export default function MyData({
 } : MyDataType) {
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
+    const { handleReplyToSecret } = useReplyToSecret();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = (text: string) => {
@@ -51,7 +56,29 @@ export default function MyData({
                 className="data-item"
                 onClick={() => toggleExpand(i, item.value, item.id)}
               >
-                <p className="item-title">{item.key}</p>
+                <div className="item-container">
+                  <div className="item-header-info">
+                  <p className="item-title">{item.key}</p>
+                  <div className="created-at-container">
+                    <strong>Created At:</strong>
+                    <span className="child-date">{formatDate(item.createdAt)}</span>
+                  </div>
+                  </div>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu
+                        options={[
+                          {
+                            label: "Reply",
+                            onClick: () => {
+                              handleReplyToSecret({parentSecretId: item.id, shareWith: item.sharedWith});
+                            } 
+                          }
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>{" "}
                 <p
                   className="item-status"
                   data-status={
@@ -151,6 +178,7 @@ export default function MyData({
           </div>
         </div>
       )}
+
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChildDataItem } from "../../../types/types";
+import { formatDate } from "../../../utils/tools";
 import "./ChildrenSection.css";
 
 interface ChildrenSectionProps {
@@ -47,7 +48,20 @@ export default function ChildrenSection({
                 }
               }}
             >
-              <span className="child-key">{child.key}</span>
+              <div className="child-info">
+              <div className="child-meta">
+                  <strong>Reply Title:</strong>
+                  <span className="child-key">{child.key}</span>
+                </div>
+                <div className="child-meta">
+                  <strong>Created by:</strong>
+                  <span className="child-username"> {child.username}</span>
+                </div>
+                <div className="child-meta">
+                <strong>Created At:</strong>
+                <span className="child-date">{formatDate(child.createdAt)}</span>
+                </div>
+              </div>
               <span className="child-toggle">
                 {expandedChildIndex[parentIndex] === childIndex ? '▼' : '▶'}
               </span>
