@@ -1,5 +1,7 @@
 import React from "react";
 import "./SeedPhrase.css";
+import Swal from "sweetalert2";
+import { useUser } from "../../context/UserContext";
 
 type Props = {
   password: string;
@@ -7,6 +9,7 @@ type Props = {
   onChange: (val: string) => void;
   onSubmit: () => void;
   onForgotPassword: () => void;
+  onHidePrompt?: (show?: boolean) => void; // Updated to accept a boolean parameter
 };
 
 export const DecryptPrompt = ({
@@ -15,7 +18,41 @@ export const DecryptPrompt = ({
   onChange,
   onSubmit,
   onForgotPassword,
+  onHidePrompt,
 }: Props) => {
+  const { userData } = useUser();
+
+  const handleClearData = () => {
+    // Hide the decrypt prompt when Clear Data is clicked
+    if (onHidePrompt) {
+      onHidePrompt(false); // Explicitly hide the prompt
+    }
+    
+    Swal.fire({
+      icon: "warning",
+      title: "Warning",
+      html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
+      confirmButtonText: "OK",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Delete the specified localStorage items
+        localStorage.removeItem("savePasswordInBackend");
+        localStorage.removeItem(`seedBackupDone-${userData?.telegramId}`);
+        localStorage.removeItem(`encryptedSeed-${userData?.telegramId}`);
+        
+        // Reload the page to reflect changes
+        window.location.reload();
+      } else {
+        // If Cancel is clicked, show the decrypt prompt again
+        if (onHidePrompt) {
+          onHidePrompt(true); // Explicitly show the prompt again
+        }
+      }
+    });
+  };
+
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
@@ -48,6 +85,20 @@ export const DecryptPrompt = ({
             }}
           >
             Forgot password?
+          </p>
+          
+          <p
+            className="clear-data"
+            onClick={handleClearData}
+            style={{
+              cursor: "pointer",
+              marginTop: 8,
+              color: "#f44336",
+              textAlign: "center",
+              textDecoration: "underline",
+            }}
+          >
+            Clear Data
           </p>
         </div>
       </div>

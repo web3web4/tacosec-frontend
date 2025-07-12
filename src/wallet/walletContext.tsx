@@ -88,11 +88,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     });
 
     if (!isConfirmed || !password) {
-      Swal.fire(
-        "Cancelled",
-        "Password is required to create your wallet.",
-        "warning"
-      );
+      Swal.fire({
+        icon : "warning",
+        title : "Cancelled",
+        html : "Password is required to create your wallet.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then(() => {
+        // Reopen the create/import wallet dialog when OK is clicked
+        createWalletFlow();
+      });
       return;
     }
 
@@ -216,6 +221,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           onForgotPassword={() => {
             setShowDecryptPrompt(false);
             setShowResetFlow(true);
+          }}
+          onHidePrompt={(show) => {
+            // If show is true, show the prompt, otherwise hide it
+            setShowDecryptPrompt(show === true);
           }}
         />
       )}
