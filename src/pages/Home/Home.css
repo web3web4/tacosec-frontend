@@ -99,6 +99,13 @@
   position: relative;
   overflow: visible;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .data-item:hover {
@@ -134,6 +141,21 @@
   color: var(--text-primary);
 }
 
+.created-at-container {
+  display: flex;
+  gap: 7px;
+  font-size: 12px;
+  margin-bottom: 0.25rem;
+}
+
+.created-at-container strong{
+  color: #0000008e;
+}
+
+.created-at-container span {
+  color: #666;
+}
+
 .item-status {
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -167,6 +189,20 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.item-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-date {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
 }
 
 .delete-button {

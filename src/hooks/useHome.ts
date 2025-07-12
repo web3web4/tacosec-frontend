@@ -9,6 +9,7 @@ import { useWallet } from "../wallet/walletContext";
 import useTaco from "./useTaco";
 import { fromHexString } from "@nucypher/shared";
 import { fromBytes } from "@nucypher/taco";
+import { formatDate } from "../utils/tools";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -50,6 +51,7 @@ export default function useHome() {
         key: item.key,
         value: item.value,
         sharedWith: item.sharedWith,
+        createdAt: item.createdAt,
       }));
       setMyData(data);
       if(data.length > 0) await getProfilesDetailsForUsers(data);
@@ -373,7 +375,7 @@ export default function useHome() {
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div style="color: #666; font-size: 12px;">
             <strong>Reported by:</strong> ${report.reporterUsername}<br>
-            <strong>Date:</strong> ${new Date(report.createdAt).toLocaleDateString('en-GB')}
+            <strong>Date:</strong> ${formatDate(report.createdAt)}
 
           </div>
         </div>

@@ -3,8 +3,9 @@ import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
-import ReplyPopup from "./ReplyPopup/ReplyPopup";
+import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
+import { formatDate } from "../../../utils/tools";
 
 interface MyDataType {
   sharedWithMyData: SharedWithMyDataType[];
@@ -19,17 +20,12 @@ interface MyDataType {
   decryptingChild: boolean,
   decryptedChildMessages: Record<string, string>,
 }
-export interface SelectedSecretType{
-  parentSecretId: string,
-  parentUsername: string,
-  shareWith: {username: string, invited?:boolean}[],
-  }
+
   
 export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret, toggleChildExpand, expandedChildIndex = {}, decryptingChild = false, decryptedChildMessages = {} }: MyDataType) {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
-  const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
-  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentUsername: "", shareWith: []});
+  const { handleReplyToSecret } = useReplyToSecret();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (text: string) => {
@@ -61,7 +57,13 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                 onClick={() => toggleExpand(uniqueKey, pass.value, pass.id)}
               >
                 <div className="item-container">
-                  <p className="item-title">{pass.key}</p>
+                  <div className="item-header-info">
+                    <p className="item-title">{pass.key}</p>
+                    <div className="created-at-container">
+                      <strong>Created At:</strong>
+                      <span className="child-date">{formatDate(pass.createdAt)}</span>
+                    </div>
+                  </div>
                   <div onClick={(e) => e.stopPropagation()}>
                     <div onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu
@@ -69,8 +71,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           {
                             label: "Reply",
                             onClick: () => {
-                              setSelectedSecret({parentSecretId: pass.id, parentUsername: item.username, shareWith: pass.sharedWith});
-                              setShowReplyPopup(true)
+                              handleReplyToSecret({parentSecretId: pass.id, parentUsername: item.username, shareWith: pass.sharedWith});
                             } 
                           },
                           {
@@ -169,7 +170,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
           </div>
         </div>
       )}
-      {showReplyPopup && <ReplyPopup setShowReplyPopup={setShowReplyPopup} showReplyPopup={showReplyPopup} selectedSecret={selectedSecret}/> }
+
     </div>
   );
 }
