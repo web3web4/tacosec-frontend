@@ -1,10 +1,30 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+// Helper function to get authentication headers
+const getAuthHeaders = (initData?: string) => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+  
+  // Try to get JWT token from localStorage first
+  const token = localStorage.getItem('jwt_token');
+  
+  if (token) {
+    // Use JWT token if available
+    headers["Authorization"] = `Bearer ${token}`;
+  } else if (initData) {
+    // Fall back to Telegram initData if available
+    headers["X-Telegram-Init-Data"] = initData;
+  }
+  
+  return headers;
+};
 
 export async function signupUser(initData: string): Promise<initDataType> {
   const data = parseTelegramInitData(initData);
@@ -24,16 +44,49 @@ export async function signupUser(initData: string): Promise<initDataType> {
   return await response.json();
 }
 
-export async function GetMyData(initData: string): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/passwords`, {
-    method: "GET",
+export async function loginUserWeb(publicAddress:string, signature:string): Promise<AuthDataType> {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
     },
+    body: JSON.stringify({publicAddress, signature}),
   });
 
   if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const authData:AuthDataType = await response.json();
+  
+  // Store the JWT token in localStorage for future API calls
+  if (authData.access_token) {
+    localStorage.setItem('jwt_token', authData.access_token);
+  }
+
+  return authData;
+}
+
+export async function GetMyData(initData?: string): Promise<any> {
+  const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/passwords`, {
+    method: "GET",
+    headers,
+  });
+
+  if (!response.ok) {
+    // Handle 401 Unauthorized errors specifically
+    if (response.status === 401) {
+      // Clear the invalid token if it exists
+      localStorage.removeItem('jwt_token');
+      throw new Error("Authentication failed. Please log in again.");
+    }
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
@@ -45,18 +98,27 @@ export async function GetMyData(initData: string): Promise<any> {
  */
 export async function storageEncryptedData(
   data: DataPayload,
-  initData: string
+  initData?: string
 ): Promise<any> {
+  const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
+  
   const response = await fetch(`${API_BASE_URL}/passwords`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+    headers,
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
+    // Handle 401 Unauthorized errors specifically
+    if (response.status === 401) {
+      localStorage.removeItem('jwt_token');
+      throw new Error("Authentication failed. Please log in again.");
+    }
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
@@ -95,16 +157,25 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   return res;
 }
 
-export async function getDataSharedWithMy(initData: string): Promise<any> {
+export async function getDataSharedWithMy(initData?: string): Promise<any> {
+  const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
+  
   const response = await fetch(`${API_BASE_URL}/passwords/shared-with-me`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+    headers,
   });
 
   if (!response.ok) {
+    // Handle 401 Unauthorized errors specifically
+    if (response.status === 401) {
+      localStorage.removeItem('jwt_token');
+      throw new Error("Authentication failed. Please log in again.");
+    }
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
@@ -149,12 +220,15 @@ export async function storagePublicKeyAndPassword(
 }
 
 export async function hidePassword(initData: string, id: string): Promise<any> {
+  const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
   const response = await fetch(`${API_BASE_URL}/passwords/hide/${id}`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+    headers: headers,
   });
 
   if (!response.ok) {
@@ -165,12 +239,15 @@ export async function hidePassword(initData: string, id: string): Promise<any> {
 }
 
 export async function deletePassword(initData: string, id: string): Promise<any> {
+  const headers = getAuthHeaders(initData);
+
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] &&!headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
   const response = await fetch(`${API_BASE_URL}/passwords/owner/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+    headers: headers,
   });
 
   if (!response.ok) {

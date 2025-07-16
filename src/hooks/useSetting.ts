@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { getUserProfileDetails } from "../apiService";
 import { useUser } from "../context/UserContext";
-import { GetUserProfileDetailsResponse } from "../types/types";
+import { GetUserProfileDetailsResponse, initDataType } from "../types/types";
 
 export default function useSetting() {
-  const { userData } = useUser();
+  const { userData }: { userData: initDataType | null } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
   const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
   const [showSupportPopup, setShowSupportPopup] = useState(false);
@@ -14,10 +14,22 @@ export default function useSetting() {
     console.log("Notifications toggled:", !notificationsOn);
   };
 
-  const fetchData = async () => {
-    const response: GetUserProfileDetailsResponse = await getUserProfileDetails(userData!.username);
+const fetchData = async () => {
+  const username = userData?.username;
+
+  if (!username) {
+    console.warn("No username found. Skipping profile fetch.");
+    return;
+  }
+
+  try {
+    const response: GetUserProfileDetailsResponse = await getUserProfileDetails(username);
     setProfileImage(response && response.img ? response.img.src : null);
-  };
+  } catch (error) {
+    console.error("Error fetching user profile details:", error);
+  }
+};
+
 
   useEffect(() => {
     fetchData();

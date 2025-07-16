@@ -13,11 +13,12 @@ import { ResetPasswordWithSeed } from "../../components/SeedPhrase/ResetPassword
 import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import ContactSupport from "../../section/Setting/ContactSupport/ContactSupport";
 import "../../components/SeedPhrase/SeedPhrase.css";
+import { getIdentifier } from "../../utils/walletIdentifiers";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, handleToggleNotifications, showSupportPopup, setShowSupportPopup } = useSetting();
-  const { userData } = useUser();
-  const { address } = useWallet();
+  const { userData , isBrowser } = useUser();
+  const { address , addressweb } = useWallet();
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
@@ -43,7 +44,9 @@ const Settings: React.FC = () => {
    */
 
   const handleDecrypt = () => {
-    const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
+    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+    if (!identifier) return;
+    const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
       Swal.fire("Error", "No encrypted seed found.", "error");
       return;
@@ -57,26 +60,30 @@ const Settings: React.FC = () => {
    * Otherwise, sets an error message indicating invalid password or corrupted data.
    */
 
-  const submitDecryption = () => {
-    const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
-    if (!encrypted) return;
+const submitDecryption = () => {
+  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+  if (!identifier) return;
 
-    const fullKey = password + "|" + process.env.REACT_APP_TG_SECRET_SALT;
+  const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
+  if (!encrypted) return;
 
-    try {
-      const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+  const fullKey = password + "|" + process.env.REACT_APP_TG_SECRET_SALT;
 
-      if (!ethers.utils.isValidMnemonic(decrypted)) throw new Error();
+  try {
+    const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 
-      setMnemonic(decrypted);
-      setShowDecryptPrompt(false);
-      setPassword("");
-      setPasswordError("");
-    } catch {
-      setPasswordError("❌ Invalid password or corrupted data.");
-    }
-  };
+    if (!ethers.utils.isValidMnemonic(decrypted)) throw new Error();
+
+    setMnemonic(decrypted);
+    setShowDecryptPrompt(false);
+    setPassword("");
+    setPasswordError("");
+  } catch {
+    setPasswordError("❌ Invalid password or corrupted data.");
+  }
+};
+
 
   // Function to copy address to clipboard
   const copyAddressToClipboard = () => {

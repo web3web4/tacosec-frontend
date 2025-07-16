@@ -1,3 +1,5 @@
+export type AuthMethod = "telegram" | "web";
+
 export interface initDataType {
   _id: string,
     telegramId: string,
@@ -9,6 +11,10 @@ export interface initDataType {
     isActive: boolean,
     createdAt: string,
     updatedAt: string,
+}
+
+export interface AuthDataType {
+  access_token: string,
 }
 
 export type TelegramUser = {
@@ -54,6 +60,7 @@ export interface SharedWithMyDataType{
 }
   
 export type TabType = "mydata" | "shared";
+
 
 export interface UserProfileType{
   data: UserProfileDetailsType,
