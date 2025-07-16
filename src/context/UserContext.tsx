@@ -2,12 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { initDataType } from "../types/types";
 import { signupUser } from "../apiService";
 import Swal from "sweetalert2";
+import { detectAuthMethod } from "../hooks/useContextHelper";
 
 
 interface UserContextType {
   userData: initDataType | null;
   initDataRaw: string | null;
   error: string | null;
+  isBrowser: boolean;
   signUserData: (initData: initDataType) => Promise<void>;
 }
 
@@ -18,12 +20,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
-
+  const [isBrowser, setIsBrowser] = useState(false);
   const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
 
  const signUserData = async () => {
     setError(null);
-    try {
+    
       if (typeof window === "undefined" || !window.Telegram?.WebApp) {
         setError("Telegram WebApp is not supported");
         return;
@@ -43,24 +45,31 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           text: `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`,
         });
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      Swal.fire({
-        icon: "error",
-        title: "Error In Sign User",
-        text: err instanceof Error ? err.message : "An error occurred",
-      });
-    }
+
   };
 
-  useEffect(() => {
-    signUserData();
-  }, []);
+useEffect(() => {
+  const method = detectAuthMethod();
+  switch (method) {
+    case "telegram":
+      signUserData();
+      break;
+
+    case "web":
+      setIsBrowser(true);
+      break;
+
+    default:
+      console.warn("Unknown auth method");
+  }
+}, []);
+
 
   const value = {
     userData,
     initDataRaw,
     error,
+    isBrowser,
     signUserData,
   };
 

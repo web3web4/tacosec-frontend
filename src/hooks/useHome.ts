@@ -25,6 +25,7 @@ export default function useHome() {
   const [expandedChildIndex, setExpandedChildIndex] = useState<Record<number, number | null>>({});
   const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const { signer, provider } = useWallet();
   const { initDataRaw, userData } = useUser();
   const { isInit, decryptDataFromBytes } = useTaco({
@@ -45,7 +46,8 @@ export default function useHome() {
 
   const fetchMyData = async () => {
     try {
-      const response = await GetMyData(initDataRaw!);
+      // Pass initDataRaw which might be null for web login
+      const response = await GetMyData(initDataRaw || undefined);
       const data: DataItem[] = response.map((item: any) => ({
         id: item._id, 
         key: item.key,
@@ -55,12 +57,26 @@ export default function useHome() {
       }));
       setMyData(data);
       if(data.length > 0) await getProfilesDetailsForUsers(data);
+      setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err instanceof Error ? err.message : "An error occurred",
-      });
+      console.error("Error fetching data:", err);
+      if (err instanceof Error && err.message.includes("Authentication")) {
+        setAuthError(err.message);
+        // Only show error alert for non-authentication errors or if we're not in Telegram
+        if (!window.Telegram?.WebApp) {
+          Swal.fire({
+            icon: "error",
+            title: "Authentication Error",
+            text: err.message,
+          });
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err instanceof Error ? err.message : "An error occurred",
+        });
+      }
     }
   };
 
@@ -102,15 +118,29 @@ export default function useHome() {
   
   const fetchSharedWithMyData = async () => {
     try {
-      const data = await getDataSharedWithMy(initDataRaw!);
+      const data = await getDataSharedWithMy(initDataRaw || undefined);
       setSharedWithMyData(data.sharedWithMe);
       if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
+      setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err instanceof Error ? err.message : "An error occurred",
-      });
+      console.error("Error fetching shared data:", err);
+      if (err instanceof Error && err.message.includes("Authentication")) {
+        setAuthError(err.message);
+        // Only show error alert for non-authentication errors or if we're not in Telegram
+        if (!window.Telegram?.WebApp) {
+          Swal.fire({
+            icon: "error",
+            title: "Authentication Error",
+            text: err.message,
+          });
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err instanceof Error ? err.message : "An error occurred",
+        });
+      }
     }
   };
 
@@ -160,9 +190,11 @@ export default function useHome() {
       try {
         if (isHasSharedWith) {
           const alsoDeleteForEveryone = result.value === 1;
-          alsoDeleteForEveryone ? deletePassword(initDataRaw!, id) : hidePassword(initDataRaw!, id);
+          alsoDeleteForEveryone ? 
+            await deletePassword(initDataRaw || ""  , id ) : 
+            await hidePassword(initDataRaw || ""  , id);
         } else {
-          deletePassword(initDataRaw!, id);
+          await deletePassword(initDataRaw || "" , id);
         }
         setMyData((prev) => prev.filter((secret) => secret.id !== id));
       } catch (error) {
@@ -474,5 +506,26 @@ export default function useHome() {
     }
   };
 
-  return { myData, sharedWithMyData, activeTab, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret, isInit, provider, userData, decrypting, decryptedMessages, toggleExpand, expandedIndex, toggleChildExpand, expandedChildIndex, decryptingChild, decryptedChildMessages };
+  return { 
+    myData, 
+    sharedWithMyData, 
+    activeTab, 
+    handleAddClick, 
+    handleSetActiveTabClick, 
+    handleDelete, 
+    handleReportUser, 
+    handleViewReportsForSecret, 
+    isInit, 
+    provider, 
+    userData, 
+    decrypting, 
+    decryptedMessages, 
+    toggleExpand, 
+    expandedIndex, 
+    toggleChildExpand, 
+    expandedChildIndex, 
+    decryptingChild, 
+    decryptedChildMessages,
+    authError // Add authError to the returned object
+  };
 }

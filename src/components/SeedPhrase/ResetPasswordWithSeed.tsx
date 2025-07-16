@@ -3,18 +3,23 @@ import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
+import { getIdentifier } from "../../utils/walletIdentifiers";
+import { useWallet } from "../../wallet/walletContext";
 
 export const ResetPasswordWithSeed = ({
   onSuccess,
-  onCancel, // Add onCancel prop
+  onCancel, 
 }: {
   onSuccess: () => void;
-  onCancel: () => void; // Add type definition
+  onCancel: () => void;
 }) => {
   const [seed, setSeed] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const {userData} = useUser();
+  const {userData , isBrowser} = useUser();
+  const { address , addressweb } = useWallet();
   const handleReset = () => {
+    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+      if (!identifier) return;
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {
       Swal.fire("Error", "Invalid seed phrase", "error");
@@ -28,8 +33,8 @@ export const ResetPasswordWithSeed = ({
 
     const fullKey = newPassword + "|" + process.env.REACT_APP_TG_SECRET_SALT;
     const encrypted = CryptoJS.AES.encrypt(trimmed, fullKey).toString();
-    localStorage.setItem(`encryptedSeed-${userData?.telegramId}`, encrypted);
-    localStorage.setItem(`seedBackupDone-${userData?.telegramId}`, "true");
+    localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
+    localStorage.setItem(`seedBackupDone-${identifier}`, "true");
 
     Swal.fire("✅ Success", "Password reset successfully", "success");
     onSuccess(); // go back to login or main screen
