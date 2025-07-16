@@ -6,7 +6,7 @@ export function SeedImportPopup({
   onImport,
   onCancel,
 }: {
-  onImport: (mnemonic: string) => void;
+  onImport: (mnemonic: string) => Promise<void>; // تغيير هنا
   onCancel?: () => void;
 }) {
   const [words, setWords] = useState(Array(12).fill(""));
@@ -18,20 +18,32 @@ export function SeedImportPopup({
     setWords(newWords);
   };
 
-  const handleSubmit = () => {
-    const trimmedWords = words.map((w) => w.trim());
-    const mnemonic = trimmedWords.join(" ");
-    if (trimmedWords.includes("") || trimmedWords.length !== 12) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid Seed",
-        text: "Please enter all 12 words correctly.",
-      });
-      return;
+const handleSubmit = async () => {
+  const trimmedWords = words.map((w) => w.trim());
+  const mnemonic = trimmedWords.join(" ");
+  if (trimmedWords.includes("") || trimmedWords.length !== 12) {
+    Swal.fire({
+      icon: "error",
+      title: "Invalid Seed",
+      text: "Please enter all 12 words correctly.",
+    });
+    return;
+  }
+  setLoading(true);
+  try {
+    console.log("Calling onImport with mnemonic:", mnemonic);
+    if (onCancel) {
+      onCancel();
     }
-    setLoading(true);
-    onImport(mnemonic);
-  };
+    await onImport(mnemonic);
+    console.log("onImport completed successfully");
+  } catch (error) {
+    console.error("Import error:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="popup-container-seed">
