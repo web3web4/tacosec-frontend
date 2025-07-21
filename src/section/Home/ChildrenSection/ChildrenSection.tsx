@@ -49,10 +49,6 @@ export default function ChildrenSection({
               }}
             >
               <div className="child-info">
-              <div className="child-meta">
-                  <strong>Reply Title:</strong>
-                  <span className="child-key">{child.key}</span>
-                </div>
                 <div className="child-meta">
                   <strong>Created by:</strong>
                   <span className="child-username"> {child.username}</span>
