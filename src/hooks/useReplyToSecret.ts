@@ -26,17 +26,9 @@ export default function useReplyToSecret() {
       title: 'Reply to Secret',
       html: `
         <div style="text-align: left; margin-bottom: 16px;">
-          <div style="margin-bottom: 12px;">
-            <label style="display: block; font-weight: 500; color: #555; font-size: 14px; margin-bottom: 6px;">Title</label>
-            <input id="reply-title" type="text" placeholder="Enter reply title" maxlength="100" style="
-              width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-              font-size: 14px; font-family: inherit; box-sizing: border-box;
-              background: #f8f9fa; outline: none;
-            " onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='#ddd'" />
-          </div>
           <div>
             <label style="display: block; font-weight: 500; color: #555; font-size: 14px; margin-bottom: 6px;">Reply</label>
-            <textarea id="reply-message" placeholder="Enter your reply..." rows="5" maxlength="1000" style="
+            <textarea id="reply-message" placeholder="Enter your reply..." rows="5" style="
               width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
               font-size: 14px; font-family: inherit; resize: vertical; min-height: 100px;
               box-sizing: border-box; background: #f8f9fa; outline: none;
@@ -51,13 +43,7 @@ export default function useReplyToSecret() {
       width: '500px',
       showLoaderOnConfirm: true,
       preConfirm: async () => {
-        const title = (document.getElementById('reply-title') as HTMLInputElement)?.value;
         const reply = (document.getElementById('reply-message') as HTMLTextAreaElement)?.value;
-        
-        if (!title || !title.trim()) {
-          Swal.showValidationMessage('Title is required!');
-          return false;
-        }
         
         if (!reply || !reply.trim()) {
           Swal.showValidationMessage('Reply is required!');
@@ -70,8 +56,8 @@ export default function useReplyToSecret() {
         }
 
         try {
-          await handleReplayToSecret(title.trim(), reply.trim(), selectedSecret);
-          return { title: title.trim(), reply: reply.trim() };
+          await handleReplayToSecret(reply.trim(), selectedSecret);
+          return { title: "", reply: reply.trim() };
         } catch (error) {
           console.error("Error submitting reply:", error);
           Swal.showValidationMessage('Failed to submit reply. Please try again.');
@@ -92,7 +78,7 @@ export default function useReplyToSecret() {
     }
   };
 
-  const handleReplayToSecret = async (title: string, reply: string, selectedSecret: SelectedSecretType) => {
+  const handleReplayToSecret = async (reply: string, selectedSecret: SelectedSecretType) => {
     let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
     selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
 
@@ -116,7 +102,7 @@ export default function useReplyToSecret() {
       const parsedInitData = parseTelegramInitData(initDataRaw!);
       const res = await storageEncryptedData(
         {
-          key: title,
+          key: "",
           description: "",
           type: "text",
           value: encryptedHex!,

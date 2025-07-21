@@ -4,7 +4,7 @@ import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 import "./Home.css";
 
 const Home: React.FC = () => {
-  const { myData, sharedWithMyData, activeTab, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret, isInit, provider, userData, decrypting, decryptedMessages, toggleExpand, expandedIndex, toggleChildExpand, expandedChildIndex, decryptingChild, decryptedChildMessages } = useHome();
+  const { myData, sharedWithMyData, activeTab, isLoading, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret, isInit, provider, userData, decrypting, decryptedMessages, toggleExpand, expandedIndex, toggleChildExpand, expandedChildIndex, decryptingChild, decryptedChildMessages } = useHome();
   
   if (!isInit || !provider) {
     return <div>Loading...</div>;
@@ -35,7 +35,10 @@ const Home: React.FC = () => {
 
       <div className="tab-content">
         <div>
-        {activeTab === "mydata" ? (
+          
+        {
+        isLoading ? <div className="spinner-container"><div className="spinner"></div></div> :
+        activeTab === "mydata" ? (
           <MyData  myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleDelete={handleDelete} toggleChildExpand={toggleChildExpand} expandedChildIndex={expandedChildIndex} decryptingChild={decryptingChild} decryptedChildMessages={decryptedChildMessages}
           />
         ) : (

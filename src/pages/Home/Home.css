@@ -81,6 +81,7 @@
 }
 
 .tab-content {
+  
   padding: 1rem;
 }
 
@@ -244,6 +245,23 @@
 }
 .dots span:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+.spinner-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+}
+
+.spinner {
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #c4357172;
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes bounce {
