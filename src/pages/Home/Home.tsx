@@ -34,10 +34,9 @@ const Home: React.FC = () => {
       </div>
 
       <div className="tab-content">
-        <div>
-          
+        <div>  
         {
-        isLoading ? <div> Loading... </div> :
+        isLoading ? <div className="loading-container-home"> Loading... </div> :
         activeTab === "mydata" ? (
           <MyData  myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleDelete={handleDelete} toggleChildExpand={toggleChildExpand} expandedChildIndex={expandedChildIndex} decryptingChild={decryptingChild} decryptedChildMessages={decryptedChildMessages}
           />
