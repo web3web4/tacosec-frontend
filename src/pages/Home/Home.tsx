@@ -37,7 +37,7 @@ const Home: React.FC = () => {
         <div>
           
         {
-        isLoading ? <div className="spinner-container"><div className="spinner"></div></div> :
+        isLoading ? <div> Loading... </div> :
         activeTab === "mydata" ? (
           <MyData  myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleDelete={handleDelete} toggleChildExpand={toggleChildExpand} expandedChildIndex={expandedChildIndex} decryptingChild={decryptingChild} decryptedChildMessages={decryptedChildMessages}
           />

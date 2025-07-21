@@ -7,6 +7,7 @@ import { storageEncryptedData } from "../apiService";
 import { useUser } from "../context/UserContext";
 import Swal from "sweetalert2";
 import { SelectedSecretType } from "../types/types";
+import { v4 as uuidv4 } from 'uuid';
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -102,7 +103,7 @@ export default function useReplyToSecret() {
       const parsedInitData = parseTelegramInitData(initDataRaw!);
       const res = await storageEncryptedData(
         {
-          key: "",
+          key: `reply: ${uuidv4()}`,
           description: "",
           type: "text",
           value: encryptedHex!,
