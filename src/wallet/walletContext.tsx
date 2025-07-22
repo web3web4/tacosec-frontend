@@ -100,23 +100,25 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const wallet = ethers.Wallet.createRandom();
     setSigner(wallet.connect(provider));
     setAddress(wallet.address);
+    const mnemonic = wallet.mnemonic.phrase;
+    const encrypted = encryptSeed(mnemonic, password);
 
     if (isWeb) {
       setSeedBackupDone(wallet.address, false);
+      
       try {
         const message = `Login to Taco App: ${Date.now()}`;
         const signature = await wallet.signMessage(message);
         await loginUserWeb(wallet.address, signature);
+        saveEncryptedSeed(wallet.address, encrypted);
       } catch (err) {
         console.error("Failed to login with web wallet:", err);
       }
     } else {
       setSeedBackupDone(userData?.telegramId || "", false);
+      saveEncryptedSeed(userData?.telegramId || "", encrypted);
     }
 
-    const mnemonic = wallet.mnemonic.phrase;
-    const encrypted = encryptSeed(mnemonic, password);
-    saveEncryptedSeed(wallet.address, encrypted);
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
