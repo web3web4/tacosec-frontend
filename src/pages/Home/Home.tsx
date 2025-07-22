@@ -42,7 +42,7 @@ const Home: React.FC = () => {
           />
         ) : (
           <SharedWithMy sharedWithMyData={sharedWithMyData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleReportUser={handleReportUser} handleViewReportsForSecret={handleViewReportsForSecret} toggleChildExpand={toggleChildExpand} expandedChildIndex={expandedChildIndex} decryptingChild={decryptingChild} decryptedChildMessages={decryptedChildMessages}/>
-        )}
+        )} 
         </div>
       </div>
     </div>
