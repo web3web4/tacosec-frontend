@@ -101,21 +101,21 @@ export default function useReplyToSecret() {
     if (encryptedBytes) {
       const encryptedHex = toHexString(encryptedBytes);
       const parsedInitData = parseTelegramInitData(initDataRaw!);
-      const res = await storageEncryptedData(
-        {
-          key: `reply: ${uuidv4()}`,
-          description: "",
-          type: "text",
-          value: encryptedHex!,
-          sharedWith: selectedSecret.shareWith,
-          initData: parsedInitData,
-          parent_secret_id: selectedSecret.parentSecretId,
-        },
-        initDataRaw!
-      );
-      if (!res) {
-        throw new Error("Failed to store encrypted data");
-      }
+      // const res = await storageEncryptedData(
+      //   {
+      //     key: `reply: ${uuidv4()}`,
+      //     description: "",
+      //     type: "text",
+      //     value: encryptedHex!,
+      //     sharedWith: selectedSecret.shareWith,
+      //     initData: parsedInitData,
+      //     parent_secret_id: selectedSecret.parentSecretId,
+      //   },
+      //   initDataRaw!
+      // );
+      // if (!res) {
+      //   throw new Error("Failed to store encrypted data");
+      // }
     } else {
       throw new Error("Failed to encrypt data");
     }
