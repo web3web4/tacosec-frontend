@@ -139,7 +139,12 @@ const AddData: React.FC = () => {
           cleanFields();
         }
       }
-    } catch (e) {
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e.message as string,
+      });
       console.log(e);
     }
     setEncrypting(false);

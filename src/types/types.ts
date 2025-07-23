@@ -71,6 +71,7 @@ export interface UserProfileDetailsType{
   img: { src: string} | null,
   name: string,
   username: string | null,
+  //address: string | null,
   invited?: boolean
 }
 
