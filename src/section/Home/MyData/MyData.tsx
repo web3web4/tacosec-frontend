@@ -1,8 +1,8 @@
-import defaultProfileImage from "../../../assets/images/no-User.png"
+// import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
-import ChildrenSection from "../ChildrenSection/ChildrenSection";
+// import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import { formatDate } from "../../../utils/tools";
@@ -123,7 +123,7 @@ export default function MyData({
                         Delete
                       </button>
                     </div>
-                    {item.sharedWith.length > 0 && (
+                    {/* {item.sharedWith.length > 0 && (
                       <div className="shared-section">
                         {" "}
                         <h4 className="shared-title">Shared with:</h4>
@@ -144,9 +144,9 @@ export default function MyData({
                           ))}
                         </div>
                       </div>
-                    )}
+                    )} */}
                     
-                    {item.children && item.children.length > 0 && (
+                    {/* {item.children && item.children.length > 0 && (
                       <ChildrenSection
                         children={item.children}
                         parentIndex={i}
@@ -155,7 +155,7 @@ export default function MyData({
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
                       />
-                    )}
+                    )} */}
                   </div>
                 )}
               </div>

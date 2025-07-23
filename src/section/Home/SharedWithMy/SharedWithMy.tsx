@@ -1,10 +1,10 @@
 import { ReportsResponse, SharedWithMyDataType } from "../../../types/types";
-import defaultProfileImage from "../../../assets/images/no-User.png";
+// import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
-import ChildrenSection from "../ChildrenSection/ChildrenSection";
+// import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import { formatDate } from "../../../utils/tools";
 
 interface MyDataType {
@@ -117,7 +117,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                       </button>
                     </div>
 
-                    {item.sharedByDetails && (
+                    {/* {item.sharedByDetails && (
                       <div className="shared-section">
                         <h4 className="shared-title">Shared By:</h4>
                         <div className="shared-users">
@@ -135,8 +135,8 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                           </div>
                         </div>
                       </div>
-                    )}
-                    {pass.children && pass.children.length > 0 && (
+                    )} */}
+                    {/* {pass.children && pass.children.length > 0 && (
                       <ChildrenSection
                         children={pass.children}
                         parentIndex={i}
@@ -145,7 +145,7 @@ export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedI
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
                       />
-                    )}
+                    )} */}
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import CustomPopup from "../../components/CustomPopup/CustomPopup";
-import defaultProfileImage from "../../assets/images/no-User.png";
-import availableIcon from "../../assets/icons/accept.png";
+// import CustomPopup from "../../components/CustomPopup/CustomPopup";
+// import defaultProfileImage from "../../assets/images/no-User.png";
+// import availableIcon from "../../assets/icons/accept.png";
 import DeleteIcon from "../../assets/icons/delete-icon.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
@@ -15,35 +15,37 @@ import "./AddData.css";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
-const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
+// const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
 const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 const AddData: React.FC = () => {
   const {
-    userProfile,
-    isOpenPopup,
-    searchData,
+    // userProfile,
+    // isOpenPopup,
+    // searchData,
     shareList,
     shareWith,
-    isSearch,
+    // isSearch,
     message,
     name,
-    closePopup,
+    // closePopup,
     handleSearch,
-    handleConfirmClick,
-    handleSearchSelect,
-    handleDeleteUsername,
+    // handleConfirmClick,
+    // handleSearchSelect,
+    // handleDeleteUsername,
     handleAddShare,
-    handleInvite,
+    // handleInvite,
     cleanFields,
     checkEncrypting,
     setMessage,
     setName,
+    handleDeleteAddress
   } = useAddData();
 
+  const { address } = useWallet();
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
-  const { initDataRaw, userData } = useUser();
+  const { initDataRaw } = useUser();
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
@@ -71,19 +73,28 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let usernames: string = "";
-      usernames = userData?.username.toLowerCase()!;
+      // let usernames: string = "";
+      // usernames = userData?.username.toLowerCase()!;
+      // shareList
+      //   .filter((item) => item.data.username !== null)
+      //   .map((item) => (
+      //     usernames += "," + item.data.username!.toLowerCase()
+      //   ));
+
+
+      let publicAddresses: string[] = [];
+      publicAddresses.push(address!);
       shareList
-        .filter((item) => item.data.username !== null)
+        .filter((item) => item.address !== null)
         .map((item) => (
-          usernames += "," + item.data.username!.toLowerCase()
+          publicAddresses.push(item.address)
         ));
 
       //condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
         parameters: {
-          TelegramUsernames : usernames,
+          TelegramUsernames : publicAddresses,
           authorizationToken: ":authorizationToken"
         },
         query: '$.isValid',
@@ -100,11 +111,11 @@ const AddData: React.FC = () => {
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
-        const sharedWithList: { username: string; invited: boolean }[] = shareList
-          .filter((item) => item.data.username !== null)
+        const sharedWithList: { publicAddress: string; invited: boolean }[] = shareList
+          .filter((item) => item.address !== null)
           .map((item) => ({
-            username: item.data.username!,
-            invited: item.data.invited ?? false,
+            publicAddress: item.address,
+            invited: false,
           }));
 
         const res = await storageEncryptedData(
@@ -136,7 +147,7 @@ const AddData: React.FC = () => {
 
   return (
     <div className="add-data-container">
-      {isOpenPopup && (
+      {/* {isOpenPopup && (
         <CustomPopup open={isOpenPopup} closed={closePopup}>
           <div className="popup-content">
             <img
@@ -160,7 +171,7 @@ const AddData: React.FC = () => {
             <button onClick={() => closePopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
-      )}
+      )} */}
       <h2 className="page-title">Add New Data</h2>
       <label>Title</label>
       <input
@@ -195,10 +206,10 @@ const AddData: React.FC = () => {
               placeholder="@user-name"
               className="input-field"
             />
-            {isSearch && <span className="spinner" />}
+            {/* {isSearch && <span className="spinner" />} */}
           </div>
 
-      {searchData.length > 0 && (
+      {/* {searchData.length > 0 && (
         <ul 
           className="autocomplete-list">
           {searchData.map((item, index) => (
@@ -210,7 +221,7 @@ const AddData: React.FC = () => {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
 
     </div>
         <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
@@ -223,9 +234,9 @@ const AddData: React.FC = () => {
           <p>Sharing with:</p>
           {shareList.map((user, i) => (
             <div className="user_container">
-            <div key={i}>- {user.data.name}</div>
+            <div className="user-content-title" key={i}>{user.address}</div>
               <div className="user-content-buttons">
-                { user.data.invited ? 
+                {/* { user.data.invited ? 
                 (<img src={availableIcon} alt="available icon" width={20} height={20}/>) 
                 : 
                 (<a
@@ -233,8 +244,8 @@ const AddData: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer">
                   <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
-                </a>)}
-                <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username!)}>
+                </a>)} */}
+                <div className="delete-user-btn" onClick={() => handleDeleteAddress(user.address)}>
                   <img src={DeleteIcon} alt="delete icon" width={20} height={20} />
                 </div>  
               </div>
