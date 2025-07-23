@@ -25,6 +25,7 @@ export default function useHome() {
   const [expandedChildIndex, setExpandedChildIndex] = useState<Record<number, number | null>>({});
   const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const { signer, provider } = useWallet();
   const { initDataRaw, userData } = useUser();
@@ -47,6 +48,7 @@ export default function useHome() {
   const fetchMyData = async () => {
     try {
       // Pass initDataRaw which might be null for web login
+      setIsLoading(true);
       const response = await GetMyData(initDataRaw || undefined);
       const data: DataItem[] = response.map((item: any) => ({
         id: item._id, 
@@ -77,6 +79,8 @@ export default function useHome() {
           text: err instanceof Error ? err.message : "An error occurred",
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,6 +122,7 @@ export default function useHome() {
   
   const fetchSharedWithMyData = async () => {
     try {
+      setIsLoading(true);
       const data = await getDataSharedWithMy(initDataRaw || undefined);
       setSharedWithMyData(data.sharedWithMe);
       if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
@@ -141,6 +146,8 @@ export default function useHome() {
           text: err instanceof Error ? err.message : "An error occurred",
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -526,6 +533,7 @@ export default function useHome() {
     expandedChildIndex, 
     decryptingChild, 
     decryptedChildMessages,
+    isLoading,
     authError // Add authError to the returned object
   };
 }

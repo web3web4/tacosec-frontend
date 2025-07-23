@@ -38,17 +38,21 @@ export const DecryptPrompt = ({
     }).then((result) => {
       if (result.isConfirmed) {
         // Delete the specified localStorage items
-        localStorage.removeItem("savePasswordInBackend");
-        localStorage.removeItem(`seedBackupDone-${userData?.telegramId}`);
-        localStorage.removeItem(`encryptedSeed-${userData?.telegramId}`);
+      Object.keys(localStorage).forEach((key) => {
+        if (
+          key.startsWith("seedBackupDone-") ||
+          key.startsWith("encryptedSeed-") ||
+          key === "savePasswordInBackend"
+        ) {
+          localStorage.removeItem(key);
+        }
+      });
         
         // Reload the page to reflect changes
         window.location.reload();
       } else {
         // If Cancel is clicked, show the decrypt prompt again
-        if (onHidePrompt) {
-          onHidePrompt(true); // Explicitly show the prompt again
-        }
+        onHidePrompt?.(false);
       }
     });
   };
