@@ -208,7 +208,7 @@ const AddData: React.FC = () => {
               type="text"
               value={shareWith}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="@user-name"
+              placeholder="Enter Public Address"
               className="input-field"
             />
             {/* {isSearch && <span className="spinner" />} */}
