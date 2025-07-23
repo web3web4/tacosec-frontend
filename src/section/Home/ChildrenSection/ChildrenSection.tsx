@@ -50,10 +50,6 @@ export default function ChildrenSection({
             >
               <div className="child-info">
                 <div className="child-meta">
-                  <strong>Created by:</strong>
-                  <span className="child-username"> {child.username}</span>
-                </div>
-                <div className="child-meta">
                 <strong>Created At:</strong>
                 <span className="child-date">{formatDate(child.createdAt)}</span>
                 </div>
