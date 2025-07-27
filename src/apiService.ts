@@ -84,7 +84,7 @@ export async function GetMyData(initData?: string): Promise<any> {
     // Handle 401 Unauthorized errors specifically
     if (response.status === 401) {
       // Clear the invalid token if it exists
-      localStorage.removeItem('jwt_token');
+      //localStorage.removeItem('jwt_token');
       throw new Error("Authentication failed. Please log in again.");
     }
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -116,7 +116,7 @@ export async function storageEncryptedData(
   if (!response.ok) {
     // Handle 401 Unauthorized errors specifically
     if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
+      //localStorage.removeItem('jwt_token');
       throw new Error("Authentication failed. Please log in again.");
     }
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -173,7 +173,7 @@ export async function getDataSharedWithMy(initData?: string): Promise<any> {
   if (!response.ok) {
     // Handle 401 Unauthorized errors specifically
     if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
+      //localStorage.removeItem('jwt_token');
       throw new Error("Authentication failed. Please log in again.");
     }
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -309,18 +309,20 @@ export async function sendContractSupport(initData: string, supportData: Support
 }
 
 export async function getChildrenForSecret(initData: string, parentId: string): Promise<ChildDataItem[]> {
+  const headers = getAuthHeaders(initData);
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
   const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+    headers,
   });
-
-  if (!response.ok) {
+/*
+  if (!response.ok || response.status !== 301) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-
+*/
   const result = await response.json();
   return result.passwords;
 }

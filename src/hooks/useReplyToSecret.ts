@@ -83,6 +83,13 @@ export default function useReplyToSecret() {
     let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
     selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
 
+/*
+    const checkUsersCondition =
+        new conditions.base.addressAllowlist.AddressAllowlistCondition({
+          userAddress: ':userAddress',
+          addresses: publicAddresses
+        });
+*/
     const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
       endpoint: `${BACKEND}/telegram/verify-test`,
       parameters: {

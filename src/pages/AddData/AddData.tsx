@@ -12,6 +12,7 @@ import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
+import { DataPayload } from "../../interfaces/addData";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -45,12 +46,13 @@ const AddData: React.FC = () => {
   const { address } = useWallet();
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
-  const { initDataRaw } = useUser();
+  const { initDataRaw , isBrowser } = useUser();
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
     provider,
     ritualId,
+
   });
 
   if (!isInit || !provider) {
@@ -89,8 +91,13 @@ const AddData: React.FC = () => {
         .map((item) => (
           publicAddresses.push(item.address)
         ));
-
       //condition
+      const checkUsersCondition =
+        new conditions.base.addressAllowlist.AddressAllowlistCondition({
+          userAddress: ':userAddress',
+          addresses: publicAddresses
+        });
+      /*
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
         parameters: {
@@ -100,7 +107,7 @@ const AddData: React.FC = () => {
         query: '$.isValid',
         returnValueTest: { comparator: '==', value: true },
       });
-
+*/
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
@@ -118,15 +125,21 @@ const AddData: React.FC = () => {
             invited: false,
           }));
 
+        // Create payload object without initData first
+        const payload: DataPayload = {
+          key: name,
+          description: "",
+          type: "text",
+          value: encryptedHex!,
+          sharedWith: sharedWithList,
+        };    
+        // Only add initData if not from web (i.e., from Telegram)
+        if (!isBrowser) {
+          payload.initData = parsedInitData;
+        }
+
         const res = await storageEncryptedData(
-          {
-            key: name,
-            description: "",
-            type: "text",
-            value: encryptedHex!,
-            sharedWith: sharedWithList,
-            initData: parsedInitData,
-          },
+          payload,
           initDataRaw!
         );
         if (res) {
