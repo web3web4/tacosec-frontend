@@ -17,7 +17,7 @@ import { DataPayload } from "../../interfaces/addData";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 // const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
-const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
+//const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 const AddData: React.FC = () => {
   const {
