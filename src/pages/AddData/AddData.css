@@ -172,10 +172,15 @@
   box-shadow: var(--box-shadow);
 }
 
+.user-content-title{
+  word-break: break-all;
+}
+
 .user-content-buttons{
   display: flex;
-  align-items: center;
-  column-gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
 .delete-user-btn{
@@ -201,9 +206,11 @@
 }
 
 .user_container {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  margin-bottom: 20px;
+  column-gap: 10px;
 }
 
 .btn-invited {

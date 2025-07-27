@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 
 export interface WalletContextProps {
   address: string | null;
+  //signature: ethers.Signer | null;
   addressweb: string | null;
   signer: ethers.Signer | null;
   hasWallet: boolean;
