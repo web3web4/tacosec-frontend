@@ -49,6 +49,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [passwordError, setPasswordError] = useState<string>("");
   const [decryptedPassword, setDecryptedPassword] = useState<string | undefined>("");
   const [showResetFlow, setShowResetFlow] = useState(false);
+
   const [addressweb, setAddressweb] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
       return findAddressInStorage();
@@ -109,6 +110,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       try {
         const message = `Login to Taco App: ${Date.now()}`;
         const signature = await wallet.signMessage(message);
+        
         await loginUserWeb(wallet.address, signature);
         saveEncryptedSeed(wallet.address, encrypted);
       } catch (err) {

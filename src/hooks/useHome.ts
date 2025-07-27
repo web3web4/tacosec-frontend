@@ -33,6 +33,7 @@ export default function useHome() {
     domain,
     provider,
     ritualId,
+    
   });
 
   const handleAddClick = (): void => {

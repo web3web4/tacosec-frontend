@@ -83,6 +83,13 @@ export default function useReplyToSecret() {
     let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
     selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
 
+/*
+    const checkUsersCondition =
+        new conditions.base.addressAllowlist.AddressAllowlistCondition({
+          userAddress: ':userAddress',
+          addresses: publicAddresses
+        });
+*/
     const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
       endpoint: `${BACKEND}/telegram/verify-test`,
       parameters: {
@@ -101,21 +108,21 @@ export default function useReplyToSecret() {
     if (encryptedBytes) {
       const encryptedHex = toHexString(encryptedBytes);
       const parsedInitData = parseTelegramInitData(initDataRaw!);
-      const res = await storageEncryptedData(
-        {
-          key: `reply: ${uuidv4()}`,
-          description: "",
-          type: "text",
-          value: encryptedHex!,
-          sharedWith: selectedSecret.shareWith,
-          initData: parsedInitData,
-          parent_secret_id: selectedSecret.parentSecretId,
-        },
-        initDataRaw!
-      );
-      if (!res) {
-        throw new Error("Failed to store encrypted data");
-      }
+      // const res = await storageEncryptedData(
+      //   {
+      //     key: `reply: ${uuidv4()}`,
+      //     description: "",
+      //     type: "text",
+      //     value: encryptedHex!,
+      //     sharedWith: selectedSecret.shareWith,
+      //     initData: parsedInitData,
+      //     parent_secret_id: selectedSecret.parentSecretId,
+      //   },
+      //   initDataRaw!
+      // );
+      // if (!res) {
+      //   throw new Error("Failed to store encrypted data");
+      // }
     } else {
       throw new Error("Failed to encrypt data");
     }
