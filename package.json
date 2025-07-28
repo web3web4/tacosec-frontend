@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
-    "@nucypher/shared": "0.6.0-alpha.0",
+    "@nucypher/nucypher-contracts": "file:./nucypher-nucypher-contracts-0.25.0.tgz",
     "@nucypher/taco-auth": "0.4.0-alpha.0",
     "@nucypher/taco": "^0.7.0-alpha.0",
     "@testing-library/dom": "^10.4.0",
@@ -58,11 +58,6 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "typescript": "^5.8.3"
-  },
-  "resolutions": {
-    "ethers": "5.7.2"
-  },
-  "peerDependencies": {
-    "ethers": "^5.7.2"
   }
+
 }
