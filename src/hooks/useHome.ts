@@ -441,6 +441,7 @@ export default function useHome() {
   };
  
   const toggleExpand = async (index: number, value: string, id: string) => {
+    setDecrypting(false);
     if (expandedIndex === index) {
       setExpandedIndex(null);
     } else {
@@ -484,6 +485,7 @@ export default function useHome() {
   };
 
   const toggleChildExpand = (parentIndex: number, childIndex: number, value: string, childId: string) => {
+    setDecryptingChild(false);
     const currentChild = expandedChildIndex[parentIndex];
     if (currentChild === childIndex) {
       setExpandedChildIndex(prev => ({ ...prev, [parentIndex]: null }));
