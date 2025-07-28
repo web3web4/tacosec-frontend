@@ -45,12 +45,14 @@ export default function useTaco({
         console.warn("Invalid signer", signer);
         return;
       }
+
       const authProvider = new EIP4361AuthProvider(provider, signer, {
-        domain: 'localhost',
-        uri: window.location.origin,
+        domain: domain, 
+        uri: 'http://localhost:3000',
       });
       console.log("signer22",signer);
       console.log("authProvider",authProvider);
+
       conditionContext.addAuthProvider(USER_ADDRESS_PARAM_DEFAULT, authProvider);
 
       return decrypt(provider, domain, messageKit, conditionContext);
