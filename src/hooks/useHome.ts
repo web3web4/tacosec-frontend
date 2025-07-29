@@ -20,6 +20,7 @@ export default function useHome() {
   const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("mydata");
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [currentSecretId, setCurrentSecretId] = useState<string | null>(null);
   const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
   const [decrypting, setDecrypting] = useState<boolean>(false);
   const [expandedChildIndex, setExpandedChildIndex] = useState<Record<number, number | null>>({});
@@ -41,9 +42,9 @@ export default function useHome() {
 
   const handleSetActiveTabClick = (tabActive: TabType): void => {
     setMyData([]);
-    setExpandedIndex(null);
     tabActive === "mydata" ? fetchMyData() : fetchSharedWithMyData();
     setActiveTab(tabActive);
+    if(currentSecretId) triggerGetChildrenForSecret(currentSecretId);
   };
 
   const fetchMyData = async () => {
@@ -441,27 +442,32 @@ export default function useHome() {
     });
   };
  
+  const triggerGetChildrenForSecret = async (id: string) => {
+    const response: ChildDataItem[] = await getChildrenForSecret(initDataRaw!, id);
+          if (activeTab === "mydata") {
+            setMyData((prev) => prev.map((item) =>
+                item.id === id ? { ...item, children: response } : item ));
+          } else {
+            setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
+                passwords: item.passwords.map((pw) =>
+                pw.id === id ? { ...pw, children: response } : pw )}))
+            );
+          }
+  };
+
   const toggleExpand = async (index: number, value: string, id: string) => {
     setDecrypting(false);
     if (expandedIndex === index) {
       setExpandedIndex(null);
+      setCurrentSecretId(null);
     } else {
       setExpandedIndex(index);
+      setCurrentSecretId(id);
   
       if (!decryptedMessages[index]) {
         decryptMessage(index, value);
       }
-  
-      const response: ChildDataItem[] = await getChildrenForSecret(initDataRaw!, id);
-      if (activeTab === "mydata") {
-        setMyData((prev) => prev.map((item) =>
-            item.id === id ? { ...item, children: response } : item ));
-      } else {
-        setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
-            passwords: item.passwords.map((pw) =>
-            pw.id === id ? { ...pw, children: response } : pw )}))
-        );
-      }
+      await triggerGetChildrenForSecret(id);
     }
   };
   
