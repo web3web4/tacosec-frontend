@@ -40,11 +40,11 @@ export default function useHome() {
     navigate("/add");
   };
 
-  const handleSetActiveTabClick = (tabActive: TabType): void => {
+  const handleSetActiveTabClick = async (tabActive: TabType) => {
     setMyData([]);
     tabActive === "mydata" ? fetchMyData() : fetchSharedWithMyData();
     setActiveTab(tabActive);
-    if(currentSecretId) triggerGetChildrenForSecret(currentSecretId);
+    if(currentSecretId) await triggerGetChildrenForSecret(currentSecretId);
   };
 
   const fetchMyData = async () => {
