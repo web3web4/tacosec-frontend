@@ -41,6 +41,7 @@ export default function useHome() {
 
   const handleSetActiveTabClick = (tabActive: TabType): void => {
     setMyData([]);
+    setExpandedIndex(null);
     tabActive === "mydata" ? fetchMyData() : fetchSharedWithMyData();
     setActiveTab(tabActive);
   };
