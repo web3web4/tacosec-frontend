@@ -1,21 +1,40 @@
 :root {
-  --primary-color: #4A90E2;  
-  --secondary-color: #7ED321; 
-  --background: #FFFFFF;    
-  --surface: #F8F9FA;        
-  --text-primary: #2C3E50;   
-  --text-secondary: #95A5A6; 
-  --success: #00C851;      
-  --danger: #FF4442;         
-  --border-radius: 12px;    
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --primary-color: #95ff5d;
+  --secondary-color: #95ff5d;
+  --accent-color: #95ff5d;
+  --background: #000000;
+  --surface: #111111;
+  --text-primary: #95ff5d;
+  --text-secondary: #95ff5d;
+  --border: #95ff5d;
+  --shadow: rgba(0, 200, 81, 0.2);
+  --success: #95ff5d;
+  --warning: #95ff5d;
+  --error: #95ff5d;
+  --info: #95ff5d;
+  --metro-green: #95ff5d;
+  --border-radius: 0px;
+  --box-shadow: 0 2px 8px rgba(0, 200, 81, 0.1);
+  --corner-cut: 15px; /* Variable for consistent corner cuts */
 }
 
 
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--background);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  min-height: 100vh;
+  background: var(--background);
+  display: flex;
+  flex-direction: column;
 }
 
 .app-container {
@@ -41,9 +60,10 @@ body {
   width: 48px;
   height: 48px;
   border: 3px solid var(--primary-color);
-  border-radius: 50%;
+  border-radius: 0;
   border-top-color: transparent;
   animation: spin 0.8s linear infinite;
+  clip-path: polygon(var(--small-corner-cut) 0%, 100% 0%, calc(100% - var(--small-corner-cut)) 100%, 0% 100%);
 }
 
 @keyframes spin {
@@ -87,19 +107,21 @@ body {
 
 .card {
   background: var(--surface);
-  border-radius: var(--border-radius);
+  border-radius: 0;
   padding: 1.25rem;
   margin: 1rem;
   box-shadow: var(--box-shadow);
+  clip-path: polygon(var(--corner-cut) 0%, 100% 0%, calc(100% - var(--corner-cut)) 100%, 0% 100%);
 }
 
 .btn {
   padding: 12px 24px;
-  border-radius: var(--border-radius);
+  border-radius: 0;
   border: none;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
 }
 
 .btn-primary {
@@ -116,9 +138,10 @@ body {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
-  border-radius: var(--border-radius);
+  border-radius: 0;
   margin: 8px 0;
   transition: border-color 0.2s ease;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
 }
 
 .input-field:focus {
@@ -134,5 +157,6 @@ body {
   padding: 1rem;
   background: var(--surface);
   margin: 0.5rem 1rem;
-  border-radius: var(--border-radius);
+  border-radius: 0;
+  clip-path: polygon(var(--corner-cut) 0%, 100% 0%, calc(100% - var(--corner-cut)) 100%, 0% 100%);
 }

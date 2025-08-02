@@ -4,7 +4,7 @@ import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../utils/metroSwal";
 
 export default function useHome() {
   const navigate = useNavigate();
@@ -35,11 +35,10 @@ export default function useHome() {
       setMyData(data);
       if(data.length > 0) await getProfilesDetailsForUsers(data);
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err instanceof Error ? err.message : "An error occurred",
-      });
+      MetroSwal.error(
+        "Error",
+        err instanceof Error ? err.message : "An error occurred"
+      );
     }
   };
 
@@ -85,11 +84,10 @@ export default function useHome() {
       setSharedWithMyData(data.sharedWithMe);
       if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err instanceof Error ? err.message : "An error occurred",
-      });
+      MetroSwal.error(
+        "Error",
+        err instanceof Error ? err.message : "An error occurred"
+      );
     }
   };
 
@@ -134,7 +132,10 @@ export default function useHome() {
       swalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
     }
   
-    const result = await Swal.fire(swalOptions);
+    const result = await MetroSwal.confirm(
+      'Do you want to delete this Secret?',
+      isHasSharedWith ? 'Also delete for everyone it was shared with' : ''
+    );
   
     if (result.isConfirmed) {
       if (isHasSharedWith) {

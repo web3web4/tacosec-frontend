@@ -4,7 +4,7 @@ import "./Settings.css";
 import { useUser } from "../../context/UserContext";
 import { useWallet } from "../../wallet/walletContext";
 import { useState, useEffect } from "react";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import { ethers } from "ethers";
 import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSettingPage";
 import CryptoJS from "crypto-js";
@@ -42,7 +42,7 @@ const Settings: React.FC = () => {
   const handleDecrypt = () => {
     const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
     if (!encrypted) {
-      Swal.fire("Error", "No encrypted seed found.", "error");
+      MetroSwal.error("Error", "No encrypted seed found.");
       return;
     }
     setShowDecryptPrompt(true);
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
         })
         .catch(err => {
           console.error("Failed to copy address: ", err);
-          Swal.fire("Error", "Failed to copy address", "error");
+          MetroSwal.error("Error", "Failed to copy address");
         });
     }
   };
@@ -176,11 +176,7 @@ const Settings: React.FC = () => {
         <ResetPasswordWithSeed
           onSuccess={() => {
             setShowResetFlow(false);
-            Swal.fire(
-              "Success",
-              "You can now unlock your wallet with your new password.",
-              "success"
-            );
+            MetroSwal.success("Success", "You can now unlock your wallet with your new password.");
           }}
           onCancel={() => {
             setShowResetFlow(false);

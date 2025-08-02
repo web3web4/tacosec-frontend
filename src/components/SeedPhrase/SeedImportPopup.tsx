@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import "./SeedPhrase.css";
 
 export function SeedImportPopup({
@@ -22,11 +22,7 @@ export function SeedImportPopup({
     const trimmedWords = words.map((w) => w.trim());
     const mnemonic = trimmedWords.join(" ");
     if (trimmedWords.includes("") || trimmedWords.length !== 12) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid Seed",
-        text: "Please enter all 12 words correctly.",
-      });
+      MetroSwal.error("Invalid Seed", "Please enter all 12 words correctly.");
       return;
     }
     setLoading(true);

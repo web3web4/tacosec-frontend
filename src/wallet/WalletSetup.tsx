@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../utils/metroSwal";
 import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
 import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
@@ -36,7 +36,7 @@ export default function WalletSetup() {
   // 🔔 Show alert if no wallet exists
 
   const showInitialPrompt = () => {
-    Swal.fire({
+    MetroSwal.fire({
       icon: "info",
       title: "No Wallet Found",
       html: `
@@ -75,7 +75,7 @@ useEffect(() => {
   );
 
   if (otherWalletKey) {
-    Swal.fire({
+    MetroSwal.fire({
       icon: "error",
       title: "Access Denied",
       html: `<p style="font-size:14px;">You are not allowed to access this app using multiple Telegram accounts on the same device.</p>`,
@@ -95,7 +95,7 @@ const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!
         setAddress(wallet.address);
         setHasWallet(true);
         setDecryptedPassword(pwd);
-        Swal.fire("Success", "Wallet restored successfully.", "success");
+        MetroSwal.fire("Success", "Wallet restored successfully.", "success");
       }
     });
     setShowImport(false);
@@ -134,7 +134,7 @@ const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!
   const handleDecrypt = async () => {
 const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
     if (!encrypted) {
-      Swal.fire("Error", "No encrypted seed found in localStorage.", "error");
+      MetroSwal.fire("Error", "No encrypted seed found in localStorage.", "error");
       return;
     }
 
@@ -175,10 +175,10 @@ const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
           localStorage.setItem(`seedBackupDone-${userData?.telegramId}`, "true");
           setShowBackup(false);
           setVerifyIndices(null);
-          Swal.fire("✅ Success", "Backup complete", "success");
+          MetroSwal.fire("✅ Success", "Backup complete", "success");
         }}
         onFailure={() => {
-          Swal.fire(
+          MetroSwal.fire(
             "❌ Failed",
             "Verification failed, please try again.",
             "error"
@@ -209,7 +209,7 @@ const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
           <ResetPasswordWithSeed
             onSuccess={() => {
               setShowResetFlow(false);
-              Swal.fire(
+              MetroSwal.fire(
                 "Success",
                 "You can now unlock your wallet with your new password.",
                 "success"
