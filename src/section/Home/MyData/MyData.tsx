@@ -1,21 +1,51 @@
-import defaultProfileImage from "../../../assets/images/no-User.png"
+// import defaultProfileImage from "../../../assets/images/no-User.png"
 import { DataItem } from "../../../types/types";
+import { useState } from "react";
+import "../../../components/SeedPhrase/SeedPhrase.css";
+// import ChildrenSection from "../ChildrenSection/ChildrenSection";
+import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
+import useReplyToSecret from "../../../hooks/useReplyToSecret";
+import { formatDate } from "../../../utils/tools";
 
 interface MyDataType{
     myData: DataItem[],
-    toggleExpand: (index: number, value: string) => void,
+    toggleExpand: (index: number, value: string, id: string) => void,
     expandedIndex: number | null,
     decrypting: boolean,
     decryptedMessages: Record<number, string>,
     handleDelete: (id: string, isHasSharedWith: boolean) => void,
+    toggleChildExpand: (parentIndex: number, childIndex: number, value: string, childId: string) => void,
+    expandedChildIndex: Record<number, number | null>,
+    decryptingChild: boolean,
+    decryptedChildMessages: Record<string, string>,
 }
 
-export default function MyData({myData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleDelete} : MyDataType) {
+export default function MyData({
+  myData, 
+  toggleExpand, 
+  expandedIndex, 
+  decrypting, 
+  decryptedMessages, 
+  handleDelete,
+  toggleChildExpand,
+  expandedChildIndex = {},
+  decryptingChild = false,
+  decryptedChildMessages = {},
+} : MyDataType) {
+    const [showManualCopy, setShowManualCopy] = useState(false);
+    const [manualCopyText, setManualCopyText] = useState("");
+    const { handleReplyToSecret } = useReplyToSecret();
+    const [copied, setCopied] = useState(false);
 
     const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text);
-        alert("Copied to clipboard!");
-      };
+        navigator.clipboard.writeText(text).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }).catch(() => {
+            setManualCopyText(text);
+            setShowManualCopy(true);
+        });
+    };
 
   return (
     <div className="data-list">
@@ -24,9 +54,31 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
               <div
                 key={i}
                 className="data-item"
-                onClick={() => toggleExpand(i, item.value)}
+                onClick={() => toggleExpand(i, item.value, item.id)}
               >
-                <p className="item-title">{item.key}</p>
+                <div className="item-container">
+                  <div className="item-header-info">
+                  <p className="item-title">{item.key}</p>
+                  <div className="created-at-container">
+                    <strong>Created At:</strong>
+                    <span className="child-date">{formatDate(item.createdAt)}</span>
+                  </div>
+                  </div>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu
+                        options={[
+                          {
+                            label: "Reply",
+                            onClick: () => {
+                              handleReplyToSecret({parentSecretId: item.id, shareWith: item.sharedWith});
+                            } 
+                          }
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>{" "}
                 <p
                   className="item-status"
                   data-status={
@@ -62,7 +114,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                             handleCopy(decryptedMessages[i]);
                         }}
                       >
-                        Copy
+                        {copied ? "Copied!" : "Copy"}
                       </button>
                       <button
                         className="delete-button"
@@ -71,7 +123,7 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                         Delete
                       </button>
                     </div>
-                    {item.sharedWith.length > 0 && (
+                    {/* {item.sharedWith.length > 0 && (
                       <div className="shared-section">
                         {" "}
                         <h4 className="shared-title">Shared with:</h4>
@@ -92,7 +144,18 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
                           ))}
                         </div>
                       </div>
-                    )}
+                    )} */}
+                    
+                    {/* {item.children && item.children.length > 0 && (
+                      <ChildrenSection
+                        children={item.children}
+                        parentIndex={i}
+                        toggleChildExpand={toggleChildExpand}
+                        expandedChildIndex={expandedChildIndex}
+                        decryptingChild={decryptingChild}
+                        decryptedChildMessages={decryptedChildMessages}
+                      />
+                    )} */}
                   </div>
                 )}
               </div>
@@ -100,6 +163,22 @@ export default function MyData({myData, toggleExpand, expandedIndex, decrypting,
           ) : (
             <p className="no-data-message">No data available.</p>
           )}
+      {showManualCopy && (
+        <div className="manual-copy-modal">
+          <div className="manual-copy-modal-content">
+            <h3>Manual Copy</h3>
+            <p>Copy your secret manually:</p>
+            <textarea
+              className="manual-copy-textarea"
+              value={manualCopyText}
+              readOnly
+              onFocus={e => e.target.select()}
+            />
+            <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

@@ -175,10 +175,17 @@
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   animation: matrixItemPulse 4s ease-in-out infinite alternate;
 
   backdrop-filter: blur(15px);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .data-item:hover {
@@ -191,6 +198,12 @@
     inset 0 0 30px rgba(0, 255, 65, 0.1);
   filter: brightness(1.2) contrast(1.1);
   animation: matrixGlitch 0.2s ease-in-out, matrixItemPulse 2s ease-in-out infinite;
+  z-index: 10;
+}
+
+.item-container{
+  display: flex;
+  justify-content: space-between;
 }
 
 .data-item::before {
@@ -291,6 +304,36 @@
   text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
 }
 
+.created-at-container {
+  display: flex;
+  gap: 7px;
+  font-size: 12px;
+  margin-bottom: 0.25rem;
+}
+
+.created-at-container strong{
+  color: #0000008e;
+}
+
+.created-at-container span {
+  color: #666;
+}
+
+.created-at-container {
+  display: flex;
+  gap: 7px;
+  font-size: 12px;
+  margin-bottom: 0.25rem;
+}
+
+.created-at-container strong{
+  color: #0000008e;
+}
+
+.created-at-container span {
+  color: #666;
+}
+
 .item-status {
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -361,6 +404,20 @@
   box-shadow: 0 0 25px rgba(0, 204, 51, 0.6), 0 0 50px rgba(0, 204, 51, 0.3);
   transform: translateY(-2px) scale(1.05);
   text-shadow: 0 0 10px #000;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.item-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-date {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
 }
 
 .delete-button {
@@ -489,6 +546,11 @@
 }
 .dots span:nth-child(3) {
   animation-delay: 0.4s;
+}
+
+.loading-container-home{
+  position: absolute;
+  inset: 45%;
 }
 
 @keyframes bounce {

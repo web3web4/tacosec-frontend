@@ -1,28 +1,30 @@
 import { useCallback, useEffect, useState } from "react";
-import defaultProfileImage from "../assets/images/no-User.png";
-import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
-import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
-import { useUser } from "../context/UserContext";
+// import defaultProfileImage from "../assets/images/no-User.png";
+// import userNotFoundImage from "../assets/images/user-not-found.svg";
+// import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
+// import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
+// import { useUser } from "../context/UserContext";
 import { MetroSwal } from "../utils/metroSwal";
 import { useNavigationGuard } from "../context/NavigationGuardContext";
-import { debounce } from "../utils/tools";
+// import { debounce } from "../utils/tools";
 
-const initProfileData = {
-  img: { src: defaultProfileImage },
-  name: "",
-  username: "",
-  invited: false,
-};
+// const initProfileData = {
+//   img: { src: defaultProfileImage },
+//   name: "",
+//   username: "",
+//   invited: false,
+// };
 
 export default function useAddData() {
-  const { initDataRaw } = useUser();
+  // const { initDataRaw } = useUser();
   const { setNavigationCheck } = useNavigationGuard();
-  const [userProfile, setUserProfile] = useState<UserProfileType>({ data: initProfileData, error: null });
-  const [searchData, setSearchData] = useState<SearchDataType[]>([]);
-  const [shareList, setShareList] = useState<UserProfileType[]>([]);
+  // const [userProfile, setUserProfile] = useState<UserProfileType>({ data: initProfileData, error: null });
+  // const [searchData, setSearchData] = useState<SearchDataType[]>([]);
+  // const [shareList, setShareList] = useState<UserProfileType[]>([]);
+  const [shareList, setShareList] = useState<{address: string}[]>([]);
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
-  const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
-  const [isSearch, setIsSearch] = useState<boolean>(false);
+  // const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
+  // const [isSearch, setIsSearch] = useState<boolean>(false);
   const [shareWith, setShareWith] = useState<string>("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
@@ -37,131 +39,152 @@ export default function useAddData() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareWith, message, name]);
 
-  const fetchUserProfile = async () => {
-    setUserProfile({ data: initProfileData, error: shareWith });
-    const username = shareWith.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
+  // const fetchUserProfile = async (username: string) => {
+  //   setUserProfile({ data: initProfileData, error: username });
+  //   const cleanedUsername = username.startsWith("@")
+  //     ? username.substring(1)
+  //     : username;
 
-    try {
-      const response: GetUserProfileDetailsResponse =
-        await getUserProfileDetails(username);
+  //   try {
+  //     const response: GetUserProfileDetailsResponse =
+  //       await getUserProfileDetails(cleanedUsername);
 
-      if (!response) {
-        setUserProfile(() => ({ data: initProfileData, error: `No Telegram user found for @${username}` }));
-        return;
-      }
-      setUserProfile({
-        data: {
-          img: { src: response.img ? response.img.src : defaultProfileImage },
-          name: response.name,
-          username: response.username,
-          invited: false,
-        },
-        error: null,
-      });
-    } catch (error) {
-      setUserProfile({ data: initProfileData, error: `Error On Fetch User: ${error}` });
-    }
-  };
+  //     if (!response) {
+  //       const profile = {
+  //         img: { src: userNotFoundImage },
+  //         name: "",
+  //         username: "",
+  //         invited: false,
+  //       };
+  //       setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${username}` }));
+  //       return;
+  //     }
+  //     setUserProfile({
+  //       data: {
+  //         img: { src: response.img ? response.img.src : defaultProfileImage },
+  //         name: response.name,
+  //         username: response.username,
+  //         invited: false,
+  //       },
+  //       error: null,
+  //     });
+  //   } catch (error) {
+  //     setUserProfile({ data: initProfileData, error: `Error On Fetch User: ${error}` });
+  //   }
+  // };
 
-  const checkIfUserExists = async () => {
-    try {
-      const username = shareWith.startsWith("@")
-        ? shareWith.substring(1)
-        : shareWith;
+  // const checkIfUserExists = async (username: string) => {
+  //   try {
+  //     const cleanedUsername = username.startsWith("@")
+  //       ? username.substring(1)
+  //       : username;
 
-      const response = await checkIfUserAvailable(initDataRaw!, username);
-      setIsCanInvite(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     const response = await checkIfUserAvailable(initDataRaw!, cleanedUsername);
+  //     setIsCanInvite(response);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  const handleConfirmClick = (): void => {
-    const cleanedUsername = shareWith.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
+  // const handleConfirmClick = (): void => {
+  //   const cleanedUsername = shareWith.startsWith("@")
+  //     ? shareWith.substring(1)
+  //     : shareWith;
 
-    const isAlreadyInList = shareList.some(
-      (user) => user.data.username?.toLowerCase() === cleanedUsername.trim().toLowerCase()
-    );
+  //   const isAlreadyInList = shareList.some(
+  //     (user) => user.data.username?.toLowerCase() === cleanedUsername.trim().toLowerCase()
+  //   );
 
-    if (!isAlreadyInList) {
-        const updatedProfile = {
-          ...userProfile,
-          data: {
-            ...userProfile.data,
-            username: cleanedUsername.toLowerCase(),
-            invited: isCanInvite,
-          },
-        };
-        setShareList([...shareList, updatedProfile]);
-    }
+  //   if (!isAlreadyInList) {
+  //       const updatedProfile = {
+  //         ...userProfile,
+  //         data: {
+  //           ...userProfile.data,
+  //           username: cleanedUsername.toLowerCase(),
+  //           invited: isCanInvite,
+  //         },
+  //       };
+  //       setShareList([...shareList, updatedProfile]);
+  //   }
     
-    setIsOpenPopup(false);
-    setIsCanInvite(false);
-    setShareWith("");
+  //   setIsOpenPopup(false);
+  //   setIsCanInvite(false);
+  //   setShareWith("");
+  //   setSearchData([]);
+  // };
+
+  // const handleInvite = (index: number) => {
+  //   setShareList((prevList) =>
+  //     prevList.map((user, i) =>
+  //       i === index ? { ...user, data: { ...user.data, invited: true } } : user
+  //     )
+  //   );
+  // };
+
+  const handleSearch = async (address: string) => {
+    // setSearchData([]);
+    setShareWith(address);
+    // getUsersAutoComplete(username);
   };
 
-  const handleInvite = (index: number) => {
-    setShareList((prevList) =>
-      prevList.map((user, i) =>
-        i === index ? { ...user, data: { ...user.data, invited: true } } : user
-      )
-    );
-  };
-
-  const handleSearch = async (username: string) => {
-    setSearchData([]);
-    setShareWith(username);
-    getUsersAutoComplete(username);
-  };
+  // const closePopup = (value: boolean) => {
+  //   setIsOpenPopup(false);
+  //   setSearchData([]);
+  // };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getUsersAutoComplete = useCallback(
-    debounce(async (username: string) => {
-      if (!username) {
-        setSearchData([]);
-        return;
-      }
-        setIsSearch(true);
-      try{
-        const cleanedUsername = username.startsWith("@")
-          ? username.substring(1)
-          : username;
+  // const getUsersAutoComplete = useCallback(
+  //   debounce(async (username: string) => {
+  //     if (!username) {
+  //       setSearchData([]);
+  //       return;
+  //     }
+  //       setIsSearch(true);
+  //     try{
+  //       const cleanedUsername = username.startsWith("@")
+  //         ? username.substring(1)
+  //         : username;
 
-        const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
-        setSearchData(response);
-      }catch(error){
-        console.log(error);
-      }finally{
-        setIsSearch(false);
-      }
-    }, 1000),
-    []
-  );
+  //       const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
+  //       setSearchData(response);
+  //     }catch(error){
+  //       console.log(error);
+  //     }finally{
+  //       setIsSearch(false);
+  //     }
+  //   }, 500),
+  //   []
+  // );
 
-  const handleDeleteUsername = (username: string) => {
-    setShareList((prevList) => prevList.filter((user) => user.data.username !== username));
+  // const handleDeleteUsername = (username: string) => {
+  //   setShareList((prevList) => prevList.filter((user) => user.data.username !== username));
+  // };
+
+  const handleDeleteAddress = (address: string) => {
+    setShareList((prevList) => prevList.filter((user) => user.address !== address));
   };
 
-  const handleSearchSelect = (username: string) => {
-    setShareWith(username);
-    setSearchData([]);
-  };
+  // const handleSearchSelect = (username: string) => {
+  //   setShareWith(username);
+  //   handleAddShare(username);
+  //   setSearchData([]);
+  // };
 
-  const handleAddShare = (): void => {
+  const handleAddShare = (address: string): void => {
     if (!shareWith.trim()) return;
-    setIsOpenPopup(true);
-    checkIfUserExists();
-    fetchUserProfile();
+    const isAlreadyInList = shareList.some((user) => user.address === address.trim());
+    if(!isAlreadyInList) setShareList([...shareList, { address: address.trim() }]);
+    setShareWith("");
+    // setIsOpenPopup(true);
+    // checkIfUserExists(username);
+    // fetchUserProfile(username);
+    // setSearchData([]);
   };
 
   const cleanFields = () => {
-    setUserProfile({ data: initProfileData, error: null });
+    // setUserProfile({ data: initProfileData, error: null });
     setIsOpenPopup(false);
-    setIsCanInvite(false);
+    // setIsCanInvite(false);
     setShareWith("");
     setShareList([]);
     setMessage("");
@@ -176,28 +199,44 @@ export default function useAddData() {
       );
       return false;
     }
+    if (name.trim() === "") {
+      MetroSwal.warning(
+        "Warning",
+        "The Title Field Is Required. Please Enter The Title."
+      );
+      return false;
+    }
+    if (message.trim() === "") {
+      MetroSwal.warning(
+        "Warning",
+        "The Secret Field Is Required. Please Enter The Secret."
+      );
+      return false;
+    }
     return true;
   };
 
   return {
-    userProfile,
+    // userProfile,
     isOpenPopup,
-    searchData,
+    // searchData,
     shareList,
     shareWith,
-    isSearch,
+    // isSearch,
     message,
     name,
-    handleInvite,
+    // handleInvite,
     setIsOpenPopup,
     handleSearch,
     handleAddShare,
-    handleConfirmClick,
-    handleSearchSelect,
-    handleDeleteUsername,
+    // handleConfirmClick,
+    // handleSearchSelect,
+    // handleDeleteUsername,
     cleanFields,
     checkEncrypting,
     setMessage,
+    // closePopup,
     setName,
+    handleDeleteAddress
   };
 }

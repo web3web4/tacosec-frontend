@@ -1,54 +1,58 @@
 import React, { useState } from "react";
-import CustomPopup from "../../components/CustomPopup/CustomPopup";
-import defaultProfileImage from "../../assets/images/no-User.png";
-import availableIcon from "../../assets/icons/accept.png";
+// import CustomPopup from "../../components/CustomPopup/CustomPopup";
+// import defaultProfileImage from "../../assets/images/no-User.png";
+// import availableIcon from "../../assets/icons/accept.png";
 import DeleteIcon from "../../assets/icons/delete-icon.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
 import { conditions, toHexString } from "@nucypher/taco";
-import { MetroSwal } from "../../utils/metroSwal";
+import Swal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
 import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
+import { DataPayload } from "../../interfaces/addData";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
-const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
-const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
+// const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
+//const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 const AddData: React.FC = () => {
   const {
-    userProfile,
-    isOpenPopup,
-    searchData,
+    // userProfile,
+    // isOpenPopup,
+    // searchData,
     shareList,
     shareWith,
-    isSearch,
+    // isSearch,
     message,
     name,
-    setIsOpenPopup,
+    // closePopup,
     handleSearch,
-    handleConfirmClick,
-    handleSearchSelect,
-    handleDeleteUsername,
+    // handleConfirmClick,
+    // handleSearchSelect,
+    // handleDeleteUsername,
     handleAddShare,
-    handleInvite,
+    // handleInvite,
     cleanFields,
     checkEncrypting,
     setMessage,
     setName,
+    handleDeleteAddress
   } = useAddData();
 
+  const { address } = useWallet();
   const [encrypting, setEncrypting] = useState(false);
   const { provider, signer } = useWallet();
-  const { initDataRaw, userData } = useUser();
+  const { initDataRaw , isBrowser } = useUser();
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
     provider,
     ritualId,
+
   });
 
   if (!isInit || !provider) {
@@ -71,25 +75,39 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let usernames: string = "";
-      usernames = userData?.username.toLowerCase()!;
-      shareList
-        .filter((item) => item.data.username !== null)
-        .map((item) => (
-          usernames += "," + item.data.username!.toLowerCase()
-        ));
+      // let usernames: string = "";
+      // usernames = userData?.username.toLowerCase()!;
+      // shareList
+      //   .filter((item) => item.data.username !== null)
+      //   .map((item) => (
+      //     usernames += "," + item.data.username!.toLowerCase()
+      //   ));
 
+
+      let publicAddresses: string[] = [];
+      publicAddresses.push(address!);
+      shareList
+        .filter((item) => item.address !== null)
+        .map((item) => (
+          publicAddresses.push(item.address)
+        ));
       //condition
+      const checkUsersCondition =
+        new conditions.base.addressAllowlist.AddressAllowlistCondition({
+          userAddress: ':userAddress',
+          addresses: publicAddresses
+        });
+      /*
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
         parameters: {
-          TelegramUsernames : usernames,
+          TelegramUsernames : publicAddresses,
           authorizationToken: ":authorizationToken"
         },
         query: '$.isValid',
         returnValueTest: { comparator: '==', value: true },
       });
-
+*/
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
@@ -100,33 +118,46 @@ const AddData: React.FC = () => {
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
-        const sharedWithList: { username: string; invited: boolean }[] = shareList
-          .filter((item) => item.data.username !== null)
+        const sharedWithList: { publicAddress: string; invited: boolean }[] = shareList
+          .filter((item) => item.address !== null)
           .map((item) => ({
-            username: item.data.username!,
-            invited: item.data.invited ?? false,
+            publicAddress: item.address,
+            invited: false,
           }));
 
+        // Create payload object without initData first
+        const payload: DataPayload = {
+          key: name,
+          description: "",
+          type: "text",
+          value: encryptedHex!,
+          sharedWith: sharedWithList,
+        };    
+        // Only add initData if not from web (i.e., from Telegram)
+        if (!isBrowser) {
+          payload.initData = parsedInitData;
+        }
+
         const res = await storageEncryptedData(
-          {
-            key: name,
-            description: "",
-            type: "text",
-            value: encryptedHex!,
-            sharedWith: sharedWithList,
-            initData: parsedInitData,
-          },
+          payload,
           initDataRaw!
         );
         if (res) {
-          MetroSwal.success(
-            "Success",
-            "The data was successfully encrypted and securely stored"
-          );
+          Swal.fire({
+            icon: "success",
+            title: `The data was successfully encrypted and securely stored`,
+            showConfirmButton: false,
+            timer: 4000
+          });
           cleanFields();
         }
       }
-    } catch (e) {
+    } catch (e: any) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e.message as string,
+      });
       console.log(e);
     }
     setEncrypting(false);
@@ -134,8 +165,8 @@ const AddData: React.FC = () => {
 
   return (
     <div className="add-data-container">
-      {isOpenPopup && (
-        <CustomPopup open={isOpenPopup} closed={setIsOpenPopup}>
+      {/* {isOpenPopup && (
+        <CustomPopup open={isOpenPopup} closed={closePopup}>
           <div className="popup-content">
             <img
               src={userProfile.data.img?.src}
@@ -155,10 +186,10 @@ const AddData: React.FC = () => {
             {!userProfile.error && (
               <button onClick={handleConfirmClick}>Confirmation</button>
             )}
-            <button onClick={() => setIsOpenPopup(false)}>Cancel</button>
+            <button onClick={() => closePopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
-      )}
+      )} */}
       <h2 className="page-title">Add New Data</h2>
       <label>Title</label>
       <input
@@ -178,7 +209,7 @@ const AddData: React.FC = () => {
       />
 
       {encrypting && (
-        <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
+        <div style={{ marginTop: "5px", color: "#ba1b5d", fontWeight: "bold" }}>
           Please Wait For Encrypting...
         </div>
       )}
@@ -190,13 +221,13 @@ const AddData: React.FC = () => {
               type="text"
               value={shareWith}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="@user-name"
+              placeholder="Enter Public Address"
               className="input-field"
             />
-            {isSearch && <span className="spinner" />}
+            {/* {isSearch && <span className="spinner" />} */}
           </div>
 
-      {searchData.length > 0 && (
+      {/* {searchData.length > 0 && (
         <ul 
           className="autocomplete-list">
           {searchData.map((item, index) => (
@@ -208,10 +239,10 @@ const AddData: React.FC = () => {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
 
     </div>
-        <button className="add-share-button" onClick={handleAddShare}>
+        <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
           +
         </button>
       </div>
@@ -221,9 +252,9 @@ const AddData: React.FC = () => {
           <p>Sharing with:</p>
           {shareList.map((user, i) => (
             <div className="user_container">
-            <div key={i}>- {user.data.name}</div>
+            <div className="user-content-title" key={i}>{user.address}</div>
               <div className="user-content-buttons">
-                { user.data.invited ? 
+                {/* { user.data.invited ? 
                 (<img src={availableIcon} alt="available icon" width={20} height={20}/>) 
                 : 
                 (<a
@@ -231,8 +262,8 @@ const AddData: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer">
                   <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
-                </a>)}
-                <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username!)}>
+                </a>)} */}
+                <div className="delete-user-btn" onClick={() => handleDeleteAddress(user.address)}>
                   <img src={DeleteIcon} alt="delete icon" width={20} height={20} />
                 </div>  
               </div>

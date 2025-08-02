@@ -1,3 +1,5 @@
+export type AuthMethod = "telegram" | "web";
+
 export interface initDataType {
   _id: string,
     telegramId: string,
@@ -11,6 +13,10 @@ export interface initDataType {
     updatedAt: string,
 }
 
+export interface AuthDataType {
+  access_token: string,
+}
+
 export type TelegramUser = {
   id: number;
   first_name: string;
@@ -18,24 +24,43 @@ export type TelegramUser = {
   username?: string;
 };
 
-export interface DataItem{
+export interface DataItem {
   id : string
   key: string,
   value: string,
-  sharedWith: {username: string, invited?: boolean}[],
-  shareWithDetails?: UserProfileDetailsType[]
+  createdAt: string,
+  sharedWith: ShareWith[],
+  shareWithDetails?: UserProfileDetailsType[], // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
+  children?: ChildDataItem[] // also this for help my to store children for each secret
+}
+interface ShareWith {
+  username: string, 
+  invited?: boolean
+}
+
+export interface ChildDataItem {
+  _id: string,
+  key: string,
+  value: string,
+  username: string  
+  createdAt: string,
 }
 export interface SharedWithMyDataType{
-  sharedByDetails?: UserProfileDetailsType,
+  sharedByDetails?: UserProfileDetailsType, // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
   username : string,
   passwords: {
     id: string,
     key: string,
     value: string,
+    reports: ReportsResponse[],
+    sharedWith: ShareWith[],
+    createdAt: string,
+    children?: ChildDataItem[] // also this for help my to store children for each secret
   }[]
 }
   
 export type TabType = "mydata" | "shared";
+
 
 export interface UserProfileType{
   data: UserProfileDetailsType,
@@ -46,6 +71,7 @@ export interface UserProfileDetailsType{
   img: { src: string} | null,
   name: string,
   username: string | null,
+  //address: string | null,
   invited?: boolean
 }
 
@@ -55,3 +81,35 @@ export interface SearchDataType{
   lastName: string;
 }
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;
+
+export interface Report {
+  reportedUsername: string;
+  report_type: ReportType;
+  secret_id: string;
+  reason: string;
+}
+
+export interface ReportsResponse {
+  id: string;
+  reason: ReportType;
+  createdAt: string;
+  report_type: string
+  reporterUsername: string;
+}
+
+export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';
+
+export interface ContactSupportProps {
+  setShowSupportPopup: (value: boolean) => void;
+}
+
+export interface SupportData {
+  subject: string;
+  message: string;
+}
+
+export interface SelectedSecretType{
+  parentSecretId: string,
+  parentUsername?: string,
+  shareWith: {username: string, invited?:boolean}[],
+  }
