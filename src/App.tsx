@@ -9,6 +9,24 @@ import { WalletProvider } from "./wallet/walletContext";
 import { UserProvider } from "./context/UserContext";
 import { NavigationGuardProvider } from "./context/NavigationGuardContext";
 import WalletSetup from "./wallet/WalletSetup";
+import { useUser } from "./context/UserContext";
+import useHome from "./hooks/useHome";
+const TopBar: React.FC = () => {
+  const { userData } = useUser();
+  const { handleAddClick } = useHome();
+
+  return (
+    <div className="top-bar">
+      <div>{userData?.firstName} {" "} {userData?.lastName}</div>
+      <button className="add-button" onClick={handleAddClick}>
+        + Add
+      </button>
+    </div>
+  );
+};
+
+
+
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -31,6 +49,7 @@ const App: React.FC = () => {
 
             {!isLoading && (
               <>
+                <TopBar />
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/add" element={<AddData />} />
@@ -47,4 +66,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;

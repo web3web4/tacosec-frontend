@@ -7,7 +7,9 @@ import {
   useMemo,
 } from "react";
 import { ethers } from "ethers";
-import { loginUserWeb, storagePublicKeyAndPassword } from "../apiService";
+import CryptoJS from "crypto-js";
+import { MetroSwal } from "../utils/metroSwal";
+import { storagePublicKeyAndPassword } from "../apiService";
 import { useUser } from "../context/UserContext";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
 import { ResetPasswordWithSeed } from "../components/SeedPhrase/ResetPasswordWithSeed";
@@ -82,17 +84,32 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   async function createWalletFlow() {
     if (isTelegram && !userData?.telegramId) return;
 
-    const { value: password, isConfirmed } = await promptPassword();
+    const { value: password, isConfirmed } = await MetroSwal.fire({
+      title: "Set Password",
+      input: "password",
+      inputLabel: "Enter a password to encrypt your wallet",
+      inputPlaceholder: "Your secure password",
+      inputAttributes: {
+        autocapitalize: "off",
+        autocorrect: "off",
+      },
+      showCancelButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+
     if (!isConfirmed || !password) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Cancelled",
-        html: "Password is required to create your wallet.",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      });
-      return createWalletFlow();
+      MetroSwal.warning(
+        "Cancelled",
+        "Password is required to create your wallet."
+      );
+      return;
     }
+
+    const { isConfirmed: saveConfirmed } = await MetroSwal.confirm(
+      "Save password",
+      "Do you want to save the wallet password on our servers?"
+    );
 
     const { isConfirmed: saveConfirmed } = await confirmSavePassword();
     const saveToBackend = saveConfirmed;
@@ -153,7 +170,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
-      Swal.fire("Success", "Wallet restored successfully.", "success");
+      MetroSwal.success("Success", "Wallet restored successfully.");
       setDecryptedPassword(password);
     } else {
       setPasswordError("Password incorrect or failed to restore wallet.");
@@ -199,13 +216,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         <ResetPasswordWithSeed
           onSuccess={() => {
             setShowResetFlow(false);
-            Swal.fire(
+            MetroSwal.success(
               "Success",
-              "You can now unlock your wallet with your new password.",
-              "success"
-            ).then(() => {
-              window.location.reload();
-            });
+              "You can now unlock your wallet with your new password."
+            );
           }}
           onCancel={() => {
             setShowResetFlow(false);

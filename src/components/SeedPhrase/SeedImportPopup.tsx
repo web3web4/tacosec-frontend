@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import "./SeedPhrase.css";
 
 export function SeedImportPopup({
@@ -44,6 +44,16 @@ const handleSubmit = async () => {
   }
 };
 
+  const handleSubmit = () => {
+    const trimmedWords = words.map((w) => w.trim());
+    const mnemonic = trimmedWords.join(" ");
+    if (trimmedWords.includes("") || trimmedWords.length !== 12) {
+      MetroSwal.error("Invalid Seed", "Please enter all 12 words correctly.");
+      return;
+    }
+    setLoading(true);
+    onImport(mnemonic);
+  };
 
   return (
     <div className="popup-container-seed">

@@ -4,7 +4,7 @@ import "./Settings.css";
 import { useUser } from "../../context/UserContext";
 import { useWallet } from "../../wallet/walletContext";
 import { useState, useEffect } from "react";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import { ethers } from "ethers";
 import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSettingPage";
 import CryptoJS from "crypto-js";
@@ -48,7 +48,7 @@ const Settings: React.FC = () => {
     if (!identifier) return;
     const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
-      Swal.fire("Error", "No encrypted seed found.", "error");
+      MetroSwal.error("Error", "No encrypted seed found.");
       return;
     }
     setShowDecryptPrompt(true);
@@ -186,11 +186,7 @@ const submitDecryption = () => {
         <ResetPasswordWithSeed
           onSuccess={() => {
             setShowResetFlow(false);
-            Swal.fire(
-              "Success",
-              "You can now unlock your wallet with your new password.",
-              "success"
-            );
+            MetroSwal.success("Success", "You can now unlock your wallet with your new password.");
           }}
           onCancel={() => {
             setShowResetFlow(false);

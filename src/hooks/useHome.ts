@@ -4,7 +4,7 @@ import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../utils/metroSwal";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "./useTaco";
 import { fromHexString } from "@nucypher/shared";
@@ -82,6 +82,10 @@ export default function useHome() {
       }
     } finally {
       setIsLoading(false);
+      MetroSwal.error(
+        "Error",
+        err instanceof Error ? err.message : "An error occurred"
+      );
     }
   };
 
@@ -149,6 +153,10 @@ export default function useHome() {
       }
     } finally {
       setIsLoading(false);
+      MetroSwal.error(
+        "Error",
+        err instanceof Error ? err.message : "An error occurred"
+      );
     }
   };
 
@@ -193,7 +201,10 @@ export default function useHome() {
       swalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
     }
   
-    const result = await Swal.fire(swalOptions);
+    const result = await MetroSwal.confirm(
+      'Do you want to delete this Secret?',
+      isHasSharedWith ? 'Also delete for everyone it was shared with' : ''
+    );
     if (result.isConfirmed) {
       try {
         if (isHasSharedWith) {

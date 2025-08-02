@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../utils/metroSwal";
 import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
 import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
@@ -35,9 +35,32 @@ export default function WalletSetup() {
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
-  const { userData, isBrowser } = useUser();
+  const { userData } = useUser();
 
-  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+  // 🔔 Show alert if no wallet exists
+
+  const showInitialPrompt = () => {
+    MetroSwal.fire({
+      icon: "info",
+      title: "No Wallet Found",
+      html: `
+      <p style="font-size:14px;">If you already have a wallet, you can import it using your secret phrase.</p>
+      <p style="font-size:14px;">Or create a new one to start using our services.</p>
+    `,
+      showCancelButton: false,
+      showDenyButton: true,
+      confirmButtonText: "Create Wallet",
+      denyButtonText: "Import Wallet",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        createWalletFlow();
+      } else if (result.isDenied) {
+        setShowImport(true);
+      }
+    });
+  };
 
   useEffect(() => {
     if (!hasWallet && (userData?.telegramId || isBrowser)) {
@@ -56,16 +79,32 @@ export default function WalletSetup() {
       (key) => key.startsWith("encryptedSeed-") && key !== `encryptedSeed-${identifier}`
     );
 
-    if (otherWalletKey) {
-      Swal.fire({
-        icon: "error",
-        title: "Access Denied",
-        html: `<p style="font-size:14px;">You are not allowed to access this app using multiple accounts on the same device.</p>`,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-      });
-    }
-  }, [identifier]);
+  if (otherWalletKey) {
+    MetroSwal.fire({
+      icon: "error",
+      title: "Access Denied",
+      html: `<p style="font-size:14px;">You are not allowed to access this app using multiple Telegram accounts on the same device.</p>`,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+  }
+}, [userData]);
+
+  const handleImport = (importedMnemonic: string) => {
+    importWalletFlow(importedMnemonic, userData, (pwd) => {
+      setPassword(pwd);
+const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
+      const wallet = restoreWalletFromEncryptedSeed(encrypted, pwd);
+      if (wallet) {
+        setSigner(wallet.connect(provider));
+        setAddress(wallet.address);
+        setHasWallet(true);
+        setDecryptedPassword(pwd);
+        MetroSwal.fire("Success", "Wallet restored successfully.", "success");
+      }
+    });
+    setShowImport(false);
+  };
 
   useEffect(() => {
     const checkBackup = () => {
@@ -97,7 +136,7 @@ export default function WalletSetup() {
 
     const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
-      Swal.fire("Error", "No encrypted seed found.", "error");
+      MetroSwal.fire("Error", "No encrypted seed found.", "error");
       return;
     }
 
@@ -146,10 +185,10 @@ export default function WalletSetup() {
           if (identifier) localStorage.setItem(`seedBackupDone-${identifier}`, "true");
           setShowBackup(false);
           setVerifyIndices(null);
-          Swal.fire("✅ Success", "Backup complete", "success");
+          MetroSwal.fire("✅ Success", "Backup complete", "success");
         }}
         onFailure={() => {
-          Swal.fire("❌ Failed", "Verification failed. Try again.", "error");
+          MetroSwal.fire("❌ Failed", "Verification failed. Try again.", "error");
           setVerifyIndices(null);
         }}
       />
@@ -170,7 +209,7 @@ export default function WalletSetup() {
           <ResetPasswordWithSeed
             onSuccess={() => {
               setShowResetFlow(false);
-              Swal.fire("Success", "You can now unlock your wallet.", "success");
+              MetroSwal.fire("Success", "You can now unlock your wallet.", "success");
             }}
             onCancel={() => {
               setShowResetFlow(false);
