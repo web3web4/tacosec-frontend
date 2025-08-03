@@ -24,6 +24,7 @@ interface HomeContextType {
   handleDelete: (id: string, isHasSharedWith: boolean) => Promise<void>;
   handleReportUser: (secretId: string, reportedUsername: string) => Promise<void>;
   handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => Promise<void>;
+  triggerGetChildrenForSecret: (id: string) => void;
   isInit: boolean;
   provider: any;
   userData: any;
@@ -553,6 +554,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     handleDelete, 
     handleReportUser, 
     handleViewReportsForSecret, 
+    triggerGetChildrenForSecret,
     isInit, 
     provider, 
     userData, 

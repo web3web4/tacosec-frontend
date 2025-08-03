@@ -8,12 +8,14 @@ import { useUser } from "../context/UserContext";
 import Swal from "sweetalert2";
 import { SelectedSecretType } from "../types/types";
 import { v4 as uuidv4 } from 'uuid';
+import { useHome } from "../context/HomeContext";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 export default function useReplyToSecret() {
+  const { triggerGetChildrenForSecret } = useHome();
   const { signer, provider } = useWallet();
   const { initDataRaw, userData } = useUser();
   const { encryptDataToBytes } = useTaco({
@@ -113,6 +115,7 @@ export default function useReplyToSecret() {
         },
         initDataRaw!
       );
+      triggerGetChildrenForSecret(selectedSecret.parentSecretId);
       if (!res) {
         throw new Error("Failed to store encrypted data");
       }
