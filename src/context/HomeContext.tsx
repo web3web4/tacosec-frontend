@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
-import { useUser } from "../context/UserContext";
+import { useUser } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
 import Swal from "sweetalert2";
 import { useWallet } from "../wallet/walletContext";
-import useTaco from "./useTaco";
+import useTaco from "../hooks/useTaco";
 import { fromHexString } from "@nucypher/shared";
 import { fromBytes } from "@nucypher/taco";
 import { formatDate } from "../utils/tools";
@@ -14,7 +14,34 @@ import { formatDate } from "../utils/tools";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 
-export default function useHome() {
+interface HomeContextType {
+  myData: DataItem[];
+  sharedWithMyData: SharedWithMyDataType[];
+  activeTab: TabType;
+  isLoading: boolean;
+  handleAddClick: () => void;
+  handleSetActiveTabClick: (tabActive: TabType) => void;
+  handleDelete: (id: string, isHasSharedWith: boolean) => Promise<void>;
+  handleReportUser: (secretId: string, reportedUsername: string) => Promise<void>;
+  handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => Promise<void>;
+  triggerGetChildrenForSecret: (id: string) => void;
+  isInit: boolean;
+  provider: any;
+  userData: any;
+  decrypting: boolean;
+  decryptedMessages: Record<number, string>;
+  toggleExpand: (index: number, value: string, id: string) => Promise<void>;
+  expandedIndex: number | null;
+  toggleChildExpand: (parentIndex: number, childIndex: number, value: string, childId: string) => void;
+  expandedChildIndex: Record<number, number | null>;
+  decryptingChild: boolean;
+  decryptedChildMessages: Record<string, string>;
+  authError: string | null;
+}
+
+const HomeContext = createContext<HomeContextType | null>(null);
+
+export function HomeProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const [myData, setMyData] = useState<DataItem[]>([]);
   const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
@@ -451,8 +478,12 @@ export default function useHome() {
       if (!decryptedMessages[index]) {
         decryptMessage(index, value);
       }
-  
-      const response: ChildDataItem[] = await getChildrenForSecret(initDataRaw!, id);
+      triggerGetChildrenForSecret(id);
+    }
+  };
+
+  const triggerGetChildrenForSecret = async (id: string) => {
+    const response: ChildDataItem[] = await getChildrenForSecret(initDataRaw!, id);
       if (activeTab === "mydata") {
         setMyData((prev) => prev.map((item) =>
             item.id === id ? { ...item, children: response } : item ));
@@ -462,9 +493,7 @@ export default function useHome() {
             pw.id === id ? { ...pw, children: response } : pw )}))
         );
       }
-    }
   };
-  
   
   const decryptMessage = async (index: number, encryptedText: string) => {
     if (!encryptedText || !provider || !signer) return;
@@ -516,7 +545,7 @@ export default function useHome() {
     }
   };
 
-  return { 
+  const value = {
     myData, 
     sharedWithMyData, 
     activeTab, 
@@ -525,6 +554,7 @@ export default function useHome() {
     handleDelete, 
     handleReportUser, 
     handleViewReportsForSecret, 
+    triggerGetChildrenForSecret,
     isInit, 
     provider, 
     userData, 
@@ -537,6 +567,16 @@ export default function useHome() {
     decryptingChild, 
     decryptedChildMessages,
     isLoading,
-    authError // Add authError to the returned object
+    authError
   };
+
+  return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
+}
+
+export function useHome() {
+  const context = useContext(HomeContext);
+  if (!context) {
+    throw new Error("useHome must be used within a HomeProvider");
+  }
+  return context;
 }

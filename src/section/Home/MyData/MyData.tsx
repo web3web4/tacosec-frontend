@@ -1,37 +1,25 @@
 import defaultProfileImage from "../../../assets/images/no-User.png"
-import { DataItem } from "../../../types/types";
 import { useState } from "react";
 import "../../../components/SeedPhrase/SeedPhrase.css";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import { formatDate } from "../../../utils/tools";
+import { useHome } from "../../../context/HomeContext";
 
-interface MyDataType{
-    myData: DataItem[],
-    toggleExpand: (index: number, value: string, id: string) => void,
-    expandedIndex: number | null,
-    decrypting: boolean,
-    decryptedMessages: Record<number, string>,
-    handleDelete: (id: string, isHasSharedWith: boolean) => void,
-    toggleChildExpand: (parentIndex: number, childIndex: number, value: string, childId: string) => void,
-    expandedChildIndex: Record<number, number | null>,
-    decryptingChild: boolean,
-    decryptedChildMessages: Record<string, string>,
-}
-
-export default function MyData({
-  myData, 
-  toggleExpand, 
-  expandedIndex, 
-  decrypting, 
-  decryptedMessages, 
-  handleDelete,
-  toggleChildExpand,
-  expandedChildIndex = {},
-  decryptingChild = false,
-  decryptedChildMessages = {},
-} : MyDataType) {
+export default function MyData() {
+    const { 
+        myData, 
+        toggleExpand, 
+        expandedIndex, 
+        decrypting, 
+        decryptedMessages, 
+        handleDelete,
+        toggleChildExpand,
+        expandedChildIndex,
+        decryptingChild,
+        decryptedChildMessages
+    } = useHome();
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
     const { handleReplyToSecret } = useReplyToSecret();
