@@ -4,8 +4,9 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
-    "@nucypher/taco": "^0.7.0-alpha.0",
-    "@nucypher/taco-auth": "0.4.0-alpha.0",
+    "@nucypher/taco": "^0.7.0-alpha.1",
+    "@nucypher/taco-auth": "0.4.0-alpha.1",
+    "@nucypher/shared": "^0.6.0-alpha.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -28,8 +29,7 @@
     "styled-components": "^6.1.17",
     "sweetalert2": "^11.19.1",
     "uuid": "^11.1.0",
-    "web-vitals": "^2.1.4",
-    "@nucypher/nucypher-contracts": "0.25.0"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "craco start",
@@ -54,9 +54,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "resolutions": {
-    "@nucypher/nucypher-contracts": "file:nucypher-nucypher-contracts-0.25.0.tgz"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",

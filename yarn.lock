@@ -2002,7 +2002,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nucypher/nucypher-contracts@0.25.0", "@nucypher/nucypher-contracts@file:nucypher-nucypher-contracts-0.25.0.tgz":
+"@nucypher/nucypher-contracts@file:nucypher-nucypher-contracts-0.25.0.tgz":
   version "0.25.0"
   resolved "file:nucypher-nucypher-contracts-0.25.0.tgz#665e0d8cf71e512a7e3cdf679810efc5b16216a0"
 
@@ -2011,44 +2011,19 @@
   resolved "https://registry.yarnpkg.com/@nucypher/nucypher-core/-/nucypher-core-0.14.5.tgz#31256d7875240e955c39178e8154aa4a0846f8cf"
   integrity sha512-Q3kBuJL0qtTtnxrM5DEQauQUvDlXmwubm9u1h7gbyLhs+aZNC9WDyjEUbE43+uahlHu4k1hKEMxD1gjV165ChA==
 
-"@nucypher/shared@0.6.0-alpha.0":
-  version "0.6.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@nucypher/shared/-/shared-0.6.0-alpha.0.tgz#122f68637bb455dd6f290b44e8a5032dba8357cd"
-  integrity sha512-w9Sdo7k1zct0yeX0SvDN/mcl/xQJSN+xliRoojCN4KNQs8/fKRTrDW0zvfQxCEBYrIXjd4hMNMH1+4e8kKxIcw==
-  dependencies:
-    "@ethersproject/abi" "^5.8.0"
-    "@ethersproject/providers" "^5.8.0"
-    "@nucypher/nucypher-contracts" "file:nucypher-nucypher-contracts-0.25.0.tgz"
-    "@nucypher/nucypher-core" "^0.14.5"
-    axios "^1.8.4"
-    deep-equal "^2.2.3"
-    ethers "^5.8.0"
-    qs "^6.14.0"
-    zod "^3.24.2"
-
-"@nucypher/shared@0.6.0-alpha.1":
+"@nucypher/shared@0.6.0-alpha.1", "@nucypher/shared@^0.6.0-alpha.1":
   version "0.6.0-alpha.1"
   resolved "https://registry.yarnpkg.com/@nucypher/shared/-/shared-0.6.0-alpha.1.tgz#2162af5df6ba2e341328d0700aece35ce4ab5e9c"
   integrity sha512-JCYMyjrDYP8zaKl2DkkYTcRdSnzw5T2xFfnRJYw352qdxhrXoFuTxUSq8pk/jVoMl7YLZ9SVMkuE4MZc73t2lg==
   dependencies:
     "@ethersproject/abi" "^5.8.0"
     "@ethersproject/providers" "^5.8.0"
-    "@nucypher/nucypher-contracts" "file:nucypher-nucypher-contracts-0.25.0.tgz"
+    "@nucypher/nucypher-contracts" "0.25.0"
     "@nucypher/nucypher-core" "^0.14.5"
     axios "^1.8.4"
     deep-equal "^2.2.3"
     ethers "^5.8.0"
     qs "^6.14.0"
-    zod "^3.24.2"
-
-"@nucypher/taco-auth@0.4.0-alpha.0":
-  version "0.4.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@nucypher/taco-auth/-/taco-auth-0.4.0-alpha.0.tgz#2eeb973adb6fdb7482de66c6a260eaf68ed540ab"
-  integrity sha512-FRYRk8X9Abh4VCesSRvDjZ1a1mvcgKDrcgBucogfKMMya6eIIhOsToWbXNmT4URdpcwMs1mbaeud8avJ3Q7X+A==
-  dependencies:
-    "@ethersproject/abstract-signer" "^5.8.0"
-    "@nucypher/shared" "0.6.0-alpha.0"
-    siwe "^3.0.0"
     zod "^3.24.2"
 
 "@nucypher/taco-auth@0.4.0-alpha.1":
@@ -2061,7 +2036,7 @@
     siwe "^3.0.0"
     zod "^3.24.2"
 
-"@nucypher/taco@^0.7.0-alpha.0":
+"@nucypher/taco@^0.7.0-alpha.1":
   version "0.7.0-alpha.1"
   resolved "https://registry.yarnpkg.com/@nucypher/taco/-/taco-0.7.0-alpha.1.tgz#a4b6cafbc26db0f462e0b09837de93e0b972c11a"
   integrity sha512-A9arTdRDD2NAUo2ROhxoVWFXRxNvt0EsmzvwEIvk3mzk3qb8ahYETDkXBBw9cTyAL9+AUqj2anjeHot99LX8BA==
