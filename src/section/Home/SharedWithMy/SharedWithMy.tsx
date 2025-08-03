@@ -1,4 +1,3 @@
-import { ReportsResponse, SharedWithMyDataType } from "../../../types/types";
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
@@ -6,23 +5,22 @@ import "../../../components/SeedPhrase/SeedPhrase.css";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import { formatDate } from "../../../utils/tools";
+import { useHome } from "../../../context/HomeContext";
 
-interface MyDataType {
-  sharedWithMyData: SharedWithMyDataType[];
-  toggleExpand: (index: number, value: string, id: string) => void;
-  expandedIndex: number | null;
-  decrypting: boolean;
-  decryptedMessages: Record<number, string>;
-  handleReportUser: (secretId: string, reportedUsername: string) => void;
-  handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => void;
-  toggleChildExpand: (parentIndex: number, childIndex: number, value: string, childId: string) => void,
-  expandedChildIndex: Record<number, number | null>,
-  decryptingChild: boolean,
-  decryptedChildMessages: Record<string, string>,
-}
-
-  
-export default function SharedWithMy({ sharedWithMyData, toggleExpand, expandedIndex, decrypting, decryptedMessages, handleReportUser, handleViewReportsForSecret, toggleChildExpand, expandedChildIndex = {}, decryptingChild = false, decryptedChildMessages = {} }: MyDataType) {
+export default function SharedWithMy() {
+  const { 
+    sharedWithMyData, 
+    toggleExpand, 
+    expandedIndex, 
+    decrypting, 
+    decryptedMessages, 
+    handleReportUser, 
+    handleViewReportsForSecret, 
+    toggleChildExpand, 
+    expandedChildIndex, 
+    decryptingChild, 
+    decryptedChildMessages 
+  } = useHome();
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const { handleReplyToSecret } = useReplyToSecret();
