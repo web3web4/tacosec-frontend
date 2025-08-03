@@ -1,10 +1,10 @@
-import useHome from "../../hooks/useHome";
+import { useHome } from "../../context/HomeContext";
 import MyData from "../../section/Home/MyData/MyData";
 import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 import "./Home.css";
 
 const Home: React.FC = () => {
-  const { myData, sharedWithMyData, activeTab, isLoading, handleAddClick, handleSetActiveTabClick, handleDelete, handleReportUser, handleViewReportsForSecret, isInit, provider, userData, decrypting, decryptedMessages, toggleExpand, expandedIndex, toggleChildExpand, expandedChildIndex, decryptingChild, decryptedChildMessages } = useHome();
+  const { activeTab, isLoading, handleAddClick, handleSetActiveTabClick, isInit, provider, userData } = useHome();
   
   if (!isInit || !provider) {
     return <div>Loading...</div>;
@@ -38,10 +38,9 @@ const Home: React.FC = () => {
         {
         isLoading ? <div className="loading-container-home"> Loading... </div> :
         activeTab === "mydata" ? (
-          <MyData  myData={myData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleDelete={handleDelete} toggleChildExpand={toggleChildExpand} expandedChildIndex={expandedChildIndex} decryptingChild={decryptingChild} decryptedChildMessages={decryptedChildMessages}
-          />
+          <MyData />
         ) : (
-          <SharedWithMy sharedWithMyData={sharedWithMyData} toggleExpand={toggleExpand} expandedIndex={expandedIndex} decrypting={decrypting} decryptedMessages={decryptedMessages} handleReportUser={handleReportUser} handleViewReportsForSecret={handleViewReportsForSecret} toggleChildExpand={toggleChildExpand} expandedChildIndex={expandedChildIndex} decryptingChild={decryptingChild} decryptedChildMessages={decryptedChildMessages}/>
+          <SharedWithMy />
         )} 
         </div>
       </div>
