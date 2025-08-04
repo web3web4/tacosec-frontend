@@ -72,6 +72,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const handleSetActiveTabClick = (tabActive: TabType): void => {
     setMyData([]);
     setExpandedIndex(null);
+    setExpandedChildIndex({});
     tabActive === "mydata" ? fetchMyData() : fetchSharedWithMyData();
     setActiveTab(tabActive);
   };
