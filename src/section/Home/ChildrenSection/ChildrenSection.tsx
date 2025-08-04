@@ -1,7 +1,9 @@
+import viewIcon from "../../../assets/icons/show-icon.png";
 import { useState } from "react";
 import { ChildDataItem } from "../../../types/types";
 import { formatDate } from "../../../utils/tools";
 import "./ChildrenSection.css";
+import { useHome } from "../../../context/HomeContext";
 
 interface ChildrenSectionProps {
   children: ChildDataItem[];
@@ -22,6 +24,7 @@ export default function ChildrenSection({
 }: ChildrenSectionProps) {
 
   const [copied, setCopied] = useState(false);
+  const { secretViews, handleGetSecretViews } = useHome();
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -93,6 +96,14 @@ export default function ChildrenSection({
                   >
                      {copied ? "Copied!" : "Copy"}
                   </button>
+                  <div className="secret-view-section">
+                    <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, child._id)}>
+                      <img src={viewIcon} alt="view-icon" width={15} height={15}/>
+                    </button>
+                    <span>
+                      {secretViews[child._id] ? secretViews[child._id].totalViews : 0}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}

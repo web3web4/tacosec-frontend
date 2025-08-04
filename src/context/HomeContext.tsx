@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret } from "../apiService";
+import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret, setSecretView, getSecretViews } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
 import { useNavigate } from "react-router-dom";
-import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType } from "../types/types";
+import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews } from "../types/types";
 import Swal from "sweetalert2";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "../hooks/useTaco";
@@ -25,6 +25,7 @@ interface HomeContextType {
   handleReportUser: (secretId: string, reportedUsername: string) => Promise<void>;
   handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => Promise<void>;
   triggerGetChildrenForSecret: (id: string) => void;
+  handleGetSecretViews: (e: any, id: string) => void;
   isInit: boolean;
   provider: any;
   userData: any;
@@ -37,6 +38,7 @@ interface HomeContextType {
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
   authError: string | null;
+  secretViews: Record<string, SecretViews>;
 }
 
 const HomeContext = createContext<HomeContextType | null>(null);
@@ -51,6 +53,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [decrypting, setDecrypting] = useState<boolean>(false);
   const [expandedChildIndex, setExpandedChildIndex] = useState<Record<number, number | null>>({});
   const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
+  const [secretViews, setSecretViews] = useState<Record<string, SecretViews>>({});
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -477,8 +480,11 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   
       if (!decryptedMessages[index]) {
         decryptMessage(index, value);
+        await setSecretView(initDataRaw!, id);
       }
       triggerGetChildrenForSecret(id);
+      const secretViews = await getSecretViews(initDataRaw!, id);
+      setSecretViews((prev) => ({ ...prev, [id]: secretViews }));
     }
   };
 
@@ -514,7 +520,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const toggleChildExpand = (parentIndex: number, childIndex: number, value: string, childId: string) => {
+  const toggleChildExpand = async (parentIndex: number, childIndex: number, value: string, childId: string) => {
     setDecryptingChild(false);
     const currentChild = expandedChildIndex[parentIndex];
     if (currentChild === childIndex) {
@@ -523,7 +529,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       setExpandedChildIndex(prev => ({ ...prev, [parentIndex]: childIndex }));
       if (!decryptedChildMessages[childId]) {
         decryptChildMessage(childId, value);
+        await setSecretView(initDataRaw!, childId);
       }
+      const secretViews = await getSecretViews(initDataRaw!, childId);
+      setSecretViews((prev) => ({ ...prev, [childId]: secretViews }));
     }
   };
 
@@ -545,6 +554,65 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleGetSecretViews = async (e: any, id: string) => {
+    e.stopPropagation();
+    const data = secretViews[id];
+    
+    if (!data || data.viewDetails.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No Views',
+        text: 'No one has viewed this message yet.',
+        confirmButtonColor: 'var(--primary-color)'
+      });
+      return;
+    }
+
+    // Sort view details by date (newest first)
+    const sortedViewDetails = [...data.viewDetails].sort((a, b) => 
+      new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()
+    );
+
+    // Create HTML for the viewers list
+    const viewersHtml = sortedViewDetails.map(viewer => {
+      const formattedDate = formatDate(viewer.viewedAt);
+      return `
+        <div style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: left;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+            <span style="font-size: 16px; color: #666;">👤</span>
+          </div>
+          <div style="flex-grow: 1;">
+            <div style="font-weight: 500; margin-bottom: 2px; text-align: left;">${viewer.username}</div>
+            <div style="font-size: 12px; color: #666; text-align: left;">${formattedDate}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    Swal.fire({
+      title: `Viewed by ${data.viewDetails.length} ${data.viewDetails.length === 1 ? 'user' : 'users'}`,
+      html: `
+        <div style="max-height: 300px; overflow-y: auto; margin: -20px -24px 0; border-radius: 12px;">
+          ${viewersHtml}
+        </div>
+      `,
+      showConfirmButton: false,
+      showCloseButton: true,
+      customClass: {
+        popup: 'viewers-popup',
+        title: 'viewers-title',
+        closeButton: 'viewers-close'
+      },
+      width: '350px',
+      didOpen: () => {
+        const title = document.querySelector('.viewers-title') as HTMLElement;
+        if (title) {
+          title.style.marginTop = '15px';
+        }
+      }
+    });
+  };
+
   const value = {
     myData, 
     sharedWithMyData, 
@@ -555,6 +623,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     handleReportUser, 
     handleViewReportsForSecret, 
     triggerGetChildrenForSecret,
+    handleGetSecretViews,
     isInit, 
     provider, 
     userData, 
@@ -567,7 +636,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     decryptingChild, 
     decryptedChildMessages,
     isLoading,
-    authError
+    authError,
+    secretViews
   };
 
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;

@@ -112,3 +112,15 @@ export interface SelectedSecretType{
   parentUsername?: string,
   shareWith: {username: string, invited?:boolean}[],
   }
+
+export interface SecretViews {
+  totalViews: number;
+  uniqueViewers: number,
+  viewDetails: ViewDetails[]
+} 
+
+export interface ViewDetails{
+  telegramId: string,
+  username: string,
+  viewedAt: string,
+}
