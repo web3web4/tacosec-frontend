@@ -175,6 +175,7 @@
 .password-text {
   font-weight: bold;
   margin-bottom: 10px;
+  white-space: pre-wrap;
 }
 
 .button-group {

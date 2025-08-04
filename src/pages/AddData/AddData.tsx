@@ -70,7 +70,7 @@ const AddData: React.FC = () => {
         console.error("Signer not found", signer);
         return;
       }
-
+      console.log(message);
       let usernames: string = "";
       usernames = userData?.username.toLowerCase()!;
       shareList
