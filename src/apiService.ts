@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews } from "./types/types";
 import { parseTelegramInitData } from "./utils/tools";
 import { DataPayload } from "./interfaces/addData";
 
@@ -323,4 +323,36 @@ export async function getChildrenForSecret(initData: string, parentId: string): 
 
   const result = await response.json();
   return result.passwords;
+}
+
+export async function setSecretView(initData: string, id: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Unknown error occurred');
+  }
+}
+
+export async function getSecretViews(initData: string, id: string): Promise<SecretViews> {
+  const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Init-Data": initData,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return result
 }

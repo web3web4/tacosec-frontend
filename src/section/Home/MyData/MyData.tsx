@@ -1,11 +1,12 @@
 import defaultProfileImage from "../../../assets/images/no-User.png"
 import { useState } from "react";
-import "../../../components/SeedPhrase/SeedPhrase.css";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import { formatDate } from "../../../utils/tools";
 import { useHome } from "../../../context/HomeContext";
+import viewIcon from "../../../assets/icons/show-icon.png";
+import "../../../components/SeedPhrase/SeedPhrase.css";
 
 export default function MyData() {
     const { 
@@ -16,9 +17,11 @@ export default function MyData() {
         decryptedMessages, 
         handleDelete,
         toggleChildExpand,
+        handleGetSecretViews,
         expandedChildIndex,
         decryptingChild,
-        decryptedChildMessages
+        decryptedChildMessages,
+        secretViews
     } = useHome();
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
@@ -94,22 +97,34 @@ export default function MyData() {
                     </p>
 
                     <div className="button-group">
-                      <button
-                        className="copy-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (decryptedMessages[i])
-                            handleCopy(decryptedMessages[i]);
-                        }}
-                      >
-                        {copied ? "Copied!" : "Copy"}
-                      </button>
-                      <button
-                        className="delete-button"
-                        onClick={() => handleDelete(item.id, item.sharedWith.length > 0)}
-                      >
-                        Delete
-                      </button>
+                      <div>
+                        <button
+                          className="copy-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (decryptedMessages[i])
+                              handleCopy(decryptedMessages[i]);
+                          }}
+                        >
+                          {copied ? "Copied!" : "Copy"}
+                        </button>
+                        <button
+                          className="delete-button"
+                          onClick={() => handleDelete(item.id, item.sharedWith.length > 0)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                      {item.sharedWith.length > 0 && (
+                        <div className="secret-view-section">
+                          <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, item.id)}>
+                            <img src={viewIcon} alt="view-icon" width={15} height={15}/>
+                          </button>
+                          <span>
+                            {secretViews[item.id] ? secretViews[item.id].totalViews : 0}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     {item.sharedWith.length > 0 && (
                       <div className="shared-section">
