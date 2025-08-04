@@ -512,6 +512,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       );
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
+        console.log(decrypted);
         setDecryptedMessages((prev) => ({ ...prev, [index]: decrypted }));
       }
     } catch (e) {
