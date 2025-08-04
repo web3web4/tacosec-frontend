@@ -1,11 +1,12 @@
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import { useState } from "react";
-import "../../../components/SeedPhrase/SeedPhrase.css";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import { formatDate } from "../../../utils/tools";
 import { useHome } from "../../../context/HomeContext";
+import viewIcon from "../../../assets/icons/show-icon.png";
+import "../../../components/SeedPhrase/SeedPhrase.css";
 
 export default function SharedWithMy() {
   const { 
@@ -17,9 +18,11 @@ export default function SharedWithMy() {
     handleReportUser, 
     handleViewReportsForSecret, 
     toggleChildExpand, 
+    handleGetSecretViews,
     expandedChildIndex, 
     decryptingChild, 
-    decryptedChildMessages 
+    decryptedChildMessages,
+    secretViews
   } = useHome();
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
@@ -113,6 +116,14 @@ export default function SharedWithMy() {
                         }}>
                         {copied ? "Copied!" : "Copy"}
                       </button>
+                      <div className="secret-view-section">
+                        <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, pass.id)}>
+                          <img src={viewIcon} alt="view-icon" width={15} height={15}/>
+                        </button>
+                        <span>
+                          {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}
+                        </span>
+                      </div>
                     </div>
 
                     {item.sharedByDetails && (
