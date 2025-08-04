@@ -8,8 +8,8 @@ import { useHome } from "../../../context/HomeContext";
 interface ChildrenSectionProps {
   children: ChildDataItem[];
   parentIndex: number;
-  toggleChildExpand?: (parentIndex: number, childIndex: number, value: string, childId: string) => void;
-  expandedChildIndex: Record<number, number | null>;
+  toggleChildExpand?: (parentIndex: number, value: string, childId: string) => void;
+  expandedChildIndex: string | null;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
 }
@@ -47,7 +47,7 @@ export default function ChildrenSection({
               onClick={(e) => {
                 e.stopPropagation();
                 if (toggleChildExpand) {
-                  toggleChildExpand(parentIndex, childIndex, child.value, child._id);
+                  toggleChildExpand(parentIndex, child.value, child._id);
                 }
               }}
             >
@@ -62,11 +62,11 @@ export default function ChildrenSection({
                 </div>
               </div>
               <span className="child-toggle">
-                {expandedChildIndex[parentIndex] === childIndex ? '▼' : '▶'}
+                {expandedChildIndex === child._id ? '▼' : '▶'}
               </span>
             </div>
             
-            {expandedChildIndex[parentIndex] === childIndex && (
+            {expandedChildIndex === child._id && (
               <div className="child-expanded">
                 <p className="child-secret">
                   Secret:{" "}
