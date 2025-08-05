@@ -12,14 +12,14 @@ export default function SharedWithMy() {
   const { 
     sharedWithMyData, 
     toggleExpand, 
-    expandedIndex, 
+    expandedId, 
     decrypting, 
     decryptedMessages, 
     handleReportUser, 
     handleViewReportsForSecret, 
     toggleChildExpand, 
     handleGetSecretViews,
-    expandedChildIndex, 
+    expandedChildId, 
     decryptingChild, 
     decryptedChildMessages,
     secretViews
@@ -44,18 +44,11 @@ export default function SharedWithMy() {
       {sharedWithMyData.length > 0 ? (
         sharedWithMyData.map((item) =>
           item.passwords.map((pass, i) => {
-            const uniqueKey = Number(
-              Array.from(pass.id)
-                .map((char) => char.charCodeAt(0))
-                .join("")
-                .slice(0, 15)
-            );
-
             return (
               <div
-                key={uniqueKey}
+                key={pass.id}
                 className="data-item"
-                onClick={() => toggleExpand(uniqueKey, pass.value, pass.id)}
+                onClick={() => toggleExpand(pass.value, pass.id)}
               >
                 <div className="item-container">
                   <div className="item-header-info">
@@ -89,7 +82,7 @@ export default function SharedWithMy() {
                   </div>
                 </div>{" "}
                 <p className="item-status" data-status="Shared"> Shared </p>
-                {expandedIndex === uniqueKey && (
+                {expandedId === pass.id && (
                   <div className="expanded-box">
                     <p className="password-text">
                       {decrypting ? (
@@ -105,7 +98,7 @@ export default function SharedWithMy() {
                           </span>
                         </span>
                       ) : (
-                        decryptedMessages[uniqueKey] || "Failed to decrypt"
+                        decryptedMessages[pass.id] || "Failed to decrypt"
                       )}
                     </p>
 
@@ -114,8 +107,8 @@ export default function SharedWithMy() {
                         className="copy-button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (decryptedMessages[uniqueKey])
-                            handleCopy(decryptedMessages[uniqueKey]);
+                          if (decryptedMessages[pass.id])
+                            handleCopy(decryptedMessages[pass.id]);
                         }}>
                         {copied ? "Copied!" : "Copy"}
                       </button>
@@ -153,7 +146,7 @@ export default function SharedWithMy() {
                         children={pass.children}
                         parentIndex={i}
                         toggleChildExpand={toggleChildExpand}
-                        expandedChildIndex={expandedChildIndex}
+                        expandedChildId={expandedChildId}
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
                       />

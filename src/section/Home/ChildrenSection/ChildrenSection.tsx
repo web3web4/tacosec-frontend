@@ -9,7 +9,7 @@ interface ChildrenSectionProps {
   children: ChildDataItem[];
   parentIndex: number;
   toggleChildExpand?: (parentIndex: number, value: string, childId: string) => void;
-  expandedChildIndex: string | null;
+  expandedChildId: string | null;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
 }
@@ -18,7 +18,7 @@ export default function ChildrenSection({
   children,
   parentIndex,
   toggleChildExpand,
-  expandedChildIndex,
+  expandedChildId,
   decryptingChild,
   decryptedChildMessages,
 }: ChildrenSectionProps) {
@@ -62,11 +62,11 @@ export default function ChildrenSection({
                 </div>
               </div>
               <span className="child-toggle">
-                {expandedChildIndex === child._id ? '▼' : '▶'}
+                {expandedChildId === child._id ? '▼' : '▶'}
               </span>
             </div>
             
-            {expandedChildIndex === child._id && (
+            {expandedChildId === child._id && (
               <div className="child-expanded">
                 <p className="child-secret">
                   {decryptingChild ? (
