@@ -91,9 +91,10 @@ export default function SharedWithMy() {
                 <p className="item-status" data-status="Shared"> Shared </p>
                 {expandedIndex === uniqueKey && (
                   <div className="expanded-box">
-                    <p className="password-text"> Secret:{" "}
+                    <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
+                          Secret:{" "}
                           Decrypting
                           <span className="dots">
                             <span>.</span>
