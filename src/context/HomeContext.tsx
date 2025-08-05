@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret, setSecretView, getSecretViews } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews } from "../types/types";
 import Swal from "sweetalert2";
 import { useWallet } from "../wallet/walletContext";
@@ -45,6 +45,7 @@ const HomeContext = createContext<HomeContextType | null>(null);
 
 export function HomeProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [myData, setMyData] = useState<DataItem[]>([]);
   const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("mydata");
@@ -57,6 +58,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [previousPath, setPreviousPath] = useState<string>("");
   const { signer, provider } = useWallet();
   const { initDataRaw, userData } = useUser();
   const { isInit, decryptDataFromBytes } = useTaco({
@@ -210,6 +212,15 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
+      activeTab === "mydata" ? fetchMyData() : fetchSharedWithMyData();
+    }
+    
+    // Update previous path
+    setPreviousPath(location.pathname);
+  }, [location.pathname]); 
+ 
   const handleDelete = async (id: string, isHasSharedWith: boolean) => {
     const swalOptions: any = {
       title: 'Do you want to delete this Secret?',
