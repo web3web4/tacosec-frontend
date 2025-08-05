@@ -12,13 +12,13 @@ export default function MyData() {
     const { 
         myData, 
         toggleExpand, 
-        expandedIndex, 
+        expandedId, 
         decrypting, 
         decryptedMessages, 
         handleDelete,
         toggleChildExpand,
         handleGetSecretViews,
-        expandedChildIndex,
+        expandedChildId,
         decryptingChild,
         decryptedChildMessages,
         secretViews
@@ -45,7 +45,7 @@ export default function MyData() {
               <div
                 key={i}
                 className="data-item"
-                onClick={() => toggleExpand(i, item.value, item.id)}
+                onClick={() => toggleExpand(item.value, item.id)}
               >
                 <div className="item-container">
                   <div className="item-header-info">
@@ -78,7 +78,7 @@ export default function MyData() {
                 >
                   {item.sharedWith.length > 0 ? "Shared" : "Private"}
                 </p>
-                {expandedIndex === i && (
+                {expandedId === item.id && (
                   <div className="expanded-box">
                     <p className="password-text">
                       {decrypting ? (
@@ -94,7 +94,7 @@ export default function MyData() {
                           </span>
                         </span>
                       ) : (
-                        decryptedMessages[i] || "Failed to decrypt"
+                        decryptedMessages[item.id] || "Failed to decrypt"
                       )}
                     </p>
 
@@ -104,8 +104,8 @@ export default function MyData() {
                           className="copy-button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (decryptedMessages[i])
-                              handleCopy(decryptedMessages[i]);
+                            if (decryptedMessages[item.id])
+                              handleCopy(decryptedMessages[item.id]);
                           }}
                         >
                           {copied ? "Copied!" : "Copy"}
@@ -156,7 +156,7 @@ export default function MyData() {
                         children={item.children}
                         parentIndex={i}
                         toggleChildExpand={toggleChildExpand}
-                        expandedChildIndex={expandedChildIndex}
+                        expandedChildId={expandedChildId}
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
                       />

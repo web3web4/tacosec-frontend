@@ -30,11 +30,11 @@ interface HomeContextType {
   provider: any;
   userData: any;
   decrypting: boolean;
-  decryptedMessages: Record<number, string>;
-  toggleExpand: (index: number, value: string, id: string) => Promise<void>;
-  expandedIndex: number | null;
+  decryptedMessages: Record<string, string>;
+  toggleExpand: (value: string, id: string) => Promise<void>;
+  expandedId: string | null;
   toggleChildExpand: (parentIndex: number, value: string, childId: string) => void;
-  expandedChildIndex: string | null;
+  expandedChildId: string | null;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
   authError: string | null;
@@ -49,10 +49,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [myData, setMyData] = useState<DataItem[]>([]);
   const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("mydata");
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
   const [decrypting, setDecrypting] = useState<boolean>(false);
-  const [expandedChildIndex, setExpandedChildIndex] = useState<string | null>(null);
+  const [expandedChildId, setExpandedChildId] = useState<string | null>(null);
   const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
   const [secretViews, setSecretViews] = useState<Record<string, SecretViews>>({});
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
@@ -73,8 +73,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
 
   const handleSetActiveTabClick = (tabActive: TabType): void => {
     setMyData([]);
-    setExpandedIndex(null);
-    setExpandedChildIndex(null);
+    setExpandedId(null);
+    setExpandedChildId(null);
     tabActive === "mydata" ? fetchMyData() : fetchSharedWithMyData();
     setActiveTab(tabActive);
   };
@@ -483,15 +483,15 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     });
   };
  
-  const toggleExpand = async (index: number, value: string, id: string) => {
+  const toggleExpand = async (value: string, id: string) => {
     setDecrypting(false);
-    if (expandedIndex === index) {
-      setExpandedIndex(null);
+    if (expandedId === id) {
+      setExpandedId(null);
     } else {
-      setExpandedIndex(index);
+      setExpandedId(id);
   
-      if (!decryptedMessages[index]) {
-        decryptMessage(index, value);
+      if (!decryptedMessages[id]) {
+        decryptMessage(id, value);
         await setSecretView(initDataRaw!, id);
       }
       triggerGetChildrenForSecret(id);
@@ -513,7 +513,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       }
   };
   
-  const decryptMessage = async (index: number, encryptedText: string) => {
+  const decryptMessage = async (id: string, encryptedText: string) => {
     if (!encryptedText || !provider || !signer) return;
     try {
       setDecrypting(true);
@@ -523,7 +523,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       );
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
-        setDecryptedMessages((prev) => ({ ...prev, [index]: decrypted }));
+        setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
       }
     } catch (e) {
       console.error("Error decrypting:", e);
@@ -534,10 +534,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
 
   const toggleChildExpand = async (parentIndex: number, value: string, childId: string) => {
     setDecryptingChild(false);
-    if (expandedChildIndex === childId) {
-      setExpandedChildIndex(null);
+    if (expandedChildId === childId) {
+      setExpandedChildId(null);
     } else {
-      setExpandedChildIndex(childId);
+      setExpandedChildId(childId);
       if (!decryptedChildMessages[childId]) {
         decryptChildMessage(childId, value);
         await setSecretView(initDataRaw!, childId);
@@ -641,9 +641,9 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     decrypting, 
     decryptedMessages, 
     toggleExpand, 
-    expandedIndex, 
+    expandedId, 
     toggleChildExpand, 
-    expandedChildIndex, 
+    expandedChildId, 
     decryptingChild, 
     decryptedChildMessages,
     isLoading,
