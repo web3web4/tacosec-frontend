@@ -81,9 +81,9 @@ export default function MyData() {
                 {expandedIndex === i && (
                   <div className="expanded-box">
                     <p className="password-text">
-                      Secret:{" "}
                       {decrypting ? (
                         <span className="decrypting-animation">
+                          Secret:{" "}
                           Decrypting
                           <span className="dots">
                             <span>.</span>

@@ -69,9 +69,9 @@ export default function ChildrenSection({
             {expandedChildIndex === child._id && (
               <div className="child-expanded">
                 <p className="child-secret">
-                  Secret:{" "}
                   {decryptingChild ? (
                     <span className="decrypting-animation">
+                      Secret:{" "}
                       Decrypting
                       <span className="dots">
                         <span>.</span>
