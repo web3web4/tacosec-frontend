@@ -70,13 +70,15 @@ export default function ChildrenSection({
               <div className="child-expanded">
                 <p className="child-secret">
                   {decryptingChild ? (
-                    <span className="decrypting-animation">
+                    <span>
                       Secret:{" "}
-                      Decrypting
-                      <span className="dots">
-                        <span>.</span>
-                        <span>.</span>
-                        <span>.</span>
+                      <span className="decrypting-animation">
+                        Decrypting
+                        <span className="dots">
+                          <span>.</span>
+                          <span>.</span>
+                          <span>.</span>
+                        </span>
                       </span>
                     </span>
                   ) : (
