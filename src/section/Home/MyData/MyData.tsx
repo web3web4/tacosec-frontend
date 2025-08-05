@@ -82,13 +82,15 @@ export default function MyData() {
                   <div className="expanded-box">
                     <p className="password-text">
                       {decrypting ? (
-                        <span className="decrypting-animation">
+                        <span>
                           Secret:{" "}
-                          Decrypting
-                          <span className="dots">
-                            <span>.</span>
-                            <span>.</span>
-                            <span>.</span>
+                          <span className="decrypting-animation">
+                            Decrypting
+                            <span className="dots">
+                              <span>.</span>
+                              <span>.</span>
+                              <span>.</span>
+                            </span>
                           </span>
                         </span>
                       ) : (
