@@ -8,6 +8,7 @@ import Loading from "./components/Loading/Loading";
 import { WalletProvider } from "./wallet/walletContext";
 import { UserProvider } from "./context/UserContext";
 import { NavigationGuardProvider } from "./context/NavigationGuardContext";
+import { HomeProvider } from "./context/HomeContext";
 import WalletSetup from "./wallet/WalletSetup";
 import { useUser } from "./context/UserContext";
 import useHome from "./hooks/useHome";
@@ -49,12 +50,13 @@ const App: React.FC = () => {
 
             {!isLoading && (
               <>
-                <TopBar />
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/add" element={<AddData />} />
-                  <Route path="/settings" element={<Settings />} />
-                </Routes>
+                <HomeProvider>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/add" element={<AddData />} />
+                    <Route path="/settings" element={<Settings />} />
+                  </Routes>
+                </HomeProvider>
                 <BottomNav />
               </>
             )}

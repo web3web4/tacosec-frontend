@@ -10,18 +10,22 @@ import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSet
 import CryptoJS from "crypto-js";
 import { DecryptPrompt } from "../../components/SeedPhrase/DecryptPrompt";
 import { ResetPasswordWithSeed } from "../../components/SeedPhrase/ResetPasswordWithSeed";
+import CustomPopup from "../../components/CustomPopup/CustomPopup";
+import ContactSupport from "../../section/Setting/ContactSupport/ContactSupport";
+import "../../components/SeedPhrase/SeedPhrase.css";
+import { getIdentifier } from "../../utils/walletIdentifiers";
 
 const Settings: React.FC = () => {
-  const { profileImage, notificationsOn, handleToggleNotifications } =
-    useSetting();
-  const { userData } = useUser();
-  const { address } = useWallet();
+  const { profileImage, notificationsOn, handleToggleNotifications, showSupportPopup, setShowSupportPopup } = useSetting();
+  const { userData , isBrowser } = useUser();
+  const { address , addressweb } = useWallet();
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [showManualCopy, setShowManualCopy] = useState(false);
 
   // Hide the "Copied" message after 2 seconds
   useEffect(() => {
@@ -40,7 +44,9 @@ const Settings: React.FC = () => {
    */
 
   const handleDecrypt = () => {
-    const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
+    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+    if (!identifier) return;
+    const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
       MetroSwal.error("Error", "No encrypted seed found.");
       return;
@@ -54,26 +60,30 @@ const Settings: React.FC = () => {
    * Otherwise, sets an error message indicating invalid password or corrupted data.
    */
 
-  const submitDecryption = () => {
-    const encrypted = localStorage.getItem(`encryptedSeed-${userData?.telegramId}`);
-    if (!encrypted) return;
+const submitDecryption = () => {
+  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+  if (!identifier) return;
 
-    const fullKey = password + "|" + process.env.REACT_APP_TG_SECRET_SALT;
+  const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
+  if (!encrypted) return;
 
-    try {
-      const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
-      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+  const fullKey = password + "|" + process.env.REACT_APP_TG_SECRET_SALT;
 
-      if (!ethers.utils.isValidMnemonic(decrypted)) throw new Error();
+  try {
+    const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 
-      setMnemonic(decrypted);
-      setShowDecryptPrompt(false);
-      setPassword("");
-      setPasswordError("");
-    } catch {
-      setPasswordError("❌ Invalid password or corrupted data.");
-    }
-  };
+    if (!ethers.utils.isValidMnemonic(decrypted)) throw new Error();
+
+    setMnemonic(decrypted);
+    setShowDecryptPrompt(false);
+    setPassword("");
+    setPasswordError("");
+  } catch {
+    setPasswordError("❌ Invalid password or corrupted data.");
+  }
+};
+
 
   // Function to copy address to clipboard
   const copyAddressToClipboard = () => {
@@ -89,10 +99,11 @@ const Settings: React.FC = () => {
     }
   };
 
-  // Format address to show only first 5 characters
+  // Format address to show only first four and last four characters
   const formatAddress = (addr: string | undefined) => {
     if (!addr) return "";
-    return `${addr.substring(0, 5)}...`;
+    if (addr.length <= 8) return addr;
+    return `${addr.substring(0, 4)}......${addr.substring(addr.length - 4)}`;
   };
 
   return (
@@ -148,7 +159,7 @@ const Settings: React.FC = () => {
 
         <div className="support-section">
           <p>Support and Help</p>
-          <button className="support-button">Contact Support</button>
+          <button className="support-button" onClick={() => setShowSupportPopup(true)}>Contact Support</button>
         </div>
       </div>
 
@@ -184,6 +195,27 @@ const Settings: React.FC = () => {
           }}
         />
       )}
+
+      {/* Manual Copy Modal Fallback */}
+      {showManualCopy && (
+          <div className="manual-copy-modal">
+          <div className="manual-copy-modal-content">
+            <h3>Manual Copy</h3>
+            <p>Copy your address manually:</p>
+            <textarea
+              className="manual-copy-textarea"
+              value={address || ""}
+              readOnly
+              onFocus={e => e.target.select()}
+            />
+            <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      <CustomPopup open={showSupportPopup} closed={setShowSupportPopup}>
+        <ContactSupport setShowSupportPopup={setShowSupportPopup}/>
+      </CustomPopup>
     </>
   );
 };

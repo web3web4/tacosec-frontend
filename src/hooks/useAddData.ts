@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import defaultProfileImage from "../assets/images/no-User.png";
+import userNotFoundImage from "../assets/images/user-not-found.svg";
 import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
 import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
 import { useUser } from "../context/UserContext";
@@ -37,18 +38,24 @@ export default function useAddData() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareWith, message, name]);
 
-  const fetchUserProfile = async () => {
-    setUserProfile({ data: initProfileData, error: shareWith });
-    const username = shareWith.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
+  const fetchUserProfile = async (username: string) => {
+    setUserProfile({ data: initProfileData, error: username });
+    const cleanedUsername = username.startsWith("@")
+      ? username.substring(1)
+      : username;
 
     try {
       const response: GetUserProfileDetailsResponse =
-        await getUserProfileDetails(username);
+        await getUserProfileDetails(cleanedUsername);
 
       if (!response) {
-        setUserProfile(() => ({ data: initProfileData, error: `No Telegram user found for @${username}` }));
+        const profile = {
+          img: { src: userNotFoundImage },
+          name: "",
+          username: "",
+          invited: false,
+        };
+        setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${username}` }));
         return;
       }
       setUserProfile({
@@ -65,13 +72,13 @@ export default function useAddData() {
     }
   };
 
-  const checkIfUserExists = async () => {
+  const checkIfUserExists = async (username: string) => {
     try {
-      const username = shareWith.startsWith("@")
-        ? shareWith.substring(1)
-        : shareWith;
+      const cleanedUsername = username.startsWith("@")
+        ? username.substring(1)
+        : username;
 
-      const response = await checkIfUserAvailable(initDataRaw!, username);
+      const response = await checkIfUserAvailable(initDataRaw!, cleanedUsername);
       setIsCanInvite(response);
     } catch (error) {
       console.log(error);
@@ -102,6 +109,7 @@ export default function useAddData() {
     setIsOpenPopup(false);
     setIsCanInvite(false);
     setShareWith("");
+    setSearchData([]);
   };
 
   const handleInvite = (index: number) => {
@@ -116,6 +124,11 @@ export default function useAddData() {
     setSearchData([]);
     setShareWith(username);
     getUsersAutoComplete(username);
+  };
+
+  const closePopup = (value: boolean) => {
+    setIsOpenPopup(false);
+    setSearchData([]);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,7 +151,7 @@ export default function useAddData() {
       }finally{
         setIsSearch(false);
       }
-    }, 1000),
+    }, 500),
     []
   );
 
@@ -148,14 +161,16 @@ export default function useAddData() {
 
   const handleSearchSelect = (username: string) => {
     setShareWith(username);
+    handleAddShare(username);
     setSearchData([]);
   };
 
-  const handleAddShare = (): void => {
+  const handleAddShare = (username: string): void => {
     if (!shareWith.trim()) return;
     setIsOpenPopup(true);
-    checkIfUserExists();
-    fetchUserProfile();
+    checkIfUserExists(username);
+    fetchUserProfile(username);
+    setSearchData([]);
   };
 
   const cleanFields = () => {
@@ -174,6 +189,22 @@ export default function useAddData() {
         "Pending Share Action",
         "You entered a username to share with, but didn't click the '+' button. Please share or clear the field before saving."
       );
+      return false;
+    }
+    if (name.trim() === "") {
+      Swal.fire({
+        icon: "warning",
+        title: "Warning",
+        text: "The Title Field Is Required. Please Enter The Title.",
+      });
+      return false;
+    }
+    if (message.trim() === "") {
+      Swal.fire({
+        icon: "warning",
+        title: "Warning",
+        text: "The Secret Field Is Required. Please Enter The Secret.",
+      });
       return false;
     }
     return true;
@@ -198,6 +229,7 @@ export default function useAddData() {
     cleanFields,
     checkEncrypting,
     setMessage,
+    closePopup,
     setName,
   };
 }

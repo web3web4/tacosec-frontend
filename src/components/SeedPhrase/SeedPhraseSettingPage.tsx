@@ -11,11 +11,14 @@ export function SeedPharseSettingPage({
 }) {
   const words = mnemonic.split(" ");
   const [copied, setCopied] = useState(false);
+  const [showManualCopy, setShowManualCopy] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(mnemonic).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+    }).catch(() => {
+      setShowManualCopy(true);
     });
   };
 
@@ -43,6 +46,21 @@ export function SeedPharseSettingPage({
             ✅ Cancel
           </button>
         </div>
+        {showManualCopy && (
+          <div className="manual-copy-modal">
+            <div className="manual-copy-modal-content">
+              <h3>Manual Copy</h3>
+              <p>Copy your seed phrase manually:</p>
+              <textarea
+                className="manual-copy-textarea"
+                value={mnemonic}
+                readOnly
+                onFocus={e => e.target.select()}
+              />
+              <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

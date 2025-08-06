@@ -11,6 +11,7 @@ export interface DataPayload {
     description: string;
     type: string;
     value: string;
-    sharedWith?: { username: string; invited: boolean }[] | null;
+    sharedWith?: { username: string; invited?: boolean }[] | null;
+    parent_secret_id?: string,// if it's a child
     initData?: InitDataForBackend
   }
