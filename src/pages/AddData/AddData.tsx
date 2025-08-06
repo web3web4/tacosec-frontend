@@ -6,7 +6,7 @@ import DeleteIcon from "../../assets/icons/delete-icon.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
 import { conditions, toHexString } from "@nucypher/taco";
-import { MetroSwal } from "../../utils/metroSwal";
+import { MetroMetroSwal } from "../../utils/metroMetroSwal";
 import { useUser } from "../../context/UserContext";
 import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
@@ -119,7 +119,7 @@ const AddData: React.FC = () => {
           initDataRaw!
         );
         if (res) {
-          MetroSwal.success(
+          MetroMetroSwal.success(
             "Success",
             "The data was successfully encrypted and securely stored"
           );
@@ -127,7 +127,7 @@ const AddData: React.FC = () => {
         }
       }
     } catch (e: any) {
-      Swal.fire({
+      MetroSwal.fire({
         icon: "error",
         title: "Error",
         text: e.message as string,

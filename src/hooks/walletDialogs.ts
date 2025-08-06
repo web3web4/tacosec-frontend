@@ -1,7 +1,7 @@
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 
 export async function promptPassword() {
-  return await Swal.fire({
+  return await MetroSwal.fire({
     title: "Set Password",
     input: "password",
     inputLabel: "Enter a password to encrypt your wallet",
@@ -17,7 +17,7 @@ export async function promptPassword() {
 }
 
 export async function confirmSavePassword() {
-  return await Swal.fire({
+  return await MetroSwal.fire({
     title: "Save password",
     text: "Do you want to save the wallet password on our servers?",
     icon: "question",
@@ -30,7 +30,7 @@ export async function confirmSavePassword() {
 }
 
 export async function showBackupReminder() {
-  return await Swal.fire({
+  return await MetroSwal.fire({
     icon: "warning",
     title: "Backup Required",
     text: "You must backup your wallet seed phrase now.",

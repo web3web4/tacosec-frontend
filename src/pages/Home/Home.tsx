@@ -3,23 +3,11 @@ import MyData from "../../section/Home/MyData/MyData";
 import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 import "./Home.css";
 
-const Home: React.FC = () => {
-  const { activeTab, isLoading, handleAddClick, handleSetActiveTabClick, isInit, provider, userData } = useHome();
-  
-  const { myData, sharedWithMyData, activeTab, handleDelete, handlesetActiveTabClick } = useHome();
-  const { signer, provider } = useWallet();
-  console.log("this is wallet" ,signer);
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [decryptedMessages, setDecryptedMessages] = useState<Record<number, string>>({});
-  const [decrypting, setDecrypting] = useState<boolean>(false);
-  const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
-  const domain = process.env.REACT_APP_TACO_DOMAIN as string;
-  const { isInit, decryptDataFromBytes } = useTaco({
-    domain,
-    provider,
-    ritualId,
-  });
 
+const Home: React.FC = () => {
+    const { activeTab, isLoading, handleAddClick, handleSetActiveTabClick, isInit, provider, userData } = useHome();
+    
+  
   if (!isInit || !provider) {
     return <div>Loading...</div>;
   }

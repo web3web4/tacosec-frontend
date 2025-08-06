@@ -399,7 +399,7 @@ input:checked + .slider:before {
   text-transform: uppercase;
 }
 
-.metro-swal-popup {
+.metro-MetroSwal-popup {
   background: var(--background) !important;
   border: 2px solid var(--metro-green) !important;
   border-radius: 0 !important;
@@ -408,7 +408,7 @@ input:checked + .slider:before {
 
 }
 
-.metro-swal-title {
+.metro-MetroSwal-title {
   color: var(--metro-green) !important;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
   font-weight: 700 !important;
@@ -416,12 +416,12 @@ input:checked + .slider:before {
   letter-spacing: 1px !important;
 }
 
-.metro-swal-content {
+.metro-MetroSwal-content {
   color: var(--text-primary) !important;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
-.metro-swal-confirm {
+.metro-MetroSwal-confirm {
   background: var(--background) !important;
   color: var(--metro-green) !important;
   border: 2px solid var(--metro-green) !important;
@@ -435,12 +435,12 @@ input:checked + .slider:before {
 
 }
 
-.metro-swal-confirm:hover {
+.metro-MetroSwal-confirm:hover {
   background: var(--metro-green) !important;
   color: var(--background) !important;
 }
 
-.metro-swal-cancel {
+.metro-MetroSwal-cancel {
   background: var(--surface) !important;
   color: var(--text-primary) !important;
   border: 2px solid var(--border-color) !important;
@@ -455,29 +455,29 @@ input:checked + .slider:before {
   margin-left: 10px !important;
 }
 
-.metro-swal-cancel:hover {
+.metro-MetroSwal-cancel:hover {
   background: var(--border-color) !important;
   border-color: var(--text-primary) !important;
 }
 
-.metro-swal-icon {
+.metro-MetroSwal-icon {
   border-color: var(--metro-green) !important;
   color: var(--metro-green) !important;
 }
 
-.metro-swal-icon.swal2-success [class^='swal2-success-line'] {
+.metro-MetroSwal-icon.MetroSwal2-success [class^='MetroSwal2-success-line'] {
   background-color: var(--metro-green) !important;
 }
 
-.metro-swal-icon.swal2-success .swal2-success-ring {
+.metro-MetroSwal-icon.MetroSwal2-success .MetroSwal2-success-ring {
   border-color: var(--metro-green) !important;
 }
 
-.metro-swal-icon.swal2-error .swal2-x-mark-line-left,
-.metro-swal-icon.swal2-error .swal2-x-mark-line-right {
+.metro-MetroSwal-icon.MetroSwal2-error .MetroSwal2-x-mark-line-left,
+.metro-MetroSwal-icon.MetroSwal2-error .MetroSwal2-x-mark-line-right {
   background-color: var(--danger) !important;
 }
 
-.metro-swal-backdrop {
+.metro-MetroSwal-backdrop {
   background: rgba(0, 0, 0, 0.8) !important;
 }

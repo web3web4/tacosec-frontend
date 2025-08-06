@@ -4,7 +4,7 @@ import userNotFoundImage from "../assets/images/user-not-found.svg";
 import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
 import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
 import { useUser } from "../context/UserContext";
-import { MetroSwal } from "../utils/metroSwal";
+import { MetroMetroSwal } from "../utils/metroMetroSwal";
 import { useNavigationGuard } from "../context/NavigationGuardContext";
 import { debounce } from "../utils/tools";
 
@@ -185,14 +185,14 @@ export default function useAddData() {
 
   const checkEncrypting = () => {
     if (shareWith.trim() !== "") {
-      MetroSwal.warning(
+      MetroMetroSwal.warning(
         "Pending Share Action",
         "You entered a username to share with, but didn't click the '+' button. Please share or clear the field before saving."
       );
       return false;
     }
     if (name.trim() === "") {
-      Swal.fire({
+      MetroSwal.fire({
         icon: "warning",
         title: "Warning",
         text: "The Title Field Is Required. Please Enter The Title.",
@@ -200,7 +200,7 @@ export default function useAddData() {
       return false;
     }
     if (message.trim() === "") {
-      Swal.fire({
+      MetroSwal.fire({
         icon: "warning",
         title: "Warning",
         text: "The Secret Field Is Required. Please Enter The Secret.",

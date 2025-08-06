@@ -1,7 +1,7 @@
 import { useNavigationGuard } from "../../context/NavigationGuardContext";
 import { FiHome, FiPlusSquare, FiSettings } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MetroSwal } from "../../utils/metroSwal";
+import { MetroMetroSwal } from "../../utils/metroMetroSwal";
 import "./BottomNav.css";
 
 export default function BottomNav() {
@@ -13,7 +13,7 @@ export default function BottomNav() {
     if (location.pathname === path) return;
 
     if (runNavigationCheck()) {
-      MetroSwal.warning(
+      MetroMetroSwal.warning(
         "Unsaved Changes",
         "You have unsaved data. Please save or clear them before navigating."
       );

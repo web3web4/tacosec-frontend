@@ -8,9 +8,6 @@ import {
 } from "react";
 import { ethers } from "ethers";
 import { loginUserWeb, storagePublicKeyAndPassword } from "../apiService";
-import CryptoJS from "crypto-js";
-import { MetroSwal } from "../utils/metroSwal";
-import { storagePublicKeyAndPassword } from "../apiService";
 import { useUser } from "../context/UserContext";
 import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
 import { ResetPasswordWithSeed } from "../components/SeedPhrase/ResetPasswordWithSeed";
@@ -34,8 +31,8 @@ import {
   showBackupReminder,
 } from "../hooks/walletDialogs";
 
-import {WalletContextProps} from "../interfaces/wallet"
-import Swal from "sweetalert2";
+import { WalletContextProps } from "../interfaces/wallet"
+import MetroSwal from "sweetalert2";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 
@@ -46,7 +43,7 @@ const WalletContext = createContext<WalletContextProps | null>(null);
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
-  const [hasWallet, setHasWallet] = useState<boolean>(false);
+  const [haMetroSwallet, setHaMetroSwallet] = useState<boolean>(false);
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string>("");
@@ -61,7 +58,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
-  const { initDataRaw , userData } = useUser();
+  const { initDataRaw, userData } = useUser();
   const isTelegram = Boolean(userData?.telegramId);
   const isWeb = !isTelegram;
 
@@ -77,14 +74,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!identifier) return;
     const encrypted = getEncryptedSeed(identifier);
-    setHasWallet(!!encrypted);
+    setHaMetroSwallet(!!encrypted);
     setShowDecryptPrompt(!!encrypted);
   }, [identifier]);
 
   async function createWalletFlow() {
     if (isTelegram && !userData?.telegramId) return;
 
-  
+
     const { value: password, isConfirmed } = await MetroSwal.fire({
       title: "Set Password",
       input: "password",
@@ -100,19 +97,24 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     });
 
     if (!isConfirmed || !password) {
-      MetroSwal.warning(
-        "Cancelled",
-        "Password is required to create your wallet."
-      );
+      MetroSwal.fire({
+        icon: 'warning',
+        title: 'Cancelled',
+        text: 'Password is required to create your wallet.'
+      });
       return;
     }
 
-    const { isConfirmed: saveConfirmed } = await MetroSwal.confirm(
-      "Save password",
-      "Do you want to save the wallet password on our servers?"
-    );
+    const { isConfirmed: saveConfirmed } = await MetroSwal.fire({
+      title: "Save password",
+      text: "Do you want to save the wallet password on our servers?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No"
+    });
 
-    const { isConfirmed: saveConfirmed } = await confirmSavePassword();
+
     const saveToBackend = saveConfirmed;
     setSavedPasswordPreference(saveToBackend);
 
@@ -124,7 +126,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     if (isWeb) {
       setSeedBackupDone(wallet.address, false);
-      
+
       try {
         const message = `Login to Taco App: ${Date.now()}`;
         const signature = await wallet.signMessage(message);
@@ -151,7 +153,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       console.error("Failed to save wallet data to backend:", err);
     }
 
-    setHasWallet(true);
+    setHaMetroSwallet(true);
     showBackupReminder();
   }
 
@@ -167,10 +169,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (wallet) {
       setSigner(wallet.connect(provider));
       setAddress(wallet.address);
-      setHasWallet(true);
+      setHaMetroSwallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
-      MetroSwal.success("Success", "Wallet restored successfully.");
+      MetroSwal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Wallet restored successfully.'
+      });
       setDecryptedPassword(password);
     } else {
       setPasswordError("Password incorrect or failed to restore wallet.");
@@ -183,14 +189,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         address,
         addressweb,
         signer,
-        hasWallet,
+        haMetroSwallet,
         provider,
         createWalletFlow,
         decryptedPassword,
         restoreWalletFromEncryptedSeed,
         setSigner,
         setAddress,
-        setHasWallet,
+        setHaMetroSwallet,
         setDecryptedPassword,
       }}
     >
@@ -212,21 +218,26 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         />
       )}
 
-      {showResetFlow && (
-        <ResetPasswordWithSeed
-          onSuccess={() => {
-            setShowResetFlow(false);
-            MetroSwal.success(
-              "Success",
-              "You can now unlock your wallet with your new password."
-            );
-          }}
-          onCancel={() => {
-            setShowResetFlow(false);
-            setShowDecryptPrompt(true);
-          }}
-        />
-      )}
+      {showResetFlow &&
+        (
+          <ResetPasswordWithSeed
+            onSuccess=
+            {() => {
+              setShowResetFlow(false);
+              MetroSwal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'You can now unlock your wallet with your new password.'
+              })
+
+            }}
+            onCancel=
+            {() => {
+              setShowResetFlow(false);
+              setShowDecryptPrompt(true);
+            }}
+          />
+        )}
     </WalletContext.Provider>
   );
 }

@@ -18,11 +18,11 @@ export function SeedImportPopup({
     setWords(newWords);
   };
 
-const handleSubmit = async () => {
+const handleImport = async () => {
   const trimmedWords = words.map((w) => w.trim());
   const mnemonic = trimmedWords.join(" ");
   if (trimmedWords.includes("") || trimmedWords.length !== 12) {
-    Swal.fire({
+    MetroSwal.fire({
       icon: "error",
       title: "Invalid Seed",
       text: "Please enter all 12 words correctly.",
@@ -48,7 +48,11 @@ const handleSubmit = async () => {
     const trimmedWords = words.map((w) => w.trim());
     const mnemonic = trimmedWords.join(" ");
     if (trimmedWords.includes("") || trimmedWords.length !== 12) {
-      MetroSwal.error("Invalid Seed", "Please enter all 12 words correctly.");
+      MetroSwal.fire({
+        icon: "error",
+        title: "Invalid Seed",
+        text: "Please enter all 12 words correctly."
+      });
       return;
     }
     setLoading(true);

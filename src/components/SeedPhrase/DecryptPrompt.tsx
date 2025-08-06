@@ -1,6 +1,6 @@
 import React from "react";
 import "./SeedPhrase.css";
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
 
 type Props = {
@@ -28,7 +28,7 @@ export const DecryptPrompt = ({
       onHidePrompt(false); // Explicitly hide the prompt
     }
     
-    Swal.fire({
+    MetroSwal.fire({
       icon: "warning",
       title: "Warning",
       html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
