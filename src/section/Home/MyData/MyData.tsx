@@ -52,7 +52,7 @@ export default function MyData() {
                   <p className="item-title">{item.key}</p>
                   <div className="created-at-container">
                     <strong>Created At:</strong>
-                    <span className="child-date">{formatDate(item.createdAt)}</span>
+                    <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
                   </div>
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
