@@ -1,5 +1,5 @@
 import CryptoJS from "crypto-js";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../utils/metroSwal";
 import { ethers } from "ethers";
 
 const SALT = process.env.REACT_APP_TG_SECRET_SALT || "default_salt";
@@ -12,11 +12,11 @@ export const importWalletFlow = async (
   
   if (!ethers.utils.isValidMnemonic(mnemonic)) {
     console.error("Invalid mnemonic"); 
-    await Swal.fire("Invalid Phrase", "Please check your 12‑word seed phrase.", "error");
+    await MetroSwal.fire("Invalid Phrase", "Please check your 12‑word seed phrase.", "error");
     return null;
   }
   
-  const { value: password, isConfirmed } = await Swal.fire({
+  const { value: password, isConfirmed } = await MetroSwal.fire({
     title: "Set Password",
     input: "password",
     inputLabel: "Enter a strong password to encrypt your wallet",
@@ -43,7 +43,7 @@ export const importWalletFlow = async (
     onImported(password);
     // Skip showing alert if callback is provided
   } else {
-    await Swal.fire("Wallet Imported!", "Your wallet has been securely saved.", "success");
+    await MetroSwal.fire("Wallet Imported!", "Your wallet has been securely saved.", "success");
   }
   
   return password;

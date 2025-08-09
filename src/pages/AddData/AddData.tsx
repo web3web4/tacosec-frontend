@@ -6,7 +6,7 @@ import DeleteIcon from "../../assets/icons/delete-icon.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
 import { conditions, toHexString } from "@nucypher/taco";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
 import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
@@ -119,17 +119,15 @@ const AddData: React.FC = () => {
           initDataRaw!
         );
         if (res) {
-          Swal.fire({
-            icon: "success",
-            title: `The data was successfully encrypted and securely stored`,
-            showConfirmButton: false,
-            timer: 4000
-          });
+          MetroSwal.success(
+            "Success",
+            "The data was successfully encrypted and securely stored"
+          );
           cleanFields();
         }
       }
     } catch (e: any) {
-      Swal.fire({
+      MetroSwal.fire({
         icon: "error",
         title: "Error",
         text: e.message as string,
@@ -185,7 +183,7 @@ const AddData: React.FC = () => {
       />
 
       {encrypting && (
-        <div style={{ marginTop: "5px", color: "#ba1b5d", fontWeight: "bold" }}>
+        <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
           Please Wait For Encrypting...
         </div>
       )}

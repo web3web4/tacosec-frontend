@@ -3,8 +3,10 @@ import MyData from "../../section/Home/MyData/MyData";
 import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
 import "./Home.css";
 
+
 const Home: React.FC = () => {
-  const { activeTab, isLoading, handleAddClick, handleSetActiveTabClick, isInit, provider, userData } = useHome();
+    const { activeTab, isLoading, handleAddClick, handleSetActiveTabClick, isInit, provider, userData } = useHome();
+    
   
   if (!isInit || !provider) {
     return <div>Loading...</div>;
@@ -12,12 +14,6 @@ const Home: React.FC = () => {
   
   return (
     <div className="home-container">
-      <div className="top-bar">
-        <div>{ userData?.firstName } { " " } { userData?.lastName }</div>
-        <button className="add-button" onClick={handleAddClick}>
-          + Add
-        </button>
-      </div>
       <div className="tabs-row">
         <button
           className={`tab-button ${activeTab === "mydata" ? "active" : ""}`}
@@ -32,7 +28,6 @@ const Home: React.FC = () => {
           Shared with Me
         </button>
       </div>
-
       <div className="tab-content">
         <div>  
         {

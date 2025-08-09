@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
@@ -22,12 +22,12 @@ export const ResetPasswordWithSeed = ({
       if (!identifier) return;
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {
-      Swal.fire("Error", "Invalid seed phrase", "error");
+      MetroSwal.fire("Error", "Invalid seed phrase", "error");
       return;
     }
 
     if (newPassword.length < 4) {
-      Swal.fire("Error", "Password too short", "error");
+      MetroSwal.fire("Error", "Password too short", "error");
       return;
     }
 
@@ -36,7 +36,7 @@ export const ResetPasswordWithSeed = ({
     localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
     localStorage.setItem(`seedBackupDone-${identifier}`, "true");
 
-    Swal.fire("✅ Success", "Password reset successfully", "success");
+    MetroSwal.fire("✅ Success", "Password reset successfully", "success");
     onSuccess(); // go back to login or main screen
   };
 

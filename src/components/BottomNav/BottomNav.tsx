@@ -1,7 +1,7 @@
-import { useNavigationGuard } from "../../context/NavigationGuardContext";
 import { FiHome, FiPlusSquare, FiSettings } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
+import { useNavigationGuard } from "../../context/NavigationGuardContext";
 import "./BottomNav.css";
 
 export default function BottomNav() {
@@ -13,11 +13,10 @@ export default function BottomNav() {
     if (location.pathname === path) return;
 
     if (runNavigationCheck()) {
-      Swal.fire({
-        icon: "warning",
-        title: "Unsaved Changes",
-        text: "You have unsaved data. Please save or clear them before navigating.",
-      });
+      MetroSwal.warning(
+        "Unsaved Changes",
+        "You have unsaved data. Please save or clear them before navigating."
+      );
       return;
     }
 
@@ -30,19 +29,19 @@ export default function BottomNav() {
         className={`nav-item ${location.pathname === "/" ? "active" : ""}`}
         onClick={() => handleNavClick("/")}>
         <FiHome className="bottom-nav-icon" />
-        <span>Home</span>
+        <span className="bottom-nav-text">Home</span>
       </div>
       <div
         className={`nav-item ${location.pathname === "/add" ? "active" : ""}`}
         onClick={() => handleNavClick("/add")}>
         <FiPlusSquare className="bottom-nav-icon" />
-        <span>Add</span>
+        <span className="bottom-nav-text">Add</span>
       </div>
       <div
         className={`nav-item ${location.pathname === "/settings" ? "active" : ""}`}
         onClick={() => handleNavClick("/settings")}>
         <FiSettings className="bottom-nav-icon" />
-        <span>Settings</span>
+        <span className="bottom-nav-text">Settings</span>
       </div>
     </nav>
   );
