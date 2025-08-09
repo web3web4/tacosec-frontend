@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MdDownload, MdClose, MdLockOpen } from "react-icons/md";
 import { MetroSwal } from "../../utils/metroSwal";
 import "./SeedPhrase.css";
 
@@ -62,7 +63,7 @@ const handleImport = async () => {
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2 className="popup-title">🧩 Import Your Wallet</h2>
+        <h2 className="popup-title"><MdDownload style={{marginRight: '8px', verticalAlign: 'middle'}} />Import Your Wallet</h2>
         <p className="warning">
           Enter your 12‑word seed phrase in the correct order.
         </p>
@@ -107,7 +108,7 @@ const handleImport = async () => {
               onClick={onCancel}
               disabled={loading}
             >
-              ❌ Cancel
+              <MdClose style={{marginRight: '4px', verticalAlign: 'middle'}} />Cancel
             </button>
           )}
           <button
@@ -115,7 +116,7 @@ const handleImport = async () => {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? "Importing…" : "🔐 Import"}
+            {loading ? "Importing…" : <><MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />Import</>}
           </button>
         </div>
       </div>
