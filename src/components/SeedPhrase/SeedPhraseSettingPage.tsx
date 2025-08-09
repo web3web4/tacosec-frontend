@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./SeedPhrase.css";
 import { FaCopy } from "react-icons/fa";
+import { MdSecurity, MdCheck, MdClose } from "react-icons/md";
 
 export function SeedPharseSettingPage({
   mnemonic,
@@ -25,7 +26,7 @@ export function SeedPharseSettingPage({
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2 className="popup-title">🔐 Backup Your Seed Phrase</h2>
+        <h2 className="popup-title"><MdSecurity style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Backup Your Seed Phrase</h2>
         <p className="warning">Please store these words securely and privately.</p>
 
         <div className="seed-grid">
@@ -40,10 +41,10 @@ export function SeedPharseSettingPage({
         <div className="popup-actions-row">
           <button className="copy-btn" onClick={handleCopy}>
             <FaCopy /> Copy
-             {copied && <span className="copy-feedback">✅ Copied!</span>}
+             {copied && <span className="copy-feedback"><MdCheck style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Copied!</span>}
           </button>
           <button className="confirm-btn" onClick={onCancel}>
-            ✅ Cancel
+            <MdClose style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Cancel
           </button>
         </div>
         {showManualCopy && (
