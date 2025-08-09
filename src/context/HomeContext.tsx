@@ -214,7 +214,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
-      activeTab === "mydata" ? fetchMyData() : fetchSharedWithMyData();
+      handleSetActiveTabClick(activeTab);
     }
     
     // Update previous path
