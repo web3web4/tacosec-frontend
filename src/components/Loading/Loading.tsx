@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "./Loading.css";
+import Logo from "../../assets/icons/Logo.png";
 
 const Loading: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -17,10 +18,9 @@ const Loading: React.FC = () => {
   return (
     <div className="loading-container">
       <div className="logo-background">
-        <div className="text-logo">
-          <div className="brand-name">TOP LOCK</div>
+        <div className="logo-container">
+          <img src={Logo} alt="Logo" className="logo-image" />
         </div>
-        <div className="spinner"></div>
       </div>
     </div>
   );

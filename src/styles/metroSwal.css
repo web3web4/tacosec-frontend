@@ -61,10 +61,14 @@
   box-shadow: 0 2px 6px rgba(0, 200, 81, 0.2) !important;
 }
 
+
+
+
+
 .metro-swal-cancel {
   background: var(--surface) !important;
-  color: var(--text-primary) !important;
-  border: 2px solid var(--border-color) !important;
+  color: #00aaff !important;
+  border: 2px solid #00aaff !important;
   border-radius: 0 !important;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
   font-weight: 600 !important;
