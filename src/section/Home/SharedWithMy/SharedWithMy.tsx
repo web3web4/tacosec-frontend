@@ -56,6 +56,7 @@ export default function SharedWithMy() {
                     <div className="created-at-container">
                       <strong>Created At:</strong>
                       <span className="child-date">
+                        {" "}
                         {pass.createdAt ? formatDate(pass.createdAt) : "Hidden for privacy"}
                       </span>
                     </div>
