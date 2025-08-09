@@ -58,7 +58,9 @@ export default function ChildrenSection({
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>
-                  <span className="child-date">{formatDate(child.createdAt)}</span>
+                  <span className="child-date">
+                      {child.createdAt ? formatDate(child.createdAt) : "Hidden for privacy"}
+                  </span>
                 </div>
               </div>
               <span className="child-toggle">
