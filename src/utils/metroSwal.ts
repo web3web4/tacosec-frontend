@@ -7,6 +7,7 @@ const metroSwalConfig = {
     title: 'metro-swal-title',
     htmlContainer: 'metro-swal-content',
     confirmButton: 'metro-swal-confirm',
+    denyButton: 'metro-swal-cancel',
     cancelButton: 'metro-swal-cancel',
     icon: 'metro-swal-icon'
   },

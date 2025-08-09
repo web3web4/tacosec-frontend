@@ -1,4 +1,4 @@
-import MetroSwal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 
 type PromptOptions = {
   onCreate: () => void;
