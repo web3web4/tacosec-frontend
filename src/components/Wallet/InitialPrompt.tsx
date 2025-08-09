@@ -1,4 +1,4 @@
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 
 type PromptOptions = {
   onCreate: () => void;
@@ -6,7 +6,7 @@ type PromptOptions = {
 };
 
 export function showInitialPrompt({ onCreate, onImport }: PromptOptions) {
-  Swal.fire({
+  MetroSwal.fire({
     icon: "info",
     title: "No Wallet Found",
     html: `

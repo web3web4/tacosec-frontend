@@ -1,4 +1,4 @@
-export function shouldShowBackup(identifier: string | null, hasWallet: boolean): boolean {
-  if (!identifier || !hasWallet) return false;
+export function shouldShowBackup(identifier: string | null, haMetroSwallet: boolean): boolean {
+  if (!identifier || !haMetroSwallet) return false;
   return localStorage.getItem(`seedBackupDone-${identifier}`) !== "true";
 }
