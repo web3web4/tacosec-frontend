@@ -11,7 +11,7 @@ import { NavigationGuardProvider } from "./context/NavigationGuardContext";
 import { HomeProvider } from "./context/HomeContext";
 import WalletSetup from "./wallet/WalletSetup";
 import { useUser } from "./context/UserContext";
-import useHome from "./hooks/useHome";
+import { useHome } from "./context/HomeContext";
 const TopBar: React.FC = () => {
   const { userData } = useUser();
   const { handleAddClick } = useHome();

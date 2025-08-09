@@ -4,7 +4,7 @@ import userNotFoundImage from "../assets/images/user-not-found.svg";
 import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
 import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
 import { useUser } from "../context/UserContext";
-import { MetroMetroSwal } from "../utils/metroMetroSwal";
+import { MetroSwal } from "../utils/metroSwal";
 import { useNavigationGuard } from "../context/NavigationGuardContext";
 import { debounce } from "../utils/tools";
 
@@ -185,7 +185,7 @@ export default function useAddData() {
 
   const checkEncrypting = () => {
     if (shareWith.trim() !== "") {
-      MetroMetroSwal.warning(
+      MetroSwal.warning(
         "Pending Share Action",
         "You entered a username to share with, but didn't click the '+' button. Please share or clear the field before saving."
       );

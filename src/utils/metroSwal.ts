@@ -10,8 +10,6 @@ const metroSwalConfig = {
     cancelButton: 'metro-swal-cancel',
     icon: 'metro-swal-icon'
   },
-  background: '#000000',
-  color: '#ffffff',
   buttonsStyling: false
 } as const;
 
@@ -25,8 +23,6 @@ export const MetroSwal = {
         text: text,
         icon: icon,
         customClass: metroSwalConfig.customClass,
-        background: metroSwalConfig.background,
-        color: metroSwalConfig.color,
         buttonsStyling: metroSwalConfig.buttonsStyling
       };
       return Swal.fire(config);
@@ -38,8 +34,6 @@ export const MetroSwal = {
           ...metroSwalConfig.customClass,
           ...options.customClass
         },
-        background: options.background || metroSwalConfig.background,
-        color: options.color || metroSwalConfig.color,
         buttonsStyling: options.buttonsStyling !== undefined ? options.buttonsStyling : metroSwalConfig.buttonsStyling
       };
       return Swal.fire(config);
@@ -52,8 +46,6 @@ export const MetroSwal = {
       text,
       icon: 'success',
       customClass: metroSwalConfig.customClass,
-      background: metroSwalConfig.background,
-      color: metroSwalConfig.color,
       buttonsStyling: metroSwalConfig.buttonsStyling
     };
     return Swal.fire(config);
@@ -65,8 +57,6 @@ export const MetroSwal = {
       text,
       icon: 'error',
       customClass: metroSwalConfig.customClass,
-      background: metroSwalConfig.background,
-      color: metroSwalConfig.color,
       buttonsStyling: metroSwalConfig.buttonsStyling
     };
     return Swal.fire(config);
@@ -78,8 +68,6 @@ export const MetroSwal = {
       text,
       icon: 'warning',
       customClass: metroSwalConfig.customClass,
-      background: metroSwalConfig.background,
-      color: metroSwalConfig.color,
       buttonsStyling: metroSwalConfig.buttonsStyling
     };
     return Swal.fire(config);
@@ -91,8 +79,6 @@ export const MetroSwal = {
       text,
       icon: 'info',
       customClass: metroSwalConfig.customClass,
-      background: metroSwalConfig.background,
-      color: metroSwalConfig.color,
       buttonsStyling: metroSwalConfig.buttonsStyling
     };
     return Swal.fire(config);
@@ -107,8 +93,6 @@ export const MetroSwal = {
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
       customClass: metroSwalConfig.customClass,
-      background: metroSwalConfig.background,
-      color: metroSwalConfig.color,
       buttonsStyling: metroSwalConfig.buttonsStyling
     };
     return Swal.fire(config);

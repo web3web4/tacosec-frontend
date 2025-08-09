@@ -32,7 +32,7 @@ import {
 } from "../hooks/walletDialogs";
 
 import { WalletContextProps } from "../interfaces/wallet"
-import MetroSwal from "sweetalert2";
+import MetroSwal from "../utils/metroSwal";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 
@@ -43,7 +43,7 @@ const WalletContext = createContext<WalletContextProps | null>(null);
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
-  const [haMetroSwallet, setHaMetroSwallet] = useState<boolean>(false);
+  const [hasWallet, setHasWallet] = useState<boolean>(false);
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string>("");
@@ -74,7 +74,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!identifier) return;
     const encrypted = getEncryptedSeed(identifier);
-    setHaMetroSwallet(!!encrypted);
+    setHasWallet(!!encrypted);
     setShowDecryptPrompt(!!encrypted);
   }, [identifier]);
 
@@ -153,7 +153,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       console.error("Failed to save wallet data to backend:", err);
     }
 
-    setHaMetroSwallet(true);
+    setHasWallet(true);
     showBackupReminder();
   }
 
@@ -169,7 +169,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (wallet) {
       setSigner(wallet.connect(provider));
       setAddress(wallet.address);
-      setHaMetroSwallet(true);
+      setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
       MetroSwal.fire({
@@ -189,14 +189,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         address,
         addressweb,
         signer,
-        haMetroSwallet,
+        hasWallet,
         provider,
         createWalletFlow,
         decryptedPassword,
         restoreWalletFromEncryptedSeed,
         setSigner,
         setAddress,
-        setHaMetroSwallet,
+        setHasWallet,
         setDecryptedPassword,
       }}
     >

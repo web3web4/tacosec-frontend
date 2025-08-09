@@ -12,7 +12,7 @@ type ImportParams = {
   restoreWalletFromEncryptedSeed: (encrypted: string, password: string) => ethers.Wallet | null;
   setSigner: (s: ethers.Signer) => void;
   setAddress: (a: string) => void;
-  setHaMetroSwallet: (v: boolean) => void;
+  setHasWallet: (v: boolean) => void;
   setDecryptedPassword: (pwd: string) => void;
   onDone?: () => void;
   onError?: (message: string) => void;
@@ -28,7 +28,7 @@ export async function handleWalletImport({
   restoreWalletFromEncryptedSeed,
   setSigner,
   setAddress,
-  setHaMetroSwallet,
+  setHasWallet,
   setDecryptedPassword,
   onDone,
   onError,
@@ -61,7 +61,7 @@ export async function handleWalletImport({
 
     setSigner(wallet.connect(provider));
     setAddress(wallet.address);
-    setHaMetroSwallet(true);
+    setHasWallet(true);
     setDecryptedPassword(password);
 
     if (isBrowser) {
