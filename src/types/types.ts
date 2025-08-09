@@ -11,6 +11,7 @@ export interface initDataType {
     isActive: boolean,
     createdAt: string,
     updatedAt: string,
+    privacyMode: boolean
 }
 
 export interface AuthDataType {
