@@ -1,4 +1,5 @@
 import React from "react";
+import { MdLock, MdLockOpen } from "react-icons/md";
 import "./SeedPhrase.css";
 import MetroSwal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
@@ -60,7 +61,7 @@ export const DecryptPrompt = ({
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2>🔐 Decrypt Your Wallet</h2>
+        <h2><MdLock style={{marginRight: '8px', verticalAlign: 'middle'}} />Decrypt Your Wallet</h2>
         <p>Enter your password to continue:</p>
         <input
           type="password"
@@ -74,7 +75,7 @@ export const DecryptPrompt = ({
         )}
         <div className="popup-actions">
           <button className="confirm-btn" onClick={onSubmit}>
-            🔓 UnLoack
+            <MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />UnLoack
           </button>
 
           <p

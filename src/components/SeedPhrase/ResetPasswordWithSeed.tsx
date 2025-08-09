@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { MdRefresh, MdClose, MdLockReset } from "react-icons/md";
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
 import { MetroSwal } from "../../utils/metroSwal";
@@ -43,7 +44,7 @@ export const ResetPasswordWithSeed = ({
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2>🔁 Reset Password</h2>
+        <h2><MdRefresh style={{marginRight: '8px', verticalAlign: 'middle'}} />Reset Password</h2>
         <p>Enter your 12-word seed phrase:</p>
         <textarea
           value={seed}
@@ -62,10 +63,10 @@ export const ResetPasswordWithSeed = ({
         />
         <div className="popup-actions-row">
           <button className="cancel-btn" onClick={onCancel}>
-            ❌ Cancel
+            <MdClose style={{marginRight: '4px', verticalAlign: 'middle'}} />Cancel
           </button>
           <button className="confirm-btn" onClick={handleReset}>
-            🔐 Reset
+            <MdLockReset style={{marginRight: '4px', verticalAlign: 'middle'}} />Reset
           </button>
         </div>
       </div>
