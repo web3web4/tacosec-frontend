@@ -356,3 +356,22 @@ export async function getSecretViews(initData: string, id: string): Promise<Secr
   const result = await response.json();
   return result
 }
+
+export async function setPrivacyMode(initData: string, value: boolean): Promise<any> {
+  const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
+  const response = await fetch(`${API_BASE_URL}/users/me/privacy-mode`, {
+    method: "PATCH",
+    headers: headers,
+    body: JSON.stringify({ privacyMode: value})
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
+

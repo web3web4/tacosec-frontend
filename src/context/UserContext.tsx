@@ -11,6 +11,7 @@ interface UserContextType {
   error: string | null;
   isBrowser: boolean;
   signUserData: (initData: initDataType) => Promise<void>;
+  setUserData: React.Dispatch<React.SetStateAction<initDataType | null>>
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -71,6 +72,7 @@ useEffect(() => {
     error,
     isBrowser,
     signUserData,
+    setUserData
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -16,7 +16,7 @@ import "../../components/SeedPhrase/SeedPhrase.css";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 
 const Settings: React.FC = () => {
-  const { profileImage, notificationsOn, handleToggleNotifications, showSupportPopup, setShowSupportPopup } = useSetting();
+  const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup } = useSetting();
   const { userData , isBrowser } = useUser();
   const { address , addressweb } = useWallet();
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -137,7 +137,18 @@ const submitDecryption = () => {
             {showCopied && <span className="copied-message">Copied</span>}
           </div>
         </div>
-        <div className="notifications-row">
+        <div className="checkbox-row">
+          <span>Activate privacy mode</span>
+          <label className="toggle-switch">
+            <input
+              type="checkbox"
+              checked={privacyModOn}
+              onChange={handleTogglePrivacyMod}
+            />
+            <span className="slider round"></span>
+          </label>
+        </div>
+        <div className="checkbox-row">
           <span>Turn on Notifications</span>
           <label className="toggle-switch">
             <input
