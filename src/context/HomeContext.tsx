@@ -4,7 +4,7 @@ import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews } from "../types/types";
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "../hooks/useTaco";
 import { fromHexString } from "@nucypher/shared";
@@ -100,14 +100,14 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         setAuthError(err.message);
         // Only show error alert for non-authentication errors or if we're not in Telegram
         if (!window.Telegram?.WebApp) {
-          Swal.fire({
+          MetroSwal.fire({
             icon: "error",
             title: "Authentication Error",
             text: err.message,
           });
         }
       } else {
-        Swal.fire({
+        MetroSwal.fire({
           icon: "error",
           title: "Error",
           text: err instanceof Error ? err.message : "An error occurred",
@@ -167,14 +167,14 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         setAuthError(err.message);
         // Only show error alert for non-authentication errors or if we're not in Telegram
         if (!window.Telegram?.WebApp) {
-          Swal.fire({
+          MetroSwal.fire({
             icon: "error",
             title: "Authentication Error",
             text: err.message,
           });
         }
       } else {
-        Swal.fire({
+        MetroSwal.fire({
           icon: "error",
           title: "Error",
           text: err instanceof Error ? err.message : "An error occurred",
@@ -222,7 +222,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   }, [location.pathname]); 
  
   const handleDelete = async (id: string, isHasSharedWith: boolean) => {
-    const swalOptions: any = {
+    const MetroSwalOptions: any = {
       title: 'Do you want to delete this Secret?',
       showCancelButton: true,
       confirmButtonText: 'Delete',
@@ -231,11 +231,11 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     };
     
     if (isHasSharedWith) {
-      swalOptions.input = 'checkbox';
-      swalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
+      MetroSwalOptions.input = 'checkbox';
+      MetroSwalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
     }
   
-    const result = await Swal.fire(swalOptions);
+    const result = await MetroSwal.fire(MetroSwalOptions);
     if (result.isConfirmed) {
       try {
         if (isHasSharedWith) {
@@ -248,7 +248,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         }
         setMyData((prev) => prev.filter((secret) => secret.id !== id));
       } catch (error) {
-        Swal.fire({
+        MetroSwal.fire({
           icon: 'error',
           title: 'Delete Secret Error',
           text: error instanceof Error ? error.message : "An error occurred",
@@ -294,7 +294,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }).join('');
     
     
-    const result = await Swal.fire({
+    const result = await MetroSwal.fire({
       title: 'Report Issue',
       html: `
           <div style="margin-bottom: 16px;">
@@ -354,12 +354,12 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         const message = (document.getElementById('report-message') as HTMLTextAreaElement)?.value;
         
         if (!selectedReportType) {
-          Swal.showValidationMessage('Please select a report type!');
+          MetroSwal.showValidationMessage('Please select a report type!');
           return false;
         }
         
         if (!message || message.trim().length < 8) {
-          Swal.showValidationMessage('Please provide at least 8 characters describing the issue!');
+          MetroSwal.showValidationMessage('Please provide at least 8 characters describing the issue!');
           return false;
         }
         
@@ -406,14 +406,14 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             }),
           }))
         );
-        Swal.fire({
+        MetroSwal.fire({
           icon: 'success',
           title: 'Report Submitted',
           text: `Your ${selectedReportType} report has been submitted successfully and will be reviewed by our team.`,
           confirmButtonColor: 'var(--primary-color)'
         });
       } catch(error) {
-        Swal.fire({
+        MetroSwal.fire({
           icon: 'error',
           title: 'Report Error',
           text: error instanceof Error ? error.message : "An error occurred",
@@ -424,7 +424,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
 
   const handleViewReportsForSecret = async (data: ReportsResponse[], secretKey: string) => {
     if (data.length === 0) {
-      Swal.fire({
+      MetroSwal.fire({
         icon: 'info',
         title: 'No Reports',
         text: 'No reports found for this secret.',
@@ -464,7 +464,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       </div>
     `).join('');
 
-    Swal.fire({
+    MetroSwal.fire({
       title: `Reports for ${secretKey} (${data.length} total)`,
       html: `
         <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
@@ -570,7 +570,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     const data = secretViews[id];
     
     if (!data || data.viewDetails.length === 0) {
-      Swal.fire({
+      MetroSwal.fire({
         icon: 'info',
         title: 'No Views',
         text: 'No one has viewed this message yet.',
@@ -600,7 +600,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       `;
     }).join('');
 
-    Swal.fire({
+    MetroSwal.fire({
       title: `Viewed by ${data.viewDetails.length} ${data.viewDetails.length === 1 ? 'user' : 'users'}`,
       html: `
         <div style="max-height: 300px; overflow-y: auto; margin: -20px -24px 0; border-radius: 12px;">

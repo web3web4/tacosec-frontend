@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { MdRefresh, MdClose, MdLockReset } from "react-icons/md";
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
@@ -22,12 +23,12 @@ export const ResetPasswordWithSeed = ({
       if (!identifier) return;
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {
-      Swal.fire("Error", "Invalid seed phrase", "error");
+      MetroSwal.fire("Error", "Invalid seed phrase", "error");
       return;
     }
 
     if (newPassword.length < 4) {
-      Swal.fire("Error", "Password too short", "error");
+      MetroSwal.fire("Error", "Password too short", "error");
       return;
     }
 
@@ -36,14 +37,14 @@ export const ResetPasswordWithSeed = ({
     localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
     localStorage.setItem(`seedBackupDone-${identifier}`, "true");
 
-    Swal.fire("✅ Success", "Password reset successfully", "success");
+    MetroSwal.fire("✅ Success", "Password reset successfully", "success");
     onSuccess(); // go back to login or main screen
   };
 
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2>🔁 Reset Password</h2>
+        <h2><MdRefresh style={{marginRight: '8px', verticalAlign: 'middle'}} />Reset Password</h2>
         <p>Enter your 12-word seed phrase:</p>
         <textarea
           value={seed}
@@ -62,10 +63,10 @@ export const ResetPasswordWithSeed = ({
         />
         <div className="popup-actions-row">
           <button className="cancel-btn" onClick={onCancel}>
-            ❌ Cancel
+            <MdClose style={{marginRight: '4px', verticalAlign: 'middle'}} />Cancel
           </button>
           <button className="confirm-btn" onClick={handleReset}>
-            🔐 Reset
+            <MdLockReset style={{marginRight: '4px', verticalAlign: 'middle'}} />Reset
           </button>
         </div>
       </div>

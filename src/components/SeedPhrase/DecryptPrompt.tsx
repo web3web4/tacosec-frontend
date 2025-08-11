@@ -1,6 +1,7 @@
 import React from "react";
+import { MdLock, MdLockOpen } from "react-icons/md";
 import "./SeedPhrase.css";
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
 
 type Props = {
@@ -28,7 +29,7 @@ export const DecryptPrompt = ({
       onHidePrompt(false); // Explicitly hide the prompt
     }
     
-    Swal.fire({
+    MetroSwal.fire({
       icon: "warning",
       title: "Warning",
       html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
@@ -60,7 +61,7 @@ export const DecryptPrompt = ({
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2>🔐 Decrypt Your Wallet</h2>
+        <h2><MdLock style={{marginRight: '8px', verticalAlign: 'middle'}} />Decrypt Your Wallet</h2>
         <p>Enter your password to continue:</p>
         <input
           type="password"
@@ -74,7 +75,7 @@ export const DecryptPrompt = ({
         )}
         <div className="popup-actions">
           <button className="confirm-btn" onClick={onSubmit}>
-            🔓 UnLoack
+            <MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />UnLoack
           </button>
 
           <p

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { MdSecurity, MdCheck } from "react-icons/md";
 import "./SeedPhrase.css";
 
 interface ConfirmSeedPopupProps {
@@ -34,7 +35,7 @@ export const ConfirmSeedPopup: React.FC<ConfirmSeedPopupProps> = ({
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2>🧪 Confirm Backup</h2>
+        <h2><MdSecurity style={{marginRight: '8px', verticalAlign: 'middle'}} />Confirm Backup</h2>
         <p className="warning">Enter the correct word for each position:</p>
         <div className="input-group">
           {indices.map((wordIndex, idx) => (
@@ -50,7 +51,7 @@ export const ConfirmSeedPopup: React.FC<ConfirmSeedPopupProps> = ({
         </div>
         <div className="popup-actions-row">
           <button className="confirm-btn" onClick={handleSubmit}>
-            ✅ Confirm
+            <MdCheck style={{marginRight: '4px', verticalAlign: 'middle'}} />Confirm
           </button>
         </div>
       </div>

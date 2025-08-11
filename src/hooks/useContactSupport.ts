@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 import { ContactSupportProps, SupportData } from "../types/types";
 import { sendContractSupport } from "../apiService";
 
@@ -18,7 +18,7 @@ export default function UseContactSupport({ setShowSupportPopup }: ContactSuppor
 
   const handleSupportSubmit = async () => {
     if (!supportForm.subject.trim() || !supportForm.message.trim()) {
-      Swal.fire("Error", "Please fill in both subject and message fields.", "error");
+      MetroSwal.fire("Error", "Please fill in both subject and message fields.", "error");
       return;
     }
 
@@ -29,7 +29,7 @@ export default function UseContactSupport({ setShowSupportPopup }: ContactSuppor
       const response = await sendContractSupport(initDataRaw!, {subject: supportForm.subject, message: supportForm.message});
 
       if (response.success) {
-          Swal.fire("Success", "Your support request has been sent successfully!", "success");
+          MetroSwal.fire("Success", "Your support request has been sent successfully!", "success");
           setSupportForm({ subject: "", message: ""});
           setShowSupportPopup(false);
       } else {
@@ -37,7 +37,7 @@ export default function UseContactSupport({ setShowSupportPopup }: ContactSuppor
       }
     } catch (error) {
       console.error('Error sending support request:', error);
-      Swal.fire("Error", "Failed to send support request. Please try again later.", "error");
+      MetroSwal.fire("Error", "Failed to send support request. Please try again later.", "error");
     } finally {
       setIsSubmittingSupportRequest(false);
     }

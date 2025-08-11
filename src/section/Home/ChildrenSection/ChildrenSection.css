@@ -27,12 +27,13 @@
 }
 
 .child-item {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  background: var(--background);
+  border: 2px solid var(--metro-green);
+  border-radius: 0;
   padding: 12px;
   transition: all 0.2s ease;
   position: relative;
+  box-shadow: var(--box-shadow);
 }
 
 .child-header {
@@ -40,14 +41,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
+  background-color: var(--background);
+  border-radius: 0;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .child-header:hover {
-  background-color: #e9ecef;
+  background-color: var(--metro-green);
+  color: var(--background);
 }
 
 .child-info {
@@ -197,11 +199,11 @@
 
 .children-empty {
   text-align: center;
-  color: #6c757d;
+  color: var(--text-secondary);
   font-size: 12px;
   font-style: italic;
   padding: 16px;
-  background: #f8f9fa;
-  border-radius: 6px;
-  border: 1px dashed #dee2e6;
+  background: var(--background);
+  border-radius: 0;
+  border: 2px dashed var(--metro-green);
 }

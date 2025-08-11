@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Swal from "sweetalert2";
+import { MdDownload, MdClose, MdLockOpen } from "react-icons/md";
+import { MetroSwal } from "../../utils/metroSwal";
 import "./SeedPhrase.css";
 
 export function SeedImportPopup({
@@ -18,11 +19,11 @@ export function SeedImportPopup({
     setWords(newWords);
   };
 
-const handleSubmit = async () => {
+const handleImport = async () => {
   const trimmedWords = words.map((w) => w.trim());
   const mnemonic = trimmedWords.join(" ");
   if (trimmedWords.includes("") || trimmedWords.length !== 12) {
-    Swal.fire({
+    MetroSwal.fire({
       icon: "error",
       title: "Invalid Seed",
       text: "Please enter all 12 words correctly.",
@@ -44,11 +45,25 @@ const handleSubmit = async () => {
   }
 };
 
+  const handleSubmit = () => {
+    const trimmedWords = words.map((w) => w.trim());
+    const mnemonic = trimmedWords.join(" ");
+    if (trimmedWords.includes("") || trimmedWords.length !== 12) {
+      MetroSwal.fire({
+        icon: "error",
+        title: "Invalid Seed",
+        text: "Please enter all 12 words correctly."
+      });
+      return;
+    }
+    setLoading(true);
+    onImport(mnemonic);
+  };
 
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2 className="popup-title">🧩 Import Your Wallet</h2>
+        <h2 className="popup-title"><MdDownload style={{marginRight: '8px', verticalAlign: 'middle'}} />Import Your Wallet</h2>
         <p className="warning">
           Enter your 12‑word seed phrase in the correct order.
         </p>
@@ -93,7 +108,7 @@ const handleSubmit = async () => {
               onClick={onCancel}
               disabled={loading}
             >
-              ❌ Cancel
+              <MdClose style={{marginRight: '4px', verticalAlign: 'middle'}} />Cancel
             </button>
           )}
           <button
@@ -101,7 +116,7 @@ const handleSubmit = async () => {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? "Importing…" : "🔐 Import"}
+            {loading ? "Importing…" : <><MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />Import</>}
           </button>
         </div>
       </div>

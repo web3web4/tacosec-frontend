@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { initDataType } from "../types/types";
 import { signupUser } from "../apiService";
-import Swal from "sweetalert2";
+import { MetroSwal } from "../utils/metroSwal";
 import { detectAuthMethod } from "../hooks/useContextHelper";
 
 
@@ -40,13 +40,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const response = await signupUser(initData);
       setUserData(response);
       if (hasWallet) {
-        Swal.fire({
-          icon: "success",
-          title: "Welcome!",
-          text: `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`,
-        });
+        MetroSwal.success(
+          "Welcome!",
+          `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`
+        );
       }
-
+    try {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      MetroSwal.error(
+        "Error In Sign User",
+        err instanceof Error ? err.message : "An error occurred"
+      );
+    }
   };
 
 useEffect(() => {

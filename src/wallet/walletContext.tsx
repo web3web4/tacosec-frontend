@@ -31,8 +31,8 @@ import {
   showBackupReminder,
 } from "../hooks/walletDialogs";
 
-import {WalletContextProps} from "../interfaces/wallet"
-import Swal from "sweetalert2";
+import { WalletContextProps } from "../interfaces/wallet"
+import MetroSwal from "../utils/metroSwal";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 
@@ -58,7 +58,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
-  const { initDataRaw , userData } = useUser();
+  const { initDataRaw, userData } = useUser();
   const isTelegram = Boolean(userData?.telegramId);
   const isWeb = !isTelegram;
 
@@ -81,19 +81,40 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   async function createWalletFlow() {
     if (isTelegram && !userData?.telegramId) return;
 
-    const { value: password, isConfirmed } = await promptPassword();
+
+    const { value: password, isConfirmed } = await MetroSwal.fire({
+      title: "Set Password",
+      input: "password",
+      inputLabel: "Enter a password to encrypt your wallet",
+      inputPlaceholder: "Your secure password",
+      inputAttributes: {
+        autocapitalize: "off",
+        autocorrect: "off",
+      },
+      showCancelButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+
     if (!isConfirmed || !password) {
-      await Swal.fire({
-        icon: "warning",
-        title: "Cancelled",
-        html: "Password is required to create your wallet.",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
+      MetroSwal.fire({
+        icon: 'warning',
+        title: 'Cancelled',
+        text: 'Password is required to create your wallet.'
       });
-      return createWalletFlow();
+      return;
     }
 
-    const { isConfirmed: saveConfirmed } = await confirmSavePassword();
+    const { isConfirmed: saveConfirmed } = await MetroSwal.fire({
+      title: "Save password",
+      text: "Do you want to save the wallet password on our servers?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No"
+    });
+
+
     const saveToBackend = saveConfirmed;
     setSavedPasswordPreference(saveToBackend);
 
@@ -105,7 +126,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     if (isWeb) {
       setSeedBackupDone(wallet.address, false);
-      
+
       try {
         const message = `Login to Taco App: ${Date.now()}`;
         const signature = await wallet.signMessage(message);
@@ -151,7 +172,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
-      Swal.fire("Success", "Wallet restored successfully.", "success");
+      MetroSwal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Wallet restored successfully.'
+      });
       setDecryptedPassword(password);
     } else {
       setPasswordError("Password incorrect or failed to restore wallet.");
@@ -193,24 +218,26 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         />
       )}
 
-      {showResetFlow && (
-        <ResetPasswordWithSeed
-          onSuccess={() => {
-            setShowResetFlow(false);
-            Swal.fire(
-              "Success",
-              "You can now unlock your wallet with your new password.",
-              "success"
-            ).then(() => {
-              window.location.reload();
-            });
-          }}
-          onCancel={() => {
-            setShowResetFlow(false);
-            setShowDecryptPrompt(true);
-          }}
-        />
-      )}
+      {showResetFlow &&
+        (
+          <ResetPasswordWithSeed
+            onSuccess=
+            {() => {
+              setShowResetFlow(false);
+              MetroSwal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'You can now unlock your wallet with your new password.'
+              })
+
+            }}
+            onCancel=
+            {() => {
+              setShowResetFlow(false);
+              setShowDecryptPrompt(true);
+            }}
+          />
+        )}
     </WalletContext.Provider>
   );
 }

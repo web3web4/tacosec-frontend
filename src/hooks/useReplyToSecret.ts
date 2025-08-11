@@ -5,7 +5,7 @@ import { toHexString } from "@nucypher/shared";
 import { parseTelegramInitData } from "../utils/tools";
 import { storageEncryptedData } from "../apiService";
 import { useUser } from "../context/UserContext";
-import Swal from "sweetalert2";
+import MetroSwal from "sweetalert2";
 import { SelectedSecretType } from "../types/types";
 import { v4 as uuidv4 } from 'uuid';
 import { useHome } from "../context/HomeContext";
@@ -25,7 +25,7 @@ export default function useReplyToSecret() {
   });
 
   const handleReplyToSecret = async (selectedSecret: SelectedSecretType) => {
-    const result = await Swal.fire({
+    const result = await MetroSwal.fire({
       title: 'Reply to Secret',
       html: `
         <div style="text-align: left; margin-bottom: 16px;">
@@ -49,12 +49,12 @@ export default function useReplyToSecret() {
         const reply = (document.getElementById('reply-message') as HTMLTextAreaElement)?.value;
         
         if (!reply || !reply.trim()) {
-          Swal.showValidationMessage('Reply is required!');
+          MetroSwal.showValidationMessage('Reply is required!');
           return false;
         }
         
         if (!provider || !signer) {
-          Swal.showValidationMessage('Wallet not connected!');
+          MetroSwal.showValidationMessage('Wallet not connected!');
           return false;
         }
 
@@ -63,15 +63,15 @@ export default function useReplyToSecret() {
           return { title: "", reply: reply.trim() };
         } catch (error) {
           console.error("Error submitting reply:", error);
-          Swal.showValidationMessage('Failed to submit reply. Please try again.');
+          MetroSwal.showValidationMessage('Failed to submit reply. Please try again.');
           return false;
         }
       },
-      allowOutsideClick: () => !Swal.isLoading()
+      allowOutsideClick: () => !MetroSwal.isLoading()
     });
 
     if (result.isConfirmed) {
-      Swal.fire({
+      MetroSwal.fire({
         icon: "success",
         title: `Reply submitted successfully!`,
         text: "Your reply has been encrypted and stored.",
