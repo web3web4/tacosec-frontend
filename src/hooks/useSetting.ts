@@ -3,6 +3,7 @@ import { getUserProfileDetails, setPrivacyMode } from "../apiService";
 import { useUser } from "../context/UserContext";
 import { GetUserProfileDetailsResponse, initDataType } from "../types/types";
 import Swal from "sweetalert2";
+import MetroSwal from "../utils/metroSwal";
 
 export default function useSetting() {
   const { userData, initDataRaw, setUserData } = useUser();
@@ -28,7 +29,7 @@ const handleTogglePrivacyMod = (): void => {
 
     // Show message only if enabling and not hidden before
     if (newStatus && !localStorage.getItem("hidePrivacyModeMessage")) {
-      Swal.fire({
+      MetroSwal.fire({
         title: "Privacy Mode Activated",
         html: `
           <p>When Privacy Mode is enabled:</p>
