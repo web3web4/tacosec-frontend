@@ -352,19 +352,119 @@
   animation-delay: 0.4s;
 }
 
-.loading-container-home{
+.loading-container-home {
   position: absolute;
-  inset: 45%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
+.loading-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--background);
+  border: 2px solid var(--metro-green);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  animation: fadeInScale 0.5s ease-out;
+}
+
+.loading-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--metro-green);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-dots {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.loading-dots span {
+  animation: bounce 1.4s infinite;
+  display: inline-block;
+  font-size: 1.5rem;
+  color: var(--metro-green);
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 200, 81, 0.2);
+  border-top: 3px solid var(--metro-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
   }
-  50% {
-    transform: translateY(-5px);
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes spin {
+   0% {
+     transform: rotate(0deg);
+   }
+   100% {
+     transform: rotate(360deg);
+   }
+ }
+ 
+ @keyframes bounce {
+   0%, 20%, 50%, 80%, 100% {
+     transform: translateY(0);
+   }
+   40% {
+     transform: translateY(-10px);
+   }
+   60% {
+     transform: translateY(-5px);
+   }
+ }
+
+
 
 
 .item-status::before {

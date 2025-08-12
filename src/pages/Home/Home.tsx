@@ -31,7 +31,21 @@ const Home: React.FC = () => {
       <div className="tab-content">
         <div>  
         {
-        isLoading ? <div className="loading-container-home"> Loading... </div> :
+        isLoading ? (
+          <div className="loading-container-home">
+            <div className="loading-animation">
+              <h2 className="loading-title">
+                Loading Your Data
+                <span className="loading-dots">
+                  <span>.</span>
+                  <span>.</span>
+                  <span>.</span>
+                </span>
+              </h2>
+              <div className="loading-spinner"></div>
+            </div>
+          </div>
+        ) :
         activeTab === "mydata" ? (
           <MyData />
         ) : (
