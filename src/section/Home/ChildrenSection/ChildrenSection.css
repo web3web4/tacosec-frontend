@@ -109,6 +109,8 @@
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #e9ecef;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .child-button-group {
