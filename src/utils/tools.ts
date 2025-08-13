@@ -36,11 +36,12 @@ export function parseTelegramInitData(initData: string){
 
   export const formatDate = (dateString: string): string => {
     try {
-      const dateUTC = new Date(dateString);
-      const offsetMinutes = new Date().getTimezoneOffset();
-      const localTime = new Date(dateUTC.getTime() - offsetMinutes * 60 * 1000);
-      return localTime.toLocaleDateString('en-US') + ' ' + localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit'});
-    } catch (error) {
+      const date = new Date(dateString);
+  
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) + ' ' +
+             date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } catch {
       return 'Invalid date';
     }
   };
+  
