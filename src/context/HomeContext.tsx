@@ -3,7 +3,7 @@ import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePasswor
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews } from "../types/types";
+import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "../types/types";
 import MetroSwal from "sweetalert2";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "../hooks/useTaco";
@@ -565,6 +565,21 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const enrichViewDetailsWithImages = async (viewDetails: ViewDetails[]): Promise<ViewDetails[]> => {
+    return Promise.all(
+      viewDetails.map(async (viewer) => {
+        const profile = await getUserProfileDetails(viewer.username);
+  
+        return {
+          ...viewer,
+          img: profile && profile.img?.src?.trim()
+            ? profile.img.src
+            : defaultProfileImage,
+        };
+      })
+    );
+  };
+
   const handleGetSecretViews = async (e: any, id: string) => {
     e.stopPropagation();
     const data = secretViews[id];
@@ -585,15 +600,15 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Create HTML for the viewers list
-    const viewersHtml = sortedViewDetails.map(viewer => {
+    const viewersHtml = sortedViewDetails.map((viewer, index) => {
       const formattedDate = formatDate(viewer.viewedAt);
       return `
         <div style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: left;">
-          <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-            <span style="font-size: 16px; color: #666;">👤</span>
+          <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+            <span style="font-size: 16px; color: #666;"><img id="viewer-img-${index}" style= "border-radius: 50%" src=${viewer.img || defaultProfileImage} width=35 height=35 /></span>
           </div>
           <div style="flex-grow: 1;">
-            <div style="font-weight: 500; margin-bottom: 2px; text-align: left;">${viewer.username}</div>
+            <div style="font-weight: 500; margin-bottom: 2px; text-align: left;">${viewer.firstName} ${viewer.lastName}</div>
             <div style="font-size: 12px; color: #666; text-align: left;">${formattedDate}</div>
           </div>
         </div>
@@ -622,6 +637,24 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         }
       }
     });
+    try {
+      if (!data) return;
+      const updatedViewDetails = await enrichViewDetailsWithImages(sortedViewDetails);
+      setSecretViews((prev) => ({
+        ...prev,
+        [id]: {
+          ...data,
+          viewDetails: updatedViewDetails,
+        },
+      }));
+
+      updatedViewDetails.forEach((viewer, index) => {
+        const imgEl = document.querySelector(`#viewer-img-${index}`) as HTMLImageElement;
+        if (imgEl) imgEl.src = viewer.img || defaultProfileImage;
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const value = {
