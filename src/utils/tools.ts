@@ -37,9 +37,8 @@ export function parseTelegramInitData(initData: string){
   export const formatDate = (dateString: string): string => {
     try {
       const dateUTC = new Date(dateString);
-      const offsetMinutes = new Date().getTimezoneOffset();
-      const localTime = new Date(dateUTC.getTime() - offsetMinutes * 60 * 1000);
-      return localTime.toLocaleDateString('en-US') + ' ' + localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit'});
+    return dateUTC.toLocaleDateString('en-US', { timeZone: 'UTC' }) + ' ' +
+           dateUTC.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
     } catch (error) {
       return 'Invalid date';
     }
