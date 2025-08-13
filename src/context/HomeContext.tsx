@@ -33,7 +33,7 @@ interface HomeContextType {
   decryptedMessages: Record<string, string>;
   toggleExpand: (value: string, id: string) => Promise<void>;
   expandedId: string | null;
-  toggleChildExpand: (parentIndex: number, value: string, childId: string) => void;
+  toggleChildExpand: (value: string, childId: string) => void;
   expandedChildId: string | null;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
@@ -492,8 +492,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   
       if (!decryptedMessages[id]) {
         decryptMessage(id, value);
-        await setSecretView(initDataRaw!, id);
       }
+      await setSecretView(initDataRaw!, id);
       triggerGetChildrenForSecret(id);
       const secretViews = await getSecretViews(initDataRaw!, id);
       setSecretViews((prev) => ({ ...prev, [id]: secretViews }));
@@ -532,15 +532,15 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const toggleChildExpand = async (parentIndex: number, value: string, childId: string) => {
+  const toggleChildExpand = async (value: string, childId: string) => {
     setDecryptingChild(false);
+    await setSecretView(initDataRaw!, childId);
     if (expandedChildId === childId) {
       setExpandedChildId(null);
     } else {
       setExpandedChildId(childId);
       if (!decryptedChildMessages[childId]) {
         decryptChildMessage(childId, value);
-        await setSecretView(initDataRaw!, childId);
       }
       const secretViews = await getSecretViews(initDataRaw!, childId);
       setSecretViews((prev) => ({ ...prev, [childId]: secretViews }));
