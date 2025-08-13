@@ -35,9 +35,9 @@ export default function ChildrenSection({
 
   return (
     <div className="children-section">
-      <h4 className="children-title">Replys To Secret:</h4>
+      <h4 className="children-title">Replies To Secret:</h4>
       <div className="children-list">
-        {children.map((child, childIndex) => (
+        {children.map((child) => (
           <div 
             key={child._id} 
             className="child-item"
@@ -54,7 +54,7 @@ export default function ChildrenSection({
               <div className="child-info">
               <div className="child-meta">
                   <strong>By:</strong>
-                  <span className="child-date">{child.username}</span>
+                  <span className="child-date">{child.firstName}{" "}{child.lastName}</span>
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>
