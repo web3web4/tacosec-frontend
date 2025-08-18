@@ -23,7 +23,6 @@
 .tabs-row {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 2rem;
   padding: 0.5rem;
   background: var(--background);
   border: 2px solid var(--metro-green);
@@ -120,7 +119,6 @@
 
 .tab-content {
   height: calc(100vh - 140px);
-  margin-top: 50px;
   padding: 1rem;
   overflow-y: auto;
 }
@@ -129,6 +127,7 @@
   display: grid;
   gap: 0.75rem;
   padding: 0 1rem;
+  margin-bottom: 40px;
 }
 
 .data-item {
@@ -204,9 +203,7 @@
 .expanded-box {
   margin-top: 12px;
   background: var(--surface);
-  border: 2px solid var(--metro-green);
   padding: 16px;
-  border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
 }
 
@@ -539,9 +536,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  border-radius: var(--border-radius);
   background: var(--surface);
-  border: 2px solid var(--metro-green);
   transition: all 0.2s ease;
 }
 
