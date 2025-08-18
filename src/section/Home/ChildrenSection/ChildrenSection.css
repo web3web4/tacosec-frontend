@@ -47,11 +47,6 @@
   transition: all 0.2s ease;
 }
 
-.child-header:hover {
-  background-color: var(--metro-green);
-  color: var(--background);
-}
-
 .child-info {
   display: flex;
   flex-direction: column;
