@@ -624,7 +624,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }).join('');
 
     MetroSwal.fire({
-      title: `Decrypted by: ${data.totalSharedUsers > 1 && sortedViewDetails.length + "/" + data.totalSharedUsers}`,
+      title: `Decrypted by: ${data.totalSharedUsers > 1 ? sortedViewDetails.length + "/" + data.totalSharedUsers : ""}`,
       html: `
         <div style="max-height: 300px; overflow-y: auto; margin: -20px -24px 0; border-radius: 12px;">
           ${viewersHtml}
