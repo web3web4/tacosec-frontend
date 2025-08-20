@@ -184,7 +184,7 @@ const AddData: React.FC = () => {
 
       {encrypting && (
         <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
-          Please Wait For Encrypting...
+          Encrypting your secret...
         </div>
       )}
       <label>Share with (optional)</label>
