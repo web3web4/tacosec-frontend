@@ -3,7 +3,7 @@ import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePasswor
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews } from "../types/types";
+import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "../types/types";
 import MetroSwal from "../utils/metroSwal";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "../hooks/useTaco";
