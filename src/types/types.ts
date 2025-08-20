@@ -11,6 +11,7 @@ export interface initDataType {
     isActive: boolean,
     createdAt: string,
     updatedAt: string,
+    privacyMode: boolean
 }
 
 export interface AuthDataType {
@@ -44,6 +45,8 @@ export interface ChildDataItem {
   value: string,
   username: string  
   createdAt: string,
+  firstName: string,
+  lastName: string,
 }
 export interface SharedWithMyDataType{
   sharedByDetails?: UserProfileDetailsType, // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
@@ -123,4 +126,7 @@ export interface ViewDetails{
   telegramId: string,
   username: string,
   viewedAt: string,
+  firstName: string,
+  lastName: string,
+  img?: string, // This property not get from backend, we used for stored img from another endpoint 
 }

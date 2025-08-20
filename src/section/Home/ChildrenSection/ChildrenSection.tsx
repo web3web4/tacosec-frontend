@@ -8,7 +8,7 @@ import { useHome } from "../../../context/HomeContext";
 interface ChildrenSectionProps {
   children: ChildDataItem[];
   parentIndex: number;
-  toggleChildExpand?: (parentIndex: number, value: string, childId: string) => void;
+  toggleChildExpand?: (value: string, childId: string) => void;
   expandedChildId: string | null;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
@@ -35,9 +35,9 @@ export default function ChildrenSection({
 
   return (
     <div className="children-section">
-      <h4 className="children-title">Replys To Secret:</h4>
+      <h4 className="children-title">Replies To Secret:</h4>
       <div className="children-list">
-        {children.map((child, childIndex) => (
+        {children.map((child) => (
           <div 
             key={child._id} 
             className="child-item"
@@ -47,18 +47,20 @@ export default function ChildrenSection({
               onClick={(e) => {
                 e.stopPropagation();
                 if (toggleChildExpand) {
-                  toggleChildExpand(parentIndex, child.value, child._id);
+                  toggleChildExpand(child.value, child._id);
                 }
               }}
             >
               <div className="child-info">
               <div className="child-meta">
                   <strong>By:</strong>
-                  <span className="child-date">{child.username}</span>
+                  <span className="child-date">{child.firstName}{" "}{child.lastName}</span>
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>
-                  <span className="child-date">{formatDate(child.createdAt)}</span>
+                  <span className="child-date">
+                      {child.createdAt ? formatDate(child.createdAt) : "Hidden for privacy"}
+                  </span>
                 </div>
               </div>
               <span className="child-toggle">

@@ -1,18 +1,59 @@
 import { useEffect, useState } from "react";
-import { getUserProfileDetails } from "../apiService";
+import { getUserProfileDetails, setPrivacyMode } from "../apiService";
 import { useUser } from "../context/UserContext";
 import { GetUserProfileDetailsResponse, initDataType } from "../types/types";
+import Swal from "sweetalert2";
+import MetroSwal from "../utils/metroSwal";
 
 export default function useSetting() {
-  const { userData }: { userData: initDataType | null } = useUser();
+  const { userData, initDataRaw, setUserData } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
   const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
+  const [privacyModOn, setPrivacyModOn] = useState<boolean>(userData?.privacyMode || false);
   const [showSupportPopup, setShowSupportPopup] = useState(false);
 
   const handleToggleNotifications = (): void => {
     setNotificationsOn(!notificationsOn);
     console.log("Notifications toggled:", !notificationsOn);
   };
+
+const handleTogglePrivacyMod = (): void => {
+  try {
+    const newStatus = !privacyModOn;
+    setPrivacyModOn(newStatus);
+    setPrivacyMode(initDataRaw!, newStatus);
+    setUserData((prev: initDataType | null) => {
+      if (!prev) return prev;
+      return { ...prev, privacyMode: newStatus };
+    });
+
+    // Show message only if enabling and not hidden before
+    if (newStatus && !localStorage.getItem("hidePrivacyModeMessage")) {
+      MetroSwal.fire({
+        title: "Privacy Mode Activated",
+        html: `
+          <p>When Privacy Mode is enabled:</p>
+          <ul style="text-align:left; margin-left:25px">
+            <li>Viewing a secret will not be recorded.</li>
+            <li>Views on your secrets will not be tracked.</li>
+            <li>Reply dates and shared secret details will be hidden.</li>
+            <li>Notifications will only say: <em>"Please check your data"</em>.</li>
+          </ul>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Got it",
+        cancelButtonText: "Don't show again",
+      }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.cancel) {
+          localStorage.setItem("hidePrivacyModeMessage", "true");
+        }
+      });
+    }
+  } catch (error) {
+    console.log("Error On Set Privacy mod:", error);
+  }
+};
+
 
 const fetchData = async () => {
   const username = userData?.username;
@@ -36,5 +77,5 @@ const fetchData = async () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { showSupportPopup, setShowSupportPopup, profileImage, notificationsOn, handleToggleNotifications };
+  return { showSupportPopup, setShowSupportPopup, profileImage, notificationsOn, handleTogglePrivacyMod, handleToggleNotifications, privacyModOn };
 }

@@ -55,7 +55,10 @@ export default function SharedWithMy() {
                     <p className="item-title">{pass.key}</p>
                     <div className="created-at-container">
                       <strong>Created At:</strong>
-                      <span className="child-date">{formatDate(pass.createdAt)}</span>
+                      <span className="child-date">
+                        {" "}
+                        {pass.createdAt ? formatDate(pass.createdAt) : "Hidden for privacy"}
+                      </span>
                     </div>
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
