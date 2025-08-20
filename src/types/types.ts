@@ -119,6 +119,7 @@ export interface SelectedSecretType{
 export interface SecretViews {
   totalViews: number;
   uniqueViewers: number,
+  totalSharedUsers: number;
   viewDetails: ViewDetails[]
 } 
 
