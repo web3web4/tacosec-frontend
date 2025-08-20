@@ -4,7 +4,7 @@ import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews } from "../types/types";
-import MetroSwal from "sweetalert2";
+import MetroSwal from "../utils/metroSwal";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "../hooks/useTaco";
 import { fromHexString } from "@nucypher/shared";
@@ -354,12 +354,20 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         const message = (document.getElementById('report-message') as HTMLTextAreaElement)?.value;
         
         if (!selectedReportType) {
-          MetroSwal.showValidationMessage('Please select a report type!');
+          return MetroSwal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: 'Please select a report type!'
+          });
           return false;
         }
         
         if (!message || message.trim().length < 8) {
-          MetroSwal.showValidationMessage('Please provide at least 8 characters describing the issue!');
+          return MetroSwal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: 'Please provide at least 8 characters describing the issue!'
+          });
           return false;
         }
         

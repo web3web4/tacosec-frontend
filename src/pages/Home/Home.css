@@ -294,6 +294,7 @@
   box-shadow: var(--box-shadow);
   position: relative;
   overflow: hidden;
+  margin-left: 10px;
 }
 
 .delete-button:hover {
