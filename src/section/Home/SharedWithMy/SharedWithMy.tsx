@@ -45,20 +45,21 @@ export default function SharedWithMy() {
         sharedWithMyData.map((item) =>
           item.passwords.map((pass, i) => {
             return (
-              <div
-                key={pass.id}
-                className="data-item"
-                onClick={() => toggleExpand(pass.value, pass.id)}
-              >
-                <div className="item-container">
+              <div key={pass.id} className="data-item" >
+                <div className="item-container" onClick={() => toggleExpand(pass.value, pass.id)}>
                   <div className="item-header-info">
                     <p className="item-title">{pass.key}</p>
-                    <div className="created-at-container">
-                      <strong>Created At:</strong>
-                      <span className="child-date">
-                        {" "}
-                        {pass.createdAt ? formatDate(pass.createdAt) : "Hidden for privacy"}
-                      </span>
+                    <div className="item-group">
+                      <div className="created-at-container">
+                        <strong>Created At:</strong>
+                        <span className="child-date">
+                          {" "}
+                          {pass.createdAt ? formatDate(pass.createdAt) : "Hidden for privacy"}
+                        </span>
+                      </div>
+                      <div className="item-toggle">
+                        {expandedId === pass.id ? '▼' : '▶'}
+                      </div>
                     </div>
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
@@ -90,9 +91,8 @@ export default function SharedWithMy() {
                     <p className="password-text">
                       {decrypting ? (
                         <span>
-                          Secret:{" "}
                           <span className="decrypting-animation">
-                            Decrypting
+                            🗝️ Unlocking your secret
                             <span className="dots">
                               <span>.</span>
                               <span>.</span>
