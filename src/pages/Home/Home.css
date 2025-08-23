@@ -180,10 +180,21 @@
   font-weight: 500;
 }
 
+.item-toggle {
+  position: relative;
+  top: 5px;
+  left: 22px;
+  font-size: 14px;
+  color: #6c757d;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+}
 
-
-
-
+.item-group {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
 
 .item-title {
   font-weight: 600;
@@ -200,6 +211,7 @@
   gap: 0.5rem;
   margin: 0;
   font-weight: 500;
+  margin-top: 8px;
 }
 
 .expanded-box {
@@ -207,6 +219,7 @@
   background: var(--surface);
   padding: 16px;
   box-shadow: var(--box-shadow);
+  cursor: default;
 }
 
 .password-text {
@@ -216,6 +229,11 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   white-space: pre-wrap;
   line-height: 1.5;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .button-group {

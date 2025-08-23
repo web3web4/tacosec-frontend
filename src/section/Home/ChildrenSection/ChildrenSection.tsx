@@ -35,7 +35,7 @@ export default function ChildrenSection({
 
   return (
     <div className="children-section">
-      <h4 className="children-title">Replies To Secret:</h4>
+      <h4 className="children-title"> {children.length} Replies To Secret:</h4>
       <div className="children-list">
         {children.map((child) => (
           <div 
@@ -73,9 +73,8 @@ export default function ChildrenSection({
                 <p className="child-secret">
                   {decryptingChild ? (
                     <span>
-                      Secret:{" "}
                       <span className="decrypting-animation">
-                        Decrypting
+                       🗝️ Unlocking your secret
                         <span className="dots">
                           <span>.</span>
                           <span>.</span>
