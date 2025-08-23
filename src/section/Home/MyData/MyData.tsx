@@ -42,17 +42,18 @@ export default function MyData() {
     <div className="data-list">
       {myData.length > 0 ? (
             myData.map((item, i) => (
-              <div
-                key={i}
-                className="data-item"
-                onClick={() => toggleExpand(item.value, item.id)}
-              >
-                <div className="item-container">
+              <div key={i} className="data-item" >
+                <div className="item-container" onClick={() => toggleExpand(item.value, item.id)}>
                   <div className="item-header-info">
                   <p className="item-title">{item.key}</p>
-                  <div className="created-at-container">
-                    <strong>Created At:</strong>
-                    <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
+                  <div className="item-group">
+                    <div className="created-at-container">
+                      <strong>Created At:</strong>
+                      <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
+                    </div>
+                    <div className="item-toggle">
+                      {expandedId === item.id ? '▼' : '▶'}
+                    </div>
                   </div>
                   </div>
                   <div onClick={(e) => e.stopPropagation()}>
