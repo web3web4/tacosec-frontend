@@ -33,7 +33,7 @@ export default function ChildrenSection({
 
   return (
     <div className="children-section">
-      <h4 className="children-title"> {children.length} Replies To Secret:</h4>
+      <h4 className="children-title"> {children.length} Replies to Secret:</h4>
       <div className="children-list">
         {children.map((child) => (
           <div 
