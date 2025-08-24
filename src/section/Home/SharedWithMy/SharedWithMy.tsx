@@ -147,7 +147,6 @@ export default function SharedWithMy() {
                     {pass.children && pass.children.length > 0 && (
                       <ChildrenSection
                         children={pass.children}
-                        parentIndex={i}
                         toggleChildExpand={toggleChildExpand}
                         expandedChildId={expandedChildId}
                         decryptingChild={decryptingChild}

@@ -121,7 +121,8 @@ export interface SecretViews {
   totalViews: number;
   uniqueViewers: number,
   totalSharedUsers: number;
-  viewDetails: ViewDetails[]
+  viewDetails: ViewDetails[];
+  isNewSecret: boolean
 } 
 
 export interface ViewDetails{

@@ -154,7 +154,6 @@ export default function MyData() {
                     {item.children && item.children.length > 0 && (
                       <ChildrenSection
                         children={item.children}
-                        parentIndex={i}
                         toggleChildExpand={toggleChildExpand}
                         expandedChildId={expandedChildId}
                         decryptingChild={decryptingChild}

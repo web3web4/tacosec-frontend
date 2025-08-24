@@ -7,7 +7,6 @@ import { useHome } from "../../../context/HomeContext";
 
 interface ChildrenSectionProps {
   children: ChildDataItem[];
-  parentIndex: number;
   toggleChildExpand?: (value: string, childId: string) => void;
   expandedChildId: string | null;
   decryptingChild: boolean;
@@ -16,7 +15,6 @@ interface ChildrenSectionProps {
 
 export default function ChildrenSection({
   children,
-  parentIndex,
   toggleChildExpand,
   expandedChildId,
   decryptingChild,
@@ -54,7 +52,8 @@ export default function ChildrenSection({
               <div className="child-info">
               <div className="child-meta">
                   <strong>By:</strong>
-                  <span className="child-date">{child.firstName}{" "}{child.lastName}</span>
+                    <div className="child-date">{child.firstName}{" "}{child.lastName}</div>
+                    {secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>

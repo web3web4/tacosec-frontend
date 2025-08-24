@@ -34,6 +34,7 @@
   transition: all 0.2s ease;
   position: relative;
   box-shadow: var(--box-shadow);
+  overflow: hidden;
 }
 
 .child-header {
@@ -59,6 +60,17 @@
   gap: 7px;
   font-size: 12px;
   margin-bottom: 0.25rem;
+}
+
+.child-status {
+  color: var(--danger);
+    position: absolute;
+    right: -13px;
+    top: -18px;
+    padding: 25px 15px 6px 15px;
+    border-radius: 50%;
+    border-bottom: 1.8px var(--danger) solid;
+    transform: rotate(32deg);
 }
 
 .child-username{
