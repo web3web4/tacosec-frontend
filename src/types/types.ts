@@ -81,6 +81,7 @@ export interface SearchDataType{
   username: string;
   firstName: string;
   lastName: string;
+  isPreviouslyShared: boolean;
 }
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;
 
@@ -120,7 +121,8 @@ export interface SecretViews {
   totalViews: number;
   uniqueViewers: number,
   totalSharedUsers: number;
-  viewDetails: ViewDetails[]
+  viewDetails: ViewDetails[];
+  isNewSecret: boolean
 } 
 
 export interface ViewDetails{

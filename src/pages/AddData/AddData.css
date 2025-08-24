@@ -111,6 +111,28 @@
   color: var(--background);
 }
 
+.group-title {
+  background: var(--border-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 6px 10px;
+  border-bottom: 1px solid black;
+  cursor: default;
+  user-select: none;
+}
+
+.autocomplete-list::-webkit-scrollbar {
+  width: 7px; 
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb {
+  background: var(--metro-green);
+  border-radius: 4px;
+}
+
+
 .add-share-button {
   padding: 0.75rem 1rem;
   background: var(--background);

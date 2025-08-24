@@ -92,7 +92,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         createdAt: item.createdAt,
       }));
       setMyData(data);
-      if(data.length > 0) await getProfilesDetailsForUsers(data);
+      if(data.length > 0) getProfilesDetailsForUsers(data);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -159,7 +159,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       const data = await getDataSharedWithMy(initDataRaw || undefined);
       setSharedWithMyData(data.sharedWithMe);
-      if(data.sharedWithMe.length > 0) await getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
+      if(data.sharedWithMe.length > 0) getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       console.error("Error fetching shared data:", err);
@@ -509,8 +509,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const triggerGetChildrenForSecret = async (id: string) => {
-    const response: ChildDataItem[] = await getChildrenForSecret(initDataRaw!, id);
-      if (activeTab === "mydata") {
+    const response = await getChildrenForSecret(initDataRaw!, id);
+    if ("message" in response) { return; }
+    
+    if (activeTab === "mydata") {
         setMyData((prev) => prev.map((item) =>
             item.id === id ? { ...item, children: response } : item ));
       } else {
@@ -519,6 +521,21 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             pw.id === id ? { ...pw, children: response } : pw )}))
         );
       }
+
+    const entries = await Promise.all(
+      response.map(async (child) => {
+        const views = await getSecretViews(initDataRaw!, child._id);
+        const hasMyView = views.viewDetails.some(sec => sec.username === userData?.username);
+        views.isNewSecret = !hasMyView;
+        if(child.username === userData?.username) views.isNewSecret = false;
+        return [child._id, views] as const;
+      })
+    );
+
+    setSecretViews((prev) => ({
+      ...prev,
+      ...Object.fromEntries(entries),
+    }));
   };
   
   const decryptMessage = async (id: string, encryptedText: string) => {
@@ -550,8 +567,6 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       if (!decryptedChildMessages[childId]) {
         decryptChildMessage(childId, value);
       }
-      const secretViews = await getSecretViews(initDataRaw!, childId);
-      setSecretViews((prev) => ({ ...prev, [childId]: secretViews }));
     }
   };
 
@@ -565,6 +580,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
+        if(secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
       }
     } catch (e) {
       console.error("Error decrypting child:", e);
@@ -616,7 +632,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             <span style="font-size: 16px; color: #666;"><img id="viewer-img-${index}" style= "border-radius: 50%" src=${viewer.img || defaultProfileImage} width=35 height=35 /></span>
           </div>
           <div style="flex-grow: 1;">
-            <div style="font-weight: 500; margin-bottom: 2px; text-align: left;">${viewer.firstName} ${viewer.lastName}</div>
+            <div style="font-weight: 500; margin-bottom: 2px; text-align: left; color: black">${viewer.firstName} ${viewer.lastName}</div>
             <div style="font-size: 12px; color: #666; text-align: left;">${formattedDate}</div>
           </div>
         </div>
