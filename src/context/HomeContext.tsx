@@ -511,16 +511,6 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const triggerGetChildrenForSecret = async (id: string) => {
     const response = await getChildrenForSecret(initDataRaw!, id);
     if ("message" in response) { return; }
-    
-    if (activeTab === "mydata") {
-        setMyData((prev) => prev.map((item) =>
-            item.id === id ? { ...item, children: response } : item ));
-      } else {
-        setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
-            passwords: item.passwords.map((pw) =>
-            pw.id === id ? { ...pw, children: response } : pw )}))
-        );
-      }
 
     const entries = await Promise.all(
       response.map(async (child) => {
@@ -536,6 +526,16 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       ...Object.fromEntries(entries),
     }));
+    
+    if (activeTab === "mydata") {
+        setMyData((prev) => prev.map((item) =>
+            item.id === id ? { ...item, children: response } : item ));
+      } else {
+        setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
+            passwords: item.passwords.map((pw) =>
+            pw.id === id ? { ...pw, children: response } : pw )}))
+        );
+      }
   };
   
   const decryptMessage = async (id: string, encryptedText: string) => {
