@@ -20,7 +20,6 @@ export const DecryptPrompt = ({
   onForgotPassword,
   onHidePrompt,
 }: Props) => {
-  const { userData } = useUser();
 
   return (
     <div className="popup-container-seed">
