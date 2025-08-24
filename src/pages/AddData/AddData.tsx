@@ -201,19 +201,45 @@ const AddData: React.FC = () => {
             {isSearch && <span className="spinner" />}
           </div>
 
-      {searchData.length > 0 && (
-        <ul 
-          className="autocomplete-list">
-          {searchData.map((item, index) => (
+          {searchData.length > 0 && (
+  <ul className="autocomplete-list">
+    {/* It was shared  previously */}
+    {searchData.some(item => item.isPreviouslyShared) && (
+      <>
+        <li className="group-title">It was shared  previously</li>
+        {searchData
+          .filter(item => item.isPreviouslyShared)
+          .map((item, index) => (
             <li
-              key={index}
-              onClick={() => handleSearchSelect(item.username)}>
-              <p>{item.firstName} {" "} {item.lastName}</p>
+              key={`shared-${index}`}
+              onClick={() => handleSearchSelect(item.username)}
+            >
+              <p>{item.firstName} {item.lastName}</p>
               <p>@{item.username}</p>
             </li>
           ))}
-        </ul>
-      )}
+      </>
+    )}
+
+    {/* Others */}
+    {searchData.some(item => !item.isPreviouslyShared) && (
+      <>
+        <li className="group-title">Others</li>
+        {searchData
+          .filter(item => !item.isPreviouslyShared)
+          .map((item, index) => (
+            <li
+              key={`others-${index}`}
+              onClick={() => handleSearchSelect(item.username)}
+            >
+              <p>{item.firstName} {item.lastName}</p>
+              <p>@{item.username}</p>
+            </li>
+          ))}
+      </>
+    )}
+  </ul>
+)}
 
     </div>
         <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
