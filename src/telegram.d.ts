@@ -9,6 +9,7 @@ declare global {
         expand: () => void;
         ready: () => void;
         initDataUnsafe?: {
+          start_param: string;
           user?: {
             id?: number;
             username?: string;
