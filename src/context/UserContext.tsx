@@ -35,6 +35,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
+      console.log(tg?.initDataUnsafe?.start_param);
       const initData = tg.initData;
       setInitDataRaw(initData);
       const response = await signupUser(initData);
