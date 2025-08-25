@@ -203,12 +203,17 @@ export async function storagePublicKeyAndPassword(
   data: any,
   initData: string
 ): Promise<any> {
+    const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
   const response = await fetch(`${API_BASE_URL}/public-addresses`, {
+    
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+    headers,
+
     body: JSON.stringify(data),
   });
 
