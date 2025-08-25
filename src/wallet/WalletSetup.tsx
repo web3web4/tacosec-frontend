@@ -27,7 +27,6 @@ export default function WalletSetup() {
     address,
     addressweb,
   } = useWallet();
-
   const [showBackup, setShowBackup] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
@@ -39,11 +38,20 @@ export default function WalletSetup() {
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
 
+  const displayName =
+  userData?.firstName && userData?.lastName
+    ? `${userData.firstName} ${userData.lastName}`
+    : userData?.username
+    ? userData.username
+    : "Friend";
+
+      
   useEffect(() => {
     if (!hasWallet && (userData?.telegramId || isBrowser)) {
       showInitialPrompt({
         onCreate: createWalletFlow,
         onImport: () => setShowImport(true),
+        displayName,
       });
     }
   }, [hasWallet, isBrowser, userData?.telegramId]);
@@ -194,6 +202,8 @@ export default function WalletSetup() {
           showInitialPrompt({
             onCreate: createWalletFlow,
             onImport: () => setShowImport(true),
+            displayName,
+
           });
         }}
       />

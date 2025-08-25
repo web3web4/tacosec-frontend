@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { MdRefresh, MdClose, MdLockReset } from "react-icons/md";
+import { MdRefresh, MdClose, MdLockReset, MdDeleteForever, MdExpandMore, MdExpandLess } from "react-icons/md";
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
 import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
+
 
 export const ResetPasswordWithSeed = ({
   onSuccess,
@@ -16,8 +17,10 @@ export const ResetPasswordWithSeed = ({
 }) => {
   const [seed, setSeed] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [showClearOption, setShowClearOption] = useState(false);
   const {userData , isBrowser} = useUser();
   const { address , addressweb } = useWallet();
+
   const handleReset = () => {
     const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
       if (!identifier) return;
@@ -40,6 +43,23 @@ export const ResetPasswordWithSeed = ({
     MetroSwal.fire("✅ Success", "Password reset successfully", "success");
     onSuccess(); // go back to login or main screen
   };
+
+  const handleClearData = () => {
+        // Delete the specified localStorage items
+        Object.keys(localStorage).forEach((key) => {
+          if (
+            key.startsWith("seedBackupDone-") ||
+            key.startsWith("encryptedSeed-") ||
+            key === "savePasswordInBackend"
+          ) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Reload the page to reflect changes
+        window.location.reload();
+      }
+
 
   return (
     <div className="popup-container-seed">
@@ -69,7 +89,38 @@ export const ResetPasswordWithSeed = ({
             <MdLockReset style={{marginRight: '4px', verticalAlign: 'middle'}} />Reset
           </button>
         </div>
+        
+        {/* Expandable section for clear data option */}
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <div 
+            onClick={() => setShowClearOption(!showClearOption)}
+            style={{ 
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#666'
+            }}
+          >
+            {showClearOption ? <MdExpandLess /> : <MdExpandMore />}
+            <span style={{ marginLeft: '5px' }}>More options</span>
+          </div>
+          
+          {showClearOption && (
+            <div style={{ marginTop: '15px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
+              <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
+                If you don't have a seedphrase, you have one last option: delete all data to create a new wallet.
+              </p>
+              <button onClick={handleClearData} className="cancel-btn" >
+                <MdDeleteForever style={{marginRight: '4px'}} />
+                Clear All Data
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
+

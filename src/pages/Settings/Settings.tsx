@@ -14,6 +14,7 @@ import CustomPopup from "../../components/CustomPopup/CustomPopup";
 import ContactSupport from "../../section/Setting/ContactSupport/ContactSupport";
 import "../../components/SeedPhrase/SeedPhrase.css";
 import { getIdentifier } from "../../utils/walletIdentifiers";
+import { MdDeleteForever } from "react-icons/md";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup } = useSetting();
@@ -84,7 +85,6 @@ const submitDecryption = () => {
   }
 };
 
-
   // Function to copy address to clipboard
   const copyAddressToClipboard = () => {
     if (address) {
@@ -104,6 +104,34 @@ const submitDecryption = () => {
     if (!addr) return "";
     if (addr.length <= 8) return addr;
     return `${addr.substring(0, 4)}......${addr.substring(addr.length - 4)}`;
+  };
+
+  // Handle clear data functionality
+  const handleClearData = () => {
+    MetroSwal.fire({
+      icon: "warning",
+      title: "Warning",
+      html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
+      confirmButtonText: "OK",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Delete the specified localStorage items
+        Object.keys(localStorage).forEach((key) => {
+          if (
+            key.startsWith("seedBackupDone-") ||
+            key.startsWith("encryptedSeed-") ||
+            key === "savePasswordInBackend"
+          ) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Reload the page to reflect changes
+        window.location.reload();
+      }
+    });
   };
 
   return (
@@ -168,10 +196,22 @@ const submitDecryption = () => {
           </button>
         </div>
 
+        {/* New Clear Data section */}
+        <div className="seed-section">
+          <button 
+            className="seed-button" 
+            onClick={handleClearData}
+          >
+            <MdDeleteForever style={{marginRight: '4px'}} />
+            Clear All Data
+          </button>
+        </div>
+
         <div className="support-section">
           <p>Support and Help</p>
           <button className="support-button" onClick={() => setShowSupportPopup(true)}>Contact Support</button>
         </div>
+        
       </div>
 
       {mnemonic && (

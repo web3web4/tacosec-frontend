@@ -29,10 +29,12 @@ import {
   promptPassword,
   confirmSavePassword,
   showBackupReminder,
+  promptPasswordWithSaveOption,
 } from "../hooks/walletDialogs";
 
 import { WalletContextProps } from "../interfaces/wallet"
 import MetroSwal from "../utils/metroSwal";
+import Swal from "sweetalert2";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 
@@ -81,41 +83,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   async function createWalletFlow() {
     if (isTelegram && !userData?.telegramId) return;
 
-
-    const { value: password, isConfirmed } = await MetroSwal.fire({
-      title: "Set Password",
-      input: "password",
-      inputLabel: "Enter a password to encrypt your wallet",
-      inputPlaceholder: "Your secure password",
-      inputAttributes: {
-        autocapitalize: "off",
-        autocorrect: "off",
-      },
-      showCancelButton: false,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-
+    // Use the new merged password dialog
+    const { isConfirmed, value: password, savePassword } = await promptPasswordWithSaveOption();
+    
     if (!isConfirmed || !password) {
-      MetroSwal.fire({
-        icon: 'warning',
-        title: 'Cancelled',
-        text: 'Password is required to create your wallet.'
+      await MetroSwal.fire({
+        icon: "warning",
+        title: "Cancelled",
+        html: "Password is required to create your wallet.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
       });
-      return;
+      return createWalletFlow();
     }
 
-    const { isConfirmed: saveConfirmed } = await MetroSwal.fire({
-      title: "Save password",
-      text: "Do you want to save the wallet password on our servers?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No"
-    });
-
-
-    const saveToBackend = saveConfirmed;
+    // No need for separate confirmSavePassword call
+    const saveToBackend = savePassword;
     setSavedPasswordPreference(saveToBackend);
 
     const wallet = ethers.Wallet.createRandom();
