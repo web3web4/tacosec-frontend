@@ -517,7 +517,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         const views = await getSecretViews(initDataRaw!, child._id);
         const hasMyView = views.viewDetails.some(sec => sec.username === userData?.username);
         views.isNewSecret = !hasMyView;
-        if(child.username === userData?.username) views.isNewSecret = false;
+        if(child.username === userData?.username || userData?.privacyMode) views.isNewSecret = false;
         return [child._id, views] as const;
       })
     );
@@ -536,6 +536,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             pw.id === id ? { ...pw, children: response } : pw )}))
         );
       }
+      console.log(response);
   };
   
   const decryptMessage = async (id: string, encryptedText: string) => {
