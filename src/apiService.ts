@@ -376,3 +376,23 @@ export async function setPrivacyMode(initData: string, value: boolean): Promise<
   }
 }
 
+export async function getPublicAddresses(initData: string): Promise<any> {
+  const headers = getAuthHeaders(initData);
+  
+  // If no authentication method is available, throw an error
+  if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
+    throw new Error("Authentication required");
+  }
+  
+  const response = await fetch(`${API_BASE_URL}/public-addresses`, {
+    method: "GET",
+    headers: headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
