@@ -104,9 +104,9 @@ export const DecryptPrompt = ({
                       }
                       
                       const response = await getPublicAddresses(initDataRaw);
-                      if (response && Array.isArray(response) && response.length > 0) {
+                      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
                         // Sort by createdAt to get the latest entry
-                        const sortedAddresses = response.sort((a, b) => 
+                        const sortedAddresses = response.data.sort((a: { createdAt: string }, b: { createdAt: string }) =>
                           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
                         );
                         
