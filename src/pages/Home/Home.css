@@ -298,6 +298,11 @@
   transform: translateY(-1px);
 }
 
+.highlight {
+  background-color: #153c19;
+  transition: background-color 0.5s ease; 
+}
+
 .delete-button {
   background: var(--background);
   color: var(--danger);

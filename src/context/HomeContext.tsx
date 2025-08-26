@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret, setSecretView, getSecretViews } from "../apiService";
 import defaultProfileImage from "../assets/images/no-User.png";
 import { useUser } from "./UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { DataItem, Report, ReportsResponse, ReportType, ChildDataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "../types/types";
+import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "../types/types";
 import MetroSwal from "../utils/metroSwal";
 import { useWallet } from "../wallet/walletContext";
 import useTaco from "../hooks/useTaco";
@@ -26,6 +26,8 @@ interface HomeContextType {
   handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => Promise<void>;
   triggerGetChildrenForSecret: (id: string) => void;
   handleGetSecretViews: (e: any, id: string) => void;
+  handleDirectLink: () => void;
+  handleDirectLinkForChildren: () => void;
   isInit: boolean;
   provider: any;
   userData: any;
@@ -39,6 +41,7 @@ interface HomeContextType {
   decryptedChildMessages: Record<string, string>;
   authError: string | null;
   secretViews: Record<string, SecretViews>;
+  itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
 }
 
 const HomeContext = createContext<HomeContextType | null>(null);
@@ -56,11 +59,12 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
   const [secretViews, setSecretViews] = useState<Record<string, SecretViews>>({});
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
+  const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [previousPath, setPreviousPath] = useState<string>("");
   const { signer, provider } = useWallet();
-  const { initDataRaw, userData } = useUser();
+  const { initDataRaw, userData, directLinkData } = useUser();
   const { isInit, decryptDataFromBytes } = useTaco({
     domain,
     provider,
@@ -208,7 +212,11 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   
 
   useEffect(() => {
-    fetchMyData();
+    if (directLinkData) {
+      handleSetActiveTabClick(directLinkData.tabName);
+    } else {
+      fetchMyData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -490,7 +498,67 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       }
     });
   };
- 
+  // This function is to handle the case of pressing the button of the message that arrived to him as a notification
+  const handleDirectLink = () => {
+    if(directLinkData){
+        const element = itemRefs.current[directLinkData.secretId];
+        if (element) {
+          let pass;
+          if(directLinkData.tabName === "shared"){
+            pass = sharedWithMyData
+            .flatMap(item => item.passwords)
+            .find(p => p.id === directLinkData.secretId);
+          } else {
+            pass = myData.find(p => p.id === directLinkData.secretId);
+          }
+    
+          if (pass) {
+            toggleExpand(pass.value, pass.id);
+          }
+          
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.classList.add("highlight");
+            setTimeout(() => {
+              element.classList.remove("highlight");
+            }, 500);
+          }, 1000);
+        }
+    }
+  };
+  
+  const handleDirectLinkForChildren = () => {
+    if(!directLinkData || !directLinkData.ChildId){ return; }
+    const targetId = directLinkData?.ChildId;
+    if(!targetId) return;
+    const element = itemRefs.current[targetId];
+    if (element) {
+      let pass;
+      if(activeTab === "mydata"){
+        pass = myData.find(p => p.id === directLinkData.secretId)
+                ?.children?.find(e => e._id === targetId);
+
+      } else {
+        pass = sharedWithMyData
+        .flatMap(item => item.passwords)
+        .find(p => p.id === directLinkData.secretId)
+        ?.children?.find(e => e._id === targetId);
+      }
+
+      if (pass) {
+        toggleChildExpand(pass.value, pass._id);
+      }
+      
+      setTimeout(() => {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        element.classList.add("highlight");
+        setTimeout(() => {
+          element.classList.remove("highlight");
+        }, 500);
+      }, 1000);
+    }
+  };
+
   const toggleExpand = async (value: string, id: string) => {
     setDecrypting(false);
     if (expandedId === id) {
@@ -693,6 +761,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     handleViewReportsForSecret, 
     triggerGetChildrenForSecret,
     handleGetSecretViews,
+    handleDirectLink,
+    handleDirectLinkForChildren,
     isInit, 
     provider, 
     userData, 
@@ -706,7 +776,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     decryptedChildMessages,
     isLoading,
     authError,
-    secretViews
+    secretViews,
+    itemRefs
   };
 
   return <HomeContext.Provider value={value}>{children}</HomeContext.Provider>;
