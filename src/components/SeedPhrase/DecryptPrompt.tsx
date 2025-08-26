@@ -5,13 +5,42 @@ import { useUser } from "../../context/UserContext";
 import { getPublicAddresses } from "../../apiService";
 import { MetroSwal } from "../../utils/metroSwal";
 
+// ------------------------------
+// 🔹 Helper function to retrieve the last secret
+// ------------------------------
+async function fetchLatestSecret(initDataRaw: string): Promise<string | null> {
+  const response = await getPublicAddresses(initDataRaw);
+  console.log("API Response:", response);
+
+  if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+    // Filter elements containing secret
+    const withSecrets = response.data.filter(
+      (item: { secret?: string }) => !!item.secret
+    );
+
+    if (withSecrets.length > 0) {
+      // Sort them by most recent
+      const sortedAddresses = withSecrets.sort(
+        (a: { createdAt: string }, b: { createdAt: string }) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      const latestAddress = sortedAddresses[0];
+      console.log("Latest address with secret:", latestAddress);
+      return latestAddress.secret!;
+    }
+  }
+
+  return null;
+}
+
 type Props = {
   password: string;
   passwordError: string;
   onChange: (val: string) => void;
   onSubmit: () => void;
   onForgotPassword: () => void;
-  onHidePrompt?: (show?: boolean) => void; // Updated to accept a boolean parameter
+  onHidePrompt?: (show?: boolean) => void;
 };
 
 export const DecryptPrompt = ({
@@ -27,16 +56,48 @@ export const DecryptPrompt = ({
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreError, setRestoreError] = useState("");
   const { initDataRaw } = useUser();
-  
+
   useEffect(() => {
     const savePasswordInBackend = localStorage.getItem("savePasswordInBackend");
     setCanRestoreFromServer(savePasswordInBackend === "true");
   }, []);
 
+  // ------------------------------
+  // 🔹 Restore password button
+  // ------------------------------
+  const handleRestorePassword = async () => {
+    try {
+      setIsRestoring(true);
+      setRestoreError("");
+
+      if (!initDataRaw) {
+        setRestoreError("Authentication required");
+        return;
+      }
+
+      const latestSecret = await fetchLatestSecret(initDataRaw);
+
+      if (latestSecret) {
+        onChange(latestSecret);
+        MetroSwal.fire("✅ Success", "Password restored successfully", "success");
+        onSubmit();
+      } else {
+        setRestoreError("No password found");
+      }
+    } catch (error) {
+      setRestoreError(error instanceof Error ? error.message : "Failed to restore password");
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2><MdLock style={{marginRight: '8px', verticalAlign: 'middle'}} />Decrypt Your Wallet</h2>
+        <h2>
+          <MdLock style={{ marginRight: "8px", verticalAlign: "middle" }} />
+          Decrypt Your Wallet
+        </h2>
         <p>Enter your password to continue:</p>
         <input
           type="password"
@@ -45,12 +106,11 @@ export const DecryptPrompt = ({
           onChange={(e) => onChange(e.target.value)}
           className="input-field"
         />
-        {passwordError && (
-          <p style={{ color: "red", marginTop: 10 }}>{passwordError}</p>
-        )}
+        {passwordError && <p style={{ color: "red", marginTop: 10 }}>{passwordError}</p>}
         <div className="popup-actions">
           <button className="confirm-btn" onClick={onSubmit}>
-            <MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />UnLoack
+            <MdLockOpen style={{ marginRight: "4px", verticalAlign: "middle" }} />
+            Unlock
           </button>
 
           <p
@@ -66,75 +126,46 @@ export const DecryptPrompt = ({
           >
             Forgot password?
           </p>
-          
+
           {/* More options section */}
           {canRestoreFromServer && (
-            <div style={{ marginTop: '15px', textAlign: 'center' }}>
-              <div 
+            <div style={{ marginTop: "15px", textAlign: "center" }}>
+              <div
                 onClick={() => setShowMoreOptions(!showMoreOptions)}
-                style={{ 
-                  cursor: 'pointer', 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#666'
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#666",
                 }}
               >
                 {showMoreOptions ? <MdExpandLess /> : <MdExpandMore />}
-                <span style={{ marginLeft: '5px' }}>More options</span>
+                <span style={{ marginLeft: "5px" }}>More options</span>
               </div>
-              
+
               {showMoreOptions && (
-              <div style={{ marginTop: '15px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
-                <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
-                  You can restore password from server
-                </p>
-                {restoreError && (
-                  <p style={{ color: "red", marginTop: 10, fontSize: '12px' }}>{restoreError}</p>
-                )}
-                <button 
-                  className="confirm-btn" 
-                  onClick={async () => {
-                    try {
-                      setIsRestoring(true);
-                      setRestoreError("");
-                      if (!initDataRaw) {
-                        setRestoreError("Authentication required");
-                        return;
-                      }
-                      
-                      const response = await getPublicAddresses(initDataRaw);
-                      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
-                        // Sort by createdAt to get the latest entry
-                        const sortedAddresses = response.data.sort((a: { createdAt: string }, b: { createdAt: string }) =>
-                          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                        );
-                        
-                        const latestAddress = sortedAddresses[0];
-                        if (latestAddress && latestAddress.secret) {
-                          onChange(latestAddress.secret);
-                          MetroSwal.fire("✅ Success", "Password restored successfully", "success");
-                          onSubmit();
-                        } else {
-                          setRestoreError("No password found");
-                        }
-                      } else {
-                        setRestoreError("No password found");
-                      }
-                    } catch (error) {
-                      setRestoreError(error instanceof Error ? error.message : "Failed to restore password");
-                    } finally {
-                      setIsRestoring(false);
-                    }
+                <div
+                  style={{
+                    marginTop: "15px",
+                    padding: "10px",
+                    border: "1px solid #eee",
+                    borderRadius: "5px",
                   }}
-                  disabled={isRestoring}
                 >
-                  <MdRestorePage style={{marginRight: '4px', verticalAlign: 'middle'}} />
-                  {isRestoring ? "Restoring..." : "Restore Password"}
-                </button>
-              </div>
-            )}
-          </div>
+                  <p style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
+                    You can restore password from server
+                  </p>
+                  {restoreError && (
+                    <p style={{ color: "red", marginTop: 10, fontSize: "12px" }}>{restoreError}</p>
+                  )}
+                  <button className="confirm-btn" onClick={handleRestorePassword} disabled={isRestoring}>
+                    <MdRestorePage style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                    {isRestoring ? "Restoring..." : "Restore Password"}
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
