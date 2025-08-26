@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { initDataType } from "../types/types";
+import { DirectLinkData, initDataType, TabType } from "../types/types";
 import { signupUser } from "../apiService";
 import { MetroSwal } from "../utils/metroSwal";
 import { detectAuthMethod } from "../hooks/useContextHelper";
@@ -8,6 +8,7 @@ import { detectAuthMethod } from "../hooks/useContextHelper";
 interface UserContextType {
   userData: initDataType | null;
   initDataRaw: string | null;
+  directLinkData: DirectLinkData | null;
   error: string | null;
   isBrowser: boolean;
   signUserData: (initData: initDataType) => Promise<void>;
@@ -19,6 +20,7 @@ const UserContext = createContext<UserContextType | null>(null);
 export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const [userData, setUserData] = useState<initDataType | null>(null);
+  const [directLinkData, setDirectLinkData] = useState<DirectLinkData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
   const [isBrowser, setIsBrowser] = useState(false);
@@ -35,7 +37,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
-      console.log(tg?.initDataUnsafe?.start_param);
       const initData = tg.initData;
       setInitDataRaw(initData);
       const response = await signupUser(initData);
@@ -56,11 +57,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const getStartParams = () => {
+    const tg = window.Telegram.WebApp;
+    const startParam = tg?.initDataUnsafe?.start_param;
+    if(startParam){
+      const parts = startParam.split("_");
+      const secretId = parts[0];
+      const tabName = parts[1];
+      const childId = parts[2] || null;
+      console.log(secretId, tabName, childId);
+      setDirectLinkData({
+        secretId: secretId,
+        tabName: tabName as TabType,
+        ChildId: childId
+      })
+    }
+  };
+
 useEffect(() => {
   const method = detectAuthMethod();
   switch (method) {
     case "telegram":
       signUserData();
+      getStartParams();
       break;
 
     case "web":
@@ -76,10 +95,11 @@ useEffect(() => {
   const value = {
     userData,
     initDataRaw,
+    directLinkData,
     error,
     isBrowser,
     signUserData,
-    setUserData
+    setUserData,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

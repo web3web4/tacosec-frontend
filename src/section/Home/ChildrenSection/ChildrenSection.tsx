@@ -1,16 +1,19 @@
 import viewIcon from "../../../assets/icons/show-icon.png";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChildDataItem } from "../../../types/types";
 import { formatDate } from "../../../utils/tools";
 import "./ChildrenSection.css";
 import { useHome } from "../../../context/HomeContext";
+import { useWallet } from "../../../wallet/walletContext";
 
 interface ChildrenSectionProps {
   children: ChildDataItem[];
-  toggleChildExpand?: (value: string, childId: string) => void;
+  toggleChildExpand: (value: string, childId: string) => void;
   expandedChildId: string | null;
   decryptingChild: boolean;
   decryptedChildMessages: Record<string, string>;
+  itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>,
+  handleDirectLinkForChildren: () => void
 }
 
 export default function ChildrenSection({
@@ -19,10 +22,17 @@ export default function ChildrenSection({
   expandedChildId,
   decryptingChild,
   decryptedChildMessages,
+  handleDirectLinkForChildren,
+  itemRefs
 }: ChildrenSectionProps) {
 
   const [copied, setCopied] = useState(false);
   const { secretViews, handleGetSecretViews } = useHome();
+  const { address } = useWallet();
+
+  useEffect(() => {
+    if(address) handleDirectLinkForChildren();
+  }, [address]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -39,6 +49,7 @@ export default function ChildrenSection({
           <div 
             key={child._id} 
             className="child-item"
+            ref={(el) => { itemRefs.current[child._id] = el }} 
           >
             <div 
               className="child-header"
