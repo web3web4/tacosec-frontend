@@ -6,7 +6,7 @@ import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
-
+import { storagePublicKeyAndPassword } from "../../apiService";
 
 export const ResetPasswordWithSeed = ({
   onSuccess,
@@ -18,12 +18,15 @@ export const ResetPasswordWithSeed = ({
   const [seed, setSeed] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showClearOption, setShowClearOption] = useState(false);
-  const {userData , isBrowser} = useUser();
-  const { address , addressweb } = useWallet();
+  const [saveOnServer, setSaveOnServer] = useState(false); // 👈 Checkbox state
 
-  const handleReset = () => {
+  const { userData, isBrowser, initDataRaw } = useUser();
+  const { address, addressweb } = useWallet();
+
+  const handleReset = async () => {
     const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
-      if (!identifier) return;
+    if (!identifier) return;
+
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {
       MetroSwal.fire("Error", "Invalid seed phrase", "error");
@@ -40,31 +43,49 @@ export const ResetPasswordWithSeed = ({
     localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
     localStorage.setItem(`seedBackupDone-${identifier}`, "true");
 
+    if (saveOnServer) {
+      localStorage.setItem("savePasswordInBackend", "true");
+
+      const data = { publicKey: address || addressweb, secret: newPassword };
+      try {
+        await storagePublicKeyAndPassword(data, initDataRaw || "");
+      } catch (error) {
+        console.error("Failed to save password in backend:", error);
+        MetroSwal.fire("Warning", "Password saved locally but failed to sync with server", "warning");
+      }
+    } else {
+      const data = { publicKey: address || addressweb };
+      try {
+        await storagePublicKeyAndPassword(data, initDataRaw || "");
+      } catch (error) {
+        console.warn("Public key only sync failed:", error);
+      }
+    }
+
     MetroSwal.fire("✅ Success", "Password reset successfully", "success");
-    onSuccess(); // go back to login or main screen
+    onSuccess();
   };
 
   const handleClearData = () => {
-        // Delete the specified localStorage items
-        Object.keys(localStorage).forEach((key) => {
-          if (
-            key.startsWith("seedBackupDone-") ||
-            key.startsWith("encryptedSeed-") ||
-            key === "savePasswordInBackend"
-          ) {
-            localStorage.removeItem(key);
-          }
-        });
-        
-        // Reload the page to reflect changes
-        window.location.reload();
+    Object.keys(localStorage).forEach((key) => {
+      if (
+        key.startsWith("seedBackupDone-") ||
+        key.startsWith("encryptedSeed-") ||
+        key === "savePasswordInBackend"
+      ) {
+        localStorage.removeItem(key);
       }
-
+    });
+    window.location.reload();
+  };
 
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2><MdRefresh style={{marginRight: '8px', verticalAlign: 'middle'}} />Reset Password</h2>
+        <h2>
+          <MdRefresh style={{ marginRight: "8px", verticalAlign: "middle" }} />
+          Reset Password
+        </h2>
         <p>Enter your 12-word seed phrase:</p>
         <textarea
           value={seed}
@@ -81,38 +102,60 @@ export const ResetPasswordWithSeed = ({
           placeholder="new password"
           className="input-field"
         />
+
+        {/* 👇 Save Password Into Server*/}
+        <div style={{ marginTop: "10px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={saveOnServer}
+              onChange={(e) => setSaveOnServer(e.target.checked)}
+            />
+            <span style={{ fontSize: "14px", color: "#444" }}>
+              Save password on server (encrypted)
+            </span>
+          </label>
+        </div>
+
         <div className="popup-actions-row">
           <button className="cancel-btn" onClick={onCancel}>
-            <MdClose style={{marginRight: '4px', verticalAlign: 'middle'}} />Cancel
+            <MdClose style={{ marginRight: "4px", verticalAlign: "middle" }} />Cancel
           </button>
           <button className="confirm-btn" onClick={handleReset}>
-            <MdLockReset style={{marginRight: '4px', verticalAlign: 'middle'}} />Reset
+            <MdLockReset style={{ marginRight: "4px", verticalAlign: "middle" }} />Reset
           </button>
         </div>
-        
+
         {/* Expandable section for clear data option */}
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <div 
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <div
             onClick={() => setShowClearOption(!showClearOption)}
-            style={{ 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#666'
+            style={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#666",
             }}
           >
             {showClearOption ? <MdExpandLess /> : <MdExpandMore />}
-            <span style={{ marginLeft: '5px' }}>More options</span>
+            <span style={{ marginLeft: "5px" }}>More options</span>
           </div>
-          
+
           {showClearOption && (
-            <div style={{ marginTop: '15px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
-              <p style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>
+            <div
+              style={{
+                marginTop: "15px",
+                padding: "10px",
+                border: "1px solid #eee",
+                borderRadius: "5px",
+              }}
+            >
+              <p style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
                 If you don't have a seedphrase, you have one last option: delete all data to create a new wallet.
               </p>
-              <button onClick={handleClearData} className="cancel-btn" >
-                <MdDeleteForever style={{marginRight: '4px'}} />
+              <button onClick={handleClearData} className="cancel-btn">
+                <MdDeleteForever style={{ marginRight: "4px" }} />
                 Clear All Data
               </button>
             </div>
@@ -122,5 +165,3 @@ export const ResetPasswordWithSeed = ({
     </div>
   );
 };
-
-
