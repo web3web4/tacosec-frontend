@@ -65,7 +65,7 @@ export async function promptPasswordWithSaveOption() {
     <div class="metro-swal-checkbox-container" style="margin-top: 1rem; text-align: left;">
       <input type="checkbox" id="save-password-checkbox" class="metro-swal-checkbox">
       <label for="save-password-checkbox" style="margin-left: 0.5rem; font-size: 0.9rem;">
-        Save wallet password on our servers ?
+        Save wallet password on our servers (encrypted)?
       </label>
     </div>` : ''}
   `;

@@ -112,7 +112,7 @@ export const ResetPasswordWithSeed = ({
               onChange={(e) => setSaveOnServer(e.target.checked)}
             />
             <span style={{ fontSize: "14px", color: "#444" }}>
-              Save password on server (encrypted)
+              Save wallet password on our servers (encrypted)
             </span>
           </label>
         </div>
