@@ -14,6 +14,11 @@ export interface initDataType {
     privacyMode: boolean
 }
 
+export interface DirectLinkData {
+  secretId: string,
+  tabName: TabType,
+  ChildId: string | null,
+}
 export interface AuthDataType {
   access_token: string,
 }

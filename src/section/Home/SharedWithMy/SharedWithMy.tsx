@@ -1,12 +1,13 @@
 import defaultProfileImage from "../../../assets/images/no-User.png";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import { formatDate } from "../../../utils/tools";
 import { useHome } from "../../../context/HomeContext";
 import viewIcon from "../../../assets/icons/show-icon.png";
 import "../../../components/SeedPhrase/SeedPhrase.css";
+import { useWallet } from "../../../wallet/walletContext";
 
 export default function SharedWithMy() {
   const { 
@@ -19,15 +20,23 @@ export default function SharedWithMy() {
     handleViewReportsForSecret, 
     toggleChildExpand, 
     handleGetSecretViews,
+    handleDirectLink,
+    handleDirectLinkForChildren,
     expandedChildId, 
     decryptingChild, 
     decryptedChildMessages,
-    secretViews
+    secretViews,
+    itemRefs
   } = useHome();
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const { handleReplyToSecret } = useReplyToSecret();
   const [copied, setCopied] = useState(false);
+  const { address } = useWallet();
+
+  useEffect(() => {
+    if(address) handleDirectLink();
+  }, [address]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -45,7 +54,7 @@ export default function SharedWithMy() {
         sharedWithMyData.map((item) =>
           item.passwords.map((pass, i) => {
             return (
-              <div key={pass.id} className="data-item" >
+              <div ref={(el) => { itemRefs.current[pass.id] = el }} key={pass.id} className="data-item" >
                 <div className="item-container" onClick={() => toggleExpand(pass.value, pass.id)}>
                   <div className="item-header-info">
                     <p className="item-title">{pass.key}</p>
@@ -151,6 +160,8 @@ export default function SharedWithMy() {
                         expandedChildId={expandedChildId}
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
+                        handleDirectLinkForChildren={handleDirectLinkForChildren}
+                        itemRefs={itemRefs}
                       />
                     )}
                   </div>

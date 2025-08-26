@@ -1,5 +1,5 @@
 import defaultProfileImage from "../../../assets/images/no-User.png"
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChildrenSection from "../ChildrenSection/ChildrenSection";
 import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
 import useReplyToSecret from "../../../hooks/useReplyToSecret";
@@ -7,6 +7,7 @@ import { formatDate } from "../../../utils/tools";
 import { useHome } from "../../../context/HomeContext";
 import viewIcon from "../../../assets/icons/show-icon.png";
 import "../../../components/SeedPhrase/SeedPhrase.css";
+import { useWallet } from "../../../wallet/walletContext";
 
 export default function MyData() {
     const { 
@@ -18,15 +19,23 @@ export default function MyData() {
         handleDelete,
         toggleChildExpand,
         handleGetSecretViews,
+        handleDirectLink,
+        handleDirectLinkForChildren,
         expandedChildId,
         decryptingChild,
         decryptedChildMessages,
-        secretViews
+        secretViews,
+        itemRefs
     } = useHome();
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
     const { handleReplyToSecret } = useReplyToSecret();
     const [copied, setCopied] = useState(false);
+    const { address } = useWallet();
+
+    useEffect(() => {
+      if(address) handleDirectLink();
+    }, [address]);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
@@ -42,7 +51,7 @@ export default function MyData() {
     <div className="data-list">
       {myData.length > 0 ? (
             myData.map((item, i) => (
-              <div key={i} className="data-item" >
+              <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
                 <div className="item-container" onClick={() => toggleExpand(item.value, item.id)}>
                   <div className="item-header-info">
                   <p className="item-title">{item.key}</p>
@@ -158,6 +167,8 @@ export default function MyData() {
                         expandedChildId={expandedChildId}
                         decryptingChild={decryptingChild}
                         decryptedChildMessages={decryptedChildMessages}
+                        handleDirectLinkForChildren={handleDirectLinkForChildren}
+                        itemRefs={itemRefs}
                       />
                     )}
                   </div>
@@ -182,7 +193,6 @@ export default function MyData() {
           </div>
         </div>
       )}
-
     </div>
   )
 }
