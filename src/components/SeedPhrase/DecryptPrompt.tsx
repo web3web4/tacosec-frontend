@@ -80,7 +80,7 @@ export const DecryptPrompt = ({
       if (latestSecret) {
         onChange(latestSecret);
         MetroSwal.fire("✅ Success", "Password restored successfully", "success");
-        onSubmit();
+        //onSubmit();
       } else {
         setRestoreError("No password found");
       }
