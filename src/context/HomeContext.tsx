@@ -604,7 +604,6 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             pw.id === id ? { ...pw, children: response } : pw )}))
         );
       }
-      console.log(response);
   };
   
   const decryptMessage = async (id: string, encryptedText: string) => {
@@ -673,6 +672,35 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const renderViewer = (viewer: any) => {
+    const formattedDate =
+      viewer.type === "viewed" && viewer.viewedAt
+        ? formatDate(viewer.viewedAt)
+        : "";
+  
+    return `
+      <div style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: left;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
+          <span style="display: flex; justify-content: space-between;font-size: 16px; color: #666;">
+            <img id="viewer-img-${viewer.username}" style="border-radius: 50%" src=${
+              viewer.img || defaultProfileImage
+            } width=35 height=35 />
+          </span>
+        </div>
+        <div style="flex-grow: 1;">
+          <div style="font-weight: 500; margin-bottom: 2px; text-align: left; color: black">
+            ${viewer.firstName || ""} ${viewer.lastName || ""}
+          </div>
+          ${
+            formattedDate
+              ? `<div style="font-size: 12px; color: #666; text-align: left;">${formattedDate}</div>`
+              : ""
+          }
+        </div>
+      </div>
+    `;
+  };
+
   const handleGetSecretViews = async (e: any, id: string) => {
     e.stopPropagation();
     const data = secretViews[id];
@@ -686,69 +714,105 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       });
       return;
     }
-
-    // Sort view details by date (newest first)
-    const sortedViewDetails = [...data.viewDetails].sort((a, b) => 
-      new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()
+  
+    let mergedData: ViewDetails[] = [];
+  
+    mergedData = [
+      ...data.viewDetails.map(user => ({
+        telegramId: user.telegramId ?? null,
+        username: user.username,
+        viewedAt: user.viewedAt ?? null,
+        firstName: user.firstName ?? null,
+        lastName: user.lastName ?? null,
+        img: undefined, 
+        type: "viewed"
+      })),
+    
+      ...data.notViewedUsers.map(user => ({
+        telegramId: user.telegramId ?? null,
+        username: user.username,
+        viewedAt: null,
+        firstName: user.firstName ?? null,
+        lastName: user.lastName ?? null,
+        img: undefined,
+        type: "not-viewed"
+      })),
+    
+      ...data.unknownUsers.map(user => ({
+        telegramId: null,
+        username: user.username,
+        viewedAt: null,
+        firstName: user.firstName ?? null,
+        lastName: user.lastName ?? null,
+        img: undefined,
+        type: "unknown"
+      })),
+    ];
+  
+    const sortedViewDetails = [...mergedData].sort((a, b) =>
+      new Date(b.viewedAt || 0).getTime() - new Date(a.viewedAt || 0).getTime()
     );
+  
+    const viewed = sortedViewDetails.filter(v => v.type === "viewed");
+    const notViewed = sortedViewDetails.filter(v => v.type === "not-viewed");
+    const unknown = sortedViewDetails.filter(v => v.type === "unknown");
 
-    // Create HTML for the viewers list
-    const viewersHtml = sortedViewDetails.map((viewer, index) => {
-      const formattedDate = formatDate(viewer.viewedAt);
-      return `
-        <div style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: left;">
-          <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-            <span style="font-size: 16px; color: #666;"><img id="viewer-img-${index}" style= "border-radius: 50%" src=${viewer.img || defaultProfileImage} width=35 height=35 /></span>
-          </div>
-          <div style="flex-grow: 1;">
-            <div style="font-weight: 500; margin-bottom: 2px; text-align: left; color: black">${viewer.firstName} ${viewer.lastName}</div>
-            <div style="font-size: 12px; color: #666; text-align: left;">${formattedDate}</div>
-          </div>
-        </div>
-      `;
-    }).join('');
+    const viewedHtml = viewed.length
+    ? `<h4 style="margin: 15px 0 10px 13px;font-size: 15px;text-align:left; color: #000000c2">Decrypted by:</h4>
+        ${viewed.map(renderViewer).join("")}`
+    : "";
+
+    const notViewedHtml = notViewed.length
+    ? `<h4 style="margin: 10px 0 10px 13px;font-size: 15px;text-align:left; color: #000000c2">Not Decrypted:</h4>
+        ${notViewed.map(renderViewer).join("")}`
+    : "";
+
+    const unknownHtml = unknown.length
+    ? `<h4 style="margin: 10px 0 10px 13px;font-size: 15px;text-align:left; color: #000000c2">Unknown:</h4>
+        ${unknown.map(renderViewer).join("")}`
+    : "";
 
     MetroSwal.fire({
-      title: `Decrypted by: ${data.totalSharedUsers > 1 ? sortedViewDetails.length + "/" + data.totalSharedUsers : ""}`,
-      html: `
-        <div style="max-height: 300px; overflow-y: auto; margin: -20px -24px 0; border-radius: 12px;">
-          ${viewersHtml}
-        </div>
-      `,
-      showConfirmButton: false,
-      showCloseButton: true,
-      customClass: {
-        popup: 'viewers-popup',
-        title: 'viewers-title',
-        closeButton: 'viewers-close'
-      },
-      width: '350px',
-      didOpen: () => {
-        const title = document.querySelector('.viewers-title') as HTMLElement;
-        if (title) {
-          title.style.marginTop = '15px';
-        }
+    title: ``,
+    html: `
+      <div style="max-height: 300px; overflow-y: auto; margin: -20px -24px 0; border-radius: 12px;">
+        ${viewedHtml}
+        ${notViewedHtml}
+        ${unknownHtml}
+      </div>
+    `,
+    showConfirmButton: false,
+    showCloseButton: true,
+    customClass: {
+      popup: "viewers-popup",
+      title: "viewers-title",
+      closeButton: "viewers-close",
+    },
+    width: "350px",
+    didOpen: () => {
+      const title = document.querySelector(".viewers-title") as HTMLElement;
+      const close = document.querySelector(".viewers-close") as HTMLElement;
+      if (title) {
+        title.style.marginTop = "15px";
+        close.style.marginTop = "5px";
+        close.style.marginRight = "15px";
       }
+    },
     });
+  
     try {
       if (!data) return;
       const updatedViewDetails = await enrichViewDetailsWithImages(sortedViewDetails);
-      setSecretViews((prev) => ({
-        ...prev,
-        [id]: {
-          ...data,
-          viewDetails: updatedViewDetails,
-        },
-      }));
-
+  
       updatedViewDetails.forEach((viewer, index) => {
-        const imgEl = document.querySelector(`#viewer-img-${index}`) as HTMLImageElement;
+        const imgEl = document.querySelector(`#viewer-img-${viewer.username}`) as HTMLImageElement;
         if (imgEl) imgEl.src = viewer.img || defaultProfileImage;
       });
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const value = {
     myData, 

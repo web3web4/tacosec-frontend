@@ -127,14 +127,25 @@ export interface SecretViews {
   uniqueViewers: number,
   totalSharedUsers: number;
   viewDetails: ViewDetails[];
+  notViewedUsers: userViewDetails[];
+  unknownUsers: userViewDetails[];
   isNewSecret: boolean
 } 
 
-export interface ViewDetails{
+ export interface userViewDetails {
   telegramId: string,
   username: string,
-  viewedAt: string,
   firstName: string,
   lastName: string,
   img?: string, // This property not get from backend, we used for stored img from another endpoint 
+ }
+
+export interface ViewDetails{
+  telegramId?: string | null;
+  username: string;
+  viewedAt?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  img?: string, // This property not get from backend, we used for stored img from another endpoint 
+  type?: string // Just For Help My 
 }
