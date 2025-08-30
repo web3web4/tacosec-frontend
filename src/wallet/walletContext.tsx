@@ -26,15 +26,12 @@ import {
 } from "../localstorage/walletStorage";
 
 import {
-  promptPassword,
-  confirmSavePassword,
   showBackupReminder,
   promptPasswordWithSaveOption,
 } from "../hooks/walletDialogs";
 
 import { WalletContextProps } from "../interfaces/wallet"
 import MetroSwal from "../utils/metroSwal";
-import Swal from "sweetalert2";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 
@@ -72,6 +69,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
     return null;
   }, [isWeb, addressweb, userData?.telegramId]);
+
+  //for address wallet in telgram 
+  const walletAddress = useMemo(() => {
+  if (isTelegram && address) {
+    return address;
+  }
+  return null;
+}, [isTelegram, address]);
 
   useEffect(() => {
     if (!identifier) return;
@@ -172,6 +177,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         address,
         addressweb,
         signer,
+        walletAddress,
         hasWallet,
         provider,
         createWalletFlow,
