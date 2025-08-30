@@ -20,49 +20,65 @@ export const ResetPasswordWithSeed = ({
   const [showClearOption, setShowClearOption] = useState(false);
   const [saveOnServer, setSaveOnServer] = useState(false); // 👈 Checkbox state
 
-  const { userData, isBrowser, initDataRaw } = useUser();
-  const { walletAddress, addressweb } = useWallet();
+  const {  isBrowser, initDataRaw } = useUser();
+  const { addressweb } = useWallet();
 
-  const handleReset = async () => {
-    const identifier = getIdentifier(isBrowser, walletAddress, addressweb, userData?.telegramId);
-    if (!identifier) return;
+const handleReset = async () => {
+  const trimmed = seed.trim().toLowerCase();
 
-    const trimmed = seed.trim().toLowerCase();
-    if (!ethers.utils.isValidMnemonic(trimmed)) {
-      MetroSwal.fire("Error", "Invalid seed phrase", "error");
+  if (!ethers.utils.isValidMnemonic(trimmed)) {
+    MetroSwal.fire("Error", "Invalid seed phrase", "error");
+    return;
+  }
+
+  if (newPassword.length < 4) {
+    MetroSwal.fire("Error", "Password too short", "error");
+    return;
+  }
+
+  let publicKey: string | null = null;
+
+  if (isBrowser) {
+    publicKey = addressweb || null;
+  } else {
+    try {
+      const wallet = ethers.Wallet.fromMnemonic(trimmed);
+      publicKey = wallet.address;
+    } catch (e) {
+      MetroSwal.fire("Error", "Failed to derive wallet from seed", "error");
       return;
     }
+  }
 
-    if (newPassword.length < 4) {
-      MetroSwal.fire("Error", "Password too short", "error");
-      return;
+  if (!publicKey) {
+    MetroSwal.fire("Error", "Could not resolve public key", "error");
+    return;
+  }
+
+  if (saveOnServer) {
+    localStorage.setItem("savePasswordInBackend", "true");
+    const data = { publicKey, secret: newPassword };
+    console.log("data", data);
+
+    try {
+      await storagePublicKeyAndPassword(data, initDataRaw || "");
+    } catch (error) {
+      console.error("Failed to save password in backend:", error);
+      MetroSwal.fire("Warning", "Password saved locally but failed to sync with server", "warning");
     }
-
-
-
-    if (saveOnServer) {
-      localStorage.setItem("savePasswordInBackend", "true");
-      const publicKey = isBrowser ? addressweb  : walletAddress;
-      const data = { publicKey, secret: newPassword };
-      console.log("data",data);
-      try {
-        await storagePublicKeyAndPassword(data, initDataRaw || "");
-      } catch (error) {
-        console.error("Failed to save password in backend:", error);
-        MetroSwal.fire("Warning", "Password saved locally but failed to sync with server", "warning");
-      }
-    } else {
-      const data = { publicKey: walletAddress || addressweb };
-      try {
-        await storagePublicKeyAndPassword(data, initDataRaw || "");
-      } catch (error) {
-        console.warn("Public key only sync failed:", error);
-      }
+  } else {
+    const data = { publicKey };
+    try {
+      await storagePublicKeyAndPassword(data, initDataRaw || "");
+    } catch (error) {
+      console.warn("Public key only sync failed:", error);
     }
+  }
 
-    MetroSwal.fire("✅ Success", "Password reset successfully", "success");
-    onSuccess();
-  };
+  MetroSwal.fire("✅ Success", "Password reset successfully", "success");
+  onSuccess();
+};
+
 
   const handleClearData = () => {
     Object.keys(localStorage).forEach((key) => {
