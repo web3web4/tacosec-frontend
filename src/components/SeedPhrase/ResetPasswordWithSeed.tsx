@@ -46,7 +46,8 @@ export const ResetPasswordWithSeed = ({
     if (saveOnServer) {
       localStorage.setItem("savePasswordInBackend", "true");
 
-      const data = { publicKey: address || addressweb, secret: newPassword };
+      const data = { publicKey: addressweb, secret: newPassword };
+      console.log("data", data);
       try {
         await storagePublicKeyAndPassword(data, initDataRaw || "");
       } catch (error) {
