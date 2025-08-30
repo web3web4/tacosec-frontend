@@ -6,6 +6,7 @@ import { useUser } from "../../context/UserContext";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
 import { storagePublicKeyAndPassword } from "../../apiService";
+import CryptoJS from "crypto-js";
 
 
 export const ResetPasswordWithSeed = ({
@@ -20,12 +21,14 @@ export const ResetPasswordWithSeed = ({
   const [showClearOption, setShowClearOption] = useState(false);
   const [saveOnServer, setSaveOnServer] = useState(false); // 👈 Checkbox state
 
-  const {  isBrowser, initDataRaw } = useUser();
+  const { userData, isBrowser, initDataRaw } = useUser();
   const { addressweb } = useWallet();
 
 const handleReset = async () => {
-  const trimmed = seed.trim().toLowerCase();
+  const identifier = isBrowser ? addressweb : userData?.telegramId;
+  if (!identifier) return;
 
+  const trimmed = seed.trim().toLowerCase();
   if (!ethers.utils.isValidMnemonic(trimmed)) {
     MetroSwal.fire("Error", "Invalid seed phrase", "error");
     return;
@@ -36,30 +39,25 @@ const handleReset = async () => {
     return;
   }
 
-  let publicKey: string | null = null;
-
-  if (isBrowser) {
-    publicKey = addressweb || null;
-  } else {
-    try {
-      const wallet = ethers.Wallet.fromMnemonic(trimmed);
-      publicKey = wallet.address;
-    } catch (e) {
-      MetroSwal.fire("Error", "Failed to derive wallet from seed", "error");
-      return;
+  // 🧹 امسح أي بيانات قديمة مرتبطة بالمحفظة
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith("encryptedSeed-") || key.startsWith("seedBackupDone-")) {
+      localStorage.removeItem(key);
     }
-  }
+  });
 
-  if (!publicKey) {
-    MetroSwal.fire("Error", "Could not resolve public key", "error");
-    return;
-  }
+  // 🔐 أعد التشفير بالباسورد الجديد
+  const encrypted = CryptoJS.AES.encrypt(trimmed, newPassword).toString();
 
+  // 💾 خزّن النسخة الجديدة
+  localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
+  localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+
+  // 🌐 sync مع السيرفر
   if (saveOnServer) {
     localStorage.setItem("savePasswordInBackend", "true");
+    const publicKey = identifier;
     const data = { publicKey, secret: newPassword };
-    console.log("data", data);
-
     try {
       await storagePublicKeyAndPassword(data, initDataRaw || "");
     } catch (error) {
@@ -67,7 +65,7 @@ const handleReset = async () => {
       MetroSwal.fire("Warning", "Password saved locally but failed to sync with server", "warning");
     }
   } else {
-    const data = { publicKey };
+    const data = { publicKey:identifier };
     try {
       await storagePublicKeyAndPassword(data, initDataRaw || "");
     } catch (error) {
