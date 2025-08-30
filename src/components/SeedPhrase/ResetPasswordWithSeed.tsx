@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { MdRefresh, MdClose, MdLockReset, MdDeleteForever, MdExpandMore, MdExpandLess } from "react-icons/md";
 import { ethers } from "ethers";
-import CryptoJS from "crypto-js";
 import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
+import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
 import { storagePublicKeyAndPassword } from "../../apiService";
+
 
 export const ResetPasswordWithSeed = ({
   onSuccess,
@@ -19,42 +20,31 @@ export const ResetPasswordWithSeed = ({
   const [showClearOption, setShowClearOption] = useState(false);
   const [saveOnServer, setSaveOnServer] = useState(false); // 👈 Checkbox state
 
-  const { isBrowser, initDataRaw } = useUser();
-  const {addressweb } = useWallet();
+  const { userData, isBrowser, initDataRaw } = useUser();
+  const { walletAddress, addressweb } = useWallet();
 
   const handleReset = async () => {
+    const identifier = getIdentifier(isBrowser, walletAddress, addressweb, userData?.telegramId);
+    if (!identifier) return;
+
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {
       MetroSwal.fire("Error", "Invalid seed phrase", "error");
       return;
     }
-    
-    // Get wallet address from the existing seed phrase
-    const wallet = ethers.Wallet.fromMnemonic(trimmed);
-    const walletAddress = wallet.address;
-    console.log("Retrieved wallet address from seed:", walletAddress);
-    
-    // For browser use addressweb or walletAddress, for Telegram use walletAddress
-    const identifier = isBrowser ? addressweb  : walletAddress;
-    console.log("Using identifier for storage:", identifier);
 
     if (newPassword.length < 4) {
       MetroSwal.fire("Error", "Password too short", "error");
       return;
     }
 
-    const fullKey = newPassword + "|" + process.env.REACT_APP_TG_SECRET_SALT;
-    const encrypted = CryptoJS.AES.encrypt(trimmed, fullKey).toString();
-    localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
-    localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+
 
     if (saveOnServer) {
       localStorage.setItem("savePasswordInBackend", "true");
-
-      // For browser use addressweb if available, otherwise use walletAddress
-      const publicKey = isBrowser ? (addressweb || walletAddress) : walletAddress;
+      const publicKey = isBrowser ? addressweb  : walletAddress;
       const data = { publicKey, secret: newPassword };
-      console.log("Saving data to server:", data);
+      console.log("data",data);
       try {
         await storagePublicKeyAndPassword(data, initDataRaw || "");
       } catch (error) {
@@ -62,9 +52,7 @@ export const ResetPasswordWithSeed = ({
         MetroSwal.fire("Warning", "Password saved locally but failed to sync with server", "warning");
       }
     } else {
-      // For browser use addressweb if available, otherwise use walletAddress
-      const publicKey = isBrowser ? (addressweb || walletAddress) : walletAddress;
-      const data = { publicKey };
+      const data = { publicKey: walletAddress || addressweb };
       try {
         await storagePublicKeyAndPassword(data, initDataRaw || "");
       } catch (error) {
