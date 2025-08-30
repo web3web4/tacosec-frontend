@@ -70,13 +70,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return null;
   }, [isWeb, addressweb, userData?.telegramId]);
 
-  //for address wallet in telgram 
-  const walletAddress = useMemo(() => {
-  if (isTelegram && address) {
-    return address;
-  }
-  return null;
-}, [isTelegram, address]);
 
   useEffect(() => {
     if (!identifier) return;
@@ -177,7 +170,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         address,
         addressweb,
         signer,
-        walletAddress,
         hasWallet,
         provider,
         createWalletFlow,
