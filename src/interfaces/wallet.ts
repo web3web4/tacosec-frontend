@@ -4,6 +4,7 @@ export interface WalletContextProps {
   address: string | null;
   addressweb: string | null;
   signer: ethers.Signer | null;
+  walletAddress: string | null ;
   hasWallet: boolean;
   provider: ethers.providers.JsonRpcProvider;
   createWalletFlow: () => void;
