@@ -177,7 +177,8 @@ const AddData: React.FC = () => {
       <label>Secret</label>
       <textarea
         placeholder="New Data ..."
-        className="input-field"
+        className="input-field-textarea"
+        rows={3}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />

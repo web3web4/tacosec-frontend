@@ -14,7 +14,8 @@ export function decryptSeed(encrypted: string, password: string): string | null 
     const bytes = CryptoJS.AES.decrypt(encrypted, key);
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     return decrypted || null;
-  } catch {
+  } catch (error) {
+    console.log("Error decrypting seed:", error);
     return null;
   }
 }

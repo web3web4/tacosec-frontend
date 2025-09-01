@@ -5,8 +5,8 @@ import { MetroSwal } from "../../utils/metroSwal";
 import { useUser } from "../../context/UserContext";
 import { getIdentifier } from "../../utils/walletIdentifiers";
 import { useWallet } from "../../wallet/walletContext";
-import { storagePublicKeyAndPassword } from "../../apiService";
 import CryptoJS from "crypto-js";
+import { storagePublicKeyAndPassword } from "../../apiService";
 
 
 export const ResetPasswordWithSeed = ({
@@ -21,61 +21,44 @@ export const ResetPasswordWithSeed = ({
   const [showClearOption, setShowClearOption] = useState(false);
   const [saveOnServer, setSaveOnServer] = useState(false); // 👈 Checkbox state
 
-  const { userData, isBrowser, initDataRaw } = useUser();
-  const { addressweb } = useWallet();
+  const { userData, isBrowser , initDataRaw} = useUser();
+  const { addressweb , address  } = useWallet();
 
-const handleReset = async () => {
-  const identifier = isBrowser ? addressweb : userData?.telegramId;
-  if (!identifier) return;
-
-  const trimmed = seed.trim().toLowerCase();
-  if (!ethers.utils.isValidMnemonic(trimmed)) {
-    MetroSwal.fire("Error", "Invalid seed phrase", "error");
-    return;
-  }
-
-  if (newPassword.length < 4) {
-    MetroSwal.fire("Error", "Password too short", "error");
-    return;
-  }
-
-  // 🧹 امسح أي بيانات قديمة مرتبطة بالمحفظة
-  Object.keys(localStorage).forEach((key) => {
-    if (key.startsWith("encryptedSeed-") || key.startsWith("seedBackupDone-")) {
-      localStorage.removeItem(key);
+  const handleReset = async () => {
+    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+      if (!identifier) return;
+    const trimmed = seed.trim().toLowerCase();
+    if (!ethers.utils.isValidMnemonic(trimmed)) {
+      MetroSwal.fire("Error", "Invalid seed phrase", "error");
+      return;
     }
-  });
 
-  // 🔐 أعد التشفير بالباسورد الجديد
-  const encrypted = CryptoJS.AES.encrypt(trimmed, newPassword).toString();
-
-  // 💾 خزّن النسخة الجديدة
-  localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
-  localStorage.setItem(`seedBackupDone-${identifier}`, "true");
-
-  // 🌐 sync مع السيرفر
-  if (saveOnServer) {
-    localStorage.setItem("savePasswordInBackend", "true");
-    const publicKey = identifier;
-    const data = { publicKey, secret: newPassword };
-    try {
-      await storagePublicKeyAndPassword(data, initDataRaw || "");
-    } catch (error) {
-      console.error("Failed to save password in backend:", error);
-      MetroSwal.fire("Warning", "Password saved locally but failed to sync with server", "warning");
+    if (newPassword.length < 4) {
+      MetroSwal.fire("Error", "Password too short", "error");
+      return;
     }
-  } else {
-    const data = { publicKey:identifier };
-    try {
-      await storagePublicKeyAndPassword(data, initDataRaw || "");
-    } catch (error) {
-      console.warn("Public key only sync failed:", error);
-    }
-  }
 
-  MetroSwal.fire("✅ Success", "Password reset successfully", "success");
-  onSuccess();
-};
+    const fullKey = newPassword + "|" + process.env.REACT_APP_TG_SECRET_SALT;
+    const encrypted = CryptoJS.AES.encrypt(trimmed, fullKey).toString();
+    localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
+    localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+    if(saveOnServer) {
+      try {
+        const wallet = ethers.Wallet.fromMnemonic(trimmed);
+        const publicKey = wallet.address;
+        await storagePublicKeyAndPassword({publicKey, secret:newPassword},initDataRaw|| "");
+        localStorage.setItem(`savePasswordInBackend`, "true"); 
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      localStorage.setItem(`savePasswordInBackend`, "false");
+    }
+    MetroSwal.fire("✅ Success", "Password reset successfully", "success");
+    onSuccess();
+    
+  };
+
 
 
   const handleClearData = () => {
@@ -115,7 +98,7 @@ const handleReset = async () => {
           className="input-field"
         />
 
-        {/* 👇 Save Password Into Server*/}
+         
         <div style={{ marginTop: "10px" }}>
           <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
             <input
@@ -128,7 +111,7 @@ const handleReset = async () => {
             </span>
           </label>
         </div>
-
+      
         <div className="popup-actions-row">
           <button className="cancel-btn" onClick={onCancel}>
             <MdClose style={{ marginRight: "4px", verticalAlign: "middle" }} />Cancel

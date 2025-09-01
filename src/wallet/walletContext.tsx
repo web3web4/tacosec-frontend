@@ -209,6 +209,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                 icon: 'success',
                 title: 'Success',
                 text: 'You can now unlock your wallet with your new password.'
+              }).then(() => {
+                window.location.reload();
               })
 
             }}

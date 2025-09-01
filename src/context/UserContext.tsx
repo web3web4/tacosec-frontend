@@ -38,7 +38,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       tg.ready();
       tg.expand();
       const initData = tg.initData;
-      setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
       if (hasWallet) {
