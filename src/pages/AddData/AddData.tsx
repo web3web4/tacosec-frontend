@@ -12,7 +12,7 @@ import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+//import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -36,18 +36,18 @@ const AddData: React.FC = () => {
     handleDeleteUsername,
     handleAddShare,
     handleInvite,
-    cleanFields,
+    //cleanFields,
     checkEncrypting,
     setMessage,
     setName,
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
-  const [seconds, setSeconds] = useState<number>(0);
-  const [minutes, setMinutes] = useState<number>(0);
-  const [hours, setHours] = useState<number>(0);
-  const [months, setMonths] = useState<number>(0);
-  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  //const [seconds, setSeconds] = useState<number>(0);
+  //const [minutes, setMinutes] = useState<number>(0);
+  //const [hours, setHours] = useState<number>(0);
+  //const [months, setMonths] = useState<number>(0);
+  //const [showMoreOptions, setShowMoreOptions] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -63,14 +63,6 @@ const AddData: React.FC = () => {
 
   const encryptMessage = async () => {
     if (!provider) return;
-    if (seconds === 0 && minutes === 0 && hours === 0 && months === 0) {
-      MetroSwal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Please enter at least one time period value",
-      });
-      return;
-    }
 
     if(!checkEncrypting()) return;
 
@@ -99,6 +91,7 @@ const AddData: React.FC = () => {
         returnValueTest: { comparator: '==', value: true },
       });
 
+/*
       // Calculate future timestamp based on time period inputs
       const now = new Date();
       const currentTimestamp = Math.floor(now.getTime() / 1000);
@@ -127,11 +120,11 @@ const AddData: React.FC = () => {
         checkUsersCondition,
         timeCondition,
       ]);
-
+*/
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        compoundCondition,
+        checkUsersCondition ,
         signer!
       );
 
@@ -163,6 +156,7 @@ const AddData: React.FC = () => {
             "Success",
             "The data was successfully encrypted and securely stored"
           );
+          /*
           cleanFields();
           // Reset time period inputs
           setSeconds(0);
@@ -170,6 +164,7 @@ const AddData: React.FC = () => {
           setHours(0);
           setMonths(0);
           setShowMoreOptions(false);
+          */
         }
       }
     } catch (e: any) {
@@ -224,7 +219,8 @@ const AddData: React.FC = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-
+  {/*
+   
       <div className="more-options-section">
         <button 
           className="more-options-toggle" 
@@ -291,7 +287,7 @@ const AddData: React.FC = () => {
           </div>
         )}
       </div>
-
+*/}
 
       {encrypting && (
         <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
