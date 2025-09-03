@@ -12,9 +12,7 @@ import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
-import TextField from "@mui/material/TextField";
-import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -45,7 +43,11 @@ const AddData: React.FC = () => {
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // datetime picker state
+  const [seconds, setSeconds] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [hours, setHours] = useState<number>(0);
+  const [months, setMonths] = useState<number>(0);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -60,7 +62,15 @@ const AddData: React.FC = () => {
   }
 
   const encryptMessage = async () => {
-    if (!provider || !selectedDate) return;
+    if (!provider) return;
+    if (seconds === 0 && minutes === 0 && hours === 0 && months === 0) {
+      MetroSwal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please enter at least one time period value",
+      });
+      return;
+    }
 
     if(!checkEncrypting()) return;
 
@@ -89,12 +99,19 @@ const AddData: React.FC = () => {
         returnValueTest: { comparator: '==', value: true },
       });
 
-      // Time condition from selected date
-      // getTimezoneOffset returns minutes WEST of UTC, so we need to ADD it (not subtract)
-      // For example, if you're in UTC+2, getTimezoneOffset returns -120 minutes
-      const localTimestamp = Math.floor(selectedDate.getTime() / 1000);
-      const timezoneOffsetSeconds = selectedDate.getTimezoneOffset() * 60;
-      const adjustedTimestamp = localTimestamp + timezoneOffsetSeconds;
+      // Calculate future timestamp based on time period inputs
+      const now = new Date();
+      const currentTimestamp = Math.floor(now.getTime() / 1000);
+      const timezoneOffsetSeconds = now.getTimezoneOffset() * 60;
+      
+      // Convert all inputs to seconds and add to current time
+      const secondsToAdd = seconds;
+      const minutesToAdd = minutes * 60;
+      const hoursToAdd = hours * 60 * 60;
+      const monthsToAdd = months * 30 * 24 * 60 * 60; // Approximate months as 30 days
+      
+      // Add all time periods to get the future timestamp
+      const adjustedTimestamp = currentTimestamp + timezoneOffsetSeconds + secondsToAdd + minutesToAdd + hoursToAdd + monthsToAdd;
       const timeCondition = new conditions.base.time.TimeCondition({
         chain: 80002,
         method: "blocktime",
@@ -147,6 +164,12 @@ const AddData: React.FC = () => {
             "The data was successfully encrypted and securely stored"
           );
           cleanFields();
+          // Reset time period inputs
+          setSeconds(0);
+          setMinutes(0);
+          setHours(0);
+          setMonths(0);
+          setShowMoreOptions(false);
         }
       }
     } catch (e: any) {
@@ -202,18 +225,72 @@ const AddData: React.FC = () => {
         onChange={(e) => setMessage(e.target.value)}
       />
 
-      <label>Expiration Date & Time</label>
-<LocalizationProvider dateAdapter={AdapterDateFns}>
-  <DateTimePicker
-    value={selectedDate}
-    onChange={(date) => setSelectedDate(date)}
-    ampm={false} // 24h format
-    slots={{
-      textField: (props) => <TextField {...props} />
-    }}
-    enableAccessibleFieldDOMStructure={false} // مهم
-  />
-</LocalizationProvider>
+      <div className="more-options-section">
+        <button 
+          className="more-options-toggle" 
+          onClick={() => setShowMoreOptions(!showMoreOptions)}
+        >
+          <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
+        </button>
+        
+        {showMoreOptions && (
+          <div className="more-options-content">
+            <p className="more-options-description">
+              Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
+            </p>
+            <div className="time-period-container">
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={seconds}
+                  onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Seconds</label>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={minutes}
+                  onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Minutes</label>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={hours}
+                  onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Hours</label>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={months}
+                  onChange={(e) => setMonths(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Months</label>
+              </div>
+            </div>
+            {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
+              <div className="time-summary">
+                Unlocks after: {months > 0 ? `${months} month${months !== 1 ? 's' : ''} ` : ''}
+                {hours > 0 ? `${hours} hour${hours !== 1 ? 's' : ''} ` : ''}
+                {minutes > 0 ? `${minutes} minute${minutes !== 1 ? 's' : ''} ` : ''}
+                {seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : ''}
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
 
 
       {encrypting && (
