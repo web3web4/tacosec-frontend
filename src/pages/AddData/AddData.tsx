@@ -12,6 +12,9 @@ import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
+import TextField from "@mui/material/TextField";
+import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -42,6 +45,7 @@ const AddData: React.FC = () => {
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // datetime picker state
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -56,14 +60,10 @@ const AddData: React.FC = () => {
   }
 
   const encryptMessage = async () => {
-    if (!provider) {
-      return;
-    }
+    if (!provider || !selectedDate) return;
 
-    if(!checkEncrypting()){
-      return;
-    }
-    
+    if(!checkEncrypting()) return;
+
     setEncrypting(true);
     try {
       if (!signer) {
@@ -71,29 +71,50 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let usernames: string = "";
-      usernames = userData?.username.toLowerCase()!;
+      let usernames: string = userData?.username.toLowerCase()!;
       shareList
         .filter((item) => item.data.username !== null)
-        .map((item) => (
-          usernames += "," + item.data.username!.toLowerCase()
-        ));
+        .forEach((item) => {
+          usernames += "," + item.data.username!.toLowerCase();
+        });
 
-      //condition
+      // JSON API condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
         parameters: {
-          TelegramUsernames : usernames,
+          TelegramUsernames: usernames,
           authorizationToken: ":authorizationToken"
         },
         query: '$.isValid',
         returnValueTest: { comparator: '==', value: true },
       });
 
+      // Time condition from selected date
+      // getTimezoneOffset returns minutes WEST of UTC, so we need to ADD it (not subtract)
+      // For example, if you're in UTC+2, getTimezoneOffset returns -120 minutes
+      const localTimestamp = Math.floor(selectedDate.getTime() / 1000);
+      const timezoneOffsetSeconds = selectedDate.getTimezoneOffset() * 60;
+      const adjustedTimestamp = localTimestamp + timezoneOffsetSeconds;
+      const timeCondition = new conditions.base.time.TimeCondition({
+        chain: 80002,
+        method: "blocktime",
+        returnValueTest: {
+          comparator: '>=',
+          value: adjustedTimestamp,
+        }
+      });
+
+
+      // Compound condition AND
+      const compoundCondition = conditions.compound.CompoundCondition.and([
+        checkUsersCondition,
+        timeCondition,
+      ]);
+
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        checkUsersCondition,
+        compoundCondition,
         signer!
       );
 
@@ -115,9 +136,11 @@ const AddData: React.FC = () => {
             value: encryptedHex!,
             sharedWith: sharedWithList,
             initData: parsedInitData,
+            //expirationTime: adjustedTimestamp, // Pass the adjusted timestamp to the backend
           },
           initDataRaw!
         );
+
         if (res) {
           MetroSwal.success(
             "Success",
@@ -153,17 +176,13 @@ const AddData: React.FC = () => {
                 target.src = defaultProfileImage;
               }}
             />
-            
-            <p>
-              {userProfile.error ? userProfile.error : userProfile.data.name}
-            </p>
-            {!userProfile.error && (
-              <button onClick={handleConfirmClick}>Confirmation</button>
-            )}
+            <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
+            {!userProfile.error && <button onClick={handleConfirmClick}>Confirmation</button>}
             <button onClick={() => closePopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
       )}
+
       <h2 className="page-title">Add New Data</h2>
       <label>Title</label>
       <input
@@ -182,6 +201,20 @@ const AddData: React.FC = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
+
+      <label>Expiration Date & Time</label>
+<LocalizationProvider dateAdapter={AdapterDateFns}>
+  <DateTimePicker
+    value={selectedDate}
+    onChange={(date) => setSelectedDate(date)}
+    ampm={false} // 24h format
+    slots={{
+      textField: (props) => <TextField {...props} />
+    }}
+    enableAccessibleFieldDOMStructure={false} // مهم
+  />
+</LocalizationProvider>
+
 
       {encrypting && (
         <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
