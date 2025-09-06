@@ -33,6 +33,7 @@ interface HomeContextType {
   userData: any;
   decrypting: boolean;
   decryptedMessages: Record<string, string>;
+  decryptErrors: Record<string, string>;
   toggleExpand: (value: string, id: string) => Promise<void>;
   expandedId: string | null;
   toggleChildExpand: (value: string, childId: string) => void;
@@ -54,6 +55,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [activeTab, setActiveTab] = useState<TabType>("mydata");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
+  const [decryptErrors, setDecryptErrors] = useState<{ [id: string]: string }>({});
   const [decrypting, setDecrypting] = useState<boolean>(false);
   const [expandedChildId, setExpandedChildId] = useState<string | null>(null);
   const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
@@ -606,24 +608,33 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       }
   };
   
-  const decryptMessage = async (id: string, encryptedText: string) => {
-    if (!encryptedText || !provider || !signer) return;
-    try {
-      setDecrypting(true);
-      console.log("Decrypting message...");
-      const decryptedBytes = await decryptDataFromBytes(
-        fromHexString(encryptedText)
-      );
-      if (decryptedBytes) {
-        const decrypted = fromBytes(decryptedBytes);
-        setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
-      }
-    } catch (e) {
-      console.error("Error decrypting:", e);
-    } finally {
-      setDecrypting(false);
+const decryptMessage = async (id: string, encryptedText: string) => {
+  if (!encryptedText || !provider || !signer) return;
+  try {
+    setDecrypting(true);
+    console.log("Decrypting message...");
+    const decryptedBytes = await decryptDataFromBytes(
+      fromHexString(encryptedText)
+    );
+    if (decryptedBytes) {
+      const decrypted = fromBytes(decryptedBytes);
+      setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
     }
-  };
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : "Unknown decryption error";
+
+    console.error("Error decrypting:", errorMessage);
+
+    setDecryptErrors((prev) => ({
+      ...prev,
+      [id]: errorMessage,
+    }));
+  } finally {
+    setDecrypting(false);
+  }
+};
+
 
   const toggleChildExpand = async (value: string, childId: string) => {
     setDecryptingChild(false);
@@ -831,7 +842,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     provider, 
     userData, 
     decrypting, 
-    decryptedMessages, 
+    decryptedMessages,
+    decryptErrors, 
     toggleExpand, 
     expandedId, 
     toggleChildExpand, 
