@@ -12,7 +12,7 @@ import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
-//import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -36,18 +36,18 @@ const AddData: React.FC = () => {
     handleDeleteUsername,
     handleAddShare,
     handleInvite,
-    //cleanFields,
+    cleanFields,
     checkEncrypting,
     setMessage,
     setName,
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
-  //const [seconds, setSeconds] = useState<number>(0);
-  //const [minutes, setMinutes] = useState<number>(0);
-  //const [hours, setHours] = useState<number>(0);
-  //const [months, setMonths] = useState<number>(0);
-  //const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [hours, setHours] = useState<number>(0);
+  const [months, setMonths] = useState<number>(0);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -91,28 +91,43 @@ const AddData: React.FC = () => {
         returnValueTest: { comparator: '==', value: true },
       });
 
-/*
-      // Calculate future timestamp based on time period inputs
-      const now = new Date();
-      const currentTimestamp = Math.floor(now.getTime() / 1000);
-      const timezoneOffsetSeconds = now.getTimezoneOffset() * 60;
-      
-      // Convert all inputs to seconds and add to current time
-      const secondsToAdd = seconds;
-      const minutesToAdd = minutes * 60;
-      const hoursToAdd = hours * 60 * 60;
-      const monthsToAdd = months * 30 * 24 * 60 * 60; // Approximate months as 30 days
-      
-      // Add all time periods to get the future timestamp
-      const adjustedTimestamp = currentTimestamp + timezoneOffsetSeconds + secondsToAdd + minutesToAdd + hoursToAdd + monthsToAdd;
-      const timeCondition = new conditions.base.time.TimeCondition({
-        chain: 80002,
-        method: "blocktime",
-        returnValueTest: {
-          comparator: '>=',
-          value: adjustedTimestamp,
-        }
-      });
+
+    // Calculate future timestamp based on time period inputs
+    const now = new Date();
+    const currentTimestamp = Math.floor(now.getTime() / 1000); // always UTC-based
+
+    // Convert all inputs to seconds
+    const secondsToAdd = Number(seconds) || 0;
+    const minutesToAdd = (Number(minutes) || 0) * 60;
+    const hoursToAdd = (Number(hours) || 0) * 60 * 60;
+    const monthsToAdd = (Number(months) || 0) * 30 * 24 * 60 * 60; // Approximate months as 30 days
+
+    // Final timestamp (no timezone offset added, blockchain uses UTC!)
+    let adjustedTimestamp = currentTimestamp + secondsToAdd + minutesToAdd + hoursToAdd + monthsToAdd;
+
+    // ✅ Safety check: prevent negative or unrealistic values
+    if (adjustedTimestamp < currentTimestamp) {
+      console.warn("Adjusted timestamp is earlier than current time. Resetting to current time.");
+      adjustedTimestamp = currentTimestamp;
+    }
+
+    // Optionally: limit far future (مثلاً ما يتجاوز 10 سنين)
+    const tenYearsLater = currentTimestamp + 10 * 365 * 24 * 60 * 60;
+    if (adjustedTimestamp > tenYearsLater) {
+      console.warn("Adjusted timestamp too far in the future. Resetting to 10 years later max.");
+      adjustedTimestamp = tenYearsLater;
+    }
+
+    // Build the TimeCondition
+    const timeCondition = new conditions.base.time.TimeCondition({
+      chain: 80002,
+      method: "blocktime",
+      returnValueTest: {
+        comparator: '>=',
+        value: adjustedTimestamp,
+      }
+    });
+
 
 
       // Compound condition AND
@@ -120,11 +135,11 @@ const AddData: React.FC = () => {
         checkUsersCondition,
         timeCondition,
       ]);
-*/
+
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        checkUsersCondition ,
+        compoundCondition ,
         signer!
       );
 
@@ -156,15 +171,16 @@ const AddData: React.FC = () => {
             "Success",
             "The data was successfully encrypted and securely stored"
           );
-          /*
+          
           cleanFields();
+          
           // Reset time period inputs
           setSeconds(0);
           setMinutes(0);
           setHours(0);
           setMonths(0);
           setShowMoreOptions(false);
-          */
+          
         }
       }
     } catch (e: any) {
@@ -219,7 +235,7 @@ const AddData: React.FC = () => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-  {/*
+  
    
       <div className="more-options-section">
         <button 
@@ -287,7 +303,7 @@ const AddData: React.FC = () => {
           </div>
         )}
       </div>
-*/}
+
 
       {encrypting && (
         <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>

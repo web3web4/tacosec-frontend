@@ -172,7 +172,7 @@ export default function useAddData() {
     fetchUserProfile(username);
     setSearchData([]);
   };
-/*
+
   const cleanFields = () => {
     setUserProfile({ data: initProfileData, error: null });
     setIsOpenPopup(false);
@@ -182,7 +182,7 @@ export default function useAddData() {
     setMessage("");
     setName("");
   };
-  */
+  
 
   const checkEncrypting = () => {
     if (shareWith.trim() !== "") {
@@ -227,7 +227,7 @@ export default function useAddData() {
     handleConfirmClick,
     handleSearchSelect,
     handleDeleteUsername,
-    //cleanFields,
+    cleanFields,
     checkEncrypting,
     setMessage,
     closePopup,
