@@ -111,7 +111,6 @@ const AddData: React.FC = () => {
       adjustedTimestamp = currentTimestamp;
     }
 
-    // Optionally: limit far future (مثلاً ما يتجاوز 10 سنين)
     const tenYearsLater = currentTimestamp + 10 * 365 * 24 * 60 * 60;
     if (adjustedTimestamp > tenYearsLater) {
       console.warn("Adjusted timestamp too far in the future. Resetting to 10 years later max.");
@@ -127,8 +126,6 @@ const AddData: React.FC = () => {
         value: adjustedTimestamp,
       }
     });
-
-
 
       // Compound condition AND
       const compoundCondition = conditions.compound.CompoundCondition.and([
@@ -161,7 +158,6 @@ const AddData: React.FC = () => {
             value: encryptedHex!,
             sharedWith: sharedWithList,
             initData: parsedInitData,
-            //expirationTime: adjustedTimestamp, // Pass the adjusted timestamp to the backend
           },
           initDataRaw!
         );
@@ -173,7 +169,6 @@ const AddData: React.FC = () => {
           );
           
           cleanFields();
-          
           // Reset time period inputs
           setSeconds(0);
           setMinutes(0);
@@ -216,6 +211,7 @@ const AddData: React.FC = () => {
           </div>
         </CustomPopup>
       )}
+      <div className="add-data-content-wrapper">
 
       <h2 className="page-title">Add New Data</h2>
       <label>Title</label>
@@ -398,6 +394,7 @@ const AddData: React.FC = () => {
       <button className="save-button" onClick={encryptMessage}>
         Save
       </button>
+      </div>
     </div>
   );
 };
