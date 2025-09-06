@@ -16,6 +16,7 @@ export default function MyData() {
         expandedId, 
         decrypting, 
         decryptedMessages, 
+        decryptErrors,
         handleDelete,
         toggleChildExpand,
         handleGetSecretViews,
@@ -94,7 +95,7 @@ export default function MyData() {
                       {decrypting ? (
                         <span>
                           <span className="decrypting-animation">
-                           🗝️ Unlocking your secret
+                            🗝️ Unlocking your secret
                             <span className="dots">
                               <span>.</span>
                               <span>.</span>
@@ -102,10 +103,17 @@ export default function MyData() {
                             </span>
                           </span>
                         </span>
+                      ) : decryptedMessages[item.id] ? (
+                        decryptedMessages[item.id]
+                      ) : decryptErrors[item.id]?.includes("conditions not satisfied") ? (
+                        "⏳ Cannot decrypt yet, please wait until the unlock time."
+                      ) : decryptErrors[item.id] ? (
+                        `❌ ${decryptErrors[item.id]}`
                       ) : (
-                        decryptedMessages[item.id] || "Failed to decrypt"
+                        "❌ Failed to decrypt"
                       )}
                     </p>
+
 
                     <div className="button-group">
                       <div>
