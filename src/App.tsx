@@ -10,7 +10,7 @@ import { UserProvider } from "./context/UserContext";
 import { NavigationGuardProvider } from "./context/NavigationGuardContext";
 import { HomeProvider } from "./context/HomeContext";
 import WalletSetup from "./wallet/WalletSetup";
-import Tracker from '@openreplay/tracker';
+import Tracker , { SanitizeLevel } from '@openreplay/tracker';
 
 
 const App: React.FC = () => {
@@ -23,7 +23,16 @@ const App: React.FC = () => {
       obscureTextNumbers: true,
       obscureInputEmails: true,
       obscureInputDates: true,
-      obscureInputNumbers: true
+      obscureInputNumbers: true,
+      domSanitizer: (node: Element) => {
+        const sensitiveClasses = [ "child-date", "password-text", "shared-user", "child-secret", "address-value", "seed-word" ];
+        for (let className of sensitiveClasses) {
+          if (node.classList.contains(className)) {
+            return SanitizeLevel.Obscured; 
+          }
+        }
+        return SanitizeLevel.Plain;
+      }
     });
     tracker.start()
     return () => { tracker.stop() };
