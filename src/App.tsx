@@ -10,26 +10,24 @@ import { UserProvider } from "./context/UserContext";
 import { NavigationGuardProvider } from "./context/NavigationGuardContext";
 import { HomeProvider } from "./context/HomeContext";
 import WalletSetup from "./wallet/WalletSetup";
-import { useUser } from "./context/UserContext";
-import { useHome } from "./context/HomeContext";
-const TopBar: React.FC = () => {
-  const { userData } = useUser();
-  const { handleAddClick } = useHome();
-
-  return (
-    <div className="top-bar">
-      <div>{userData?.firstName} {" "} {userData?.lastName}</div>
-      <button className="add-button" onClick={handleAddClick}>
-        + Add
-      </button>
-    </div>
-  );
-};
-
+import Tracker from '@openreplay/tracker';
 
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const tracker = new Tracker({
+      projectKey: "OBRRxhO5bKmUOOdoVd4Y",  
+      obscureTextEmails: true,
+      obscureTextNumbers: true,
+      obscureInputEmails: true,
+      obscureInputDates: true,
+      obscureInputNumbers: true
+    });
+    tracker.start()
+    return () => { tracker.stop() };
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
