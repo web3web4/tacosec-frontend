@@ -2613,6 +2613,22 @@
     semver "^7.7.1"
     zod "^3.24.2"
 
+"@openreplay/network-proxy@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@openreplay/network-proxy/-/network-proxy-1.2.0.tgz#58b3667baaea00290beb994212031b83c313e7e9"
+  integrity sha512-vIOzBWVKn+7/Dk4qFmRxR1fdOEnLt1hXkEYtc3m7eIA2nVwz+BSGW4Hbs/ygFLnNS0HkcBwuRgmXAwRMK5HCrQ==
+
+"@openreplay/tracker@^16.4.8":
+  version "16.4.8"
+  resolved "https://registry.yarnpkg.com/@openreplay/tracker/-/tracker-16.4.8.tgz#c935207bdb20ca9014786c39f295a860d1de88dc"
+  integrity sha512-IB/yIzquRQAYGch55tkwXm0dKN2eKAzLNbxD6I21bKOlcWy+PfOMqb7p4opKR+vE/BReGUG3q7Cl1S6BghDUWQ==
+  dependencies:
+    "@openreplay/network-proxy" "^1.2.0"
+    error-stack-parser "^2.1.4"
+    error-stack-parser-es "^0.1.5"
+    fflate "^0.8.2"
+    web-vitals "^4.2.4"
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz"
@@ -5431,7 +5447,12 @@ error-ex@^1.3.1:
   dependencies:
     is-arrayish "^0.2.1"
 
-error-stack-parser@^2.0.6:
+error-stack-parser-es@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/error-stack-parser-es/-/error-stack-parser-es-0.1.5.tgz#15b50b67bea4b6ed6596976ee07c7867ae25bb1c"
+  integrity sha512-xHku1X40RO+fO8yJ8Wh2f2rZWVjqyhb1zgq1yZ8aZRQkv6OOKhKWRUaht3eSCUbAOBaKIgM+ykwFLE+QUxgGeg==
+
+error-stack-parser@^2.0.6, error-stack-parser@^2.1.4:
   version "2.1.4"
   resolved "https://registry.npmjs.org/error-stack-parser/-/error-stack-parser-2.1.4.tgz"
   integrity sha512-Sk5V6wVazPhq5MhpO+AUxJn5x7XSXGl1R93Vn7i+zS15KDVxQijejNCrz8340/2bgLBjR9GtEG8ZVKONDjcqGQ==
@@ -6088,6 +6109,11 @@ fb-watchman@^2.0.0:
   integrity sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==
   dependencies:
     bser "2.1.1"
+
+fflate@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.8.2.tgz#fc8631f5347812ad6028bbe4a2308b2792aa1dea"
+  integrity sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==
 
 file-entry-cache@^6.0.1:
   version "6.0.1"
@@ -11297,6 +11323,11 @@ web-vitals@^2.1.4:
   version "2.1.4"
   resolved "https://registry.npmjs.org/web-vitals/-/web-vitals-2.1.4.tgz"
   integrity sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==
+
+web-vitals@^4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-4.2.4.tgz#1d20bc8590a37769bd0902b289550936069184b7"
+  integrity sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==
 
 webidl-conversions@^4.0.2:
   version "4.0.2"

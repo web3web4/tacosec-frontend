@@ -10,6 +10,7 @@
     "@mui/x-date-pickers": "^8.11.0",
     "@nucypher/taco": "^0.6.0",
     "@nucypher/taco-auth": "^0.2.0",
+    "@openreplay/tracker": "^16.4.8",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
