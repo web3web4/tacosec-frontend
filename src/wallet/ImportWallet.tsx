@@ -1,6 +1,7 @@
 import CryptoJS from "crypto-js";
 import { MetroSwal } from "../utils/metroSwal";
 import { ethers } from "ethers";
+import { promptPasswordWithSaveOption } from "../hooks/walletDialogs";
 
 const SALT = process.env.REACT_APP_TG_SECRET_SALT || "default_salt";
 
@@ -16,16 +17,8 @@ export const importWalletFlow = async (
     return null;
   }
   
-  const { value: password, isConfirmed } = await MetroSwal.fire({
-    title: "Set Password",
-    input: "password",
-    inputLabel: "Enter a strong password to encrypt your wallet",
-    inputPlaceholder: "Your password",
-    inputAttributes: { autocapitalize: "off", autocorrect: "off" },
-    showCancelButton: false,
-    allowOutsideClick: false,
-    allowEscapeKey: false
-  });
+  // Use the new merged password dialog
+  const { isConfirmed, value: password, savePassword } = await promptPasswordWithSaveOption();
   
   if (!isConfirmed || !password) return null;
 
@@ -34,7 +27,7 @@ export const importWalletFlow = async (
 
   localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
   localStorage.setItem(`seedBackupDone-${identifier}`, "true");
-  localStorage.setItem("savePasswordInBackend", "false");
+  localStorage.setItem("savePasswordInBackend", savePassword.toString());
   
   const savedEncrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
   console.log("Verification - Data saved to localStorage:", savedEncrypted ? "Success" : "Failed"); // إضافة للتصحيح

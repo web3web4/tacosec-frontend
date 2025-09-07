@@ -12,6 +12,7 @@ import { storageEncryptedData } from "../../apiService";
 import { parseTelegramInitData } from "../../utils/tools";
 import useAddData from "../../hooks/useAddData";
 import "./AddData.css";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -42,6 +43,11 @@ const AddData: React.FC = () => {
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [hours, setHours] = useState<number>(0);
+  const [months, setMonths] = useState<number>(0);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -56,14 +62,10 @@ const AddData: React.FC = () => {
   }
 
   const encryptMessage = async () => {
-    if (!provider) {
-      return;
-    }
+    if (!provider) return;
 
-    if(!checkEncrypting()){
-      return;
-    }
-    
+    if(!checkEncrypting()) return;
+
     setEncrypting(true);
     try {
       if (!signer) {
@@ -71,29 +73,70 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let usernames: string = "";
-      usernames = userData?.username.toLowerCase()!;
+      let usernames: string = userData?.username.toLowerCase()!;
       shareList
         .filter((item) => item.data.username !== null)
-        .map((item) => (
-          usernames += "," + item.data.username!.toLowerCase()
-        ));
+        .forEach((item) => {
+          usernames += "," + item.data.username!.toLowerCase();
+        });
 
-      //condition
+      // JSON API condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
         parameters: {
-          TelegramUsernames : usernames,
+          TelegramUsernames: usernames,
           authorizationToken: ":authorizationToken"
         },
         query: '$.isValid',
         returnValueTest: { comparator: '==', value: true },
       });
 
+
+    // Calculate future timestamp based on time period inputs
+    const now = new Date();
+    const currentTimestamp = Math.floor(now.getTime() / 1000); // always UTC-based
+
+    // Convert all inputs to seconds
+    const secondsToAdd = Number(seconds) || 0;
+    const minutesToAdd = (Number(minutes) || 0) * 60;
+    const hoursToAdd = (Number(hours) || 0) * 60 * 60;
+    const monthsToAdd = (Number(months) || 0) * 30 * 24 * 60 * 60; // Approximate months as 30 days
+
+    // Final timestamp (no timezone offset added, blockchain uses UTC!)
+    let adjustedTimestamp = currentTimestamp + secondsToAdd + minutesToAdd + hoursToAdd + monthsToAdd;
+
+    // ✅ Safety check: prevent negative or unrealistic values
+    if (adjustedTimestamp < currentTimestamp) {
+      console.warn("Adjusted timestamp is earlier than current time. Resetting to current time.");
+      adjustedTimestamp = currentTimestamp;
+    }
+
+    const tenYearsLater = currentTimestamp + 10 * 365 * 24 * 60 * 60;
+    if (adjustedTimestamp > tenYearsLater) {
+      console.warn("Adjusted timestamp too far in the future. Resetting to 10 years later max.");
+      adjustedTimestamp = tenYearsLater;
+    }
+
+    // Build the TimeCondition
+    const timeCondition = new conditions.base.time.TimeCondition({
+      chain: 80002,
+      method: "blocktime",
+      returnValueTest: {
+        comparator: '>=',
+        value: adjustedTimestamp,
+      }
+    });
+
+      // Compound condition AND
+      const compoundCondition = conditions.compound.CompoundCondition.and([
+        checkUsersCondition,
+        timeCondition,
+      ]);
+
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        checkUsersCondition,
+        compoundCondition ,
         signer!
       );
 
@@ -118,12 +161,21 @@ const AddData: React.FC = () => {
           },
           initDataRaw!
         );
+
         if (res) {
           MetroSwal.success(
             "Success",
             "The data was successfully encrypted and securely stored"
           );
+          
           cleanFields();
+          // Reset time period inputs
+          setSeconds(0);
+          setMinutes(0);
+          setHours(0);
+          setMonths(0);
+          setShowMoreOptions(false);
+          
         }
       }
     } catch (e: any) {
@@ -153,17 +205,14 @@ const AddData: React.FC = () => {
                 target.src = defaultProfileImage;
               }}
             />
-            
-            <p>
-              {userProfile.error ? userProfile.error : userProfile.data.name}
-            </p>
-            {!userProfile.error && (
-              <button onClick={handleConfirmClick}>Confirmation</button>
-            )}
+            <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
+            {!userProfile.error && <button onClick={handleConfirmClick}>Confirmation</button>}
             <button onClick={() => closePopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
       )}
+      <div className="add-data-content-wrapper">
+
       <h2 className="page-title">Add New Data</h2>
       <label>Title</label>
       <input
@@ -177,10 +226,80 @@ const AddData: React.FC = () => {
       <label>Secret</label>
       <textarea
         placeholder="New Data ..."
-        className="input-field"
+        className="input-field-textarea"
+        rows={3}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
+  
+   
+      <div className="more-options-section">
+        <button 
+          className="more-options-toggle" 
+          onClick={() => setShowMoreOptions(!showMoreOptions)}
+        >
+          <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
+        </button>
+        
+        {showMoreOptions && (
+          <div className="more-options-content">
+            <p className="more-options-description">
+              Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
+            </p>
+            <div className="time-period-container">
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={seconds}
+                  onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Seconds</label>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={minutes}
+                  onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Minutes</label>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={hours}
+                  onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Hours</label>
+              </div>
+              <div className="time-input-group">
+                <input
+                  type="number"
+                  min="0"
+                  value={months}
+                  onChange={(e) => setMonths(parseInt(e.target.value) || 0)}
+                  className="time-input"
+                />
+                <label className="time-label">Months</label>
+              </div>
+            </div>
+            {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
+              <div className="time-summary">
+                Unlocks after: {months > 0 ? `${months} month${months !== 1 ? 's' : ''} ` : ''}
+                {hours > 0 ? `${hours} hour${hours !== 1 ? 's' : ''} ` : ''}
+                {minutes > 0 ? `${minutes} minute${minutes !== 1 ? 's' : ''} ` : ''}
+                {seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : ''}
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
+
 
       {encrypting && (
         <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
@@ -275,6 +394,7 @@ const AddData: React.FC = () => {
       <button className="save-button" onClick={encryptMessage}>
         Save
       </button>
+      </div>
     </div>
   );
 };

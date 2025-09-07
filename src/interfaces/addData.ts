@@ -13,5 +13,6 @@ export interface DataPayload {
     value: string;
     sharedWith?: { username: string; invited?: boolean }[] | null;
     parent_secret_id?: string,// if it's a child
-    initData?: InitDataForBackend
+    initData?: InitDataForBackend,
+    expirationTime?: number // Unix timestamp for expiration
   }

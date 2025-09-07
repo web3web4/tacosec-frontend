@@ -26,9 +26,8 @@ import {
 } from "../localstorage/walletStorage";
 
 import {
-  promptPassword,
-  confirmSavePassword,
   showBackupReminder,
+  promptPasswordWithSaveOption,
 } from "../hooks/walletDialogs";
 
 import { WalletContextProps } from "../interfaces/wallet"
@@ -71,6 +70,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return null;
   }, [isWeb, addressweb, userData?.telegramId]);
 
+
   useEffect(() => {
     if (!identifier) return;
     const encrypted = getEncryptedSeed(identifier);
@@ -81,41 +81,22 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   async function createWalletFlow() {
     if (isTelegram && !userData?.telegramId) return;
 
-
-    const { value: password, isConfirmed } = await MetroSwal.fire({
-      title: "Set Password",
-      input: "password",
-      inputLabel: "Enter a password to encrypt your wallet",
-      inputPlaceholder: "Your secure password",
-      inputAttributes: {
-        autocapitalize: "off",
-        autocorrect: "off",
-      },
-      showCancelButton: false,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-
+    // Use the new merged password dialog
+    const { isConfirmed, value: password, savePassword } = await promptPasswordWithSaveOption();
+    
     if (!isConfirmed || !password) {
-      MetroSwal.fire({
-        icon: 'warning',
-        title: 'Cancelled',
-        text: 'Password is required to create your wallet.'
+      await MetroSwal.fire({
+        icon: "warning",
+        title: "Cancelled",
+        html: "Password is required to create your wallet.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
       });
-      return;
+      return createWalletFlow();
     }
 
-    const { isConfirmed: saveConfirmed } = await MetroSwal.fire({
-      title: "Save password",
-      text: "Do you want to save the wallet password on our servers?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No"
-    });
-
-
-    const saveToBackend = saveConfirmed;
+    // No need for separate confirmSavePassword call
+    const saveToBackend = savePassword;
     setSavedPasswordPreference(saveToBackend);
 
     const wallet = ethers.Wallet.createRandom();
@@ -228,6 +209,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
                 icon: 'success',
                 title: 'Success',
                 text: 'You can now unlock your wallet with your new password.'
+              }).then(() => {
+                window.location.reload();
               })
 
             }}

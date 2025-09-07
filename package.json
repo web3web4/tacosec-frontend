@@ -4,6 +4,10 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.2",
+    "@mui/x-date-pickers": "^8.11.0",
     "@nucypher/taco": "^0.6.0",
     "@nucypher/taco-auth": "^0.2.0",
     "@testing-library/dom": "^10.4.0",
@@ -17,6 +21,7 @@
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "crypto-js": "^4.2.0",
+    "date-fns": "^4.1.0",
     "ethers": "^5.7.2",
     "process": "^0.11.10",
     "react": "^19.1.0",

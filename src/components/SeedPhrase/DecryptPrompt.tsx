@@ -1,8 +1,38 @@
-import React from "react";
-import { MdLock, MdLockOpen } from "react-icons/md";
+import React, { useState, useEffect } from "react";
+import { MdLock, MdLockOpen, MdExpandMore, MdExpandLess, MdRestorePage } from "react-icons/md";
 import "./SeedPhrase.css";
-import MetroSwal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
+import { getPublicAddresses } from "../../apiService";
+import { MetroSwal } from "../../utils/metroSwal";
+
+// ------------------------------
+// 🔹 Helper function to retrieve the last secret
+// ------------------------------
+async function fetchLatestSecret(initDataRaw: string): Promise<string | null> {
+  const response = await getPublicAddresses(initDataRaw);
+  console.log("API Response:", response);
+
+  if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+    // Filter elements containing secret
+    const withSecrets = response.data.filter(
+      (item: { secret?: string }) => !!item.secret
+    );
+
+    if (withSecrets.length > 0) {
+      // Sort them by most recent
+      const sortedAddresses = withSecrets.sort(
+        (a: { createdAt: string }, b: { createdAt: string }) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      const latestAddress = sortedAddresses[0];
+      console.log("Latest address with secret:", latestAddress);
+      return latestAddress.secret!;
+    }
+  }
+
+  return null;
+}
 
 type Props = {
   password: string;
@@ -10,7 +40,7 @@ type Props = {
   onChange: (val: string) => void;
   onSubmit: () => void;
   onForgotPassword: () => void;
-  onHidePrompt?: (show?: boolean) => void; // Updated to accept a boolean parameter
+  onHidePrompt?: (show?: boolean) => void;
 };
 
 export const DecryptPrompt = ({
@@ -21,47 +51,53 @@ export const DecryptPrompt = ({
   onForgotPassword,
   onHidePrompt,
 }: Props) => {
-  const { userData } = useUser();
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [canRestoreFromServer, setCanRestoreFromServer] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreError, setRestoreError] = useState("");
+  const { initDataRaw } = useUser();
 
-  const handleClearData = () => {
-    // Hide the decrypt prompt when Clear Data is clicked
-    if (onHidePrompt) {
-      onHidePrompt(false); // Explicitly hide the prompt
-    }
-    
-    MetroSwal.fire({
-      icon: "warning",
-      title: "Warning",
-      html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
-      confirmButtonText: "OK",
-      showCancelButton: true,
-      cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Delete the specified localStorage items
-      Object.keys(localStorage).forEach((key) => {
-        if (
-          key.startsWith("seedBackupDone-") ||
-          key.startsWith("encryptedSeed-") ||
-          key === "savePasswordInBackend"
-        ) {
-          localStorage.removeItem(key);
-        }
-      });
-        
-        // Reload the page to reflect changes
-        window.location.reload();
-      } else {
-        // If Cancel is clicked, show the decrypt prompt again
-        onHidePrompt?.(false);
+  useEffect(() => {
+    const savePasswordInBackend = localStorage.getItem("savePasswordInBackend");
+    setCanRestoreFromServer(savePasswordInBackend === "true");
+  }, []);
+
+  // ------------------------------
+  // 🔹 Restore password button
+  // ------------------------------
+  const handleRestorePassword = async () => {
+    try {
+      setIsRestoring(true);
+      setRestoreError("");
+
+      if (!initDataRaw) {
+        setRestoreError("Authentication required");
+        return;
       }
-    });
+
+      const latestSecret = await fetchLatestSecret(initDataRaw);
+
+      if (latestSecret) {
+        onChange(latestSecret);
+        MetroSwal.fire("✅ Success", "Password restored successfully", "success");
+        //onSubmit();
+      } else {
+        setRestoreError("No password found");
+      }
+    } catch (error) {
+      setRestoreError(error instanceof Error ? error.message : "Failed to restore password");
+    } finally {
+      setIsRestoring(false);
+    }
   };
 
   return (
     <div className="popup-container-seed">
       <div className="popup-seed">
-        <h2><MdLock style={{marginRight: '8px', verticalAlign: 'middle'}} />Decrypt Your Wallet</h2>
+        <h2>
+          <MdLock style={{ marginRight: "8px", verticalAlign: "middle" }} />
+          Decrypt Your Wallet
+        </h2>
         <p>Enter your password to continue:</p>
         <input
           type="password"
@@ -70,12 +106,11 @@ export const DecryptPrompt = ({
           onChange={(e) => onChange(e.target.value)}
           className="input-field"
         />
-        {passwordError && (
-          <p style={{ color: "red", marginTop: 10 }}>{passwordError}</p>
-        )}
+        {passwordError && <p style={{ color: "red", marginTop: 10 }}>{passwordError}</p>}
         <div className="popup-actions">
           <button className="confirm-btn" onClick={onSubmit}>
-            <MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />UnLoack
+            <MdLockOpen style={{ marginRight: "4px", verticalAlign: "middle" }} />
+            Unlock
           </button>
 
           <p
@@ -91,20 +126,47 @@ export const DecryptPrompt = ({
           >
             Forgot password?
           </p>
-          
-          <p
-            className="clear-data"
-            onClick={handleClearData}
-            style={{
-              cursor: "pointer",
-              marginTop: 8,
-              color: "#f44336",
-              textAlign: "center",
-              textDecoration: "underline",
-            }}
-          >
-            Clear Data
-          </p>
+
+          {/* More options section */}
+          {canRestoreFromServer && (
+            <div style={{ marginTop: "15px", textAlign: "center" }}>
+              <div
+                onClick={() => setShowMoreOptions(!showMoreOptions)}
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#666",
+                }}
+              >
+                {showMoreOptions ? <MdExpandLess /> : <MdExpandMore />}
+                <span style={{ marginLeft: "5px" }}>More options</span>
+              </div>
+
+              {showMoreOptions && (
+                <div
+                  style={{
+                    marginTop: "15px",
+                    padding: "10px",
+                    border: "1px solid #eee",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <p style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
+                    You can restore password from server
+                  </p>
+                  {restoreError && (
+                    <p style={{ color: "red", marginTop: 10, fontSize: "12px" }}>{restoreError}</p>
+                  )}
+                  <button className="confirm-btn" onClick={handleRestorePassword} disabled={isRestoring}>
+                    <MdRestorePage style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                    {isRestoring ? "Restoring..." : "Restore Password"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

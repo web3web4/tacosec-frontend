@@ -182,6 +182,7 @@ export default function useAddData() {
     setMessage("");
     setName("");
   };
+  
 
   const checkEncrypting = () => {
     if (shareWith.trim() !== "") {
