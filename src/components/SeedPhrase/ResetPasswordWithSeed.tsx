@@ -1,12 +1,12 @@
-import React, { useState } from "react";
 import { MdRefresh, MdClose, MdLockReset, MdDeleteForever, MdExpandMore, MdExpandLess } from "react-icons/md";
-import { ethers } from "ethers";
-import { MetroSwal } from "../../utils/metroSwal";
-import { useUser } from "../../context/UserContext";
-import { getIdentifier } from "../../utils/walletIdentifiers";
-import { useWallet } from "../../wallet/walletContext";
+import { storagePublicKeyAndPassword } from "@/apiService";
+import { useWallet } from "@/wallet/walletContext";
+import { getIdentifier } from "@/utils";
+import { MetroSwal } from "@/utils";
+import { useUser } from "@/context";
+import { useState } from "react";
 import CryptoJS from "crypto-js";
-import { storagePublicKeyAndPassword } from "../../apiService";
+import { ethers } from "ethers";
 
 
 export const ResetPasswordWithSeed = ({

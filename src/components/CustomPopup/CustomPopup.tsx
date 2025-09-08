@@ -1,4 +1,4 @@
-import closeIcon from "../../assets/icons/close-icon.png";
+import { closeIcon } from "@/assets";
 import { ReactNode, useEffect } from "react";
 import "./CustomPopup.css";
 

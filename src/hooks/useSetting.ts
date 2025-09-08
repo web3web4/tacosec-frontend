@@ -1,9 +1,9 @@
+import { GetUserProfileDetailsResponse, initDataType } from "@/types/types";
+import { getUserProfileDetails, setPrivacyMode } from "@/apiService";
 import { useEffect, useState } from "react";
-import { getUserProfileDetails, setPrivacyMode } from "../apiService";
-import { useUser } from "../context/UserContext";
-import { GetUserProfileDetailsResponse, initDataType } from "../types/types";
+import { useUser } from "@/context";
+import { MetroSwal } from "@/utils";
 import Swal from "sweetalert2";
-import MetroSwal from "../utils/metroSwal";
 
 export default function useSetting() {
   const { userData, initDataRaw, setUserData } = useUser();

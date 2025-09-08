@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
 import { MdLock, MdLockOpen, MdExpandMore, MdExpandLess, MdRestorePage } from "react-icons/md";
+import { getPublicAddresses } from "@/apiService";
+import { useState, useEffect } from "react";
+import { useUser } from "@/context";
+import { MetroSwal } from "@/utils";
 import "./SeedPhrase.css";
-import { useUser } from "../../context/UserContext";
-import { getPublicAddresses } from "../../apiService";
-import { MetroSwal } from "../../utils/metroSwal";
 
 // ------------------------------
 // 🔹 Helper function to retrieve the last secret

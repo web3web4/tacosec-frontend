@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Logo } from "@/assets";
 import "./Loading.css";
-import Logo from "../../assets/icons/Logo.png";
 
 const Loading: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);

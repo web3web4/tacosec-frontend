@@ -1,7 +1,7 @@
 import { FiHome, FiPlusSquare, FiSettings } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MetroSwal } from "../../utils/metroSwal";
-import { useNavigationGuard } from "../../context/NavigationGuardContext";
+import { useNavigationGuard } from "@/context";
+import { MetroSwal } from "@/utils";
 import "./BottomNav.css";
 
 export default function BottomNav() {

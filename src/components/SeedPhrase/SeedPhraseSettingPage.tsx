@@ -1,7 +1,7 @@
+import { MdSecurity, MdCheck, MdClose } from "react-icons/md";
+import { FaCopy } from "react-icons/fa";
 import { useState } from "react";
 import "./SeedPhrase.css";
-import { FaCopy } from "react-icons/fa";
-import { MdSecurity, MdCheck, MdClose } from "react-icons/md";
 
 export function SeedPharseSettingPage({
   mnemonic,

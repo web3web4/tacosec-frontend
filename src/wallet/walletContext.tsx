@@ -1,37 +1,23 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useMemo,
-} from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
+import { loginUserWeb, storagePublicKeyAndPassword } from "@/apiService";
+import { DecryptPrompt, ResetPasswordWithSeed } from "@/components";
+import { encryptSeed, restoreWallet } from "@/utils";
+import { useUser } from "@/context";
 import { ethers } from "ethers";
-import { loginUserWeb, storagePublicKeyAndPassword } from "../apiService";
-import { useUser } from "../context/UserContext";
-import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
-import { ResetPasswordWithSeed } from "../components/SeedPhrase/ResetPasswordWithSeed";
-
-import {
-  encryptSeed,
-  restoreWallet,
-} from "../utils/walletUtils";
-
 import {
   getEncryptedSeed,
   saveEncryptedSeed,
   setSeedBackupDone,
   setSavedPasswordPreference,
   findAddressInStorage,
-} from "../localstorage/walletStorage";
-
+} from "@/localstorage/walletStorage";
 import {
   showBackupReminder,
   promptPasswordWithSaveOption,
-} from "../hooks/walletDialogs";
+} from "@/hooks/walletDialogs";
 
-import { WalletContextProps } from "../interfaces/wallet"
-import MetroSwal from "../utils/metroSwal";
+import { WalletContextProps } from "@/interfaces/wallet"
+import { MetroSwal } from "@/utils";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 

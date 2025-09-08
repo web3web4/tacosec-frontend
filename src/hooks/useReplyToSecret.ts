@@ -1,14 +1,12 @@
-import { useWallet } from "../wallet/walletContext";
-import useTaco from "./useTaco";
-import { conditions } from "@nucypher/taco";
-import { toHexString } from "@nucypher/shared";
-import { parseTelegramInitData } from "../utils/tools";
-import { storageEncryptedData } from "../apiService";
-import { useUser } from "../context/UserContext";
+import { conditions, toHexString } from "@nucypher/taco";
+import { storageEncryptedData } from "@/apiService";
+import { useWallet } from "@/wallet/walletContext";
+import { SelectedSecretType } from "@/types/types";
+import { parseTelegramInitData } from "@/utils";
+import { useUser, useHome } from "@/context";
+import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
-import { SelectedSecretType } from "../types/types";
 import { v4 as uuidv4 } from 'uuid';
-import { useHome } from "../context/HomeContext";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;

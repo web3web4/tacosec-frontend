@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./SeedPhrase.css";
 import { FaCopy } from "react-icons/fa";
 import { MdSecurity, MdCheck } from "react-icons/md";
+import "./SeedPhrase.css";
 
 export function SeedBackupPopup({
   mnemonic,

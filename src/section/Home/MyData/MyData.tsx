@@ -1,13 +1,12 @@
-import defaultProfileImage from "../../../assets/images/no-User.png"
-import { useEffect, useRef, useState } from "react";
-import ChildrenSection from "../ChildrenSection/ChildrenSection";
-import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
-import useReplyToSecret from "../../../hooks/useReplyToSecret";
-import { formatDate } from "../../../utils/tools";
-import { useHome } from "../../../context/HomeContext";
-import viewIcon from "../../../assets/icons/show-icon.png";
-import "../../../components/SeedPhrase/SeedPhrase.css";
-import { useWallet } from "../../../wallet/walletContext";
+import { useWallet } from "@/wallet/walletContext";
+import { noUserImage, showIcon } from "@/assets";
+import { useHome } from "@/context/HomeContext";
+import { useEffect,  useState } from "react";
+import { ChildrenSection } from "@/section";
+import { DropdownMenu } from "@/components";
+import { useReplyToSecret } from "@/hooks";
+import { formatDate } from "@/utils";
+import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function MyData() {
     const { 
@@ -137,7 +136,7 @@ export default function MyData() {
                       {item.sharedWith.length > 0 && (
                         <div className="secret-view-section">
                           <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, item.id)}>
-                            <img src={viewIcon} alt="view-icon" width={15} height={15}/>
+                            <img src={showIcon} alt="view-icon" width={15} height={15}/>
                           </button>
                           <span>
                             {secretViews[item.id] ? secretViews[item.id].totalViews : 0}
@@ -158,7 +157,7 @@ export default function MyData() {
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
                                   target.onerror = null;
-                                  target.src = defaultProfileImage;
+                                  target.src = noUserImage;
                                 }}
                               />
                               <span>{user.name}</span>

@@ -1,4 +1,4 @@
-import { MetroSwal } from "../../utils/metroSwal";
+import { MetroSwal } from "@/utils";
 
 type PromptOptions = {
   onCreate: () => void;

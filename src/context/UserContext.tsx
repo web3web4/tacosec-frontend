@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { DirectLinkData, initDataType, TabType } from "../types/types";
-import { signupUser } from "../apiService";
-import { MetroSwal } from "../utils/metroSwal";
-import { detectAuthMethod } from "../hooks/useContextHelper";
+import { DirectLinkData, initDataType, TabType } from "@/types/types";
+import { detectAuthMethod } from "@/hooks/useContextHelper";
+import { signupUser } from "@/apiService";
+import { MetroSwal } from "@/utils";
 
 
 interface UserContextType {

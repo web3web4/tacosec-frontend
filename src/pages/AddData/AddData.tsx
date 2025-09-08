@@ -1,18 +1,15 @@
-import React, { useState } from "react";
-import CustomPopup from "../../components/CustomPopup/CustomPopup";
-import defaultProfileImage from "../../assets/images/no-User.png";
-import availableIcon from "../../assets/icons/accept.png";
-import DeleteIcon from "../../assets/icons/delete-icon.png";
-import useTaco from "../../hooks/useTaco";
-import { useWallet } from "../../wallet/walletContext";
-import { conditions, toHexString } from "@nucypher/taco";
-import { MetroSwal } from "../../utils/metroSwal";
-import { useUser } from "../../context/UserContext";
-import { storageEncryptedData } from "../../apiService";
-import { parseTelegramInitData } from "../../utils/tools";
-import useAddData from "../../hooks/useAddData";
-import "./AddData.css";
+import { noUserImage, acceptIcon, deleteIcon } from "@/assets";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { conditions, toHexString } from "@nucypher/taco";
+import { storageEncryptedData } from "@/apiService";
+import { useWallet } from "@/wallet/walletContext";
+import { parseTelegramInitData } from "@/utils";
+import { MetroSwal } from "@/utils/metroSwal";
+import { useAddData, useTaco} from "@/hooks";
+import { CustomPopup } from "@/components";
+import React, { useState } from "react";
+import { useUser } from "@/context";
+import "./AddData.css";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -202,7 +199,7 @@ const AddData: React.FC = () => {
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = defaultProfileImage;
+                target.src = noUserImage;
               }}
             />
             <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
@@ -374,7 +371,7 @@ const AddData: React.FC = () => {
             <div key={i}>- {user.data.name}</div>
               <div className="user-content-buttons">
                 { user.data.invited ? 
-                (<img src={availableIcon} alt="available icon" width={20} height={20}/>) 
+                (<img src={acceptIcon} alt="available icon" width={20} height={20}/>) 
                 : 
                 (<a
                 href={`https://t.me/${user.data.username}?text=${encodeURIComponent(`I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`)}`}
@@ -383,7 +380,7 @@ const AddData: React.FC = () => {
                   <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
                 </a>)}
                 <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username!)}>
-                  <img src={DeleteIcon} alt="delete icon" width={20} height={20} />
+                  <img src={deleteIcon} alt="delete icon" width={20} height={20} />
                 </div>  
               </div>
             </div>
