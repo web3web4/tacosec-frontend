@@ -174,12 +174,42 @@
   font-weight: 600;
 }
 
-.more-options-section {
+.time-condition-checkbox {
   margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.time-condition-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0;
+  cursor: pointer;
+}
+
+.time-condition-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--metro-green);
+  cursor: pointer;
+}
+
+.time-condition-description {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding-left: 1.5rem;
+}
+
+.more-options-section {
+  margin-top: 1rem;
   margin-bottom: 1.5rem;
   border: 2px solid var(--metro-green);
   border-radius: var(--border-radius);
-  overflow: visible;
+  overflow: hidden;
 }
 
 .more-options-toggle {

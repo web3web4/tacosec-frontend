@@ -45,6 +45,7 @@ const AddData: React.FC = () => {
   const [hours, setHours] = useState<number>(0);
   const [months, setMonths] = useState<number>(0);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [useTimeCondition, setUseTimeCondition] = useState(false);
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -124,11 +125,16 @@ const AddData: React.FC = () => {
       }
     });
 
-      // Compound condition AND
-      const compoundCondition = conditions.compound.CompoundCondition.and([
-        checkUsersCondition,
-        timeCondition,
-      ]);
+    let compoundCondition;
+      if (useTimeCondition) {
+        compoundCondition = conditions.compound.CompoundCondition.and([
+          checkUsersCondition,
+          timeCondition,
+        ]);
+      } else {
+        compoundCondition = checkUsersCondition;
+      }
+
 
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
@@ -229,19 +235,29 @@ const AddData: React.FC = () => {
         onChange={(e) => setMessage(e.target.value)}
       />
   
-   
-      <div className="more-options-section">
-        <button 
-          className="more-options-toggle" 
-          onClick={() => setShowMoreOptions(!showMoreOptions)}
-        >
-          <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
-        </button>
-        
-        {showMoreOptions && (
-          <div className="more-options-content">
-            <p className="more-options-description">
-              Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
+      <div className="checkbox-time-condition">
+        <label>
+          <input
+            type="checkbox"
+            checked={useTimeCondition}
+            onChange={(e) => setUseTimeCondition(e.target.checked)}
+          />
+          Do you want to add a date/time condition to unlock this secret?
+        </label>
+      </div>
+      {useTimeCondition && (
+        <div className="more-options-section">
+          <button 
+            className="more-options-toggle" 
+            onClick={() => setShowMoreOptions(!showMoreOptions)}
+          >
+            <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
+          </button>
+          
+          {showMoreOptions && (
+            <div className="more-options-content">
+              <p className="more-options-description">
+                Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
             </p>
             <div className="time-period-container">
               <div className="time-input-group">
@@ -296,6 +312,7 @@ const AddData: React.FC = () => {
           </div>
         )}
       </div>
+      )}
 
 
       {encrypting && (
