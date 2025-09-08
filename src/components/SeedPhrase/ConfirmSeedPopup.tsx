@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import { MdSecurity, MdCheck, MdArrowBack } from "react-icons/md";
+import React, { useState } from "react";
 import "./SeedPhrase.css";
 
 interface ConfirmSeedPopupProps {

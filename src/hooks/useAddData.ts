@@ -1,15 +1,12 @@
+import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "@/apiService";
+import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "@/types/types";
 import { useCallback, useEffect, useState } from "react";
-import defaultProfileImage from "../assets/images/no-User.png";
-import userNotFoundImage from "../assets/images/user-not-found.svg";
-import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "../types/types";
-import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "../apiService";
-import { useUser } from "../context/UserContext";
-import { MetroSwal } from "../utils/metroSwal";
-import { useNavigationGuard } from "../context/NavigationGuardContext";
-import { debounce } from "../utils/tools";
+import { noUserImage, userNotFoundSvg } from "@/assets";
+import { useUser, useNavigationGuard } from "@/context";
+import { MetroSwal, debounce } from "@/utils";
 
 const initProfileData = {
-  img: { src: defaultProfileImage },
+  img: { src: noUserImage },
   name: "",
   username: "",
   invited: false,
@@ -50,7 +47,7 @@ export default function useAddData() {
 
       if (!response) {
         const profile = {
-          img: { src: userNotFoundImage },
+          img: { src: userNotFoundSvg },
           name: "",
           username: "",
           invited: false,
@@ -60,7 +57,7 @@ export default function useAddData() {
       }
       setUserProfile({
         data: {
-          img: { src: response.img ? response.img.src : defaultProfileImage },
+          img: { src: response.img ? response.img.src : noUserImage },
           name: response.name,
           username: response.username,
           invited: false,

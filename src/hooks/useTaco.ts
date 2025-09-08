@@ -11,7 +11,7 @@ import {
 } from '@nucypher/taco-auth';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
-import { useUser } from '../context/UserContext';
+import { useUser } from '@/context';
 
 export default function useTaco({
   ritualId,

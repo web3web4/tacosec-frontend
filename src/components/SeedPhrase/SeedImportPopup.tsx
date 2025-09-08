@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { MdDownload, MdClose, MdLockOpen } from "react-icons/md";
-import { MetroSwal } from "../../utils/metroSwal";
+import { MetroSwal } from "@/utils";
+import { useState } from "react";
 import "./SeedPhrase.css";
 
 export function SeedImportPopup({

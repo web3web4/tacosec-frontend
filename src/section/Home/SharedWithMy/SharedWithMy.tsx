@@ -1,13 +1,12 @@
-import defaultProfileImage from "../../../assets/images/no-User.png";
-import DropdownMenu from "../../../components/DropdownMenu/DropdownMenu";
-import { useEffect, useRef, useState } from "react";
-import useReplyToSecret from "../../../hooks/useReplyToSecret";
-import ChildrenSection from "../ChildrenSection/ChildrenSection";
-import { formatDate } from "../../../utils/tools";
-import { useHome } from "../../../context/HomeContext";
-import viewIcon from "../../../assets/icons/show-icon.png";
-import "../../../components/SeedPhrase/SeedPhrase.css";
-import { useWallet } from "../../../wallet/walletContext";
+import { useWallet } from "@/wallet/walletContext";
+import { noUserImage, showIcon } from "@/assets";
+import { ChildrenSection } from "@/section";
+import { useEffect, useState } from "react";
+import { DropdownMenu } from "@/components";
+import { useReplyToSecret } from "@/hooks";
+import { formatDate } from "@/utils";
+import { useHome } from "@/context";
+import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function SharedWithMy() {
   const { 
@@ -126,7 +125,7 @@ export default function SharedWithMy() {
                       </button>
                       <div className="secret-view-section">
                         <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, pass.id)}>
-                          <img src={viewIcon} alt="view-icon" width={15} height={15}/>
+                          <img src={showIcon} alt="view-icon" width={15} height={15}/>
                         </button>
                         <span>
                           {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}
@@ -145,7 +144,7 @@ export default function SharedWithMy() {
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.onerror = null;
-                                target.src = defaultProfileImage;
+                                target.src = noUserImage;
                               }}
                             />
                             <span>{item.sharedByDetails.name}</span>

@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useUser } from "../context/UserContext";
+import { ContactSupportProps, SupportData } from "@/types/types";
+import { sendContractSupport } from "@/apiService";
 import MetroSwal from "sweetalert2";
-import { ContactSupportProps, SupportData } from "../types/types";
-import { sendContractSupport } from "../apiService";
+import { useUser } from "@/context";
+import { useState } from "react";
 
 export default function UseContactSupport({ setShowSupportPopup }: ContactSupportProps) {
   const { initDataRaw } = useUser();

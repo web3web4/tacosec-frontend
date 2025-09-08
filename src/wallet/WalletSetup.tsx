@@ -1,17 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { ConfirmSeedPopup, DecryptPrompt, SeedImportPopup, ResetPasswordWithSeed, SeedBackupPopup } from "@/components";
+import { shouldShowBackup, getIdentifier, decryptMnemonic, handleWalletImport } from "@/utils";
+import { showInitialPrompt } from "@/components/Wallet/InitialPrompt";
+import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
+import { useUser } from "@/context";
 import Swal from "sweetalert2";
-import { SeedBackupPopup } from "../components/SeedPhrase/SeedPhrase";
-import { ConfirmSeedPopup } from "../components/SeedPhrase/ConfirmSeedPopup";
-import { DecryptPrompt } from "../components/SeedPhrase/DecryptPrompt";
-import { SeedImportPopup } from "../components/SeedPhrase/SeedImportPopup";
-import { ResetPasswordWithSeed } from "../components/SeedPhrase/ResetPasswordWithSeed";
-import { useUser } from "../context/UserContext";
-import { shouldShowBackup } from "../utils/walletBackup";
-import { getIdentifier } from "../utils/walletIdentifiers";
-import { decryptMnemonic } from "../utils/walletDecrypt";
-import { handleWalletImport } from "../utils/walletImport";
-import { showInitialPrompt } from "../components/Wallet/InitialPrompt";
 
 export default function WalletSetup() {
   const {

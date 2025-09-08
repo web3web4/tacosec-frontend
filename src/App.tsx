@@ -1,22 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { UserProvider, NavigationGuardProvider, HomeProvider } from "@/context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home";
-import AddData from "./pages/AddData/AddData";
-import Settings from "./pages/Settings/Settings";
-import BottomNav from "./components/BottomNav/BottomNav";
-import Loading from "./components/Loading/Loading";
-import { WalletProvider } from "./wallet/walletContext";
-import { UserProvider } from "./context/UserContext";
-import { NavigationGuardProvider } from "./context/NavigationGuardContext";
-import { HomeProvider } from "./context/HomeContext";
-import WalletSetup from "./wallet/WalletSetup";
 import Tracker , { SanitizeLevel } from '@openreplay/tracker';
-
+import { WalletProvider } from "@/wallet/walletContext";
+import { BottomNav, Loading } from "@/components";
+import { Home, AddData, Settings } from "@/pages";
+import WalletSetup from "@/wallet/WalletSetup";
+import { useState, useEffect } from "react";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
+  useEffect(() => { 
     const tracker = new Tracker({
       projectKey: "OBRRxhO5bKmUOOdoVd4Y",  
       obscureTextEmails: true,

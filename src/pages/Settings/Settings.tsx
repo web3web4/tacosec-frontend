@@ -1,20 +1,17 @@
-import useSetting from "../../hooks/useSetting";
-import defaultProfileImage from "../../assets/images/no-User.png";
-import "./Settings.css";
-import { useUser } from "../../context/UserContext";
-import { useWallet } from "../../wallet/walletContext";
-import { useState, useEffect } from "react";
-import { MetroSwal } from "../../utils/metroSwal";
-import { ethers } from "ethers";
-import { SeedPharseSettingPage } from "../../components/SeedPhrase/SeedPhraseSettingPage";
-import CryptoJS from "crypto-js";
-import { DecryptPrompt } from "../../components/SeedPhrase/DecryptPrompt";
-import { ResetPasswordWithSeed } from "../../components/SeedPhrase/ResetPasswordWithSeed";
-import CustomPopup from "../../components/CustomPopup/CustomPopup";
-import ContactSupport from "../../section/Setting/ContactSupport/ContactSupport";
-import "../../components/SeedPhrase/SeedPhrase.css";
-import { getIdentifier } from "../../utils/walletIdentifiers";
+import { SeedPharseSettingPage, DecryptPrompt, ResetPasswordWithSeed, CustomPopup } from "@/components";
+import { ContactSupport } from "@/section";
+import { noUserImage } from "@/assets";
+import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever } from "react-icons/md";
+import { useUser } from "@/context";
+import { useState, useEffect } from "react";
+import { getIdentifier } from "@/utils";
+import { useSetting } from "@/hooks";
+import { MetroSwal } from "@/utils";
+import CryptoJS from "crypto-js";
+import { ethers } from "ethers";
+import "../../components/SeedPhrase/SeedPhrase.css";
+import "./Settings.css";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup } = useSetting();
@@ -141,12 +138,12 @@ const submitDecryption = () => {
         <div className="profile-section">
           <div className="photo-preview">
             <img
-              src={profileImage || defaultProfileImage}
+              src={profileImage || noUserImage}
               alt="Profile"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.onerror = null;
-                target.src = defaultProfileImage;
+                target.src = noUserImage;
               }}
             />
           </div>

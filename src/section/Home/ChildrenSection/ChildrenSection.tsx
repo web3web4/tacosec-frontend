@@ -1,10 +1,10 @@
-import viewIcon from "../../../assets/icons/show-icon.png";
-import { useEffect, useRef, useState } from "react";
-import { ChildDataItem } from "../../../types/types";
-import { formatDate } from "../../../utils/tools";
+import { useWallet } from "@/wallet/walletContext";
+import { ChildDataItem } from "@/types/types";
+import { useEffect, useState } from "react";
+import { formatDate } from "@/utils";
+import { useHome } from "@/context";
+import { showIcon } from "@/assets";
 import "./ChildrenSection.css";
-import { useHome } from "../../../context/HomeContext";
-import { useWallet } from "../../../wallet/walletContext";
 
 interface ChildrenSectionProps {
   children: ChildDataItem[];
@@ -111,7 +111,7 @@ export default function ChildrenSection({
                   </button>
                   <div className="secret-view-section">
                     <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, child._id)}>
-                      <img src={viewIcon} alt="view-icon" width={15} height={15}/>
+                      <img src={showIcon} alt="view-icon" width={15} height={15}/>
                     </button>
                     <span>
                       {secretViews[child._id] ? secretViews[child._id].totalViews : 0}
