@@ -585,9 +585,9 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     const entries = await Promise.all(
       response.map(async (child) => {
         const views = await getSecretViews(initDataRaw!, child._id);
-        const hasMyView = views.viewDetails.some(sec => sec.username === userData?.username);
+        const hasMyView = views.viewDetails.some(sec => sec.username.toLowerCase() === userData?.username.toLowerCase());
         views.isNewSecret = !hasMyView;
-        if(child.username === userData?.username || userData?.privacyMode) views.isNewSecret = false;
+        if(child.username.toLowerCase() === userData?.username.toLowerCase() || userData?.privacyMode) views.isNewSecret = false;
         return [child._id, views] as const;
       })
     );
