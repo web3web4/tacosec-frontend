@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { loginUserWeb } from "../apiService";
-import { importWalletFlow } from "../wallet/ImportWallet";
+import { loginUserWeb } from "@/apiService";
+import { importWalletFlow } from "@/wallet/ImportWallet";
 
 type ImportParams = {
   importedMnemonic: string;

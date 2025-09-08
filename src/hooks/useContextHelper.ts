@@ -1,4 +1,4 @@
-import { AuthMethod } from "../types/types";
+import { AuthMethod } from "@/types/types";
 
 export function detectAuthMethod(): AuthMethod | null {
   if (typeof window === "undefined") return null;

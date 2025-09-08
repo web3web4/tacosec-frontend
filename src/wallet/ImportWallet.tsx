@@ -1,7 +1,7 @@
+import { promptPasswordWithSaveOption } from "@/hooks/walletDialogs";
+import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
-import { MetroSwal } from "../utils/metroSwal";
 import { ethers } from "ethers";
-import { promptPasswordWithSaveOption } from "../hooks/walletDialogs";
 
 const SALT = process.env.REACT_APP_TG_SECRET_SALT || "default_salt";
 

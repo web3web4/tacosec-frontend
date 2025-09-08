@@ -1,8 +1,8 @@
 "use server";
 
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews } from "./types/types";
-import { parseTelegramInitData } from "./utils/tools";
-import { DataPayload } from "./interfaces/addData";
+import { parseTelegramInitData } from "@/utils";
+import { DataPayload } from "@/interfaces/addData";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 

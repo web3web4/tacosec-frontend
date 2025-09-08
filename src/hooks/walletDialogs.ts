@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { MetroSwal } from "../utils/metroSwal";
+import { MetroSwal } from "@/utils";
 
 export async function promptPassword() {
   return await MetroSwal.fire({

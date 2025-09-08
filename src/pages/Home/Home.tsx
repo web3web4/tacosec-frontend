@@ -1,13 +1,11 @@
-import { useHome } from "../../context/HomeContext";
-import MyData from "../../section/Home/MyData/MyData";
-import SharedWithMy from "../../section/Home/SharedWithMy/SharedWithMy";
+import { MyData , SharedWithMy} from "@/section";
+import { useHome } from "@/context";
 import "./Home.css";
 
 
 const Home: React.FC = () => {
-    const { activeTab, isLoading, handleAddClick, handleSetActiveTabClick, isInit, provider, userData } = useHome();
+    const { activeTab, isLoading, handleSetActiveTabClick, isInit, provider } = useHome();
     
-  
   if (!isInit || !provider) {
     return <div>Loading...</div>;
   }

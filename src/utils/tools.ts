@@ -1,4 +1,4 @@
-import { TelegramUser } from "../types/types";
+import { TelegramUser } from "@/types/types";
 
 export function parseTelegramInitData(initData: string){
     const params = new URLSearchParams(initData);

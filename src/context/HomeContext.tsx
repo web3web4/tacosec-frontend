@@ -1,15 +1,15 @@
+import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
+import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "@/types/types";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret, setSecretView, getSecretViews } from "../apiService";
-import defaultProfileImage from "../assets/images/no-User.png";
-import { useUser } from "./UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "../types/types";
-import MetroSwal from "../utils/metroSwal";
-import { useWallet } from "../wallet/walletContext";
-import useTaco from "../hooks/useTaco";
+import { useWallet } from "@/wallet/walletContext";
 import { fromHexString } from "@nucypher/shared";
+import { MetroSwal, formatDate } from "@/utils";
 import { fromBytes } from "@nucypher/taco";
-import { formatDate } from "../utils/tools";
+import { noUserImage } from "@/assets";
+import { useUser } from "@/context";
+import { useTaco } from "@/hooks";
+
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -135,7 +135,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
               if (profile && (!profile.img || !profile.img.src || profile.img.src.trim() === "")) {
                 return {
                   ...profile,
-                  img: { src: defaultProfileImage },
+                  img: { src: noUserImage },
                 };
               }
   
@@ -200,7 +200,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   
         const profileWithDefaultImg = {
           ...profile,
-          img: profile.img ?? { src: defaultProfileImage},
+          img: profile.img ?? { src: noUserImage},
         };
   
         return {
@@ -585,9 +585,9 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     const entries = await Promise.all(
       response.map(async (child) => {
         const views = await getSecretViews(initDataRaw!, child._id);
-        const hasMyView = views.viewDetails.some(sec => sec.username === userData?.username);
+        const hasMyView = views.viewDetails.some(sec => sec.username.toLowerCase() === userData?.username.toLowerCase());
         views.isNewSecret = !hasMyView;
-        if(child.username === userData?.username || userData?.privacyMode) views.isNewSecret = false;
+        if(child.username.toLowerCase() === userData?.username.toLowerCase() || userData?.privacyMode) views.isNewSecret = false;
         return [child._id, views] as const;
       })
     );
@@ -677,7 +677,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
           ...viewer,
           img: profile && profile.img?.src?.trim()
             ? profile.img.src
-            : defaultProfileImage,
+            : noUserImage,
         };
       })
     );
@@ -694,7 +694,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
         <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
           <span style="display: flex; justify-content: space-between;font-size: 16px; color: #666;">
             <img id="viewer-img-${viewer.username}" style="border-radius: 50%" src=${
-              viewer.img || defaultProfileImage
+              viewer.img || noUserImage
             } width=35 height=35 />
           </span>
         </div>
@@ -817,7 +817,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
   
       updatedViewDetails.forEach((viewer, index) => {
         const imgEl = document.querySelector(`#viewer-img-${viewer.username}`) as HTMLImageElement;
-        if (imgEl) imgEl.src = viewer.img || defaultProfileImage;
+        if (imgEl) imgEl.src = viewer.img || noUserImage;
       });
     } catch (error) {
       console.error(error);
