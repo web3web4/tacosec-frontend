@@ -37,7 +37,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const tg = window.Telegram.WebApp;
       tg.ready();
       tg.expand();
-      const initData = tg.initData;
+      const initData = `query_id=AAGZF7ZmAAAAAJkXtmaMC9RV&user=%7B%22id%22%3A1723209625%2C%22first_name%22%3A%22%D8%AD%D8%B3%D9%8A%D9%86%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Houssine_A%22%2C%22language_code%22%3A%22ar%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FYWUllIMQmCsMQozU1JvCW2HdmyzGdqp4WuIqlW1fXJE.svg%22%7D&auth_date=1757325100&signature=CDexiWkajyhyJ_-oWjf_bGmePsbNqpureKEzB03eEXLJVLsUY1UkB-TSXRX4TUSTM_FpHHkCprOVthtZ0qc0Dg&hash=398af26e950c2a0ae498fb2c14d9d0a3b7e703789f492c62d53368534eaef988`;
       setInitDataRaw(initData);
       const response = await signupUser(initData);
       setUserData(response);
