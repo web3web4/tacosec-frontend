@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import DeleteIcon from "../../assets/icons/delete-icon.png";
 import useTaco from "../../hooks/useTaco";
 import { useWallet } from "../../wallet/walletContext";
-import { conditions, toHexString } from "@nucypher/taco";
+import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import Swal from "sweetalert2";
 import { useUser } from "../../context/UserContext";
 import { storageEncryptedData } from "../../apiService";
@@ -91,12 +91,15 @@ const AddData: React.FC = () => {
         .map((item) => (
           publicAddresses.push(item.address)
         ));
-      //condition
-      const checkUsersCondition =
-        new conditions.base.addressAllowlist.AddressAllowlistCondition({
-          userAddress: ':userAddress',
-          addresses: publicAddresses
-        });
+
+      // Create a context variable condition that checks if userAddress is in allowlist
+      const contextVariableCondition = new conditions.base.contextVariable.ContextVariableCondition({
+        contextVariable: ":userAddress",
+        returnValueTest: {
+          comparator: 'in',
+          value: publicAddresses,
+        },
+      });
       /*
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
@@ -111,7 +114,7 @@ const AddData: React.FC = () => {
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        checkUsersCondition,
+        contextVariableCondition,
         signer!
       );
 
