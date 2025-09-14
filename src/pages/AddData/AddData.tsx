@@ -46,6 +46,7 @@ const AddData: React.FC = () => {
   const [months, setMonths] = useState<number>(0);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [useTimeCondition, setUseTimeCondition] = useState(false);
+  const [timeConditionType, setTimeConditionType] = useState<'unlock' | 'expire'>('unlock');
   const { provider, signer } = useWallet();
   const { initDataRaw, userData } = useUser();
 
@@ -116,24 +117,37 @@ const AddData: React.FC = () => {
     }
 
     // Build the TimeCondition
-    const timeCondition = new conditions.base.time.TimeCondition({
-      chain: 80002,
-      method: "blocktime",
-      returnValueTest: {
-        comparator: '>=',
-        value: adjustedTimestamp,
-      }
-    });
-
     let compoundCondition;
-      if (useTimeCondition) {
-        compoundCondition = conditions.compound.CompoundCondition.and([
-          checkUsersCondition,
-          timeCondition,
-        ]);
+    if (useTimeCondition) {
+      let timeCondition;
+
+      if (timeConditionType === 'unlock') {
+        timeCondition = new conditions.base.time.TimeCondition({
+          chain: 80002,
+          method: "blocktime",
+          returnValueTest: {
+            comparator: '>=',
+            value: adjustedTimestamp,
+          }
+        });
       } else {
-        compoundCondition = checkUsersCondition;
+        timeCondition = new conditions.base.time.TimeCondition({
+          chain: 80002,
+          method: "blocktime",
+          returnValueTest: {
+            comparator: '<=',
+            value: adjustedTimestamp,
+          }
+        });
       }
+
+      compoundCondition = conditions.compound.CompoundCondition.and([
+        checkUsersCondition,
+        timeCondition,
+      ]);
+    } else {
+      compoundCondition = checkUsersCondition;
+    }
 
 
       console.log("Encrypting message...");
@@ -246,72 +260,85 @@ const AddData: React.FC = () => {
         </label>
       </div>
       {useTimeCondition && (
-        <div className="more-options-section">
-          <button 
-            className="more-options-toggle" 
-            onClick={() => setShowMoreOptions(!showMoreOptions)}
-          >
-            <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
-          </button>
-          
-          {showMoreOptions && (
-            <div className="more-options-content">
-              <p className="more-options-description">
-                Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
-            </p>
-            <div className="time-period-container">
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  min="0"
-                  value={seconds}
-                  onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
-                  className="time-input"
-                />
-                <label className="time-label">Seconds</label>
-              </div>
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  min="0"
-                  value={minutes}
-                  onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                  className="time-input"
-                />
-                <label className="time-label">Minutes</label>
-              </div>
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  min="0"
-                  value={hours}
-                  onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                  className="time-input"
-                />
-                <label className="time-label">Hours</label>
-              </div>
-              <div className="time-input-group">
-                <input
-                  type="number"
-                  min="0"
-                  value={months}
-                  onChange={(e) => setMonths(parseInt(e.target.value) || 0)}
-                  className="time-input"
-                />
-                <label className="time-label">Months</label>
-              </div>
-            </div>
-            {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
-              <div className="time-summary">
-                Unlocks after: {months > 0 ? `${months} month${months !== 1 ? 's' : ''} ` : ''}
-                {hours > 0 ? `${hours} hour${hours !== 1 ? 's' : ''} ` : ''}
-                {minutes > 0 ? `${minutes} minute${minutes !== 1 ? 's' : ''} ` : ''}
-                {seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : ''}
-              </div>
-            ) : null}
-          </div>
-        )}
-      </div>
+          <><div className="time-condition-type">
+            <label>
+              <input
+                type="radio"
+                value="unlock"
+                checked={timeConditionType === 'unlock'}
+                onChange={() => setTimeConditionType('unlock')} />
+              Unlock after specific time
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="expire"
+                checked={timeConditionType === 'expire'}
+                onChange={() => setTimeConditionType('expire')} />
+              Expire after specific time
+            </label>
+          </div><div className="more-options-section">
+              <button
+                className="more-options-toggle"
+                onClick={() => setShowMoreOptions(!showMoreOptions)}
+              >
+                <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
+              </button>
+
+              {showMoreOptions && (
+                <div className="more-options-content">
+                  <p className="more-options-description">
+                    Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
+                  </p>
+                  <div className="time-period-container">
+                    <div className="time-input-group">
+                      <input
+                        type="number"
+                        min="0"
+                        value={seconds}
+                        onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
+                        className="time-input" />
+                      <label className="time-label">Seconds</label>
+                    </div>
+                    <div className="time-input-group">
+                      <input
+                        type="number"
+                        min="0"
+                        value={minutes}
+                        onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
+                        className="time-input" />
+                      <label className="time-label">Minutes</label>
+                    </div>
+                    <div className="time-input-group">
+                      <input
+                        type="number"
+                        min="0"
+                        value={hours}
+                        onChange={(e) => setHours(parseInt(e.target.value) || 0)}
+                        className="time-input" />
+                      <label className="time-label">Hours</label>
+                    </div>
+                    <div className="time-input-group">
+                      <input
+                        type="number"
+                        min="0"
+                        value={months}
+                        onChange={(e) => setMonths(parseInt(e.target.value) || 0)}
+                        className="time-input" />
+                      <label className="time-label">Months</label>
+                    </div>
+                  </div>
+                  {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
+                    <div className="time-summary">
+                      Unlocks after: {months > 0 ? `${months} month${months !== 1 ? 's' : ''} ` : ''}
+                      {hours > 0 ? `${hours} hour${hours !== 1 ? 's' : ''} ` : ''}
+                      {minutes > 0 ? `${minutes} minute${minutes !== 1 ? 's' : ''} ` : ''}
+                      {seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : ''}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div></>
       )}
 
 
