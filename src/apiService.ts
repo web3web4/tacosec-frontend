@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse } from "./types/types";
 import { parseTelegramInitData } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 
@@ -67,7 +67,7 @@ export async function loginUserWeb(publicAddress:string, signature:string): Prom
   return authData;
 }
 
-export async function GetMyData(initData?: string): Promise<any> {
+export async function GetMyData(initData?: string): Promise<Secret[]> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
@@ -99,7 +99,7 @@ export async function GetMyData(initData?: string): Promise<any> {
 export async function storageEncryptedData(
   data: DataPayload,
   initData?: string
-): Promise<any> {
+): Promise<unknown> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
@@ -157,7 +157,7 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   return res;
 }
 
-export async function getDataSharedWithMy(initData?: string): Promise<any> {
+export async function getDataSharedWithMy(initData?: string): Promise<SharedWithMeResponse> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
@@ -182,7 +182,7 @@ export async function getDataSharedWithMy(initData?: string): Promise<any> {
   return await response.json();
 }
 
-export async function checkIfUserAvailable(initData: string, username: string): Promise<any> {
+export async function checkIfUserAvailable(initData: string, username: string): Promise<boolean> {
   const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
     method: "GET",
     headers: {
@@ -200,9 +200,9 @@ export async function checkIfUserAvailable(initData: string, username: string): 
 
 
 export async function storagePublicKeyAndPassword(
-  data: any,
+  data: StoragePublicKeyData,
   initData: string
-): Promise<any> {
+): Promise<void> {
     const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
@@ -224,7 +224,7 @@ export async function storagePublicKeyAndPassword(
   return await response.json();
 }
 
-export async function hidePassword(initData: string, id: string): Promise<any> {
+export async function hidePassword(initData: string, id: string): Promise<void> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
@@ -243,7 +243,7 @@ export async function hidePassword(initData: string, id: string): Promise<any> {
   return await response.json();
 }
 
-export async function deletePassword(initData: string, id: string): Promise<any> {
+export async function deletePassword(initData: string, id: string): Promise<void> {
   const headers = getAuthHeaders(initData);
 
   // If no authentication method is available, throw an error
@@ -279,7 +279,7 @@ export async function getAutoCompleteUsername(initData: string, username: string
   return result.data;
 }
 
-export async function reportUser(initData: string, report: Report): Promise<any> {
+export async function reportUser(initData: string, report: Report): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/reports`, {
     method: "POST",
     headers: {
@@ -295,7 +295,7 @@ export async function reportUser(initData: string, report: Report): Promise<any>
   }
 }
 
-export async function sendContractSupport(initData: string, supportData: SupportData): Promise<any> {
+export async function sendContractSupport(initData: string, supportData: SupportData): Promise<ContractSupportResponse> {
   const response = await fetch(`${API_BASE_URL}/telegram/send-to-specific-admin`, {
     method: "POST",
     headers: {
@@ -314,7 +314,7 @@ export async function sendContractSupport(initData: string, supportData: Support
 }
 
 export async function getChildrenForSecret(initData: string, parentId: string): Promise<ChildDataItem[]  | { statusCode: number; message: string }> {
-  const response: any = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
+  const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -326,7 +326,7 @@ export async function getChildrenForSecret(initData: string, parentId: string): 
   return result.passwords ?? result;;
 }
 
-export async function setSecretView(initData: string, id: string): Promise<any> {
+export async function setSecretView(initData: string, id: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
     method: "PATCH",
     headers: {
@@ -358,7 +358,7 @@ export async function getSecretViews(initData: string, id: string): Promise<Secr
   return result
 }
 
-export async function setPrivacyMode(initData: string, value: boolean): Promise<any> {
+export async function setPrivacyMode(initData: string, value: boolean): Promise<void> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
@@ -376,7 +376,7 @@ export async function setPrivacyMode(initData: string, value: boolean): Promise<
   }
 }
 
-export async function getPublicAddresses(initData: string): Promise<any> {
+export async function getPublicAddresses(initData: string): Promise<PublicKeysResponse> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
