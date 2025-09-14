@@ -1,4 +1,4 @@
-type ReportHandler = (metric: any) => void;
+type ReportHandler = () => void;
 
 const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
   if (onPerfEntry && onPerfEntry instanceof Function) {

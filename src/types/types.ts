@@ -149,3 +149,46 @@ export interface ViewDetails{
   img?: string, // This property not get from backend, we used for stored img from another endpoint 
   type?: string // Just For Help My 
 }
+
+export interface Secret {
+  _id: string;
+  key: string;
+  value: string;
+  description: string;
+  sharedWith: ShareWith[];
+  updatedAt: string;
+  createdAt: string;
+  hidden: boolean;
+  reports: unknown[];
+  viewsCount: number;
+}
+
+export interface SharedWithMeResponse {
+  sharedWithMe: SharedWithMyDataType[];
+  userCount: number;
+}
+
+export interface StoragePublicKeyData {
+  publicKey: string,
+  secret?: string
+}
+
+export interface ContractSupportResponse {
+  success: string,
+  adminTelegramId: string
+}
+
+export interface PublicKeysResponse {
+  success: boolean;
+  data: PublicKeyRecord[];
+  total: number;
+}
+
+export interface PublicKeyRecord {
+  _id: string;
+  publicKey: string;
+  secret?: string;
+  userTelegramId: string;
+  createdAt: string;
+  updatedAt: string;
+}

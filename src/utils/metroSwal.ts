@@ -1,4 +1,4 @@
-import Swal, { SweetAlertOptions } from 'sweetalert2';
+import Swal, { SweetAlertIcon, SweetAlertOptions } from 'sweetalert2';
 
 // Metro UI SweetAlert2 configuration
 const metroSwalConfig = {
@@ -16,7 +16,7 @@ const metroSwalConfig = {
 
 // Metro UI SweetAlert2 wrapper functions
 export const MetroSwal = {
-  fire: (options: SweetAlertOptions | string, text?: string, icon?: any) => {
+  fire: (options: SweetAlertOptions | string, text?: string, icon?: SweetAlertIcon | undefined) => {
     if (typeof options === 'string') {
       // Handle legacy string format
       const config: SweetAlertOptions = {

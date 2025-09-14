@@ -195,13 +195,13 @@ const AddData: React.FC = () => {
           
         }
       }
-    } catch (e: any) {
-      MetroSwal.fire({
+    } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : 'Unexpected error';
+        MetroSwal.fire({
         icon: "error",
         title: "Error",
-        text: e.message as string,
+        text: message,
       });
-      console.log(e);
     }
     setEncrypting(false);
   };

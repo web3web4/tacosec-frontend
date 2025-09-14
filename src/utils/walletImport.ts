@@ -1,11 +1,12 @@
 import { ethers } from "ethers";
 import { loginUserWeb } from "@/apiService";
 import { importWalletFlow } from "@/wallet/ImportWallet";
+import { initDataType } from "@/types/types";
 
 type ImportParams = {
   importedMnemonic: string;
   isBrowser: boolean;
-  userData: any;
+  userData: initDataType | null;
   address: string | null;
   addressweb: string | null;
   provider: ethers.providers.Provider;
@@ -34,7 +35,7 @@ export async function handleWalletImport({
   onError,
 }: ImportParams) {
   try {
-    let identifier = isBrowser ? (address || addressweb) : userData?.telegramId;
+    let identifier = isBrowser ? (address || addressweb) : userData?.telegramId!;
 
     if (!identifier && isBrowser) {
       identifier = "web-" + Math.random().toString(36).substring(2, 15);
