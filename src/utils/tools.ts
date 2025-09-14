@@ -23,12 +23,12 @@ export function parseTelegramInitData(initData: string){
     };
   }
 
-  export const debounce = function (
-    functionToDebounce: (...args: any[]) => any,
+  export const debounce = <TArgs extends unknown[]>(
+    functionToDebounce: (...args: TArgs) => void,
     delay: number
-  ) {
-    let timeout: NodeJS.Timeout;
-    return function (...args: any[]) {
+  ) => {
+    let timeout: ReturnType<typeof setTimeout>;
+    return (...args: TArgs): void => {
       clearTimeout(timeout);
       timeout = setTimeout(() => functionToDebounce(...args), delay);
     };

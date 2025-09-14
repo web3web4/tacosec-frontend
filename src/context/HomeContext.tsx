@@ -1,5 +1,5 @@
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, reportUser, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
-import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails } from "@/types/types";
+import { DataItem, Report, ReportsResponse, ReportType, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails, Secret } from "@/types/types";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
@@ -9,6 +9,8 @@ import { fromBytes } from "@nucypher/taco";
 import { noUserImage } from "@/assets";
 import { useUser } from "@/context";
 import { useTaco } from "@/hooks";
+import { ethers } from "ethers";
+import { SweetAlertOptions } from "sweetalert2";
 
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
@@ -25,12 +27,11 @@ interface HomeContextType {
   handleReportUser: (secretId: string, reportedUsername: string) => Promise<void>;
   handleViewReportsForSecret: (data: ReportsResponse[], secretKey: string) => Promise<void>;
   triggerGetChildrenForSecret: (id: string) => void;
-  handleGetSecretViews: (e: any, id: string) => void;
+  handleGetSecretViews: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => void;
   handleDirectLink: () => void;
   handleDirectLinkForChildren: () => void;
   isInit: boolean;
-  provider: any;
-  userData: any;
+  provider: ethers.providers.Provider | undefined;
   decrypting: boolean;
   decryptedMessages: Record<string, string>;
   decryptErrors: Record<string, string>;
@@ -89,8 +90,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     try {
       // Pass initDataRaw which might be null for web login
       setIsLoading(true);
-      const response = await GetMyData(initDataRaw || undefined);
-      const data: DataItem[] = response.map((item: any) => ({
+      const response: Secret[] = await GetMyData(initDataRaw || undefined);
+      const data: DataItem[] = response.map((item: Secret) => ({
         id: item._id, 
         key: item.key,
         value: item.value,
@@ -232,7 +233,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   }, [location.pathname]); 
  
   const handleDelete = async (id: string, isHasSharedWith: boolean) => {
-    const MetroSwalOptions: any = {
+    const MetroSwalOptions: string | SweetAlertOptions = {
       title: 'Do you want to delete this Secret?',
       showCancelButton: true,
       confirmButtonText: 'Delete',
@@ -683,7 +684,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     );
   };
 
-  const renderViewer = (viewer: any) => {
+  const renderViewer = (viewer: ViewDetails) => {
     const formattedDate =
       viewer.type === "viewed" && viewer.viewedAt
         ? formatDate(viewer.viewedAt)
@@ -712,7 +713,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     `;
   };
 
-  const handleGetSecretViews = async (e: any, id: string) => {
+  const handleGetSecretViews = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
     e.stopPropagation();
     const data = secretViews[id];
     
@@ -815,7 +816,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
       if (!data) return;
       const updatedViewDetails = await enrichViewDetailsWithImages(sortedViewDetails);
   
-      updatedViewDetails.forEach((viewer, index) => {
+      updatedViewDetails.forEach((viewer) => {
         const imgEl = document.querySelector(`#viewer-img-${viewer.username}`) as HTMLImageElement;
         if (imgEl) imgEl.src = viewer.img || noUserImage;
       });
