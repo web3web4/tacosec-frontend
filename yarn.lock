@@ -2541,6 +2541,64 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@nucypher-experimental2/shared@0.6.0-alpha.3", "@nucypher-experimental2/shared@workspace:*":
+  version "0.6.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/shared/-/shared-0.6.0-alpha.3.tgz#04922c062d1a1af1cad2a1c2924020a5b34c49e7"
+  integrity sha512-q3OrexYu/iXKV4zngi5USrYKRh9KCErhwo90LGXn5s89EM8rU0fYQ9WdWQjRNZ9dcge2+m4Q45f8UovA3MZ4rA==
+  dependencies:
+    "@ethersproject/abi" "^5.8.0"
+    "@ethersproject/providers" "^5.8.0"
+    "@nucypher/nucypher-contracts" "0.26.0-alpha.1"
+    "@nucypher/nucypher-core" "^0.14.5"
+    axios "^1.8.4"
+    deep-equal "^2.2.3"
+    ethers "^5.8.0"
+    qs "^6.14.0"
+    zod "^3.24.2"
+
+"@nucypher-experimental2/shared@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/shared/-/shared-0.5.0.tgz#5dec1584d0eb88f5ef5e2cc1300511cf31b892b7"
+  integrity sha512-RyzcNQ6OJ5wXstQW7e4Ysx9DnSxhtdlr+QzQpqhVdnT7tRNOKsUg/RPmheZOXPW9AQYARy8B5LCN3fGgMEaaFg==
+  dependencies:
+    "@ethersproject/abi" "^5.8.0"
+    "@ethersproject/providers" "^5.8.0"
+    "@nucypher/nucypher-contracts" "0.26.0-alpha.1"
+    "@nucypher/nucypher-core" "^0.14.5"
+    axios "^1.8.4"
+    deep-equal "^2.2.3"
+    ethers "^5.8.0"
+    qs "^6.14.0"
+    zod "^3.24.2"
+
+"@nucypher-experimental2/taco-auth@^0.4.0-alpha.2", "@nucypher-experimental2/taco-auth@workspace:*":
+  version "0.4.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/taco-auth/-/taco-auth-0.4.0-alpha.2.tgz#c9fafbdf52ed21d35001edf354bb6e0ded403f17"
+  integrity sha512-jiL5BzXl36CNoFuOiLh3rIXA1sa+rfmN5a3zvnIyTmm1aNdXg4aQ9dWq4FCMWoQj3BBn2+UPV4Tf59GohVjDDw==
+  dependencies:
+    "@ethersproject/abstract-signer" "^5.8.0"
+    "@nucypher-experimental2/shared" "0.6.0-alpha.3"
+    siwe "^3.0.0"
+    zod "^3.24.2"
+
+"@nucypher-experimental2/taco@^0.7.0-alpha.2":
+  version "0.7.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/taco/-/taco-0.7.0-alpha.2.tgz#fc0ae9ea99052b10bc581321326eb2ab0af28c87"
+  integrity sha512-Guqy4WaYcJ9p1aSLC9tJgZ3z3C/HPVHu91bsJji+gc9XDSCBWXnW5nic2IJ75ydJ6cxM7rlpm5sENw7K045M7A==
+  dependencies:
+    "@astronautlabs/jsonpath" "^1.1.2"
+    "@nucypher-experimental2/shared" "workspace:*"
+    "@nucypher-experimental2/taco-auth" "workspace:*"
+    "@nucypher/nucypher-core" "^0.14.5"
+    ethers "^5.8.0"
+    semver "^7.7.1"
+    zod "^3.24.2"
+
+"@nucypher/nucypher-contracts@0.26.0-alpha.1":
+  version "0.26.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-contracts/-/nucypher-contracts-0.26.0-alpha.1.tgz#29ef0f9a8f8bff6d638ac7ce011792e757900f6f"
+  integrity sha512-ISS66SyKbDLXFF88Z6k8Tnc/L6Shx6tq22CjPpovbSD2PGS/UzE3uDxvFTKZfgcIJYsi7GV/ho2Brsx4sHYTLg==
+
 "@nucypher/nucypher-contracts@^0.23.0":
   version "0.23.0"
   resolved "https://registry.npmjs.org/@nucypher/nucypher-contracts/-/nucypher-contracts-0.23.0.tgz"

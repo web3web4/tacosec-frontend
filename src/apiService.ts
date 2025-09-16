@@ -116,7 +116,7 @@ export async function storageEncryptedData(
   if (!response.ok) {
     // Handle 401 Unauthorized errors specifically
     if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
+      // Clear the invalid token if it exists
       throw new Error("Authentication failed. Please log in again.");
     }
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -153,7 +153,7 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   const img = imgEl ? { src: imgEl.src } : null;
   const name = nameEl?.textContent?.trim() ?? "";
   const finalUsername = username.startsWith("@") ? username.substring(1) : username;
-  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername};
+  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername, address: ""};
   return res;
 }
 
