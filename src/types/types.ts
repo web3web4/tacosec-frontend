@@ -79,6 +79,7 @@ export interface UserProfileDetailsType{
   img: { src: string} | null,
   name: string,
   username: string | null,
+  address: string | null,
   invited?: boolean
 }
 
@@ -86,6 +87,7 @@ export interface SearchDataType{
   username: string;
   firstName: string;
   lastName: string;
+  address: string;
   isPreviouslyShared: boolean;
 }
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;

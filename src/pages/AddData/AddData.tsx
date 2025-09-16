@@ -1,6 +1,6 @@
 import { noUserImage, acceptIcon, deleteIcon } from "@/assets";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { conditions, toHexString } from "@nucypher/taco";
+import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
 import { parseTelegramInitData } from "@/utils";
@@ -10,6 +10,7 @@ import { CustomPopup } from "@/components";
 import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
+import { DataPayload } from "@/interfaces/addData";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -47,8 +48,8 @@ const AddData: React.FC = () => {
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [useTimeCondition, setUseTimeCondition] = useState(false);
   const [timeConditionType, setTimeConditionType] = useState<'unlock' | 'expire'>('unlock');
-  const { provider, signer } = useWallet();
-  const { initDataRaw, userData } = useUser();
+  const { provider, signer , address } = useWallet();
+  const { initDataRaw, userData, isBrowser } = useUser();
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
@@ -79,6 +80,24 @@ const AddData: React.FC = () => {
           usernames += "," + item.data.username!.toLowerCase();
         });
 
+      let publicAddresses: string[] = [];
+      publicAddresses.push(address!);
+      shareList
+        .filter((item) => item.data.address !== null)
+        .map((item) => (
+          publicAddresses.push(item.data.address!)
+        ));
+
+
+      const checkUsersCondition = new conditions.base.contextVariable.ContextVariableCondition({
+        contextVariable: ":userAddress",
+        returnValueTest: {
+          comparator: 'in',
+          value: publicAddresses,
+        },
+      });
+
+/*
       // JSON API condition
       const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
         endpoint: `${BACKEND}/telegram/verify-test`,
@@ -89,7 +108,7 @@ const AddData: React.FC = () => {
         query: '$.isValid',
         returnValueTest: { comparator: '==', value: true },
       });
-
+*/
 
     // Calculate future timestamp based on time period inputs
     const now = new Date();
@@ -167,17 +186,23 @@ const AddData: React.FC = () => {
             invited: item.data.invited ?? false,
           }));
 
+        const payload: DataPayload = {
+          key: name,
+          description: "",
+          type: "text",
+          value: encryptedHex!,
+          sharedWith: sharedWithList,
+        };    
+        // Only add initData if not from web (i.e., from Telegram)
+        if (!isBrowser) {
+          payload.initData = parsedInitData;
+        }
+
         const res = await storageEncryptedData(
-          {
-            key: name,
-            description: "",
-            type: "text",
-            value: encryptedHex!,
-            sharedWith: sharedWithList,
-            initData: parsedInitData,
-          },
+          payload,
           initDataRaw!
         );
+
 
         if (res) {
           MetroSwal.success(
@@ -205,7 +230,7 @@ const AddData: React.FC = () => {
     }
     setEncrypting(false);
   };
-
+  console.log("shareList:", searchData);
   return (
     <div className="add-data-container">
       {isOpenPopup && (
@@ -362,44 +387,44 @@ const AddData: React.FC = () => {
           </div>
 
           {searchData.length > 0 && (
-  <ul className="autocomplete-list">
-    {/* It was shared  previously */}
-    {searchData.some(item => item.isPreviouslyShared) && (
-      <>
-        <li className="group-title">It was shared  previously</li>
-        {searchData
-          .filter(item => item.isPreviouslyShared)
-          .map((item, index) => (
-            <li
-              key={`shared-${index}`}
-              onClick={() => handleSearchSelect(item.username)}
-            >
-              <p>{item.firstName} {item.lastName}</p>
-              <p>@{item.username}</p>
-            </li>
-          ))}
-      </>
-    )}
+            <ul className="autocomplete-list">
+              {/* It was shared  previously */}
+              {searchData.some(item => item.isPreviouslyShared) && (
+                <>
+                  <li className="group-title">It was shared  previously</li>
+                  {searchData
+                    .filter(item => item.isPreviouslyShared)
+                    .map((item, index) => (
+                      <li
+                        key={`shared-${index}`}
+                        onClick={() => handleSearchSelect(item)}
+                      >
+                        <p>{item.firstName} {item.lastName}</p>
+                        <p>@{item.username}</p>
+                      </li>
+                    ))}
+                </>
+              )}
 
-    {/* Others */}
-    {searchData.some(item => !item.isPreviouslyShared) && (
-      <>
-        <li className="group-title">Others</li>
-        {searchData
-          .filter(item => !item.isPreviouslyShared)
-          .map((item, index) => (
-            <li
-              key={`others-${index}`}
-              onClick={() => handleSearchSelect(item.username)}
-            >
-              <p>{item.firstName} {item.lastName}</p>
-              <p>@{item.username}</p>
-            </li>
-          ))}
-      </>
-    )}
-  </ul>
-)}
+              {/* Others */}
+              {searchData.some(item => !item.isPreviouslyShared) && (
+                <>
+                  <li className="group-title">Others</li>
+                  {searchData
+                    .filter(item => !item.isPreviouslyShared)
+                    .map((item, index) => (
+                      <li
+                        key={`others-${index}`}
+                        onClick={() => handleSearchSelect(item)}
+                      >
+                        <p>{item.firstName} {item.lastName}</p>
+                        <p>@{item.username}</p>
+                      </li>
+                    ))}
+                </>
+              )}
+            </ul>
+          )}
 
     </div>
         <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
@@ -410,25 +435,32 @@ const AddData: React.FC = () => {
       {shareList.length > 0 && (
         <div className="share-list">
           <p>Sharing with:</p>
-          {shareList.map((user, i) => (
-            <div className="user_container">
-            <div key={i}>- {user.data.name}</div>
-              <div className="user-content-buttons">
-                { user.data.invited ? 
-                (<img src={acceptIcon} alt="available icon" width={20} height={20}/>) 
-                : 
-                (<a
-                href={`https://t.me/${user.data.username}?text=${encodeURIComponent(`I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`)}`}
-                target="_blank"
-                rel="noopener noreferrer">
-                  <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
-                </a>)}
-                <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username!)}>
-                  <img src={deleteIcon} alt="delete icon" width={20} height={20} />
-                </div>  
+            {shareList.map((user, i) => (
+              <div className="user_container" key={i}>
+                <div>- {user.data.username ? `@${user.data.username}` : user.data.address}</div>
+                <div className="user-content-buttons">
+                  {user.data.username ? (
+                    user.data.invited ? (
+                      <img src={acceptIcon} alt="available icon" width={20} height={20}/>
+                    ) : (
+                      <a
+                        href={`https://t.me/${user.data.username}?text=${encodeURIComponent(
+                          `I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
+                      </a>
+                    )
+                  ) : null}
+                  <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username || user.data.address!)}>
+                    <img src={deleteIcon} alt="delete icon" width={20} height={20} />
+                  </div>  
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+
         </div>
       )}
 
