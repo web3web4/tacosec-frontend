@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { noUserImage, userNotFoundSvg } from "@/assets";
 import { useUser, useNavigationGuard } from "@/context";
 import { MetroSwal, debounce, handleSilentError, createAppError } from "@/utils";
+import { utils  } from "ethers";
 
 const initProfileData = {
   img: { src: noUserImage },
   name: "",
   username: "",
   invited: false,
+  address: "",
 };
 
 export default function useAddData() {
@@ -50,6 +52,7 @@ export default function useAddData() {
           img: { src: userNotFoundSvg },
           name: "",
           username: "",
+          address: "",
           invited: false,
         };
         setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${username}` }));
@@ -60,6 +63,7 @@ export default function useAddData() {
           img: { src: response.img ? response.img.src : noUserImage },
           name: response.name,
           username: response.username,
+          address: response.address,
           invited: false,
         },
         error: null,
@@ -145,6 +149,8 @@ export default function useAddData() {
 
         const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
         setSearchData(response);
+        console.log("searchData:", searchData);
+
       }catch(error){
         console.log(error);
       }finally{
@@ -158,19 +164,52 @@ export default function useAddData() {
     setShareList((prevList) => prevList.filter((user) => user.data.username !== username));
   };
 
-  const handleSearchSelect = (username: string) => {
-    setShareWith(username);
-    handleAddShare(username);
-    setSearchData([]);
+const handleSearchSelect = (user: SearchDataType) => {
+  setShareWith(user.username);
+
+  const newProfile = {
+    data: {
+      img: { src: noUserImage },
+      name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
+      username: user.username,
+      address: user.address,
+      invited: user.isPreviouslyShared ?? false,
+    },
+    error: null,
   };
 
-  const handleAddShare = (username: string): void => {
-    if (!shareWith.trim()) return;
-    setIsOpenPopup(true);
-    checkIfUserExists(username);
-    fetchUserProfile(username);
+  setShareList((prev) => [...prev, newProfile]);
+  setSearchData([]);
+};
+
+
+const handleAddShare = (input: string): void => {
+  if (!input.trim()) return;
+
+  if (utils.isAddress(input)) {
+    const newProfile = {
+      data: {
+        img: { src: noUserImage },
+        name: input,
+        username: "",   
+        address: input,
+        invited: true,  
+      },
+      error: null,
+    };
+
+    setShareList((prev) => [...prev, newProfile]);
+    setShareWith("");
     setSearchData([]);
-  };
+    return;
+  }
+
+  setIsOpenPopup(true);
+  checkIfUserExists(input);
+  fetchUserProfile(input);
+  setSearchData([]);
+};
+
 
   const cleanFields = () => {
     setUserProfile({ data: initProfileData, error: null });

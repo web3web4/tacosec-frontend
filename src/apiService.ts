@@ -131,7 +131,7 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   const img = imgEl ? { src: imgEl.src } : null;
   const name = nameEl?.textContent?.trim() ?? "";
   const finalUsername = username.startsWith("@") ? username.substring(1) : username;
-  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername};
+  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername, address: ""};
   return res;
 }
 
