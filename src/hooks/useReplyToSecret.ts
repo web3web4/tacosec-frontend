@@ -2,7 +2,7 @@ import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";
-import { parseTelegramInitData } from "@/utils";
+import { parseTelegramInitData, createAppError, handleSilentError } from "@/utils";
 import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
@@ -60,7 +60,7 @@ export default function useReplyToSecret() {
           await handleReplayToSecret(reply.trim(), selectedSecret);
           return { title: "", reply: reply.trim() };
         } catch (error) {
-          console.error("Error submitting reply:", error);
+          handleSilentError(error, 'submitting reply');
           MetroSwal.showValidationMessage('Failed to submit reply. Please try again.');
           return false;
         }

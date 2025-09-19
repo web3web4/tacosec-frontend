@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
 import { fromHexString } from "@nucypher/shared";
-import { MetroSwal, formatDate } from "@/utils";
+import { MetroSwal, formatDate, showError, createAppError } from "@/utils";
 import { fromBytes } from "@nucypher/taco";
 import { noUserImage } from "@/assets";
 import { useUser } from "@/context";
@@ -102,23 +102,17 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       if(data.length > 0) getProfilesDetailsForUsers(data);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
-      console.error("Error fetching data:", err);
-      if (err instanceof Error && err.message.includes("Authentication")) {
-        setAuthError(err.message);
-        // Only show error alert for non-authentication errors or if we're not in Telegram
+      const appError = createAppError(err, 'unknown');
+      
+      // Handle authentication errors specifically
+      if (appError.type === 'auth' || appError.message.includes("Authentication")) {
+        setAuthError(appError.message);
+        // Only show error alert if we're not in Telegram
         if (!window.Telegram?.WebApp) {
-          MetroSwal.fire({
-            icon: "error",
-            title: "Authentication Error",
-            text: err.message,
-          });
+          showError(appError, "Authentication Error");
         }
       } else {
-        MetroSwal.fire({
-          icon: "error",
-          title: "Error",
-          text: err instanceof Error ? err.message : "An error occurred",
-        });
+        showError(appError, "Failed to Load Data");
       }
     } finally {
       setIsLoading(false);
@@ -170,22 +164,16 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       console.error("Error fetching shared data:", err);
-      if (err instanceof Error && err.message.includes("Authentication")) {
-        setAuthError(err.message);
+      const appError = createAppError(err, 'unknown');
+      
+      if (appError.message.includes("Authentication")) {
+        setAuthError(appError.message);
         // Only show error alert for non-authentication errors or if we're not in Telegram
         if (!window.Telegram?.WebApp) {
-          MetroSwal.fire({
-            icon: "error",
-            title: "Authentication Error",
-            text: err.message,
-          });
+          showError(appError, "Authentication Error");
         }
       } else {
-        MetroSwal.fire({
-          icon: "error",
-          title: "Error",
-          text: err instanceof Error ? err.message : "An error occurred",
-        });
+        showError(appError, "Failed to Load Shared Data");
       }
     } finally {
       setIsLoading(false);
@@ -259,11 +247,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         }
         setMyData((prev) => prev.filter((secret) => secret.id !== id));
       } catch (error) {
-        MetroSwal.fire({
-          icon: 'error',
-          title: 'Delete Secret Error',
-          text: error instanceof Error ? error.message : "An error occurred",
-        });
+        const appError = createAppError(error, 'unknown');
+        showError(appError, 'Delete Secret Error');
       }
     }
   };
@@ -432,11 +417,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
           confirmButtonColor: 'var(--primary-color)'
         });
       } catch(error) {
-        MetroSwal.fire({
-          icon: 'error',
-          title: 'Report Error',
-          text: error instanceof Error ? error.message : "An error occurred",
-        });
+        const appError = createAppError(error, 'unknown');
+        showError(appError, 'Report Error');
       }
     }
   }; 

@@ -3,6 +3,7 @@ import { sendContractSupport } from "@/apiService";
 import MetroSwal from "sweetalert2";
 import { useUser } from "@/context";
 import { useState } from "react";
+import { showError, createAppError } from "@/utils";
 
 export default function UseContactSupport({ setShowSupportPopup }: ContactSupportProps) {
   const { initDataRaw } = useUser();
@@ -37,7 +38,8 @@ export default function UseContactSupport({ setShowSupportPopup }: ContactSuppor
       }
     } catch (error) {
       console.error('Error sending support request:', error);
-      MetroSwal.fire("Error", "Failed to send support request. Please try again later.", "error");
+      const appError = createAppError(error, 'unknown');
+      showError(appError, 'Support Request Error');
     } finally {
       setIsSubmittingSupportRequest(false);
     }

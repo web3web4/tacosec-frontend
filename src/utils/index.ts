@@ -5,3 +5,4 @@ export * from "@/utils/walletDecrypt";
 export * from "@/utils/walletIdentifiers";
 export * from "@/utils/walletImport";
 export * from "@/utils/walletUtils";
+export * from "@/utils/errorHandler";

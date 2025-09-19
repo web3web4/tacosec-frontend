@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { DirectLinkData, initDataType, TabType } from "@/types/types";
 import { detectAuthMethod } from "@/hooks/useContextHelper";
 import { signupUser } from "@/apiService";
-import { MetroSwal } from "@/utils";
+import { MetroSwal, showError, createAppError } from "@/utils";
 
 
 interface UserContextType {
@@ -28,7 +28,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
  const signUserData = async () => {
     setError(null);
-    
+    try {
       if (typeof window === "undefined" || !window.Telegram?.WebApp) {
         setError("Telegram WebApp is not supported");
         return;
@@ -47,13 +47,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`
         );
       }
-    try {
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      MetroSwal.error(
-        "Error In Sign User",
-        err instanceof Error ? err.message : "An error occurred"
-      );
+      const appError = createAppError(err, 'unknown');
+      setError(appError.message);
+      showError(appError, "Error In Sign User");
     }
   };
 

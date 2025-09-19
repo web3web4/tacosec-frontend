@@ -3,7 +3,7 @@ import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
-import { parseTelegramInitData } from "@/utils";
+import { parseTelegramInitData, showError, createAppError } from "@/utils";
 import { MetroSwal } from "@/utils/metroSwal";
 import { useAddData, useTaco} from "@/hooks";
 import { CustomPopup } from "@/components";
@@ -182,12 +182,8 @@ const AddData: React.FC = () => {
         }
       }
     } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : 'Unexpected error';
-        MetroSwal.fire({
-        icon: "error",
-        title: "Error",
-        text: message,
-      });
+        const appError = createAppError(e, 'unknown');
+        showError(appError, 'Error');
     }
     setEncrypting(false);
   };

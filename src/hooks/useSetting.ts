@@ -2,7 +2,7 @@ import { GetUserProfileDetailsResponse, initDataType } from "@/types/types";
 import { getUserProfileDetails, setPrivacyMode } from "@/apiService";
 import { useEffect, useState } from "react";
 import { useUser } from "@/context";
-import { MetroSwal } from "@/utils";
+import { MetroSwal, handleSilentError } from "@/utils";
 import Swal from "sweetalert2";
 
 export default function useSetting() {
@@ -50,7 +50,7 @@ const handleTogglePrivacyMod = (): void => {
       });
     }
   } catch (error) {
-    console.log("Error On Set Privacy mod:", error);
+    handleSilentError(error, 'setting privacy mode');
   }
 };
 
@@ -67,7 +67,7 @@ const fetchData = async () => {
     const response: GetUserProfileDetailsResponse = await getUserProfileDetails(username);
     setProfileImage(response && response.img ? response.img.src : null);
   } catch (error) {
-    console.error("Error fetching user profile details:", error);
+    handleSilentError(error, 'fetching user profile details');
   }
 };
 
