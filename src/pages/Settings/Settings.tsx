@@ -1,4 +1,4 @@
-import { SeedPharseSettingPage, DecryptPrompt, ResetPasswordWithSeed, CustomPopup } from "@/components";
+import { SeedPharseSettingPage, DecryptPrompt, ResetPasswordWithSeed, CustomPopup, SectionErrorBoundary } from "@/components";
 import { ContactSupport } from "@/section";
 import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
@@ -135,34 +135,36 @@ const submitDecryption = () => {
     <>
       <div className="settings-container">
         <h2 className="page-title">Settings</h2>
-        <div className="profile-section">
-          <div className="photo-preview">
-            <img
-              src={profileImage || noUserImage}
-              alt="Profile"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.onerror = null;
-                target.src = noUserImage;
-              }}
-            />
+        <SectionErrorBoundary sectionName="ProfileSection">
+          <div className="profile-section">
+            <div className="photo-preview">
+              <img
+                src={profileImage || noUserImage}
+                alt="Profile"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = noUserImage;
+                }}
+              />
+            </div>
+            <div className="profile-name">
+              {userData?.firstName} {userData?.lastName}
+            </div>
+            <div className="address-container">
+              <span>Address: </span>
+              <span className="address-value">{formatAddress(address || undefined)}</span>
+              <button 
+                className="copy-address-btn" 
+                onClick={copyAddressToClipboard}
+                title="Copy full address"
+              >
+                📋
+              </button>
+              {showCopied && <span className="copied-message">Copied</span>}
+            </div>
           </div>
-          <div className="profile-name">
-            {userData?.firstName} {userData?.lastName}
-          </div>
-          <div className="address-container">
-            <span>Address: </span>
-            <span className="address-value">{formatAddress(address || undefined)}</span>
-            <button 
-              className="copy-address-btn" 
-              onClick={copyAddressToClipboard}
-              title="Copy full address"
-            >
-              📋
-            </button>
-            {showCopied && <span className="copied-message">Copied</span>}
-          </div>
-        </div>
+        </SectionErrorBoundary>
         <div className="checkbox-row">
           <span>Activate privacy mode</span>
           <label className="toggle-switch">
@@ -204,10 +206,12 @@ const submitDecryption = () => {
           </button>
         </div>
 
-        <div className="support-section">
-          <p>Support and Help</p>
-          <button className="support-button" onClick={() => setShowSupportPopup(true)}>Contact Support</button>
-        </div>
+        <SectionErrorBoundary sectionName="SupportSection">
+          <div className="support-section">
+            <p>Support and Help</p>
+            <button className="support-button" onClick={() => setShowSupportPopup(true)}>Contact Support</button>
+          </div>
+        </SectionErrorBoundary>
         
       </div>
 
@@ -262,7 +266,9 @@ const submitDecryption = () => {
       )}
 
       <CustomPopup open={showSupportPopup} closed={setShowSupportPopup}>
-        <ContactSupport setShowSupportPopup={setShowSupportPopup}/>
+        <SectionErrorBoundary sectionName="ContactSupport">
+          <ContactSupport setShowSupportPopup={setShowSupportPopup}/>
+        </SectionErrorBoundary>
       </CustomPopup>
     </>
   );

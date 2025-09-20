@@ -2,7 +2,7 @@ import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";
-import { parseTelegramInitData, createAppError, handleSilentError } from "@/utils";
+import { parseTelegramInitData, handleSilentError } from "@/utils";
 import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";

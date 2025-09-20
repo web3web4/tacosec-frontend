@@ -6,7 +6,7 @@ import { useWallet } from "@/wallet/walletContext";
 import { parseTelegramInitData, showError, createAppError } from "@/utils";
 import { MetroSwal } from "@/utils/metroSwal";
 import { useAddData, useTaco} from "@/hooks";
-import { CustomPopup } from "@/components";
+import { CustomPopup, SectionErrorBoundary } from "@/components";
 import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
@@ -369,95 +369,99 @@ const AddData: React.FC = () => {
         </div>
       )}
       <label>Share with (optional)</label>
-      <div className="share-with-row">
-        <div className="autocomplete-wrapper">
-          <div className="input-wrapper">
-            <input
-              type="text"
-              value={shareWith}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="@user-name"
-              className="input-field"
-            />
-            {isSearch && <span className="spinner" />}
-          </div>
+      <SectionErrorBoundary sectionName="ShareWithSection">
+        <div className="share-with-row">
+          <div className="autocomplete-wrapper">
+            <div className="input-wrapper">
+              <input
+                type="text"
+                value={shareWith}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="@user-name"
+                className="input-field"
+              />
+              {isSearch && <span className="spinner" />}
+            </div>
 
-          {searchData.length > 0 && (
-            <ul className="autocomplete-list">
-              {/* It was shared  previously */}
-              {searchData.some(item => item.isPreviouslyShared) && (
-                <>
-                  <li className="group-title">It was shared  previously</li>
-                  {searchData
-                    .filter(item => item.isPreviouslyShared)
-                    .map((item, index) => (
-                      <li
-                        key={`shared-${index}`}
-                        onClick={() => handleSearchSelect(item)}
-                      >
-                        <p>{item.firstName} {item.lastName}</p>
-                        <p>@{item.username}</p>
-                      </li>
-                    ))}
-                </>
-              )}
+            {searchData.length > 0 && (
+              <ul className="autocomplete-list">
+                {/* It was shared  previously */}
+                {searchData.some(item => item.isPreviouslyShared) && (
+                  <>
+                    <li className="group-title">It was shared  previously</li>
+                    {searchData
+                      .filter(item => item.isPreviouslyShared)
+                      .map((item, index) => (
+                        <li
+                          key={`shared-${index}`}
+                          onClick={() => handleSearchSelect(item)}
+                        >
+                          <p>{item.firstName} {item.lastName}</p>
+                          <p>@{item.username}</p>
+                        </li>
+                      ))}
+                  </>
+                )}
 
-              {/* Others */}
-              {searchData.some(item => !item.isPreviouslyShared) && (
-                <>
-                  <li className="group-title">Others</li>
-                  {searchData
-                    .filter(item => !item.isPreviouslyShared)
-                    .map((item, index) => (
-                      <li
-                        key={`others-${index}`}
-                        onClick={() => handleSearchSelect(item)}
-                      >
-                        <p>{item.firstName} {item.lastName}</p>
-                        <p>@{item.username}</p>
-                      </li>
-                    ))}
-                </>
-              )}
-            </ul>
-          )}
+                {/* Others */}
+                {searchData.some(item => !item.isPreviouslyShared) && (
+                  <>
+                    <li className="group-title">Others</li>
+                    {searchData
+                      .filter(item => !item.isPreviouslyShared)
+                      .map((item, index) => (
+                        <li
+                          key={`others-${index}`}
+                          onClick={() => handleSearchSelect(item)}
+                        >
+                          <p>{item.firstName} {item.lastName}</p>
+                          <p>@{item.username}</p>
+                        </li>
+                      ))}
+                  </>
+                )}
+              </ul>
+            )}
 
-    </div>
-        <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
-          +
-        </button>
       </div>
+          <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
+            +
+          </button>
+        </div>
+      </SectionErrorBoundary>
 
       {shareList.length > 0 && (
-        <div className="share-list">
-          <p>Sharing with:</p>
-            {shareList.map((user, i) => (
-              <div className="user_container" key={i}>
-                <div>- {user.data.username ? `@${user.data.username}` : user.data.address}</div>
-                <div className="user-content-buttons">
-                  {user.data.username ? (
-                    user.data.invited ? (
-                      <img src={acceptIcon} alt="available icon" width={20} height={20}/>
-                    ) : (
-                      <a
-                        href={`https://t.me/${user.data.username}?text=${encodeURIComponent(
-                          `I’ve shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
-                      </a>
-                    )
-                  ) : null}
-                  <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username || user.data.address!)}>
-                    <img src={deleteIcon} alt="delete icon" width={20} height={20} />
-                  </div>  
+        <SectionErrorBoundary sectionName="ShareList">
+          <div className="share-list">
+            <p>Sharing with:</p>
+              {shareList.map((user, i) => (
+                <div className="user_container" key={i}>
+                  <div>- {user.data.username ? `@${user.data.username}` : user.data.address}</div>
+                  <div className="user-content-buttons">
+                    {user.data.username ? (
+                      user.data.invited ? (
+                        <img src={acceptIcon} alt="available icon" width={20} height={20}/>
+                      ) : (
+                        <a
+                          href={`https://t.me/${user.data.username}?text=${encodeURIComponent(
+                            `I've shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
+                        </a>
+                      )
+                    ) : null}
+                    <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username || user.data.address!)}>
+                      <img src={deleteIcon} alt="delete icon" width={20} height={20} />
+                    </div>  
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-        </div>
+          </div>
+        </SectionErrorBoundary>
       )}
 
       <button className="save-button" onClick={encryptMessage}>

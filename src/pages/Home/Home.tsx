@@ -1,5 +1,6 @@
 import { MyData , SharedWithMy} from "@/section";
 import { useHome } from "@/context";
+import { SectionErrorBoundary } from "@/components";
 import "./Home.css";
 
 
@@ -45,9 +46,13 @@ const Home: React.FC = () => {
           </div>
         ) :
         activeTab === "mydata" ? (
-          <MyData />
+          <SectionErrorBoundary sectionName="MyData">
+            <MyData />
+          </SectionErrorBoundary>
         ) : (
-          <SharedWithMy />
+          <SectionErrorBoundary sectionName="SharedWithMy">
+            <SharedWithMy />
+          </SectionErrorBoundary>
         )} 
         </div>
       </div>
