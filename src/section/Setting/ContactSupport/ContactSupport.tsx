@@ -1,5 +1,6 @@
 import { ContactSupportProps } from "@/types/types";
 import { useContactSupport } from "@/hooks";
+import "./ContactSupport.css";
 
 export default function ContactSupport({setShowSupportPopup}: ContactSupportProps) {
   const {supportForm, isSubmittingSupportRequest, handleSupportFormChange, handleSupportSubmit } = useContactSupport({setShowSupportPopup});
