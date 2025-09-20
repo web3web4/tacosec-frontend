@@ -12,7 +12,7 @@ const App: React.FC = () => {
 
   useEffect(() => { 
     const tracker = new Tracker({
-      projectKey: "OBRRxhO5bKmUOOdoVd4Y",  
+      projectKey: process.env.REACT_APP_OPENREPLAY_PROJECT_KEY as string,  
       obscureTextEmails: true,
       obscureTextNumbers: true,
       obscureInputEmails: true,
