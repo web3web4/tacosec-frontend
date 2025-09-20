@@ -17,7 +17,7 @@ import {
 } from "@/hooks/walletDialogs";
 
 import { WalletContextProps } from "@/interfaces/wallet"
-import { MetroSwal } from "@/utils";
+import { MetroSwal, handleSilentError } from "@/utils";
 
 const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
 
@@ -100,7 +100,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         await loginUserWeb(wallet.address, signature);
         saveEncryptedSeed(wallet.address, encrypted);
       } catch (err) {
-        console.error("Failed to login with web wallet:", err);
+        handleSilentError(err, 'loginUserWeb');
       }
     } else {
       setSeedBackupDone(userData?.telegramId || "", false);
@@ -117,7 +117,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     try {
       await storagePublicKeyAndPassword(data, initDataRaw || "");
     } catch (err) {
-      console.error("Failed to save wallet data to backend:", err);
+      handleSilentError(err, 'storagePublicKeyAndPassword');
     }
 
     setHasWallet(true);

@@ -3,7 +3,7 @@ import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "
 import { useCallback, useEffect, useState } from "react";
 import { noUserImage, userNotFoundSvg } from "@/assets";
 import { useUser, useNavigationGuard } from "@/context";
-import { MetroSwal, debounce } from "@/utils";
+import { MetroSwal, debounce, handleSilentError, createAppError } from "@/utils";
 import { utils  } from "ethers";
 
 const initProfileData = {
@@ -69,7 +69,8 @@ export default function useAddData() {
         error: null,
       });
     } catch (error) {
-      setUserProfile({ data: initProfileData, error: `Error On Fetch User: ${error}` });
+      const appError = createAppError(error, 'network', 'Failed to fetch user profile');
+      setUserProfile({ data: initProfileData, error: appError.message });
     }
   };
 
@@ -82,7 +83,8 @@ export default function useAddData() {
       const response = await checkIfUserAvailable(initDataRaw!, cleanedUsername);
       setIsCanInvite(response);
     } catch (error) {
-      console.log(error);
+      handleSilentError(error, 'checkIfUserExists');
+      setIsCanInvite(false); // Default to false on error
     }
   };
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse } from "./types/types";
-import { parseTelegramInitData } from "@/utils";
+import { parseTelegramInitData, handleApiCall, createAppError } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -28,36 +28,31 @@ const getAuthHeaders = (initData?: string) => {
 
 export async function signupUser(initData: string): Promise<initDataType> {
   const data = parseTelegramInitData(initData);
-  const response = await fetch(`${API_BASE_URL}/users/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
-    body: JSON.stringify(data),
+  
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+      body: JSON.stringify(data),
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 
 export async function loginUserWeb(publicAddress:string, signature:string): Promise<AuthDataType> {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({publicAddress, signature}),
+  const authData = await handleApiCall<AuthDataType>(async () => {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({publicAddress, signature}),
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const authData:AuthDataType = await response.json();
   
   // Store the JWT token in localStorage for future API calls
   if (authData.access_token) {
@@ -72,25 +67,16 @@ export async function GetMyData(initData?: string): Promise<Secret[]> {
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
-  const response = await fetch(`${API_BASE_URL}/passwords`, {
-    method: "GET",
-    headers,
-  });
-
-  if (!response.ok) {
-    // Handle 401 Unauthorized errors specifically
-    if (response.status === 401) {
-      // Clear the invalid token if it exists
-      localStorage.removeItem('jwt_token');
-      throw new Error("Authentication failed. Please log in again.");
-    }
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
+  return handleApiCall<Secret[]>(
+    () => fetch(`${API_BASE_URL}/passwords`, {
+      method: "GET",
+      headers,
+    }),
+    "Failed to fetch your data"
+  );
 }
 
 /**
@@ -104,43 +90,35 @@ export async function storageEncryptedData(
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
-  const response = await fetch(`${API_BASE_URL}/passwords`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    // Handle 401 Unauthorized errors specifically
-    if (response.status === 401) {
-      // Clear the invalid token if it exists
-      throw new Error("Authentication failed. Please log in again.");
-    }
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
+  return handleApiCall<unknown>(
+    () => fetch(`${API_BASE_URL}/passwords`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+    }),
+    "Failed to save encrypted data"
+  );
 }
 
 export async function getUserProfileDetails(username: string): Promise<UserProfileDetailsType | null> {
   if (!username) return null;
-  const response = await fetch(
-    `${API_BASE_URL}/users/telegram/profile?username=${username}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  
+  const html = await handleApiCall<string>(async () => {
+    const response = await fetch(
+      `${API_BASE_URL}/users/telegram/profile?username=${username}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  }, undefined, 'text');
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const html = await response.text();
   // Check if the response contains this class, the user does not exist
   const tgDownloadLink = html.includes("tl_main_download_link tl_main_download_link_ios");
   // Also Check if the response contains this class, the user does not exist
@@ -162,40 +140,29 @@ export async function getDataSharedWithMy(initData?: string): Promise<SharedWith
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError("Authentication required", 'auth');
   }
   
-  const response = await fetch(`${API_BASE_URL}/passwords/shared-with-me`, {
-    method: "GET",
-    headers,
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/shared-with-me`, {
+      method: "GET",
+      headers,
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    // Handle 401 Unauthorized errors specifically
-    if (response.status === 401) {
-      localStorage.removeItem('jwt_token');
-      throw new Error("Authentication failed. Please log in again.");
-    }
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 
 export async function checkIfUserAvailable(initData: string, username: string): Promise<boolean> {
-  const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 
 
@@ -207,21 +174,17 @@ export async function storagePublicKeyAndPassword(
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError("Authentication required", 'auth');
   }
-  const response = await fetch(`${API_BASE_URL}/public-addresses`, {
-    
-    method: "POST",
-    headers,
-
-    body: JSON.stringify(data),
+  
+  await handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/public-addresses`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 
 export async function hidePassword(initData: string, id: string): Promise<void> {
@@ -229,18 +192,16 @@ export async function hidePassword(initData: string, id: string): Promise<void> 
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError("Authentication required", 'auth');
   }
-  const response = await fetch(`${API_BASE_URL}/passwords/hide/${id}`, {
-    method: "PATCH",
-    headers: headers,
+  
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/hide/${id}`, {
+      method: "PATCH",
+      headers: headers,
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 
 export async function deletePassword(initData: string, id: string): Promise<void> {
@@ -248,114 +209,105 @@ export async function deletePassword(initData: string, id: string): Promise<void
 
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] &&!headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError("Authentication required", 'auth');
   }
-  const response = await fetch(`${API_BASE_URL}/passwords/owner/${id}`, {
-    method: "DELETE",
-    headers: headers,
+  
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/owner/${id}`, {
+      method: "DELETE",
+      headers: headers,
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 
 export async function getAutoCompleteUsername(initData: string, username: string): Promise<SearchDataType[]> {
-  const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${username}&limit=5&searchType=contains`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+  const result = await handleApiCall<{ data: SearchDataType[] }>(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${username}&limit=5&searchType=contains`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
+  
   return result.data;
 }
 
 export async function reportUser(initData: string, report: Report): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/reports`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
-    body: JSON.stringify(report),
+  await handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/reports`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+      body: JSON.stringify(report),
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Unknown error occurred');
-  }
 }
 
 export async function sendContractSupport(initData: string, supportData: SupportData): Promise<ContractSupportResponse> {
-  const response = await fetch(`${API_BASE_URL}/telegram/send-to-specific-admin`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
-    body: JSON.stringify(supportData),
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/telegram/send-to-specific-admin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+      body: JSON.stringify(supportData),
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Unknown error occurred');
-  }
-
-  return await response.json();
 }
 
 export async function getChildrenForSecret(initData: string, parentId: string): Promise<ChildDataItem[]  | { statusCode: number; message: string }> {
-  const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+  const result = await handleApiCall<{ passwords?: ChildDataItem[] } | { statusCode: number; message: string }>(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+    });
+    return response;
   });
 
-  const result = await response.json();
-  return result.passwords ?? result;;
+  if ('passwords' in result) {
+    return result.passwords ?? [];
+  }
+  return result as { statusCode: number; message: string };
 }
 
 export async function setSecretView(initData: string, id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+  await handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Unknown error occurred');
-  }
 }
 
 export async function getSecretViews(initData: string, id: string): Promise<SecretViews> {
-  const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": initData,
-    },
+  const result = await handleApiCall<SecretViews>(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+      },
+    });
+    return response;
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result
+  return result;
 }
 
 export async function setPrivacyMode(initData: string, value: boolean): Promise<void> {
@@ -363,17 +315,17 @@ export async function setPrivacyMode(initData: string, value: boolean): Promise<
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError("Authentication required", 'auth');
   }
-  const response = await fetch(`${API_BASE_URL}/users/me/privacy-mode`, {
-    method: "PATCH",
-    headers: headers,
-    body: JSON.stringify({ privacyMode: value})
+  
+  await handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/me/privacy-mode`, {
+      method: "PATCH",
+      headers: headers,
+      body: JSON.stringify({ privacyMode: value})
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
 }
 
 export async function getPublicAddresses(initData: string): Promise<PublicKeysResponse> {
@@ -381,18 +333,15 @@ export async function getPublicAddresses(initData: string): Promise<PublicKeysRe
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw new Error("Authentication required");
+    throw createAppError("Authentication required", 'auth');
   }
   
-  const response = await fetch(`${API_BASE_URL}/public-addresses`, {
-    method: "GET",
-    headers: headers,
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/public-addresses`, {
+      method: "GET",
+      headers: headers,
+    });
+    return response;
   });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return await response.json();
 }
 

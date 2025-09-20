@@ -1,6 +1,7 @@
 export { default as BottomNav } from "@/components/BottomNav/BottomNav";
 export { default as CustomPopup } from "@/components/CustomPopup/CustomPopup";
 export { default as DropdownMenu} from "@/components/DropdownMenu/DropdownMenu";
+export { ErrorBoundary, AppErrorBoundary, PageErrorBoundary, SectionErrorBoundary } from "@/components/ErrorBoundary";
 export { default as Loading } from "@/components/Loading/Loading";
 export { ConfirmSeedPopup } from "@/components/SeedPhrase/ConfirmSeedPopup";
 export { DecryptPrompt } from "@/components/SeedPhrase/DecryptPrompt";

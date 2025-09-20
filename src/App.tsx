@@ -2,7 +2,7 @@ import { UserProvider, NavigationGuardProvider, HomeProvider } from "@/context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Tracker , { SanitizeLevel } from '@openreplay/tracker';
 import { WalletProvider } from "@/wallet/walletContext";
-import { BottomNav, Loading } from "@/components";
+import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/components";
 import { Home, AddData, Settings } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
@@ -41,31 +41,45 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <UserProvider>
-      <NavigationGuardProvider>
-      <WalletProvider>
-        <WalletSetup />
-        <Router>
-          <div className="app-container">
-            {isLoading && <Loading />}
+    <AppErrorBoundary>
+      <UserProvider>
+        <NavigationGuardProvider>
+          <WalletProvider>
+            <WalletSetup />
+            <Router>
+              <div className="app-container">
+                {isLoading && <Loading />}
 
-            {!isLoading && (
-              <>
-                <HomeProvider>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/add" element={<AddData />} />
-                    <Route path="/settings" element={<Settings />} />
-                  </Routes>
-                </HomeProvider>
-                <BottomNav />
-              </>
-            )}
-          </div>
-        </Router>
-      </WalletProvider>
-      </NavigationGuardProvider>
-    </UserProvider>
+                {!isLoading && (
+                  <>
+                    <HomeProvider>
+                      <Routes>
+                        <Route path="/" element={
+                          <PageErrorBoundary pageName="Home">
+                            <Home />
+                          </PageErrorBoundary>
+                        } />
+                        <Route path="/add" element={
+                          <PageErrorBoundary pageName="AddData">
+                            <AddData />
+                          </PageErrorBoundary>
+                        } />
+                        <Route path="/settings" element={
+                          <PageErrorBoundary pageName="Settings">
+                            <Settings />
+                          </PageErrorBoundary>
+                        } />
+                      </Routes>
+                    </HomeProvider>
+                    <BottomNav />
+                  </>
+                )}
+              </div>
+            </Router>
+          </WalletProvider>
+        </NavigationGuardProvider>
+      </UserProvider>
+    </AppErrorBoundary>
   );
 };
 
