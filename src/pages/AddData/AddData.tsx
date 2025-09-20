@@ -206,8 +206,8 @@ const AddData: React.FC = () => {
 
         if (res) {
           MetroSwal.success(
-            "Success",
-            "The data was successfully encrypted and securely stored"
+            "All set",
+            "Your data was encrypted and saved securely."
           );
           
           cleanFields();
@@ -244,7 +244,7 @@ const AddData: React.FC = () => {
               }}
             />
             <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
-            {!userProfile.error && <button onClick={handleConfirmClick}>Confirmation</button>}
+            {!userProfile.error && <button onClick={handleConfirmClick}>Confirm</button>}
             <button onClick={() => closePopup(false)}>Cancel</button>
           </div>
         </CustomPopup>
