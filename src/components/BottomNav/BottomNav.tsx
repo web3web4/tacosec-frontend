@@ -14,8 +14,8 @@ export default function BottomNav() {
 
     if (runNavigationCheck()) {
       MetroSwal.warning(
-        "Unsaved Changes",
-        "You have unsaved data. Please save or clear them before navigating."
+        "Unsaved changes",
+        "You have unsaved edits. Please save or clear them before leaving this page."
       );
       return;
     }
