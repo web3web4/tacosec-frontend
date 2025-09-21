@@ -9,16 +9,11 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  overflow: hidden;
 }
 
 .logo-background {
-  padding: 2rem;
-  border-radius: 0;
-  background: var(--surface);
-  border: 2px solid var(--metro-green);
-  box-shadow: var(--box-shadow);
   position: relative;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,54 +28,119 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: float 3s ease-in-out infinite;
 }
 
 .logo-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-  z-index: 2;
+  filter: drop-shadow(0 0 20px var(--metro-green));
+  z-index: 3;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-/* Glow animation behind the logo */
+/* Floating animation for logo container */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Pulse animation for logo */
+@keyframes pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px var(--metro-green));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px var(--metro-green)) drop-shadow(0 0 40px var(--metro-green));
+  }
+}
+
+/* Animated background circles */
 .logo-container::before {
   content: '';
   position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  background: radial-gradient(circle, rgba(0, 255, 127, 0.4) 0%, rgba(0, 255, 127, 0.2) 40%, transparent 70%);
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    var(--metro-green),
+    transparent,
+    var(--metro-green),
+    transparent
+  );
   border-radius: 50%;
-  animation: glow 2s ease-in-out infinite alternate;
+  animation: rotate 4s linear infinite;
+  opacity: 0.3;
   z-index: 1;
 }
 
-@keyframes glow {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.6;
+.logo-container::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  background: radial-gradient(
+    circle,
+    transparent 40%,
+    var(--metro-green) 41%,
+    var(--metro-green) 42%,
+    transparent 43%
+  );
+  border-radius: 50%;
+  animation: rotate 6s linear infinite reverse;
+  opacity: 0.2;
+  z-index: 2;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
   }
-  100% {
-    transform: scale(1.1);
-    opacity: 1;
+  to {
+    transform: rotate(360deg);
   }
 }
 
-.logo-background::after {
+/* Animated dots around the loading */
+.loading-container::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 40px,
-    rgba(0, 200, 81, 0.02) 40px,
-    rgba(0, 200, 81, 0.02) 42px
-  );
-  pointer-events: none;
+  width: 300px;
+  height: 300px;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--metro-green);
+  border-radius: 50%;
+  animation: spin 3s linear infinite;
+  opacity: 0.6;
+}
+
+.loading-container::after {
+  content: '';
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border: 1px solid transparent;
+  border-bottom: 1px solid var(--metro-green);
+  border-radius: 50%;
+  animation: spin 2s linear infinite reverse;
+  opacity: 0.4;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
