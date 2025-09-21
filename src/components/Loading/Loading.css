@@ -9,7 +9,6 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  overflow: hidden;
 }
 
 .logo-background {
@@ -19,6 +18,30 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  background: var(--surface);
+  border: 2px solid var(--metro-green);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 0 30px rgba(149, 255, 93, 0.3);
+}
+
+.logo-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(149, 255, 93, 0.1) 10px,
+    rgba(149, 255, 93, 0.1) 20px
+  );
+  border-radius: 18px;
+  animation: glow 2s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
 .logo-container {
@@ -28,119 +51,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: float 3s ease-in-out infinite;
+  z-index: 2;
 }
 
 .logo-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0 20px var(--metro-green));
-  z-index: 3;
-  animation: pulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px var(--metro-green));
 }
 
-/* Floating animation for logo container */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+@keyframes glow {
+  0% {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(149, 255, 93, 0.1) 10px,
+      rgba(149, 255, 93, 0.1) 20px
+    );
   }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* Pulse animation for logo */
-@keyframes pulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 20px var(--metro-green));
-  }
-  50% {
-    filter: drop-shadow(0 0 30px var(--metro-green)) drop-shadow(0 0 40px var(--metro-green));
-  }
-}
-
-/* Animated background circles */
-.logo-container::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    var(--metro-green),
-    transparent,
-    var(--metro-green),
-    transparent
-  );
-  border-radius: 50%;
-  animation: rotate 4s linear infinite;
-  opacity: 0.3;
-  z-index: 1;
-}
-
-.logo-container::after {
-  content: '';
-  position: absolute;
-  top: -30%;
-  left: -30%;
-  width: 160%;
-  height: 160%;
-  background: radial-gradient(
-    circle,
-    transparent 40%,
-    var(--metro-green) 41%,
-    var(--metro-green) 42%,
-    transparent 43%
-  );
-  border-radius: 50%;
-  animation: rotate 6s linear infinite reverse;
-  opacity: 0.2;
-  z-index: 2;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Animated dots around the loading */
-.loading-container::before {
-  content: '';
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border: 2px solid transparent;
-  border-top: 2px solid var(--metro-green);
-  border-radius: 50%;
-  animation: spin 3s linear infinite;
-  opacity: 0.6;
-}
-
-.loading-container::after {
-  content: '';
-  position: absolute;
-  width: 250px;
-  height: 250px;
-  border: 1px solid transparent;
-  border-bottom: 1px solid var(--metro-green);
-  border-radius: 50%;
-  animation: spin 2s linear infinite reverse;
-  opacity: 0.4;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  100% {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(149, 255, 93, 0.2) 10px,
+      rgba(149, 255, 93, 0.2) 20px
+    );
   }
 }
