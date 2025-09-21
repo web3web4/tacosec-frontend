@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
 import { showIcon } from "@/assets";
+import { DotsLoader } from "@/components";
 import "./ChildrenSection.css";
 
 interface ChildrenSectionProps {
@@ -82,16 +83,7 @@ export default function ChildrenSection({
               <div className="child-expanded">
                 <p className="child-secret">
                   {decryptingChild ? (
-                    <span>
-                      <span className="decrypting-animation">
-                       🗝️ Unlocking your secret
-                        <span className="dots">
-                          <span>.</span>
-                          <span>.</span>
-                          <span>.</span>
-                        </span>
-                      </span>
-                    </span>
+                    <DotsLoader size="small" />
                   ) : (
                     decryptedChildMessages[child._id] || "Failed to decrypt"
                   )}

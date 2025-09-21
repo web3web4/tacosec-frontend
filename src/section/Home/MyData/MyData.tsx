@@ -3,7 +3,7 @@ import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect,  useState } from "react";
 import { ChildrenSection } from "@/section";
-import { DropdownMenu } from "@/components";
+import { DropdownMenu, DotsLoader } from "@/components";
 import { useReplyToSecret } from "@/hooks";
 import { formatDate } from "@/utils";
 import "@/components/SeedPhrase/SeedPhrase.css";
@@ -92,16 +92,7 @@ export default function MyData() {
                   <div className="expanded-box">
                     <p className="password-text">
                       {decrypting ? (
-                        <span>
-                          <span className="decrypting-animation">
-                            🗝️ Unlocking your secret
-                            <span className="dots">
-                              <span>.</span>
-                              <span>.</span>
-                              <span>.</span>
-                            </span>
-                          </span>
-                        </span>
+                        <DotsLoader size="medium" />
                       ) : decryptedMessages[item.id] ? (
                         decryptedMessages[item.id]
                       ) : decryptErrors[item.id]?.includes("conditions not satisfied") ? (
