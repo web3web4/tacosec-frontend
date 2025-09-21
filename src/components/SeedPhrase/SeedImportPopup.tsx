@@ -1,35 +1,44 @@
 import { MdDownload, MdClose, MdLockOpen } from "react-icons/md";
 import { MetroSwal } from "@/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./SeedPhrase.css";
 
 export function SeedImportPopup({
   onImport,
   onCancel,
 }: {
-  onImport: (mnemonic: string) => Promise<void>; // تغيير هنا
+  onImport: (mnemonic: string) => Promise<void>;
   onCancel?: () => void;
 }) {
-  const [words, setWords] = useState(Array(12).fill(""));
+  const [seedPhrase, setSeedPhrase] = useState("");
   const [loading, setLoading] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
+  const [isValid, setIsValid] = useState(false);
 
-  const handleChange = (index: number, value: string) => {
-    const newWords = [...words];
-    newWords[index] = value;
-    setWords(newWords);
+  // Real-time validation
+  useEffect(() => {
+    const words = seedPhrase.trim().split(/\s+/).filter(word => word.length > 0);
+    setWordCount(words.length);
+    setIsValid(words.length === 12 && words.every(word => word.length > 0));
+  }, [seedPhrase]);
+
+  const handleSeedPhraseChange = (value: string) => {
+    setSeedPhrase(value);
   };
 
 const handleImport = async () => {
-  const trimmedWords = words.map((w) => w.trim());
-  const mnemonic = trimmedWords.join(" ");
-  if (trimmedWords.includes("") || trimmedWords.length !== 12) {
+  const words = seedPhrase.trim().split(/\s+/).filter(word => word.length > 0);
+  
+  if (words.length !== 12) {
     MetroSwal.fire({
       icon: "error",
-      title: "Invalid Seed",
-      text: "Please enter all 12 words correctly.",
+      title: "Invalid Seed Phrase",
+      text: `Please enter exactly 12 words. You have entered ${words.length} words.`,
     });
     return;
   }
+
+  const mnemonic = words.join(" ");
   setLoading(true);
   try {
     console.log("Calling onImport with mnemonic:", mnemonic);
@@ -46,16 +55,18 @@ const handleImport = async () => {
 };
 
   const handleSubmit = () => {
-    const trimmedWords = words.map((w) => w.trim());
-    const mnemonic = trimmedWords.join(" ");
-    if (trimmedWords.includes("") || trimmedWords.length !== 12) {
+    const words = seedPhrase.trim().split(/\s+/).filter(word => word.length > 0);
+    
+    if (words.length !== 12) {
       MetroSwal.fire({
         icon: "error",
-        title: "Invalid Seed",
-        text: "Please enter all 12 words correctly."
+        title: "Invalid Seed Phrase",
+        text: `Please enter exactly 12 words. You have entered ${words.length} words.`
       });
       return;
     }
+    
+    const mnemonic = words.join(" ");
     setLoading(true);
     onImport(mnemonic);
   };
@@ -65,40 +76,31 @@ const handleImport = async () => {
       <div className="popup-seed">
         <h2 className="popup-title"><MdDownload style={{marginRight: '8px', verticalAlign: 'middle'}} />Import Your Wallet</h2>
         <p className="warning">
-          Enter your 12‑word seed phrase in the correct order.
+          Enter your 12‑word seed phrase separated by spaces.
         </p>
 
-        <div className="seed-grid">
-          {words.map((word, index) => (
-            <div key={index} className="seed-word">
-              <span className="index">{index + 1}.</span>
-              <input
-                type="text"
-                value={word}
-                autoFocus={index === 0}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onBlur={() =>
-                  handleChange(index, words[index].trim())
-                }
-                onPaste={
-                  index === 0
-                    ? (e) => {
-                        e.preventDefault();
-                        const paste = e.clipboardData.getData("text");
-                        const split = paste.trim().split(/\s+/);
-                        if (split.length === 12) {
-                          setWords(split);
-                        } else {
-                          handleChange(index, paste); 
-                        }
-                      }
-                    : undefined
-                }
-                className="seed-input"
-                placeholder={`Word ${index + 1}`}
-              />
-            </div>
-          ))}
+        <div className="seed-input-container">
+          <textarea
+            value={seedPhrase}
+            onChange={(e) => handleSeedPhraseChange(e.target.value)}
+            className="seed-phrase-input"
+            placeholder="Enter your 12-word seed phrase here, separated by spaces..."
+            rows={4}
+            autoFocus
+          />
+          <div className="seed-validation-info">
+            <span className={`word-count ${isValid ? 'valid' : wordCount > 12 ? 'error' : 'warning'}`}>
+              {wordCount}/12 words
+            </span>
+            {wordCount > 0 && wordCount !== 12 && (
+              <span className="validation-message">
+                {wordCount < 12 ? `Need ${12 - wordCount} more words` : `Remove ${wordCount - 12} words`}
+              </span>
+            )}
+            {isValid && (
+              <span className="validation-success">✓ Ready to import</span>
+            )}
+          </div>
         </div>
 
         <div className="popup-actions-row">
@@ -114,7 +116,7 @@ const handleImport = async () => {
           <button
             className="confirm-btn"
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !isValid}
           >
             {loading ? "Importing…" : <><MdLockOpen style={{marginRight: '4px', verticalAlign: 'middle'}} />Import</>}
           </button>
