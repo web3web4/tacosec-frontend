@@ -47,6 +47,12 @@ body {
 .app-container {
   background-color: var(--background);
   backdrop-filter: none;
+  max-width: 400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  height: 100vh;
+  position: relative;
+  padding-bottom: 80px; /* space for fixed bottom nav */
 }
 
 /* Global scrollbar styling */
@@ -229,7 +235,7 @@ body {
 }
 
 .tab-button.active::after {
-  width: 100%;
+  width: 300%;
   height: 3px;
   background: var(--background);
   box-shadow: none;

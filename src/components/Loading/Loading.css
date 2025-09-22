@@ -12,60 +12,17 @@
 }
 
 .logo-background {
-  padding: 2rem;
-  border-radius: 0;
-  background: var(--surface);
-  border: 2px solid var(--metro-green);
-  box-shadow: var(--box-shadow);
   position: relative;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-}
-
-.logo-container {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-  z-index: 2;
-}
-
-/* Glow animation behind the logo */
-.logo-container::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  right: -20px;
-  bottom: -20px;
-  background: radial-gradient(circle, rgba(0, 255, 127, 0.4) 0%, rgba(0, 255, 127, 0.2) 40%, transparent 70%);
-  border-radius: 50%;
-  animation: glow 2s ease-in-out infinite alternate;
-  z-index: 1;
-}
-
-@keyframes glow {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
+  background: var(--surface);
+  border: 2px solid var(--metro-green);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 0 30px rgba(149, 255, 93, 0.3);
 }
 
 .logo-background::after {
@@ -76,11 +33,51 @@
   right: 0;
   bottom: 0;
   background: repeating-linear-gradient(
-    90deg,
+    45deg,
     transparent,
-    transparent 40px,
-    rgba(0, 200, 81, 0.02) 40px,
-    rgba(0, 200, 81, 0.02) 42px
+    transparent 10px,
+    rgba(149, 255, 93, 0.1) 10px,
+    rgba(149, 255, 93, 0.1) 20px
   );
+  border-radius: 18px;
+  animation: glow 2s ease-in-out infinite alternate;
   pointer-events: none;
+}
+
+.logo-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px var(--metro-green));
+}
+
+@keyframes glow {
+  0% {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(149, 255, 93, 0.1) 10px,
+      rgba(149, 255, 93, 0.1) 20px
+    );
+  }
+  100% {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(149, 255, 93, 0.2) 10px,
+      rgba(149, 255, 93, 0.2) 20px
+    );
+  }
 }

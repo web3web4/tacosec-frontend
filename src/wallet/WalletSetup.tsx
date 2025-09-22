@@ -1,10 +1,9 @@
 import { ConfirmSeedPopup, DecryptPrompt, SeedImportPopup, ResetPasswordWithSeed, SeedBackupPopup } from "@/components";
-import { shouldShowBackup, getIdentifier, decryptMnemonic, handleWalletImport } from "@/utils";
+import { shouldShowBackup, getIdentifier, decryptMnemonic, handleWalletImport, MetroSwal } from "@/utils";
 import { showInitialPrompt } from "@/components/Wallet/InitialPrompt";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
-import Swal from "sweetalert2";
 
 export default function WalletSetup() {
   const {
@@ -58,7 +57,7 @@ export default function WalletSetup() {
     );
 
     if (otherWalletKey) {
-      Swal.fire({
+      MetroSwal.fire({
         icon: "error",
         title: "Access Denied",
         html: `<p style="font-size:14px;">You are not allowed to access this app using multiple accounts on the same device.</p>`,
@@ -98,7 +97,11 @@ export default function WalletSetup() {
 
     const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
-      Swal.fire("Error", "No encrypted seed found.", "error");
+      MetroSwal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No encrypted seed found.'
+      });
       return;
     }
 
@@ -133,8 +136,16 @@ export default function WalletSetup() {
       setAddress,
       setHasWallet,
       setDecryptedPassword,
-      onDone: () => Swal.fire("Success", "Wallet restored successfully.", "success"),
-      onError: (msg) => Swal.fire("Error", msg, "error"),
+      onDone: () => MetroSwal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Wallet restored successfully.'
+      }),
+      onError: (msg) => MetroSwal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: msg
+      }),
     });
   };
 
@@ -147,10 +158,18 @@ export default function WalletSetup() {
           if (identifier) localStorage.setItem(`seedBackupDone-${identifier}`, "true");
           setShowBackup(false);
           setVerifyIndices(null);
-          Swal.fire("✅ Success", "Backup complete", "success");
+          MetroSwal.fire({
+            icon: 'success',
+            title: '✅ Success',
+            text: 'Backup complete'
+          });
         }}
         onFailure={() => {
-          Swal.fire("❌ Failed", "Verification failed. Try again.", "error");
+          MetroSwal.fire({
+            icon: 'error',
+            title: '❌ Failed',
+            text: 'Verification failed. Try again.'
+          });
           setVerifyIndices(null);
         }}
       />
@@ -171,7 +190,11 @@ export default function WalletSetup() {
           <ResetPasswordWithSeed
             onSuccess={() => {
               setShowResetFlow(false);
-              Swal.fire("Success", "You can now unlock your wallet.", "success");
+              MetroSwal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'You can now unlock your wallet.'
+              });
             }}
             onCancel={() => {
               setShowResetFlow(false);

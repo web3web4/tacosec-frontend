@@ -46,7 +46,7 @@ const Settings: React.FC = () => {
     if (!identifier) return;
     const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
-      MetroSwal.error("Error", "No encrypted seed found.");
+      MetroSwal.error("Error", "We couldn't find a saved seed on this device.");
       return;
     }
     setShowDecryptPrompt(true);
@@ -91,7 +91,7 @@ const submitDecryption = () => {
         })
         .catch(err => {
           console.error("Failed to copy address: ", err);
-          MetroSwal.error("Error", "Failed to copy address");
+          MetroSwal.error("Error", "We couldn't copy your address. Please try again.");
         });
     }
   };
@@ -107,11 +107,11 @@ const submitDecryption = () => {
   const handleClearData = () => {
     MetroSwal.fire({
       icon: "warning",
-      title: "Warning",
-      html: "When I click on the OK button, your wallet will be lost forever and cannot be recovered. Any data related to the wallet will also be deleted.",
-      confirmButtonText: "OK",
+      title: "Delete all data?",
+      html: "This will permanently remove your wallet and all related data from this device. This action cannot be undone.",
+      confirmButtonText: "Delete",
       showCancelButton: true,
-      cancelButtonText: "Cancel",
+      cancelButtonText: "Keep data",
     }).then((result) => {
       if (result.isConfirmed) {
         // Delete the specified localStorage items
@@ -239,7 +239,7 @@ const submitDecryption = () => {
         <ResetPasswordWithSeed
           onSuccess={() => {
             setShowResetFlow(false);
-            MetroSwal.success("Success", "You can now unlock your wallet with your new password.");
+            MetroSwal.success("Password updated", "Your password has been updated. You can now unlock your wallet.");
           }}
           onCancel={() => {
             setShowResetFlow(false);

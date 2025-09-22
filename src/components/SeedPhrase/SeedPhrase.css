@@ -75,7 +75,6 @@
 
 .warning {
   background: var(--background);
-  border: 2px solid var(--metro-green);
   border-radius: 0;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -132,6 +131,99 @@
 .input-field:hover {
   border-color: var(--metro-green);
   box-shadow: 0 0 0 2px rgba(0, 200, 81, 0.1);
+}
+
+/* New styles for single seed phrase input */
+.seed-input-container {
+  margin-bottom: 1.5rem;
+}
+
+.seed-phrase-input {
+  width: 100%;
+  padding: 1rem;
+  background: var(--background);
+  border: 2px solid var(--metro-green);
+  border-radius: 0;
+  color: var(--metro-green);
+  font-size: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+.seed-phrase-input::placeholder {
+  color: rgba(149, 255, 93, 0.5);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.seed-phrase-input:focus {
+  outline: none;
+  border-color: var(--metro-green);
+  box-shadow: 0 0 0 3px rgba(149, 255, 93, 0.2);
+  text-shadow: none;
+}
+
+.seed-phrase-input:hover {
+  border-color: var(--metro-green);
+  box-shadow: 0 0 0 2px rgba(149, 255, 93, 0.1);
+}
+
+.seed-validation-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: var(--background);
+  border-radius: 0;
+  font-size: 0.9rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.word-count {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0;
+  border: 1px solid;
+}
+
+.word-count.valid {
+  color: var(--metro-green);
+  border-color: var(--metro-green);
+  background: rgba(149, 255, 93, 0.1);
+}
+
+.word-count.warning {
+  color: #ffa500;
+  border-color: #ffa500;
+  background: rgba(255, 165, 0, 0.1);
+}
+
+.word-count.error {
+  color: #ff4444;
+  border-color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.validation-message {
+  color: rgba(149, 255, 93, 0.8);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.validation-success {
+  color: var(--metro-green);
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .seed-grid {

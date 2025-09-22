@@ -92,14 +92,12 @@ export default function MyData() {
                   <div className="expanded-box">
                     <p className="password-text">
                       {decrypting ? (
-                        <span>
-                          <span className="decrypting-animation">
-                            🗝️ Unlocking your secret
-                            <span className="dots">
-                              <span>.</span>
-                              <span>.</span>
-                              <span>.</span>
-                            </span>
+                        <span className="decrypting-animation">
+                          Decrypting
+                          <span className="dots">
+                            <span>.</span>
+                            <span>.</span>
+                            <span>.</span>
                           </span>
                         </span>
                       ) : decryptedMessages[item.id] ? (

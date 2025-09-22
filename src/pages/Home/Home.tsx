@@ -1,6 +1,6 @@
 import { MyData , SharedWithMy} from "@/section";
 import { useHome } from "@/context";
-import { SectionErrorBoundary } from "@/components";
+import { SectionErrorBoundary, DotsLoader } from "@/components";
 import "./Home.css";
 
 
@@ -32,17 +32,7 @@ const Home: React.FC = () => {
         {
         isLoading ? (
           <div className="loading-container-home">
-            <div className="loading-animation">
-              <h2 className="loading-title">
-                Loading Your Data
-                <span className="loading-dots">
-                  <span>.</span>
-                  <span>.</span>
-                  <span>.</span>
-                </span>
-              </h2>
-              <div className="loading-spinner"></div>
-            </div>
+            <DotsLoader size="large" />
           </div>
         ) :
         activeTab === "mydata" ? (
