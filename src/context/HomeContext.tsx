@@ -232,6 +232,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     if (isHasSharedWith) {
       MetroSwalOptions.input = 'checkbox';
       MetroSwalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
+      MetroSwalOptions.customClass = {
+        ...MetroSwalOptions.customClass,
+        input: 'metro-swal-checkbox-input'
+      };
     }
   
     const result = await MetroSwal.fire(MetroSwalOptions);
