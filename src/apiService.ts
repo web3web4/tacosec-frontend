@@ -28,14 +28,12 @@ const getAuthHeaders = (initData?: string) => {
 
 export async function signupUser(initData: string): Promise<initDataType> {
   const data = parseTelegramInitData(initData);
+  const headers = getAuthHeaders(initData);
   
   return handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/users/signup`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
       body: JSON.stringify(data),
     });
     return response;
@@ -43,12 +41,12 @@ export async function signupUser(initData: string): Promise<initDataType> {
 }
 
 export async function loginUserWeb(publicAddress:string, signature:string): Promise<AuthDataType> {
+  const headers = getAuthHeaders();
+  
   const authData = await handleApiCall<AuthDataType>(async () => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({publicAddress, signature}),
     });
     return response;
@@ -105,15 +103,14 @@ export async function storageEncryptedData(
 
 export async function getUserProfileDetails(username: string): Promise<UserProfileDetailsType | null> {
   if (!username) return null;
+  const headers = getAuthHeaders();
   
   const html = await handleApiCall<string>(async () => {
     const response = await fetch(
       `${API_BASE_URL}/users/telegram/profile?username=${username}`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
     return response;
@@ -153,13 +150,12 @@ export async function getDataSharedWithMy(initData?: string): Promise<SharedWith
 }
 
 export async function checkIfUserAvailable(initData: string, username: string): Promise<boolean> {
+  const headers = getAuthHeaders(initData);
+  
   return handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
     });
     return response;
   });
@@ -222,13 +218,12 @@ export async function deletePassword(initData: string, id: string): Promise<void
 }
 
 export async function getAutoCompleteUsername(initData: string, username: string): Promise<SearchDataType[]> {
+  const headers = getAuthHeaders(initData);
+  
   const result = await handleApiCall<{ data: SearchDataType[] }>(async () => {
     const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${username}&limit=5&searchType=contains`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
     });
     return response;
   });
@@ -237,13 +232,12 @@ export async function getAutoCompleteUsername(initData: string, username: string
 }
 
 export async function reportUser(initData: string, report: Report): Promise<void> {
+  const headers = getAuthHeaders(initData);
+  
   await handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/reports`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
       body: JSON.stringify(report),
     });
     return response;
@@ -251,13 +245,12 @@ export async function reportUser(initData: string, report: Report): Promise<void
 }
 
 export async function sendContractSupport(initData: string, supportData: SupportData): Promise<ContractSupportResponse> {
+  const headers = getAuthHeaders(initData);
+  
   return handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/telegram/send-to-specific-admin`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
       body: JSON.stringify(supportData),
     });
     return response;
@@ -265,13 +258,12 @@ export async function sendContractSupport(initData: string, supportData: Support
 }
 
 export async function getChildrenForSecret(initData: string, parentId: string): Promise<ChildDataItem[]  | { statusCode: number; message: string }> {
+  const headers = getAuthHeaders(initData);
+  
   const result = await handleApiCall<{ passwords?: ChildDataItem[] } | { statusCode: number; message: string }>(async () => {
     const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
     });
     return response;
   });
@@ -283,26 +275,24 @@ export async function getChildrenForSecret(initData: string, parentId: string): 
 }
 
 export async function setSecretView(initData: string, id: string): Promise<void> {
+  const headers = getAuthHeaders(initData);
+  
   await handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
     });
     return response;
   });
 }
 
 export async function getSecretViews(initData: string, id: string): Promise<SecretViews> {
+  const headers = getAuthHeaders(initData);
+  
   const result = await handleApiCall<SecretViews>(async () => {
     const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${id}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Telegram-Init-Data": initData,
-      },
+      headers,
     });
     return response;
   });

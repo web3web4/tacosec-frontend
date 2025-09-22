@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
 import { fromHexString } from "@nucypher/shared";
-import { MetroSwal, formatDate, showError, createAppError } from "@/utils";
+import { MetroSwal, formatDate, showError, createAppError, handleSilentError } from "@/utils";
 import { fromBytes } from "@nucypher/taco";
 import { noUserImage } from "@/assets";
 import { useUser } from "@/context";
@@ -112,7 +112,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
           showError(appError, "Authentication Error");
         }
       } else {
-        showError(appError, "Failed to Load Data");
+        handleSilentError(appError, "Failed to Load Data");
       }
     } finally {
       setIsLoading(false);
@@ -173,7 +173,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
           showError(appError, "Authentication Error");
         }
       } else {
-        showError(appError, "Failed to Load Shared Data");
+        handleSilentError(appError, "Failed to Load Shared Data");
       }
     } finally {
       setIsLoading(false);

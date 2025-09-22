@@ -87,7 +87,7 @@ export interface SearchDataType{
   username: string;
   firstName: string;
   lastName: string;
-  address: string;
+  latestPublicAddress: string;
   isPreviouslyShared: boolean;
 }
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;

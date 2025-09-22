@@ -172,7 +172,7 @@ const handleSearchSelect = (user: SearchDataType) => {
       img: { src: noUserImage },
       name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
       username: user.username,
-      address: user.address,
+      address: user.latestPublicAddress,
       invited: user.isPreviouslyShared ?? false,
     },
     error: null,

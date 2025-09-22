@@ -93,7 +93,7 @@ export default function MyData() {
                     <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
-                          Decrypting
+                          🗝️ Unlocking your secret
                           <span className="dots">
                             <span>.</span>
                             <span>.</span>
