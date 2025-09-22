@@ -99,7 +99,7 @@ export default function SharedWithMy() {
                     <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
-                          Decrypting
+                          🗝️ Unlocking your secret
                           <span className="dots">
                             <span>.</span>
                             <span>.</span>
