@@ -73,13 +73,6 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let usernames: string = userData?.username.toLowerCase()!;
-      shareList
-        .filter((item) => item.data.username !== null)
-        .forEach((item) => {
-          usernames += "," + item.data.username!.toLowerCase();
-        });
-
       let publicAddresses: string[] = [];
       publicAddresses.push(address!);
       shareList
@@ -226,7 +219,6 @@ const AddData: React.FC = () => {
     }
     setEncrypting(false);
   };
-  console.log("shareList:", searchData);
   return (
     <div className="add-data-container">
       {isOpenPopup && (
@@ -377,7 +369,7 @@ const AddData: React.FC = () => {
                 type="text"
                 value={shareWith}
                 onChange={(e) => handleSearch(e.target.value)}
-                placeholder="@user-name"
+                placeholder="@username or address"
                 className="input-field"
               />
               {isSearch && <span className="spinner" />}

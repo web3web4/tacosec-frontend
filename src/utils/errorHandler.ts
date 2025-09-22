@@ -38,7 +38,7 @@ export function handleApiError(response: Response, customMessage?: string): AppE
     type = 'auth';
     message = 'Authentication failed. Please log in again.';
     // Clear invalid token
-    localStorage.removeItem('jwt_token');
+    // localStorage.removeItem('jwt_token');
   } else if (response.status >= 400 && response.status < 500) {
     type = 'validation';
   } else if (response.status >= 500) {
