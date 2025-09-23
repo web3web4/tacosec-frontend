@@ -8,16 +8,6 @@
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/.well-known/farcaster.json",
-      "dest": "/.well-known/farcaster.json",
-      "headers": {
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=3600"
-      }
-    }
-  ],
   "headers": [
     {
       "source": "/.well-known/farcaster.json",
