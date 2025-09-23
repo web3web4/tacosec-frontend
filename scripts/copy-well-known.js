@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 // Ensure the build/.well-known directory exists
 const buildWellKnownDir = path.join(__dirname, '..', 'build', '.well-known');
