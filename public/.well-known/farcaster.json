@@ -1,0 +1,20 @@
+{
+  "frame": {
+    "name": "tacosec staging",
+    "homeUrl": "https://staging.tacosec.com",
+    "iconUrl": "https://staging.tacosec.com/icon.png",
+    "version": "1",
+    "imageUrl": "https://staging.tacosec.com/previewimage.png",
+    "subtitle": "tacosec staging",
+    "webhookUrl": "https://staging.tacosec.com/api/webhook",
+    "description": "tacosec staging",
+    "splashImageUrl": "https://staging.tacosec.com/splash.png",
+    "primaryCategory": "social",
+    "splashBackgroundColor": "#95ff5d"
+  },
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  }
+}
