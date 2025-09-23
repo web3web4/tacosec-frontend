@@ -185,6 +185,19 @@
   color: #666666 !important;
 }
 
+.metro-swal-popup .swal2-checkbox input[type="checkbox"] {
+  accent-color: #95ff5d !important;
+}
+
+.metro-swal-popup .swal2-checkbox input[type="checkbox"]:focus {
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5) !important;
+  outline: none !important;
+}
+
+.metro-swal-popup .metro-swal-checkbox-input {
+  background: transparent;
+  color: #ffffff;
+}
 
 .metro-swal-popup .swal2-textarea {
   background: #1a1a1a !important;
