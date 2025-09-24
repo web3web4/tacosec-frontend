@@ -5,7 +5,7 @@ import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever } from "react-icons/md";
 import { useUser } from "@/context";
 import { useState, useEffect } from "react";
-import { getIdentifier } from "@/utils";
+import { formatAddress, getIdentifier } from "@/utils";
 import { useSetting } from "@/hooks";
 import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
@@ -96,13 +96,6 @@ const submitDecryption = () => {
     }
   };
 
-  // Format address to show only first four and last four characters
-  const formatAddress = (addr: string | undefined) => {
-    if (!addr) return "";
-    if (addr.length <= 8) return addr;
-    return `${addr.substring(0, 4)}......${addr.substring(addr.length - 4)}`;
-  };
-
   // Handle clear data functionality
   const handleClearData = () => {
     MetroSwal.fire({
@@ -153,7 +146,7 @@ const submitDecryption = () => {
             </div>
             <div className="address-container">
               <span>Address: </span>
-              <span className="address-value">{formatAddress(address || undefined)}</span>
+              <span className="address-value">{formatAddress(4, address || undefined)}</span>
               <button 
                 className="copy-address-btn" 
                 onClick={copyAddressToClipboard}

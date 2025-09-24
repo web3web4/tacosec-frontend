@@ -1,12 +1,12 @@
-import { noUserImage, acceptIcon, deleteIcon } from "@/assets";
+import { noUserImage, deleteIcon } from "@/assets";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
-import { parseTelegramInitData, showError, createAppError } from "@/utils";
+import { parseTelegramInitData, showError, createAppError, formatAddress } from "@/utils";
 import { MetroSwal } from "@/utils/metroSwal";
-import { useAddData, useTaco} from "@/hooks";
-import { CustomPopup, SectionErrorBoundary } from "@/components";
+import { useAddData, useTaco } from "@/hooks";
+import { CustomPopup, SectionErrorBoundary, TelegramInviteButton } from "@/components";
 import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
@@ -15,7 +15,6 @@ import { DataPayload } from "@/interfaces/addData";
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
 const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
-const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 const AddData: React.FC = () => {
   const {
@@ -33,7 +32,6 @@ const AddData: React.FC = () => {
     handleSearchSelect,
     handleDeleteUsername,
     handleAddShare,
-    handleInvite,
     cleanFields,
     checkEncrypting,
     setMessage,
@@ -47,9 +45,9 @@ const AddData: React.FC = () => {
   const [months, setMonths] = useState<number>(0);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [useTimeCondition, setUseTimeCondition] = useState(false);
-  const [timeConditionType, setTimeConditionType] = useState<'unlock' | 'expire'>('unlock');
-  const { provider, signer , address } = useWallet();
-  const { initDataRaw, userData, isBrowser } = useUser();
+  const [timeConditionType, setTimeConditionType] = useState<"unlock" | "expire">("unlock");
+  const { provider, signer, address } = useWallet();
+  const { initDataRaw, isBrowser } = useUser();
 
   const { isInit, encryptDataToBytes } = useTaco({
     domain,
@@ -64,7 +62,7 @@ const AddData: React.FC = () => {
   const encryptMessage = async () => {
     if (!provider) return;
 
-    if(!checkEncrypting()) return;
+    if (!checkEncrypting()) return;
 
     setEncrypting(true);
     try {
@@ -77,107 +75,101 @@ const AddData: React.FC = () => {
       publicAddresses.push(address!);
       shareList
         .filter((item) => item.data.address !== null)
-        .map((item) => (
-          publicAddresses.push(item.data.address!)
-        ));
+        .map((item) => publicAddresses.push(item.data.address!));
 
-
-      const checkUsersCondition = new conditions.base.contextVariable.ContextVariableCondition({
-        contextVariable: ":userAddress",
-        returnValueTest: {
-          comparator: 'in',
-          value: publicAddresses,
-        },
-      });
-
-/*
-      // JSON API condition
-      const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
-        endpoint: `${BACKEND}/telegram/verify-test`,
-        parameters: {
-          TelegramUsernames: usernames,
-          authorizationToken: ":authorizationToken"
-        },
-        query: '$.isValid',
-        returnValueTest: { comparator: '==', value: true },
-      });
-*/
-
-    // Calculate future timestamp based on time period inputs
-    const now = new Date();
-    const currentTimestamp = Math.floor(now.getTime() / 1000); // always UTC-based
-
-    // Convert all inputs to seconds
-    const secondsToAdd = Number(seconds) || 0;
-    const minutesToAdd = (Number(minutes) || 0) * 60;
-    const hoursToAdd = (Number(hours) || 0) * 60 * 60;
-    const monthsToAdd = (Number(months) || 0) * 30 * 24 * 60 * 60; // Approximate months as 30 days
-
-    // Final timestamp (no timezone offset added, blockchain uses UTC!)
-    let adjustedTimestamp = currentTimestamp + secondsToAdd + minutesToAdd + hoursToAdd + monthsToAdd;
-
-    // ✅ Safety check: prevent negative or unrealistic values
-    if (adjustedTimestamp < currentTimestamp) {
-      console.warn("Adjusted timestamp is earlier than current time. Resetting to current time.");
-      adjustedTimestamp = currentTimestamp;
-    }
-
-    const tenYearsLater = currentTimestamp + 10 * 365 * 24 * 60 * 60;
-    if (adjustedTimestamp > tenYearsLater) {
-      console.warn("Adjusted timestamp too far in the future. Resetting to 10 years later max.");
-      adjustedTimestamp = tenYearsLater;
-    }
-
-    // Build the TimeCondition
-    let compoundCondition;
-    if (useTimeCondition) {
-      let timeCondition;
-
-      if (timeConditionType === 'unlock') {
-        timeCondition = new conditions.base.time.TimeCondition({
-          chain: 80002,
-          method: "blocktime",
+      const checkUsersCondition =
+        new conditions.base.contextVariable.ContextVariableCondition({
+          contextVariable: ":userAddress",
           returnValueTest: {
-            comparator: '>=',
-            value: adjustedTimestamp,
-          }
+            comparator: "in",
+            value: publicAddresses,
+          },
         });
-      } else {
-        timeCondition = new conditions.base.time.TimeCondition({
-          chain: 80002,
-          method: "blocktime",
-          returnValueTest: {
-            comparator: '<=',
-            value: adjustedTimestamp,
-          }
-        });
+
+      // Calculate future timestamp based on time period inputs
+      const now = new Date();
+      const currentTimestamp = Math.floor(now.getTime() / 1000); // always UTC-based
+
+      // Convert all inputs to seconds
+      const secondsToAdd = Number(seconds) || 0;
+      const minutesToAdd = (Number(minutes) || 0) * 60;
+      const hoursToAdd = (Number(hours) || 0) * 60 * 60;
+      const monthsToAdd = (Number(months) || 0) * 30 * 24 * 60 * 60; // Approximate months as 30 days
+
+      // Final timestamp (no timezone offset added, blockchain uses UTC!)
+      let adjustedTimestamp =
+        currentTimestamp +
+        secondsToAdd +
+        minutesToAdd +
+        hoursToAdd +
+        monthsToAdd;
+
+      // ✅ Safety check: prevent negative or unrealistic values
+      if (adjustedTimestamp < currentTimestamp) {
+        console.warn(
+          "Adjusted timestamp is earlier than current time. Resetting to current time."
+        );
+        adjustedTimestamp = currentTimestamp;
       }
 
-      compoundCondition = conditions.compound.CompoundCondition.and([
-        checkUsersCondition,
-        timeCondition,
-      ]);
-    } else {
-      compoundCondition = checkUsersCondition;
-    }
+      const tenYearsLater = currentTimestamp + 10 * 365 * 24 * 60 * 60;
+      if (adjustedTimestamp > tenYearsLater) {
+        console.warn(
+          "Adjusted timestamp too far in the future. Resetting to 10 years later max."
+        );
+        adjustedTimestamp = tenYearsLater;
+      }
 
+      // Build the TimeCondition
+      let compoundCondition;
+      if (useTimeCondition) {
+        let timeCondition;
+
+        if (timeConditionType === "unlock") {
+          timeCondition = new conditions.base.time.TimeCondition({
+            chain: 80002,
+            method: "blocktime",
+            returnValueTest: {
+              comparator: ">=",
+              value: adjustedTimestamp,
+            },
+          });
+        } else {
+          timeCondition = new conditions.base.time.TimeCondition({
+            chain: 80002,
+            method: "blocktime",
+            returnValueTest: {
+              comparator: "<=",
+              value: adjustedTimestamp,
+            },
+          });
+        }
+
+        compoundCondition = conditions.compound.CompoundCondition.and([
+          checkUsersCondition,
+          timeCondition,
+        ]);
+      } else {
+        compoundCondition = checkUsersCondition;
+      }
 
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
         message,
-        compoundCondition ,
+        compoundCondition,
         signer!
       );
 
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
-        const sharedWithList: { username: string; invited: boolean }[] = shareList
-          .filter((item) => item.data.username !== null)
-          .map((item) => ({
-            username: item.data.username!,
-            invited: item.data.invited ?? false,
-          }));
+        const sharedWithList: { username: string; invited: boolean }[] =
+          shareList
+            .filter((item) => item.data.username !== null)
+            .map((item) => ({
+              username: item.data.username!,
+              invited: item.data.invited ?? false,
+            }));
 
         const payload: DataPayload = {
           key: name,
@@ -185,24 +177,20 @@ const AddData: React.FC = () => {
           type: "text",
           value: encryptedHex!,
           sharedWith: sharedWithList,
-        };    
+        };
         // Only add initData if not from web (i.e., from Telegram)
         if (!isBrowser) {
           payload.initData = parsedInitData;
         }
 
-        const res = await storageEncryptedData(
-          payload,
-          initDataRaw!
-        );
-
+        const res = await storageEncryptedData(payload, initDataRaw!);
 
         if (res) {
           MetroSwal.success(
             "All set",
             "Your data was encrypted and saved securely."
           );
-          
+
           cleanFields();
           // Reset time period inputs
           setSeconds(0);
@@ -210,12 +198,11 @@ const AddData: React.FC = () => {
           setHours(0);
           setMonths(0);
           setShowMoreOptions(false);
-          
         }
       }
     } catch (e: unknown) {
-        const appError = createAppError(e, 'unknown');
-        showError(appError, 'Error');
+      const appError = createAppError(e, "unknown");
+      showError(appError, "Error");
     }
     setEncrypting(false);
   };
@@ -236,72 +223,98 @@ const AddData: React.FC = () => {
               }}
             />
             <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
-            {!userProfile.error && <button onClick={handleConfirmClick}>Confirm</button>}
-            <button onClick={() => closePopup(false)}>Cancel</button>
+            {!userProfile.error && (
+              userProfile.data.existsInPlatform ? (
+                <button onClick={() => handleConfirmClick(userProfile.data)}>
+                  Confirm
+                </button>
+              ) : (
+                <div>
+                  <p className="not-found">
+                    This user isn’t on our platform. Invite them to create a
+                    public address, or share directly by entering a public address
+                  </p>
+                  <TelegramInviteButton
+                    username={userProfile.data.username!}
+                    botUserName={BOT_USER_NAME}
+                    onClick={() => { }}>
+                    Invite
+                  </TelegramInviteButton>
+                </div>
+              )
+            )}
+            <button onClick={closePopup}>Cancel</button>
           </div>
         </CustomPopup>
       )}
       <div className="add-data-content-wrapper">
+        <h2 className="page-title">Add New Data</h2>
+        <label>Title</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Facebook Password"
+          className="input-field"
+        />
 
-      <h2 className="page-title">Add New Data</h2>
-      <label>Title</label>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="e.g. Facebook Password"
-        className="input-field"
-      />
+        <label>Secret</label>
+        <textarea
+          placeholder="New Data ..."
+          className="input-field-textarea"
+          rows={3}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
 
-      <label>Secret</label>
-      <textarea
-        placeholder="New Data ..."
-        className="input-field-textarea"
-        rows={3}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-  
-      <div className="checkbox-time-condition">
-        <label>
-          <input
-            type="checkbox"
-            checked={useTimeCondition}
-            onChange={(e) => setUseTimeCondition(e.target.checked)}
-          />
-          Do you want to add a date/time condition to unlock this secret?
-        </label>
-      </div>
-      {useTimeCondition && (
-          <><div className="time-condition-type">
-            <label>
-              <input
-                type="radio"
-                value="unlock"
-                checked={timeConditionType === 'unlock'}
-                onChange={() => setTimeConditionType('unlock')} />
-              Unlock after specific time
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="expire"
-                checked={timeConditionType === 'expire'}
-                onChange={() => setTimeConditionType('expire')} />
-              Expire after specific time
-            </label>
-          </div><div className="more-options-section">
+        <div className="checkbox-time-condition">
+          <label>
+            <input
+              type="checkbox"
+              checked={useTimeCondition}
+              onChange={(e) => setUseTimeCondition(e.target.checked)}
+            />
+            Do you want to add a date/time condition to unlock this secret?
+          </label>
+        </div>
+        {useTimeCondition && (
+          <>
+            <div className="time-condition-type">
+              <label>
+                <input
+                  type="radio"
+                  value="unlock"
+                  checked={timeConditionType === "unlock"}
+                  onChange={() => setTimeConditionType("unlock")}
+                />
+                Unlock after specific time
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="expire"
+                  checked={timeConditionType === "expire"}
+                  onChange={() => setTimeConditionType("expire")}
+                />
+                Expire after specific time
+              </label>
+            </div>
+            <div className="more-options-section">
               <button
                 className="more-options-toggle"
                 onClick={() => setShowMoreOptions(!showMoreOptions)}
               >
-                <span>Time Period {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}</span>
+                <span>
+                  Time Period{" "}
+                  {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}
+                </span>
               </button>
 
               {showMoreOptions && (
                 <div className="more-options-content">
                   <p className="more-options-description">
-                    Set when your secret will be unlocked. Enter values in seconds, minutes, hours, or months.
+                    Set when your secret will be unlocked. Enter values in
+                    seconds, minutes, hours, or months.
                   </p>
                   <div className="time-period-container">
                     <div className="time-input-group">
@@ -309,8 +322,11 @@ const AddData: React.FC = () => {
                         type="number"
                         min="0"
                         value={seconds}
-                        onChange={(e) => setSeconds(parseInt(e.target.value) || 0)}
-                        className="time-input" />
+                        onChange={(e) =>
+                          setSeconds(parseInt(e.target.value) || 0)
+                        }
+                        className="time-input"
+                      />
                       <label className="time-label">Seconds</label>
                     </div>
                     <div className="time-input-group">
@@ -318,8 +334,11 @@ const AddData: React.FC = () => {
                         type="number"
                         min="0"
                         value={minutes}
-                        onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                        className="time-input" />
+                        onChange={(e) =>
+                          setMinutes(parseInt(e.target.value) || 0)
+                        }
+                        className="time-input"
+                      />
                       <label className="time-label">Minutes</label>
                     </div>
                     <div className="time-input-group">
@@ -327,8 +346,11 @@ const AddData: React.FC = () => {
                         type="number"
                         min="0"
                         value={hours}
-                        onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                        className="time-input" />
+                        onChange={(e) =>
+                          setHours(parseInt(e.target.value) || 0)
+                        }
+                        className="time-input"
+                      />
                       <label className="time-label">Hours</label>
                     </div>
                     <div className="time-input-group">
@@ -336,129 +358,154 @@ const AddData: React.FC = () => {
                         type="number"
                         min="0"
                         value={months}
-                        onChange={(e) => setMonths(parseInt(e.target.value) || 0)}
-                        className="time-input" />
+                        onChange={(e) =>
+                          setMonths(parseInt(e.target.value) || 0)
+                        }
+                        className="time-input"
+                      />
                       <label className="time-label">Months</label>
                     </div>
                   </div>
                   {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
                     <div className="time-summary">
-                      Unlocks after: {months > 0 ? `${months} month${months !== 1 ? 's' : ''} ` : ''}
-                      {hours > 0 ? `${hours} hour${hours !== 1 ? 's' : ''} ` : ''}
-                      {minutes > 0 ? `${minutes} minute${minutes !== 1 ? 's' : ''} ` : ''}
-                      {seconds > 0 ? `${seconds} second${seconds !== 1 ? 's' : ''}` : ''}
+                      Unlocks after:{" "}
+                      {months > 0
+                        ? `${months} month${months !== 1 ? "s" : ""} `
+                        : ""}
+                      {hours > 0
+                        ? `${hours} hour${hours !== 1 ? "s" : ""} `
+                        : ""}
+                      {minutes > 0
+                        ? `${minutes} minute${minutes !== 1 ? "s" : ""} `
+                        : ""}
+                      {seconds > 0
+                        ? `${seconds} second${seconds !== 1 ? "s" : ""}`
+                        : ""}
                     </div>
                   ) : null}
                 </div>
               )}
-            </div></>
-      )}
-
-
-      {encrypting && (
-        <div style={{ marginTop: "5px", color: "var(--danger)", fontWeight: "bold" }}>
-          Encrypting your secret...
-        </div>
-      )}
-      <label>Share with (optional)</label>
-      <SectionErrorBoundary sectionName="ShareWithSection">
-        <div className="share-with-row">
-          <div className="autocomplete-wrapper">
-            <div className="input-wrapper">
-              <input
-                type="text"
-                value={shareWith}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="@username or address"
-                className="input-field"
-              />
-              {isSearch && <span className="spinner" />}
             </div>
+          </>
+        )}
 
-            {searchData.length > 0 && (
-              <ul className="autocomplete-list">
-                {/* It was shared  previously */}
-                {searchData.some(item => item.isPreviouslyShared) && (
-                  <>
-                    <li className="group-title">It was shared  previously</li>
-                    {searchData
-                      .filter(item => item.isPreviouslyShared)
-                      .map((item, index) => (
-                        <li
-                          key={`shared-${index}`}
-                          onClick={() => handleSearchSelect(item)}
-                        >
-                          <p>{item.firstName} {item.lastName}</p>
-                          <p>@{item.username}</p>
-                        </li>
-                      ))}
-                  </>
-                )}
+        {encrypting && (
+          <div
+            style={{
+              marginTop: "5px",
+              color: "var(--danger)",
+              fontWeight: "bold",
+            }}
+          >
+            Encrypting your secret...
+          </div>
+        )}
+        <label>Share with (optional)</label>
+        <SectionErrorBoundary sectionName="ShareWithSection">
+          <div className="share-with-row">
+            <div className="autocomplete-wrapper">
+              <div className="input-wrapper">
+                <input
+                  type="text"
+                  value={shareWith}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  placeholder="@username or address"
+                  className="input-field"
+                />
+                {isSearch && <span className="spinner" />}
+              </div>
 
-                {/* Others */}
-                {searchData.some(item => !item.isPreviouslyShared) && (
-                  <>
-                    <li className="group-title">Others</li>
-                    {searchData
-                      .filter(item => !item.isPreviouslyShared)
-                      .map((item, index) => (
-                        <li
-                          key={`others-${index}`}
-                          onClick={() => handleSearchSelect(item)}
-                        >
-                          <p>{item.firstName} {item.lastName}</p>
-                          <p>@{item.username}</p>
-                        </li>
-                      ))}
-                  </>
-                )}
-              </ul>
-            )}
+              {searchData.length > 0 && (
+                <ul className="autocomplete-list">
+                  {/* It was shared  previously */}
+                  {searchData.some((item) => item.isPreviouslyShared) && (
+                    <>
+                      <li className="group-title">It was shared previously</li>
+                      {searchData
+                        .filter((item) => item.isPreviouslyShared)
+                        .map((item, index) => (
+                          <li
+                            key={`shared-${index}`}
+                            onClick={() => handleSearchSelect(item)}
+                          >
+                            <p>
+                              {item.firstName} {item.lastName}
+                            </p>
+                            <p>@{item.username}</p>
+                          </li>
+                        ))}
+                    </>
+                  )}
 
-      </div>
-          <button className="add-share-button" onClick={ () => handleAddShare(shareWith)}>
-            +
-          </button>
-        </div>
-      </SectionErrorBoundary>
+                  {/* Others */}
+                  {searchData.some((item) => !item.isPreviouslyShared) && (
+                    <>
+                      <li className="group-title">Others</li>
+                      {searchData
+                        .filter((item) => !item.isPreviouslyShared)
+                        .map((item, index) => (
+                          <li
+                            key={`others-${index}`}
+                            onClick={() => handleSearchSelect(item)}
+                          >
+                            <p>
+                              {item.firstName} {item.lastName}
+                            </p>
+                            <p>@{item.username}</p>
+                          </li>
+                        ))}
+                    </>
+                  )}
+                </ul>
+              )}
+            </div>
+            <button
+              className="add-share-button"
+              onClick={() => handleAddShare(shareWith)}
+            >
+              +
+            </button>
+          </div>
+        </SectionErrorBoundary>
 
-      {shareList.length > 0 && (
-        <SectionErrorBoundary sectionName="ShareList">
-          <div className="share-list">
-            <p>Sharing with:</p>
+        {shareList.length > 0 && (
+          <SectionErrorBoundary sectionName="ShareList">
+            <div className="share-list">
+              <p>Sharing with:</p>
               {shareList.map((user, i) => (
                 <div className="user_container" key={i}>
-                  <div>- {user.data.username ? `@${user.data.username}` : user.data.address}</div>
+                  <div>
+                    -{" "}
+                    {user.data.username
+                      ? `@${user.data.username}`
+                      : formatAddress(10, user.data.address!)}
+                  </div>
                   <div className="user-content-buttons">
-                    {user.data.username ? (
-                      user.data.invited ? (
-                        <img src={acceptIcon} alt="available icon" width={20} height={20}/>
-                      ) : (
-                        <a
-                          href={`https://t.me/${user.data.username}?text=${encodeURIComponent(
-                            `I've shared some private files with you. Please open the bot to view them: ${BOT_USER_NAME}`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <button className="btn-invited" onClick={() => {handleInvite(i)}}>invite</button>
-                        </a>
-                      )
-                    ) : null}
-                    <div className="delete-user-btn" onClick={() => handleDeleteUsername(user.data.username || user.data.address!)}>
-                      <img src={deleteIcon} alt="delete icon" width={20} height={20} />
-                    </div>  
+                    <div
+                      className="delete-user-btn"
+                      onClick={() =>
+                        handleDeleteUsername(
+                          user.data.username || user.data.address!
+                        )
+                      }
+                    >
+                      <img
+                        src={deleteIcon}
+                        alt="delete icon"
+                        width={20}
+                        height={20}
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
+            </div>
+          </SectionErrorBoundary>
+        )}
 
-          </div>
-        </SectionErrorBoundary>
-      )}
-
-      <button className="save-button" onClick={encryptMessage}>
-        Save
-      </button>
+        <button className="save-button" onClick={encryptMessage}>
+          Save
+        </button>
       </div>
     </div>
   );

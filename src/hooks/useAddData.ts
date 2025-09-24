@@ -1,9 +1,9 @@
-import { checkIfUserAvailable, getUserProfileDetails, getAutoCompleteUsername } from "@/apiService";
-import { GetUserProfileDetailsResponse, SearchDataType, UserProfileType } from "@/types/types";
+import { getUserProfileDetails, getAutoCompleteUsername } from "@/apiService";
+import { GetUserProfileDetailsResponse, SearchDataType, UserProfileDetailsType, UserProfileType } from "@/types/types";
 import { useCallback, useEffect, useState } from "react";
 import { noUserImage, userNotFoundSvg } from "@/assets";
 import { useUser, useNavigationGuard } from "@/context";
-import { MetroSwal, debounce, handleSilentError, createAppError } from "@/utils";
+import { MetroSwal, debounce,createAppError } from "@/utils";
 import { utils  } from "ethers";
 
 const initProfileData = {
@@ -12,6 +12,7 @@ const initProfileData = {
   username: "",
   invited: false,
   address: "",
+  existsInPlatform: null,
 };
 
 export default function useAddData() {
@@ -21,7 +22,6 @@ export default function useAddData() {
   const [searchData, setSearchData] = useState<SearchDataType[]>([]);
   const [shareList, setShareList] = useState<UserProfileType[]>([]);
   const [isOpenPopup, setIsOpenPopup] = useState<boolean>(false);
-  const [isCanInvite, setIsCanInvite] = useState<boolean>(false);
   const [isSearch, setIsSearch] = useState<boolean>(false);
   const [shareWith, setShareWith] = useState<string>("");
   const [message, setMessage] = useState("");
@@ -54,6 +54,7 @@ export default function useAddData() {
           username: "",
           address: "",
           invited: false,
+          existsInPlatform: false,
         };
         setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${username}` }));
         return;
@@ -65,6 +66,7 @@ export default function useAddData() {
           username: response.username,
           address: response.address,
           invited: false,
+          existsInPlatform: response.existsInPlatform,
         },
         error: null,
       });
@@ -74,27 +76,9 @@ export default function useAddData() {
     }
   };
 
-  const checkIfUserExists = async (username: string) => {
-    try {
-      const cleanedUsername = username.startsWith("@")
-        ? username.substring(1)
-        : username;
-
-      const response = await checkIfUserAvailable(initDataRaw!, cleanedUsername);
-      setIsCanInvite(response);
-    } catch (error) {
-      handleSilentError(error, 'checkIfUserExists');
-      setIsCanInvite(false); // Default to false on error
-    }
-  };
-
-  const handleConfirmClick = (): void => {
-    const cleanedUsername = shareWith.startsWith("@")
-      ? shareWith.substring(1)
-      : shareWith;
-
+  const handleConfirmClick = (data: UserProfileDetailsType): void => {
     const isAlreadyInList = shareList.some(
-      (user) => user.data.username?.toLowerCase() === cleanedUsername.trim().toLowerCase()
+      (user) => user.data.address?.toLocaleLowerCase() === data.address?.toLocaleLowerCase()
     );
 
     if (!isAlreadyInList) {
@@ -102,25 +86,16 @@ export default function useAddData() {
           ...userProfile,
           data: {
             ...userProfile.data,
-            username: cleanedUsername.toLowerCase(),
-            invited: isCanInvite,
+            address: data.address,
+            invited: false,
           },
         };
         setShareList([...shareList, updatedProfile]);
     }
     
     setIsOpenPopup(false);
-    setIsCanInvite(false);
     setShareWith("");
     setSearchData([]);
-  };
-
-  const handleInvite = (index: number) => {
-    setShareList((prevList) =>
-      prevList.map((user, i) =>
-        i === index ? { ...user, data: { ...user.data, invited: true } } : user
-      )
-    );
   };
 
   const handleSearch = async (username: string) => {
@@ -129,7 +104,7 @@ export default function useAddData() {
     getUsersAutoComplete(username);
   };
 
-  const closePopup = (value: boolean) => {
+  const closePopup = () => {
     setIsOpenPopup(false);
     setSearchData([]);
   };
@@ -149,8 +124,6 @@ export default function useAddData() {
 
         const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
         setSearchData(response);
-        console.log("searchData:", searchData);
-
       }catch(error){
         console.log(error);
       }finally{
@@ -166,19 +139,7 @@ export default function useAddData() {
 
 const handleSearchSelect = (user: SearchDataType) => {
   setShareWith(user.username);
-
-  const newProfile = {
-    data: {
-      img: { src: noUserImage },
-      name: `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
-      username: user.username,
-      address: user.latestPublicAddress,
-      invited: user.isPreviouslyShared ?? false,
-    },
-    error: null,
-  };
-
-  setShareList((prev) => [...prev, newProfile]);
+  handleAddShare(user.username);
   setSearchData([]);
 };
 
@@ -187,25 +148,28 @@ const handleAddShare = (input: string): void => {
   if (!input.trim()) return;
 
   if (utils.isAddress(input)) {
-    const newProfile = {
-      data: {
-        img: { src: noUserImage },
-        name: input,
-        username: "",   
-        address: input,
-        invited: true,  
-      },
-      error: null,
-    };
-
-    setShareList((prev) => [...prev, newProfile]);
+    const isAlreadyInList = shareList.some((user) => user.data.address?.toLocaleLowerCase() === input.toLocaleLowerCase());
+    if(!isAlreadyInList){
+        const newProfile = {
+          data: {
+            img: { src: noUserImage },
+            name: input,
+            username: "",   
+            address: input,
+            invited: true,  
+            existsInPlatform: false,
+          },
+          error: null,
+        };
+        setShareList((prev) => [...prev, newProfile]);
+     }
+    
     setShareWith("");
     setSearchData([]);
     return;
   }
 
   setIsOpenPopup(true);
-  checkIfUserExists(input);
   fetchUserProfile(input);
   setSearchData([]);
 };
@@ -214,7 +178,6 @@ const handleAddShare = (input: string): void => {
   const cleanFields = () => {
     setUserProfile({ data: initProfileData, error: null });
     setIsOpenPopup(false);
-    setIsCanInvite(false);
     setShareWith("");
     setShareList([]);
     setMessage("");
@@ -258,7 +221,6 @@ const handleAddShare = (input: string): void => {
     isSearch,
     message,
     name,
-    handleInvite,
     setIsOpenPopup,
     handleSearch,
     handleAddShare,
