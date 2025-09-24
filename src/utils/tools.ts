@@ -45,3 +45,8 @@ export function parseTelegramInitData(initData: string){
     }
   };
   
+export const formatAddress = (formatNumber: number, addr: string | undefined) => {
+    if (!addr) return "";
+    if (addr.length <= 8) return addr;
+    return `${addr.substring(0, formatNumber)}......${addr.substring(addr.length - formatNumber)}`;
+  };

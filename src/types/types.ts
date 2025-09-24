@@ -79,7 +79,8 @@ export interface UserProfileDetailsType{
   img: { src: string} | null,
   name: string,
   username: string | null,
-  address: string | null,
+  existsInPlatform: boolean | null,
+  address?: string | null,
   invited?: boolean
 }
 
@@ -193,4 +194,10 @@ export interface PublicKeyRecord {
   userTelegramId: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProfileDetails {
+  existsInPlatform: boolean,
+  publicAddress: string,
+  profile: string
 }

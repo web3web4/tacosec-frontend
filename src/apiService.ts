@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 
@@ -105,7 +105,7 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   if (!username) return null;
   const headers = getAuthHeaders();
   
-  const html = await handleApiCall<string>(async () => {
+  const response = await handleApiCall<ProfileDetails>(async () => {
     const response = await fetch(
       `${API_BASE_URL}/users/telegram/profile?username=${username}`,
       {
@@ -114,21 +114,21 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
       }
     );
     return response;
-  }, undefined, 'text');
+  }, undefined, 'json');
 
   // Check if the response contains this class, the user does not exist
-  const tgDownloadLink = html.includes("tl_main_download_link tl_main_download_link_ios");
+  const tgDownloadLink = response?.profile?.includes("tl_main_download_link tl_main_download_link_ios");
   // Also Check if the response contains this class, the user does not exist
-  const tgIconUser = html.includes("tgme_icon_user");
+  const tgIconUser = response?.profile?.includes("tgme_icon_user");
   if (tgDownloadLink || tgIconUser) return null;
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+  const doc = parser.parseFromString(response?.profile ?? "", "text/html");
   const imgEl = doc.querySelector(".tgme_page_photo_image") as HTMLImageElement | null;
   const nameEl = doc.querySelector(".tgme_page_title span") as HTMLElement | null;
   const img = imgEl ? { src: imgEl.src } : null;
   const name = nameEl?.textContent?.trim() ?? "";
   const finalUsername = username.startsWith("@") ? username.substring(1) : username;
-  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername, address: ""};
+  const res: UserProfileDetailsType = {img: img, name: name, username: finalUsername, address: response.publicAddress, existsInPlatform: response.existsInPlatform};
   return res;
 }
 

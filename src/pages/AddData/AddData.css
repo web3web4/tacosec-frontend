@@ -135,6 +135,10 @@
   margin-top: 0.5rem;
 }
 
+.not-found {
+  color: var(--danger);
+}
+
 .time-input-group {
   flex: 1;
   min-width: calc(50% - 0.5rem);
