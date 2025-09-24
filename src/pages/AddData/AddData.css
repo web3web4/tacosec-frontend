@@ -12,8 +12,7 @@
 .add-data-content-wrapper {
   position: relative;
   z-index: 1;
-  max-height: 80vh; 
-  overflow-y: auto;
+  padding-bottom: 250px;
 }
 
 .page-title {
@@ -306,7 +305,7 @@
   border: 2px solid var(--metro-green);
   background: var(--surface);
   z-index: 100;
-  max-height: 300px;
+  max-height: 250px;
   overflow-y: auto;
   margin: 0;
   padding: 0;
