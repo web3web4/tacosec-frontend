@@ -1,20 +1,20 @@
 {
   "frame": {
     "name": "tacosec staging",
-    "homeUrl": "https://staging.tacosec.com",
-    "iconUrl": "https://staging.tacosec.com/icon.png",
     "version": "1",
+    "iconUrl": "https://staging.tacosec.com/icon.png",
+    "homeUrl": "https://staging.tacosec.com",
     "imageUrl": "https://staging.tacosec.com/previewimage.png",
-    "subtitle": "tacosec staging",
-    "webhookUrl": "https://staging.tacosec.com/api/webhook",
-    "description": "tacosec staging",
     "splashImageUrl": "https://staging.tacosec.com/splash.png",
-    "primaryCategory": "social",
-    "splashBackgroundColor": "#95ff5d"
+    "splashBackgroundColor": "#95ff5d",
+    "webhookUrl": "https://staging.tacosec.com/api/webhook",
+    "subtitle": "tacosec staging",
+    "description": "tacosec staging",
+    "primaryCategory": "social"
   },
   "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
+    "header": "eyJmaWQiOjEzNDY5MzQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkMEZkMEI4ZGVhQjlGNDEyMzgyOEQ0YzJiZDU0ZjQzNGNBNUM3ODhhIn0",
+    "payload": "eyJkb21haW4iOiJzdGFnaW5nLnRhY29zZWMuY29tIn0",
+    "signature": "MHhlY2M5MGI3M2U5Y2E2ZmU0NzVjMmIwZjFlNGQ2MGE3ZmMzZTg3OTNjNzZmYmQ2NTg1MjMxNmY2YzVjMTU2YzBkNTk1NTc1ZGEyMzQ3YjJkYjA2ZGVlNzQ1ZDVjNjY3YzZjNzczMmFlNjdkMDE2YzNjNDExMjRhNzQwMmJiMTUwMjFi"
   }
 }
