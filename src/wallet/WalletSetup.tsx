@@ -1,6 +1,6 @@
 import { ConfirmSeedPopup, DecryptPrompt, SeedImportPopup, ResetPasswordWithSeed, SeedBackupPopup } from "@/components";
 import { shouldShowBackup, getIdentifier, decryptMnemonic, handleWalletImport, MetroSwal } from "@/utils";
-import { showInitialPrompt } from "@/components/Wallet/InitialPrompt";
+import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
@@ -20,7 +20,7 @@ export default function WalletSetup() {
     addressweb,
   } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
-  const [showImport, setShowImport] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
   const [passwordError, setPasswordError] = useState("");
@@ -40,11 +40,7 @@ export default function WalletSetup() {
       
   useEffect(() => {
     if (!hasWallet && (userData?.telegramId || isBrowser)) {
-      showInitialPrompt({
-        onCreate: createWalletFlow,
-        onImport: () => setShowImport(true),
-        displayName,
-      });
+      setShowOnboarding(true);
     }
   }, [hasWallet, isBrowser, userData?.telegramId]);
 
@@ -122,8 +118,11 @@ export default function WalletSetup() {
     setVerifyIndices(Array.from(indices));
   };
 
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
+
   const handleImport = async (importedMnemonic: string) => {
-    setShowImport(false);
     handleWalletImport({
       importedMnemonic,
       isBrowser,
@@ -209,19 +208,12 @@ export default function WalletSetup() {
     return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
   }
 
-  if (showImport) {
+  // Show onboarding flow for new users
+  if (showOnboarding) {
     return (
-      <SeedImportPopup
-        onImport={handleImport}
-        onCancel={() => {
-          setShowImport(false);
-          showInitialPrompt({
-            onCreate: createWalletFlow,
-            onImport: () => setShowImport(true),
-            displayName,
-
-          });
-        }}
+      <OnboardingFlow
+        initialStep="welcome"
+        onComplete={handleOnboardingComplete}
       />
     );
   }

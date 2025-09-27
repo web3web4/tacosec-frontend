@@ -81,8 +81,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       return createWalletFlow();
     }
 
-    // No need for separate confirmSavePassword call
-    const saveToBackend = savePassword;
+    // Use the new function with provided password
+    return createWalletWithPassword(password, savePassword);
+  }
+
+  async function createWalletWithPassword(password: string, saveToBackend: boolean) {
+    if (isTelegram && !userData?.telegramId) return;
+
     setSavedPasswordPreference(saveToBackend);
 
     const wallet = ethers.Wallet.createRandom();
@@ -106,7 +111,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setSeedBackupDone(userData?.telegramId || "", false);
       saveEncryptedSeed(userData?.telegramId || "", encrypted);
     }
-
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
@@ -159,6 +163,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         hasWallet,
         provider,
         createWalletFlow,
+        createWalletWithPassword,
         decryptedPassword,
         restoreWalletFromEncryptedSeed,
         setSigner,
