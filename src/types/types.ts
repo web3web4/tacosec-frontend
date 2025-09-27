@@ -81,7 +81,7 @@ export interface UserProfileDetailsType{
   name: string,
   username: string | null,
   existsInPlatform: boolean | null,
-  address?: string | null,
+  publicAddress?: string | null,
   invited?: boolean
 }
 

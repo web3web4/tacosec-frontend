@@ -74,8 +74,8 @@ const AddData: React.FC = () => {
       let publicAddresses: string[] = [];
       publicAddresses.push(address!);
       shareList
-        .filter((item) => item.data.address !== null)
-        .map((item) => publicAddresses.push(item.data.address!));
+        .filter((item) => item.data.publicAddress !== null)
+        .map((item) => publicAddresses.push(item.data.publicAddress!));
 
       const checkUsersCondition =
         new conditions.base.contextVariable.ContextVariableCondition({
@@ -165,9 +165,9 @@ const AddData: React.FC = () => {
         const parsedInitData = parseTelegramInitData(initDataRaw!);
         const sharedWithList: { publicAddress: string; invited: boolean }[] =
           shareList
-            .filter((item) => item.data.address !== null)
+            .filter((item) => item.data.publicAddress !== null)
             .map((item) => ({
-              publicAddress: item.data.address!,
+              publicAddress: item.data.publicAddress!,
               invited: item.data.invited ?? false,
             }));
 
@@ -478,14 +478,14 @@ const AddData: React.FC = () => {
                     -{" "}
                     {user.data.username
                       ? `@${user.data.username}`
-                      : formatAddress(10, user.data.address!)}
+                      : formatAddress(10, user.data.publicAddress!)}
                   </div>
                   <div className="user-content-buttons">
                     <div
                       className="delete-user-btn"
                       onClick={() =>
                         handleDeleteUsername(
-                          user.data.username || user.data.address!
+                          user.data.username || user.data.publicAddress!
                         )
                       }
                     >
