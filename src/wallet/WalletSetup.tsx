@@ -65,6 +65,12 @@ export default function WalletSetup() {
 
   useEffect(() => {
     const checkBackup = () => {
+      // Don't show backup popups if user is in onboarding flow
+      if (showOnboarding) {
+        setShowBackup(false);
+        return;
+      }
+      
       if (shouldShowBackup(identifier, hasWallet)) {
         setShowBackup(true);
       } else {
@@ -79,7 +85,7 @@ export default function WalletSetup() {
     window.removeEventListener("focus", checkBackup);
     window.removeEventListener("wallet-imported", checkBackup); 
   };
-  }, [identifier, hasWallet]);
+  }, [identifier, hasWallet, showOnboarding]);
 
   useEffect(() => {
     if (showBackup && decryptedPassword && !mnemonic) {
@@ -120,6 +126,8 @@ export default function WalletSetup() {
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
+    // Prevent backup popups from showing immediately after onboarding
+    setShowBackup(false);
   };
 
   const handleImport = async (importedMnemonic: string) => {
