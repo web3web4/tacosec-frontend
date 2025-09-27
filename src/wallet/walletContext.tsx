@@ -85,7 +85,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return createWalletWithPassword(password, savePassword);
   }
 
-  async function createWalletWithPassword(password: string, saveToBackend: boolean) {
+  async function createWalletWithPassword(password: string, saveToBackend: boolean, skipBackupReminder: boolean = false) {
     if (isTelegram && !userData?.telegramId) return;
 
     setSavedPasswordPreference(saveToBackend);
@@ -125,7 +125,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     setHasWallet(true);
-    showBackupReminder();
+    
+    // Only show backup reminder if not skipped (for onboarding flow)
+    if (!skipBackupReminder) {
+      showBackupReminder();
+    }
+    
+    return { wallet, mnemonic };
   }
 
   function restoreWalletFromEncryptedSeed(encryptedSeed: string, password: string) {

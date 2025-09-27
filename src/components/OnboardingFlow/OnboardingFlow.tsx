@@ -93,10 +93,13 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
       setOnboardingData(prev => ({ ...prev, password, saveInBackend }));
       
       if (onboardingData.choice === 'create') {
-        // Create new wallet
-        await createWalletWithPassword(password, saveInBackend);
-        // The wallet creation will trigger the backup flow automatically
-        onComplete();
+        // Create new wallet with backup handled in wizard
+        const result = await createWalletWithPassword(password, saveInBackend, true);
+        if (result) {
+          // Navigate to seed backup screen within the wizard
+          setOnboardingData(prev => ({ ...prev, seedPhrase: result.mnemonic }));
+          navigateToStep('seed-backup');
+        }
       } else if (onboardingData.choice === 'import' && onboardingData.seedPhrase) {
         // Import existing wallet
         await handleWalletImport({
@@ -136,7 +139,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         text: 'An error occurred. Please try again.'
       });
     }
-  }, [onboardingData, createWalletWithPassword, isBrowser, userData, address, addressweb, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, setDecryptedPassword, onComplete]);
+  }, [onboardingData, createWalletWithPassword, navigateToStep, isBrowser, userData, address, addressweb, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, setDecryptedPassword, onComplete]);
 
   const handleImportWallet = useCallback((seedPhrase: string) => {
     setOnboardingData(prev => ({ ...prev, seedPhrase }));
@@ -151,8 +154,15 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   }, [navigateToStep]);
 
   const handleSeedConfirmSuccess = useCallback(() => {
+    // Mark seed backup as completed to prevent backup flow from triggering
+    const identifier = isBrowser ? address || addressweb : userData?.telegramId;
+    
+    if (identifier) {
+      localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+    }
+    
     onComplete();
-  }, [onComplete]);
+  }, [onComplete, isBrowser, address, addressweb, userData?.telegramId]);
 
   const handleDecryptSuccess = useCallback((seedPhrase: string) => {
     setOnboardingData(prev => ({ ...prev, seedPhrase }));
