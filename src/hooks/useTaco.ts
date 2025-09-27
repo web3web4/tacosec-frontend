@@ -47,8 +47,8 @@ export default function useTaco({
       }
 
       const authProvider = new EIP4361AuthProvider(provider, signer, {
-        domain: domain, 
-        uri: 'http://localhost:3000',
+        domain: domain,
+        uri: window.origin,
       });
       console.log("signer22",signer);
       console.log("authProvider",authProvider);
