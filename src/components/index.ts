@@ -11,4 +11,4 @@ export { SeedImportPopup } from "@/components/SeedPhrase/SeedImportPopup";
 export { SeedBackupPopup } from "@/components/SeedPhrase/SeedPhrase";
 export { SeedPharseSettingPage } from "@/components/SeedPhrase/SeedPhraseSettingPage";
 export { default as TelegramInviteButton } from "@/components/TelegramInviteButton/TelegramInviteButton";
-export { showInitialPrompt } from "@/components/Wallet/InitialPrompt";
+export { showInitialPrompt, InitialPromptScreen } from "@/components/Wallet/InitialPrompt";

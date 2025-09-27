@@ -7,6 +7,7 @@ export interface WalletContextProps {
   hasWallet: boolean;
   provider: ethers.providers.JsonRpcProvider;
   createWalletFlow: () => void;
+  createWalletWithPassword: (password: string, saveToBackend: boolean) => Promise<void>;
   restoreWalletFromEncryptedSeed: (
     encryptedSeed: string,
     password: string
