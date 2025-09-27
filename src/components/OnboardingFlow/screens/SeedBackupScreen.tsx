@@ -40,46 +40,102 @@ export function SeedBackupScreen({ mnemonic, onConfirm, onBack }: SeedBackupScre
       </div>
       
       <div className="onboarding-content">
-        <div className="seed-grid">
-          {words.map((word, index) => (
-            <div key={index} className="seed-word">
-              <span className="index">{index + 1}.</span>
-              <span>{word}</span>
-            </div>
-          ))}
-        </div>
-        
-        <div style={{ textAlign: 'center', margin: '20px 0' }}>
-          <button 
-            className="onboarding-btn secondary"
-            onClick={handleCopy}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-          >
-            {copied ? (
-              <>
-                <MdCheck />
-                Copied!
-              </>
-            ) : (
-              <>
-                <MdContentCopy />
-                Copy to Clipboard
-              </>
-            )}
-          </button>
-        </div>
-        
-        <div style={{ 
-          background: '#fff3cd', 
-          border: '1px solid #ffeaa7', 
-          borderRadius: '8px', 
-          padding: '16px', 
-          margin: '20px 0' 
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: 'calc(100vh - 300px)',
+          overflow: 'hidden'
         }}>
-          <p style={{ margin: 0, fontSize: '14px', color: '#856404' }}>
-            <strong>⚠️ Important:</strong> Never share your seed phrase with anyone. 
-            Store it safely offline. Anyone with access to these words can control your wallet.
-          </p>
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '10px 0',
+            marginBottom: '16px'
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '16px',
+              padding: '0 8px'
+            }}>
+              {words.map((word, index) => (
+                <div key={index} style={{
+                  background: 'rgba(149, 255, 93, 0.1)',
+                  border: '2px solid rgba(149, 255, 93, 0.3)',
+                  borderRadius: '8px',
+                  padding: '16px 12px',
+                  textAlign: 'center',
+                  fontFamily: 'Courier New, monospace',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  color: '#95ff5d',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  minHeight: '60px',
+                  justifyContent: 'center'
+                }}>
+                  <span style={{
+                    color: 'rgba(149, 255, 93, 0.7)',
+                    fontSize: '12px',
+                    fontWeight: '500'
+                  }}>{index + 1}</span>
+                  <span style={{ wordBreak: 'break-word' }}>{word}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div style={{ 
+            textAlign: 'center',
+            marginBottom: '12px',
+            flexShrink: 0
+          }}>
+            <button 
+              className="onboarding-btn secondary"
+              onClick={handleCopy}
+              style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                padding: '12px 20px',
+                fontSize: '14px'
+              }}
+            >
+              {copied ? (
+                <>
+                  <MdCheck />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <MdContentCopy />
+                  Copy to Clipboard
+                </>
+              )}
+            </button>
+          </div>
+          
+          <div style={{ 
+            background: 'rgba(255, 243, 205, 0.1)', 
+            border: '1px solid rgba(255, 234, 167, 0.3)', 
+            borderRadius: '6px', 
+            padding: '12px',
+            flexShrink: 0
+          }}>
+            <p style={{ 
+              margin: 0, 
+              fontSize: '12px', 
+              color: 'rgba(149, 255, 93, 0.8)',
+              textAlign: 'center',
+              lineHeight: '1.4'
+            }}>
+              <strong>⚠️ Important:</strong> Never share your seed phrase with anyone. 
+              Store it safely offline.
+            </p>
+          </div>
         </div>
       </div>
       
