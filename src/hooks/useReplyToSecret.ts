@@ -81,7 +81,7 @@ export default function useReplyToSecret() {
 
   const handleReplayToSecret = async (reply: string, selectedSecret: SelectedSecretType) => {
     let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
-    selectedSecret.shareWith.map((user) => usernames += "," +  user.username);
+    selectedSecret.shareWith.map((user) => usernames += "," +  user.publicAddress);
 
     const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
       endpoint: `${BACKEND}/telegram/verify-test`,

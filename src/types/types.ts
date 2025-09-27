@@ -40,6 +40,7 @@ export interface DataItem {
   children?: ChildDataItem[] // also this for help my to store children for each secret
 }
 interface ShareWith {
+  publicAddress: string,
   username: string, 
   invited?: boolean
 }
@@ -122,7 +123,7 @@ export interface SupportData {
 export interface SelectedSecretType{
   parentSecretId: string,
   parentUsername?: string,
-  shareWith: {username: string, invited?:boolean}[],
+  shareWith: {publicAddress: string, invited?:boolean}[],
   }
 
 export interface SecretViews {

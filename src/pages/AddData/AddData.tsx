@@ -163,11 +163,11 @@ const AddData: React.FC = () => {
       if (encryptedBytes) {
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
-        const sharedWithList: { username: string; invited: boolean }[] =
+        const sharedWithList: { publicAddress: string; invited: boolean }[] =
           shareList
-            .filter((item) => item.data.username !== null)
+            .filter((item) => item.data.address !== null)
             .map((item) => ({
-              username: item.data.username!,
+              publicAddress: item.data.address!,
               invited: item.data.invited ?? false,
             }));
 
