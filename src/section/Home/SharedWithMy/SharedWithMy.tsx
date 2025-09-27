@@ -4,7 +4,7 @@ import { ChildrenSection } from "@/section";
 import { useEffect, useState } from "react";
 import { DropdownMenu } from "@/components";
 import { useReplyToSecret } from "@/hooks";
-import { formatDate } from "@/utils";
+import { formatAddress, formatDate } from "@/utils";
 import { useHome } from "@/context";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
@@ -145,7 +145,7 @@ export default function SharedWithMy() {
                                 target.src = noUserImage;
                               }}
                             />
-                            <span>{item.sharedByDetails.name}</span>
+                            <span>{item.sharedByDetails.name ? item.sharedByDetails.name : formatAddress(8, item.sharedByDetails.publicAddress!)}</span>
                           </div>
                         </div>
                       </div>

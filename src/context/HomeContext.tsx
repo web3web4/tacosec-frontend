@@ -125,6 +125,12 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         data.map(async (item) => {
           const userDetails = await Promise.all(
             item.sharedWith.map(async (user) => {
+              if(!user.username){
+                return {
+                  img: noUserImage,
+                  publicAddress: user.publicAddress,
+                }
+              }
               const profile = await getUserProfileDetails(user.username);
 
               if (profile && (!profile.img || !profile.img.src || profile.img.src.trim() === "")) {

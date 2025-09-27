@@ -64,7 +64,7 @@ export default function useAddData() {
           img: { src: response.img ? response.img.src : noUserImage },
           name: response.name,
           username: response.username,
-          address: response.address,
+          publicAddress: response.publicAddress,
           invited: false,
           existsInPlatform: response.existsInPlatform,
         },
@@ -78,7 +78,7 @@ export default function useAddData() {
 
   const handleConfirmClick = (data: UserProfileDetailsType): void => {
     const isAlreadyInList = shareList.some(
-      (user) => user.data.address?.toLocaleLowerCase() === data.address?.toLocaleLowerCase()
+      (user) => user.data.publicAddress?.toLocaleLowerCase() === data.publicAddress?.toLocaleLowerCase()
     );
 
     if (!isAlreadyInList) {
@@ -86,7 +86,7 @@ export default function useAddData() {
           ...userProfile,
           data: {
             ...userProfile.data,
-            address: data.address,
+            address: data.publicAddress,
             invited: false,
           },
         };
@@ -148,14 +148,14 @@ const handleAddShare = (input: string): void => {
   if (!input.trim()) return;
 
   if (utils.isAddress(input)) {
-    const isAlreadyInList = shareList.some((user) => user.data.address?.toLocaleLowerCase() === input.toLocaleLowerCase());
+    const isAlreadyInList = shareList.some((user) => user.data.publicAddress?.toLocaleLowerCase() === input.toLocaleLowerCase());
     if(!isAlreadyInList){
         const newProfile = {
           data: {
             img: { src: noUserImage },
             name: input,
             username: "",   
-            address: input,
+            publicAddress: input,
             invited: true,  
             existsInPlatform: false,
           },
