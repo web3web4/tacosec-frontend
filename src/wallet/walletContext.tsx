@@ -61,7 +61,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!identifier) return;
     const encrypted = getEncryptedSeed(identifier);
     setHasWallet(!!encrypted);
-    setShowDecryptPrompt(!!encrypted);
+    
+    // Only show decrypt prompt if wallet exists and user is not in onboarding flow
+    // Check if this is a fresh wallet creation by looking for recent activity
+    const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
+    if (encrypted && !recentWalletCreation) {
+      setShowDecryptPrompt(true);
+    } else {
+      setShowDecryptPrompt(false);
+    }
   }, [identifier]);
 
   async function createWalletFlow() {
@@ -126,6 +134,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     setHasWallet(true);
     
+    // Mark as recent wallet creation to prevent decrypt prompt
+    sessionStorage.setItem('recentWalletCreation', 'true');
+    
     // Only show backup reminder if not skipped (for onboarding flow)
     if (!skipBackupReminder) {
       showBackupReminder();
@@ -149,6 +160,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
+      
+      // Clear the recent wallet creation flag since user successfully decrypted
+      sessionStorage.removeItem('recentWalletCreation');
+      
       MetroSwal.fire({
         icon: 'success',
         title: 'Success',
