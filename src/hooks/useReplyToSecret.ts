@@ -1,8 +1,8 @@
-import { conditions, toHexString } from "@nucypher/taco";
+import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";
-import { parseTelegramInitData, handleSilentError } from "@/utils";
+import { handleSilentError } from "@/utils";
 import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
@@ -10,12 +10,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
-const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
 
 export default function useReplyToSecret() {
   const { triggerGetChildrenForSecret } = useHome();
-  const { signer, provider } = useWallet();
-  const { initDataRaw, userData } = useUser();
+  const { signer, provider, address } = useWallet();
+  const { initDataRaw } = useUser();
   const { encryptDataToBytes } = useTaco({
     domain,
     provider,
@@ -80,18 +79,18 @@ export default function useReplyToSecret() {
   };
 
   const handleReplayToSecret = async (reply: string, selectedSecret: SelectedSecretType) => {
-    let usernames: string = selectedSecret.parentUsername ?? userData?.username!;
-    selectedSecret.shareWith.map((user) => usernames += "," +  user.publicAddress);
-
-    const checkUsersCondition = new conditions.base.jsonApi.JsonApiCondition({
-      endpoint: `${BACKEND}/telegram/verify-test`,
-      parameters: {
-        TelegramUsernames: usernames,
-        authorizationToken: ":authorizationToken",
-      },
-      query: "$.isValid",
-      returnValueTest: { comparator: "==", value: true },
-    });
+    let publicAddress: string[] = [];
+    publicAddress.push(selectedSecret.parentAddress ?? address!);
+    selectedSecret.shareWith.map((user) => publicAddress.push(user.publicAddress));
+    
+     const checkUsersCondition =
+        new conditions.base.contextVariable.ContextVariableCondition({
+          contextVariable: ":userAddress",
+          returnValueTest: {
+            comparator: "in",
+            value: publicAddress,
+          },
+        });
 
     const encryptedBytes = await encryptDataToBytes(
       reply,
@@ -100,15 +99,14 @@ export default function useReplyToSecret() {
     );
     if (encryptedBytes) {
       const encryptedHex = toHexString(encryptedBytes);
-      const parsedInitData = parseTelegramInitData(initDataRaw!);
+      const cleanedSharedWith = selectedSecret.shareWith.map(({ shouldSendTelegramNotification, ...rest }) => rest);
       const res = await storageEncryptedData(
         {
           key: `reply: ${uuidv4()}`,
           description: "",
           type: "text",
           value: encryptedHex!,
-          sharedWith: selectedSecret.shareWith,
-          initData: parsedInitData,
+          sharedWith: cleanedSharedWith,
           parent_secret_id: selectedSecret.parentSecretId,
         },
         initDataRaw!

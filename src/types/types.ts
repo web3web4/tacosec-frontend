@@ -42,7 +42,8 @@ export interface DataItem {
 interface ShareWith {
   publicAddress: string,
   username: string, 
-  invited?: boolean
+  invited?: boolean,
+  shouldSendTelegramNotification?: boolean
 }
 
 export interface ChildDataItem {
@@ -123,7 +124,7 @@ export interface SupportData {
 export interface SelectedSecretType{
   parentSecretId: string,
   parentUsername?: string,
-  shareWith: {publicAddress: string, invited?:boolean}[],
+  shareWith: {publicAddress: string, invited?:boolean, shouldSendTelegramNotification?: boolean}[],
   }
 
 export interface SecretViews {
