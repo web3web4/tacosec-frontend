@@ -11,10 +11,11 @@ import { useUser } from "@/context";
 import { useTaco } from "@/hooks";
 import { ethers } from "ethers";
 import { SweetAlertOptions } from "sweetalert2";
+import { config } from "@/utils/config";
 
 
-const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
-const domain = process.env.REACT_APP_TACO_DOMAIN as string;
+const ritualId = config.TACO_RITUAL_ID;
+const domain = config.TACO_DOMAIN;
 
 interface HomeContextType {
   myData: DataItem[];

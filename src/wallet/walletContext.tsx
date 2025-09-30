@@ -18,8 +18,9 @@ import {
 
 import { WalletContextProps } from "@/interfaces/wallet"
 import { MetroSwal, handleSilentError } from "@/utils";
+import { config } from "@/utils/config";
 
-const RPC_URL = process.env.REACT_APP_RPC_PROVIDER_URL;
+const RPC_URL = config.RPC_PROVIDER_URL;
 
 
 

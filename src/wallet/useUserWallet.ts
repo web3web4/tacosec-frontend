@@ -4,7 +4,9 @@ import { useMemo } from "react";
 import { ethers, providers } from "ethers"; 
 const { keccak256, toUtf8Bytes } = ethers.utils;
 
-const SALT = process.env.REACT_APP_TG_SECRET_SALT;
+import { config } from "@/utils/config";
+
+const SALT = config.TG_SECRET_SALT;
 
 interface TelegramUser {
   username?: string;

@@ -2,8 +2,9 @@ import { promptPasswordWithSaveOption } from "@/hooks/walletDialogs";
 import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
+import { config } from "@/utils/config";
 
-const SALT = process.env.REACT_APP_TG_SECRET_SALT || "default_salt";
+const SALT = config.TG_SECRET_SALT || "default_salt";
 
 export const importWalletFlow = async (
   mnemonic: string,

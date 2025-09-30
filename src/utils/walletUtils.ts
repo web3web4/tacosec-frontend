@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
+import { config } from "@/utils/config";
 
-const SALT = process.env.REACT_APP_TG_SECRET_SALT || "";
+const SALT = config.TG_SECRET_SALT;
 
 export function encryptSeed(mnemonic: string, password: string): string {
   const key = password + "|" + SALT;

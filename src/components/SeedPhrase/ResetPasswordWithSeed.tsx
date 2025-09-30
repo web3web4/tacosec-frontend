@@ -7,6 +7,7 @@ import { useUser } from "@/context";
 import { useState } from "react";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
+import { config } from "@/utils/config";
 
 
 export const ResetPasswordWithSeed = ({
@@ -38,7 +39,7 @@ export const ResetPasswordWithSeed = ({
       return;
     }
 
-    const fullKey = newPassword + "|" + process.env.REACT_APP_TG_SECRET_SALT;
+    const fullKey = newPassword + "|" + config.TG_SECRET_SALT;
     const encrypted = CryptoJS.AES.encrypt(trimmed, fullKey).toString();
     localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
     localStorage.setItem(`seedBackupDone-${identifier}`, "true");

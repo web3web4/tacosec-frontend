@@ -7,10 +7,11 @@ import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
 import { v4 as uuidv4 } from 'uuid';
+import { config } from "@/utils/config";
 
-const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
-const domain = process.env.REACT_APP_TACO_DOMAIN as string;
-const BACKEND = process.env.REACT_APP_API_BASE_URL as string;
+const ritualId = config.TACO_RITUAL_ID;
+const domain = config.TACO_DOMAIN;
+const BACKEND = config.API_BASE_URL;
 
 export default function useReplyToSecret() {
   const { triggerGetChildrenForSecret } = useHome();
