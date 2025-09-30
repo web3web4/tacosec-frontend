@@ -189,18 +189,35 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const getProfilesDetailsForUsersSharedBy = async (data: SharedWithMyDataType[]) => {
     const enrichedData = await Promise.all(
       data.map(async (item) => {
-        const profile = await getUserProfileDetails(item.username);
+        const profile = await getUserProfileDetails(item.sharedBy.username);
         
-        if (!profile) return item;
+        if (!profile) {
+          const enhancedSharedBy = {
+            ...item.sharedBy,
+            img: { src: noUserImage },
+            name: ""
+          };
+          
+          return {
+            ...item,
+            sharedBy: enhancedSharedBy,
+          };
+        }
   
         const profileWithDefaultImg = {
           ...profile,
           img: profile.img ?? { src: noUserImage},
         };
+
+        const enhancedSharedBy = {
+          ...item.sharedBy,
+          img: profileWithDefaultImg.img,
+          name: profileWithDefaultImg.name
+        };
   
         return {
           ...item,
-          sharedByDetails: profileWithDefaultImg,
+          sharedBy: enhancedSharedBy,
         };
       })
     );
@@ -263,7 +280,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleReportUser = async (secretId: string, reportedUsername: string) => {
+  const handleReportUser = async (secretId: string, reportedAddress: string) => {
     // Set default report type
     let selectedReportType: ReportType = 'Other';
 
@@ -393,7 +410,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         secret_id: secretId,
         report_type: selectedReportType,
         reason: message,
-        reportedUsername: reportedUsername,
+        reportedUsername: reportedAddress,
       };
       
       try {

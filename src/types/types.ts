@@ -42,7 +42,8 @@ export interface DataItem {
 interface ShareWith {
   publicAddress: string,
   username: string, 
-  invited?: boolean
+  invited?: boolean,
+  shouldSendTelegramNotification?: boolean
 }
 
 export interface ChildDataItem {
@@ -53,10 +54,18 @@ export interface ChildDataItem {
   createdAt: string,
   firstName: string,
   lastName: string,
+  latestPublicAddress: string
 }
 export interface SharedWithMyDataType{
-  sharedByDetails?: UserProfileDetailsType, // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
-  username : string,
+  sharedBy: {
+    userId: string,
+    username: string,
+    telegramId: string,
+    latestPublicAddress: string,
+    // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
+    img?: { src: string} | null,
+    name?: string,
+  },
   passwords: {
     id: string,
     key: string,
@@ -122,8 +131,8 @@ export interface SupportData {
 
 export interface SelectedSecretType{
   parentSecretId: string,
-  parentUsername?: string,
-  shareWith: {publicAddress: string, invited?:boolean}[],
+  parentAddress?: string,
+  shareWith: {publicAddress: string, invited?:boolean, shouldSendTelegramNotification?: boolean}[],
   }
 
 export interface SecretViews {
