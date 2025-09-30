@@ -51,7 +51,7 @@ export default function SharedWithMy() {
     <div className="data-list">
       {sharedWithMyData.length > 0 ? (
         sharedWithMyData.map((item) =>
-          item.passwords.map((pass, i) => {
+          item.passwords.map((pass) => {
             return (
               <div ref={(el) => { itemRefs.current[pass.id] = el }} key={pass.id} className="data-item" >
                 <div className="item-container" onClick={() => toggleExpand(pass.value, pass.id)}>
@@ -77,12 +77,12 @@ export default function SharedWithMy() {
                           {
                             label: "Reply",
                             onClick: () => {
-                              handleReplyToSecret({parentSecretId: pass.id, parentUsername: item.username, shareWith: pass.sharedWith});
+                              handleReplyToSecret({parentSecretId: pass.id, parentAddress: item.sharedBy.latestPublicAddress, shareWith: pass.sharedWith});
                             } 
                           },
                           {
                             label: "Report",
-                            onClick: () => handleReportUser(pass.id, item.sharedByDetails!.username!),
+                            onClick: () => handleReportUser(pass.id, item.sharedBy!.username!),
                           },
                           {
                             label: "View Reports",
@@ -131,13 +131,13 @@ export default function SharedWithMy() {
                       </div>
                     </div>
 
-                    {item.sharedByDetails && (
+                    {item.sharedBy && (
                       <div className="shared-section">
                         <h4 className="shared-title">Shared By:</h4>
                         <div className="shared-users">
                           <div className="shared-user">
                             <img
-                              src={item.sharedByDetails.img?.src}
+                              src={item.sharedBy.img?.src}
                               alt="img"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
@@ -145,7 +145,7 @@ export default function SharedWithMy() {
                                 target.src = noUserImage;
                               }}
                             />
-                            <span>{item.sharedByDetails.name ? item.sharedByDetails.name : formatAddress(8, item.sharedByDetails.publicAddress!)}</span>
+                            <span>{item.sharedBy.name ? item.sharedBy.name : formatAddress(8, item.sharedBy.latestPublicAddress!)}</span>
                           </div>
                         </div>
                       </div>
