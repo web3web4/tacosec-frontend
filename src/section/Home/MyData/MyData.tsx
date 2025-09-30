@@ -3,9 +3,9 @@ import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect,  useState } from "react";
 import { ChildrenSection } from "@/section";
-import { DropdownMenu } from "@/components";
+import { DropdownMenu, UserDisplayToggle } from "@/components";
 import { useReplyToSecret } from "@/hooks";
-import { formatAddress, formatDate } from "@/utils";
+import { formatDate } from "@/utils";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function MyData() {
@@ -158,7 +158,7 @@ export default function MyData() {
                                   target.src = noUserImage;
                                 }}
                               />
-                              <span>{user.name ? user.name : formatAddress(8, user.publicAddress!)}</span>
+                              <span><UserDisplayToggle userData={user} /></span>
                             </div>
                           ))}
                         </div>
