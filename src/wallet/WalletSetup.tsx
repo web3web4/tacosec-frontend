@@ -1,6 +1,6 @@
 import { ConfirmSeedPopup, DecryptPrompt, SeedImportPopup, ResetPasswordWithSeed, SeedBackupPopup } from "@/components";
 import { shouldShowBackup, getIdentifier, decryptMnemonic, handleWalletImport, MetroSwal } from "@/utils";
-import { showInitialPrompt } from "@/components/Wallet/InitialPrompt";
+import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
@@ -20,7 +20,7 @@ export default function WalletSetup() {
     addressweb,
   } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
-  const [showImport, setShowImport] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [mnemonic, setMnemonic] = useState<string>("");
   const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
   const [passwordError, setPasswordError] = useState("");
@@ -40,11 +40,7 @@ export default function WalletSetup() {
       
   useEffect(() => {
     if (!hasWallet && (userData?.telegramId || isBrowser)) {
-      showInitialPrompt({
-        onCreate: createWalletFlow,
-        onImport: () => setShowImport(true),
-        displayName,
-      });
+      setShowOnboarding(true);
     }
   }, [hasWallet, isBrowser, userData?.telegramId]);
 
@@ -69,6 +65,12 @@ export default function WalletSetup() {
 
   useEffect(() => {
     const checkBackup = () => {
+      // Don't show backup popups if user is in onboarding flow
+      if (showOnboarding) {
+        setShowBackup(false);
+        return;
+      }
+      
       if (shouldShowBackup(identifier, hasWallet)) {
         setShowBackup(true);
       } else {
@@ -83,7 +85,7 @@ export default function WalletSetup() {
     window.removeEventListener("focus", checkBackup);
     window.removeEventListener("wallet-imported", checkBackup); 
   };
-  }, [identifier, hasWallet]);
+  }, [identifier, hasWallet, showOnboarding]);
 
   useEffect(() => {
     if (showBackup && decryptedPassword && !mnemonic) {
@@ -122,8 +124,13 @@ export default function WalletSetup() {
     setVerifyIndices(Array.from(indices));
   };
 
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    // Prevent backup popups from showing immediately after onboarding
+    setShowBackup(false);
+  };
+
   const handleImport = async (importedMnemonic: string) => {
-    setShowImport(false);
     handleWalletImport({
       importedMnemonic,
       isBrowser,
@@ -209,19 +216,12 @@ export default function WalletSetup() {
     return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
   }
 
-  if (showImport) {
+  // Show onboarding flow for new users
+  if (showOnboarding) {
     return (
-      <SeedImportPopup
-        onImport={handleImport}
-        onCancel={() => {
-          setShowImport(false);
-          showInitialPrompt({
-            onCreate: createWalletFlow,
-            onImport: () => setShowImport(true),
-            displayName,
-
-          });
-        }}
+      <OnboardingFlow
+        initialStep="welcome"
+        onComplete={handleOnboardingComplete}
       />
     );
   }

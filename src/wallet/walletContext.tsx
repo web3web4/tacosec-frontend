@@ -61,7 +61,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!identifier) return;
     const encrypted = getEncryptedSeed(identifier);
     setHasWallet(!!encrypted);
-    setShowDecryptPrompt(!!encrypted);
+    
+    // Only show decrypt prompt if wallet exists and user is not in onboarding flow
+    // Check if this is a fresh wallet creation by looking for recent activity
+    const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
+    if (encrypted && !recentWalletCreation) {
+      setShowDecryptPrompt(true);
+    } else {
+      setShowDecryptPrompt(false);
+    }
   }, [identifier]);
 
   async function createWalletFlow() {
@@ -81,8 +89,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       return createWalletFlow();
     }
 
-    // No need for separate confirmSavePassword call
-    const saveToBackend = savePassword;
+    // Use the new function with provided password
+    return createWalletWithPassword(password, savePassword);
+  }
+
+  async function createWalletWithPassword(password: string, saveToBackend: boolean, skipBackupReminder: boolean = false) {
+    if (isTelegram && !userData?.telegramId) return;
+
     setSavedPasswordPreference(saveToBackend);
 
     const wallet = ethers.Wallet.createRandom();
@@ -107,7 +120,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       saveEncryptedSeed(userData?.telegramId || "", encrypted);
     }
 
-
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
     const data = saveToBackend
@@ -121,7 +133,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     setHasWallet(true);
-    showBackupReminder();
+    
+    // Mark as recent wallet creation to prevent decrypt prompt
+    sessionStorage.setItem('recentWalletCreation', 'true');
+    
+    // Only show backup reminder if not skipped (for onboarding flow)
+    if (!skipBackupReminder) {
+      showBackupReminder();
+    }
+    
+    return { wallet, mnemonic };
   }
 
   function restoreWalletFromEncryptedSeed(encryptedSeed: string, password: string) {
@@ -139,6 +160,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
+      
+      // Clear the recent wallet creation flag since user successfully decrypted
+      sessionStorage.removeItem('recentWalletCreation');
+      
       MetroSwal.fire({
         icon: 'success',
         title: 'Success',
@@ -159,6 +184,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         hasWallet,
         provider,
         createWalletFlow,
+        createWalletWithPassword,
         decryptedPassword,
         restoreWalletFromEncryptedSeed,
         setSigner,
