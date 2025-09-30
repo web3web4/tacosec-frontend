@@ -8,7 +8,7 @@ import "./SeedPhrase.css";
 // ------------------------------
 // 🔹 Helper function to retrieve the last secret
 // ------------------------------
-async function fetchLatestSecret(initDataRaw: string): Promise<string | null> {
+async function fetchLatestSecret(initDataRaw: string | null): Promise<string | null> {
   const response = await getPublicAddresses(initDataRaw);
   console.log("API Response:", response);
 
@@ -69,11 +69,6 @@ export const DecryptPrompt = ({
     try {
       setIsRestoring(true);
       setRestoreError("");
-
-      if (!initDataRaw) {
-        setRestoreError("Authentication required");
-        return;
-      }
 
       const latestSecret = await fetchLatestSecret(initDataRaw);
 
