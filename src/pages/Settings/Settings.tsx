@@ -12,6 +12,7 @@ import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import "../../components/SeedPhrase/SeedPhrase.css";
 import "./Settings.css";
+import { config } from "@/utils/config";
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup } = useSetting();
@@ -65,7 +66,7 @@ const submitDecryption = () => {
   const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
   if (!encrypted) return;
 
-  const fullKey = password + "|" + process.env.REACT_APP_TG_SECRET_SALT;
+  const fullKey = password + "|" + config.TG_SECRET_SALT;
 
   try {
     const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
