@@ -487,13 +487,6 @@
   border: 2px solid var(--metro-green);
 }
 
-.shared-user:hover {
-  background: var(--metro-green);
-  color: var(--background);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 200, 81, 0.3);
-}
-
 .manual-copy-modal {
   position: fixed;
   top: 0;
