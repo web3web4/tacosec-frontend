@@ -1,16 +1,16 @@
-import { noUserImage, deleteIcon } from "@/assets";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { conditions, toHexString } from "@nucypher-experimental2/taco";
-import { storageEncryptedData } from "@/apiService";
-import { useWallet } from "@/wallet/walletContext";
 import { parseTelegramInitData, showError, createAppError, formatAddress } from "@/utils";
+import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
+import { conditions, toHexString } from "@nucypher-experimental2/taco";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { storageEncryptedData } from "@/apiService";
+import { DataPayload } from "@/interfaces/addData";
+import { noUserImage, deleteIcon } from "@/assets";
+import { useWallet } from "@/wallet/walletContext";
 import { MetroSwal } from "@/utils/metroSwal";
 import { useAddData, useTaco } from "@/hooks";
-import { CustomPopup, SectionErrorBoundary, TelegramInviteButton } from "@/components";
 import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
-import { DataPayload } from "@/interfaces/addData";
 
 const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
 const domain = process.env.REACT_APP_TACO_DOMAIN as string;
@@ -474,11 +474,8 @@ const AddData: React.FC = () => {
               <p>Sharing with:</p>
               {shareList.map((user, i) => (
                 <div className="user_container" key={i}>
-                  <div>
-                    -{" "}
-                    {user.data.username
-                      ? `@${user.data.username}`
-                      : formatAddress(10, user.data.publicAddress!)}
+                  <div className="user-content">
+                    - <UserDisplayToggle userData={user.data} />
                   </div>
                   <div className="user-content-buttons">
                     <div

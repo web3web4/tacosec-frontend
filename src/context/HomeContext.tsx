@@ -209,9 +209,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
           img: profile.img ?? { src: noUserImage},
         };
 
-        // Enhance sharedBy object with profile data while keeping original fields
         const enhancedSharedBy = {
-          ...item.sharedBy, // Keep original sharedBy fields
+          ...item.sharedBy,
           img: profileWithDefaultImg.img,
           name: profileWithDefaultImg.name
         };

@@ -2,9 +2,9 @@ import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
 import { ChildrenSection } from "@/section";
 import { useEffect, useState } from "react";
-import { DropdownMenu } from "@/components";
+import { DropdownMenu, UserDisplayToggle } from "@/components";
 import { useReplyToSecret } from "@/hooks";
-import { formatAddress, formatDate } from "@/utils";
+import { formatDate } from "@/utils";
 import { useHome } from "@/context";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
@@ -145,7 +145,7 @@ export default function SharedWithMy() {
                                 target.src = noUserImage;
                               }}
                             />
-                            <span>{item.sharedBy.name ? item.sharedBy.name : formatAddress(8, item.sharedBy.latestPublicAddress!)}</span>
+                            <span><UserDisplayToggle userData={item.sharedBy}/></span>
                           </div>
                         </div>
                       </div>

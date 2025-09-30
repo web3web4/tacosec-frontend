@@ -57,12 +57,12 @@ export interface ChildDataItem {
   latestPublicAddress: string
 }
 export interface SharedWithMyDataType{
-  sharedByDetails?: UserProfileDetailsType, // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
   sharedBy: {
     userId: string,
     username: string,
     telegramId: string,
     latestPublicAddress: string,
+    // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
     img?: { src: string} | null,
     name?: string,
   },

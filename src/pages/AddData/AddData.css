@@ -438,6 +438,14 @@
   box-shadow: var(--box-shadow);
 }
 
+.user-content {
+  display: flex;
+}
+
+.user-content div {
+  margin-left: 5px;
+}
+
 .user-content-buttons{
   display: flex;
   align-items: center;

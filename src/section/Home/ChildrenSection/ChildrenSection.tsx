@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
 import { showIcon } from "@/assets";
-
+import { UserDisplayToggle } from "@/components";
 import "./ChildrenSection.css";
 
 interface ChildrenSectionProps {
@@ -64,7 +64,9 @@ export default function ChildrenSection({
               <div className="child-info">
               <div className="child-meta">
                   <strong>By:</strong>
-                    <div className="child-date">{child.firstName}{" "}{child.lastName}</div>
+                    <div className="child-date">
+                      <UserDisplayToggle userData={child}/>
+                    </div>
                     {secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
                 </div>
                 <div className="child-meta">
