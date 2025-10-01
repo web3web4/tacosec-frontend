@@ -114,6 +114,8 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
           setAddress,
           setHasWallet,
           setDecryptedPassword,
+          providedPassword: password,
+          providedSavePassword: saveInBackend,
           onDone: () => {
             MetroSwal.fire({
               icon: 'success',

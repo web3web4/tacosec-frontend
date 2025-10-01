@@ -6,13 +6,14 @@ import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/compo
 import { Home, AddData, Settings } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
+import { config } from "@/utils/config";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => { 
     const tracker = new Tracker({
-      projectKey: process.env.REACT_APP_OPENREPLAY_PROJECT_KEY as string,  
+      projectKey: config.OPENREPLAY_PROJECT_KEY,  
       obscureTextEmails: true,
       obscureTextNumbers: true,
       obscureInputEmails: true,

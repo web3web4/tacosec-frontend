@@ -2,13 +2,16 @@ import { promptPasswordWithSaveOption } from "@/hooks/walletDialogs";
 import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
+import { config } from "@/utils/config";
 
-const SALT = process.env.REACT_APP_TG_SECRET_SALT || "default_salt";
+const SALT = config.TG_SECRET_SALT || "default_salt";
 
 export const importWalletFlow = async (
   mnemonic: string,
   identifier: string | null,
-  onImported?: (password: string) => void
+  onImported?: (password: string) => void,
+  providedPassword?: string,
+  providedSavePassword?: boolean
 ): Promise<string | null> => {
   
   if (!ethers.utils.isValidMnemonic(mnemonic)) {
@@ -17,10 +20,22 @@ export const importWalletFlow = async (
     return null;
   }
   
-  // Use the new merged password dialog
-  const { isConfirmed, value: password, savePassword } = await promptPasswordWithSaveOption();
+  let password: string;
+  let savePassword: boolean;
   
-  if (!isConfirmed || !password) return null;
+
+  if (providedPassword) {
+    password = providedPassword;
+    savePassword = providedSavePassword || false;
+  } else {
+
+    const { isConfirmed, value: dialogPassword, savePassword: dialogSavePassword } = await promptPasswordWithSaveOption();
+    
+    if (!isConfirmed || !dialogPassword) return null;
+    
+    password = dialogPassword;
+    savePassword = dialogSavePassword;
+  }
 
   const fullKey = password + "|" + SALT;
   const encrypted = CryptoJS.AES.encrypt(mnemonic, fullKey).toString();

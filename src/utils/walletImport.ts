@@ -17,6 +17,8 @@ type ImportParams = {
   setDecryptedPassword: (pwd: string) => void;
   onDone?: () => void;
   onError?: (message: string) => void;
+  providedPassword?: string;
+  providedSavePassword?: boolean;
 };
 
 export async function handleWalletImport({
@@ -33,6 +35,8 @@ export async function handleWalletImport({
   setDecryptedPassword,
   onDone,
   onError,
+  providedPassword,
+  providedSavePassword,
 }: ImportParams) {
   try {
     let identifier = isBrowser ? (address || addressweb) : userData?.telegramId!;
@@ -42,7 +46,13 @@ export async function handleWalletImport({
       localStorage.setItem("browser-user-id", identifier);
     }
 
-    const password = await importWalletFlow(importedMnemonic, identifier);
+    const password = await importWalletFlow(
+      importedMnemonic, 
+      identifier, 
+      undefined, // onImported callback
+      providedPassword, 
+      providedSavePassword
+    );
     if (!password) {
       onError?.("No password returned from import.");
       return;

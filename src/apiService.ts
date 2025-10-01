@@ -2,12 +2,14 @@
 
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError } from "@/utils";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails } from "./types/types";
+import { parseTelegramInitData, handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = config.API_BASE_URL;
 
 // Helper function to get authentication headers
-const getAuthHeaders = (initData?: string) => {
+const getAuthHeaders = (initData?: string | null) => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json"
   };
@@ -332,7 +334,7 @@ export async function setPrivacyMode(initData: string, value: boolean): Promise<
   });
 }
 
-export async function getPublicAddresses(initData: string): Promise<PublicKeysResponse> {
+export async function getPublicAddresses(initData: string | null): Promise<PublicKeysResponse> {
   const headers = getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error

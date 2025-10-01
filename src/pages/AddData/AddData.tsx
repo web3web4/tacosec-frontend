@@ -12,9 +12,11 @@ import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
 
-const ritualId = process.env.REACT_APP_TACO_RITUAL_ID as unknown as number;
-const domain = process.env.REACT_APP_TACO_DOMAIN as string;
-const BOT_USER_NAME = process.env.REACT_APP_BOT_USER_NAME as string;
+import { config } from "@/utils/config";
+
+const ritualId = config.TACO_RITUAL_ID;
+const domain = config.TACO_DOMAIN;
+const BOT_USER_NAME = config.BOT_USER_NAME;
 
 const AddData: React.FC = () => {
   const {
