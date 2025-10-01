@@ -77,7 +77,7 @@ export default function SharedWithMy() {
                           {
                             label: "Reply",
                             onClick: () => {
-                              handleReplyToSecret({parentSecretId: pass.id, parentAddress: item.sharedBy.latestPublicAddress, shareWith: pass.sharedWith});
+                              handleReplyToSecret({parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith});
                             } 
                           },
                           {

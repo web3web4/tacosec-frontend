@@ -2,16 +2,22 @@ export type AuthMethod = "telegram" | "web";
 
 export interface initDataType {
   _id: string,
-    telegramId: string,
-    firstName: string,
-    lastName: string,
-    username: string,
-    authDate: string,
-    hash: string,
-    isActive: boolean,
-    createdAt: string,
-    updatedAt: string,
-    privacyMode: boolean
+  telegramId: string,
+  firstName: string,
+  lastName: string,
+  username: string,
+  authDate: string,
+  hash: string,
+  isActive: boolean,
+  createdAt: string,
+  updatedAt: string,
+  privacyMode: boolean,
+  publicAddress: string
+}
+
+export interface UserDetails{
+  success: boolean,
+  data: initDataType
 }
 
 export interface DirectLinkData {
@@ -61,7 +67,7 @@ export interface SharedWithMyDataType{
     userId: string,
     username: string,
     telegramId: string,
-    latestPublicAddress: string,
+    publicAddress: string,
     // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
     img?: { src: string} | null,
     name?: string,
@@ -146,6 +152,7 @@ export interface SecretViews {
 } 
 
  export interface userViewDetails {
+  publicAddress: string,
   telegramId: string,
   username: string,
   firstName: string,
@@ -154,6 +161,7 @@ export interface SecretViews {
  }
 
 export interface ViewDetails{
+  publicAddress: string;
   telegramId?: string | null;
   username: string;
   viewedAt?: string | null;

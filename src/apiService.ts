@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 
@@ -38,6 +38,20 @@ export async function signupUser(initData: string): Promise<initDataType> {
     });
     return response;
   });
+}
+
+export async function getUserDetails(): Promise<initDataType> {
+  const headers = getAuthHeaders();
+  
+  const data = await handleApiCall<UserDetails>(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
+      method: "GET",
+      headers,
+    });
+    return response;
+  });
+
+  return data.data;
 }
 
 export async function loginUserWeb(publicAddress:string, signature:string): Promise<AuthDataType> {
