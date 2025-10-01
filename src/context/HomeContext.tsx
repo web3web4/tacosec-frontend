@@ -67,7 +67,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [previousPath, setPreviousPath] = useState<string>("");
-  const { signer, provider } = useWallet();
+  const { signer, provider, address } = useWallet();
   const { initDataRaw, userData, directLinkData } = useUser();
   const { isInit, decryptDataFromBytes } = useTaco({
     domain,
@@ -596,9 +596,9 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     const entries = await Promise.all(
       response.map(async (child) => {
         const views = await getSecretViews(initDataRaw!, child._id);
-        const hasMyView = views.viewDetails.some(sec => sec.username.toLowerCase() === userData?.username.toLowerCase());
+        const hasMyView = views.viewDetails.some(sec => sec.publicAddress.toLowerCase() === address?.toLowerCase());
         views.isNewSecret = !hasMyView;
-        if(child.username.toLowerCase() === userData?.username.toLowerCase() || userData?.privacyMode) views.isNewSecret = false;
+        if(child.latestPublicAddress.toLowerCase() === address?.toLowerCase() || userData?.privacyMode) views.isNewSecret = false;
         return [child._id, views] as const;
       })
     );
@@ -746,6 +746,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
         viewedAt: user.viewedAt ?? null,
         firstName: user.firstName ?? null,
         lastName: user.lastName ?? null,
+        publicAddress: user.publicAddress,
         img: undefined, 
         type: "viewed"
       })),
@@ -756,6 +757,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
         viewedAt: null,
         firstName: user.firstName ?? null,
         lastName: user.lastName ?? null,
+        publicAddress: user.publicAddress,
         img: undefined,
         type: "not-viewed"
       })),
@@ -766,6 +768,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
         viewedAt: null,
         firstName: user.firstName ?? null,
         lastName: user.lastName ?? null,
+        publicAddress: user.publicAddress,
         img: undefined,
         type: "unknown"
       })),

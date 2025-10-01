@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { DirectLinkData, initDataType, TabType } from "@/types/types";
 import { detectAuthMethod } from "@/hooks/useContextHelper";
-import { signupUser } from "@/apiService";
+import { getUserDetails, signupUser } from "@/apiService";
 import { MetroSwal, showError, createAppError } from "@/utils";
 
 
@@ -54,6 +54,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const getUserData = async () => {
+    const response = await getUserDetails();
+    setUserData(response);
+  };
+
   const getStartParams = () => {
     const tg = window.Telegram.WebApp;
     const startParam = tg?.initDataUnsafe?.start_param;
@@ -80,6 +85,7 @@ useEffect(() => {
       break;
 
     case "web":
+      getUserData();
       setIsBrowser(true);
       break;
 
