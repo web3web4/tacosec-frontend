@@ -3,40 +3,15 @@
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
+import { getToken, setToken, clearToken, isTokenExpiring, parseJwt } from "@/utils/cookieManager";
 
 const API_BASE_URL = config.API_BASE_URL;
-const TOKEN_KEY = 'jwt_token';
 const TOKEN_EXPIRY_BUFFER = 60; 
-
-function parseJwt(token: string) {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-}
-
-// Check if token is about to expire
-function isTokenExpiring(token: string): boolean {
-  const payload = parseJwt(token);
-  if (!payload?.exp) return true;
-  
-  const now = Math.floor(Date.now() / 1000);
-  return now >= (payload.exp - TOKEN_EXPIRY_BUFFER);
-}
 
 // Refresh token function
 async function refreshToken(): Promise<string | null> {
   try {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = getToken();
     if (!token) return null;
     
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
@@ -48,13 +23,13 @@ async function refreshToken(): Promise<string | null> {
     });
     
     if (!response.ok) {
-      localStorage.removeItem(TOKEN_KEY);
+      clearToken();
       return null;
     }
     
     const data = await response.json();
     if (data.access_token) {
-      localStorage.setItem(TOKEN_KEY, data.access_token);
+      setToken(data.access_token);
       return data.access_token;
     }
     
@@ -71,8 +46,8 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
     "Content-Type": "application/json"
   };
   
-  // Try to get JWT token from localStorage first
-  let token = localStorage.getItem(TOKEN_KEY);
+  // Try to get JWT token from cookies first
+  let token = getToken();
   
   if (token) {
     // Check if token is about to expire and refresh it proactively
@@ -134,9 +109,9 @@ export async function loginUserWeb(publicAddress:string, signature:string): Prom
     return response;
   });
   
-  // Store the JWT token in localStorage for future API calls
+  // Store the JWT token in cookie for future API calls
   if (authData.access_token) {
-    localStorage.setItem(TOKEN_KEY, authData.access_token);
+    setToken(authData.access_token);
   }
 
   return authData;
