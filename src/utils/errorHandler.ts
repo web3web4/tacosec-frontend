@@ -41,7 +41,7 @@ export function handleApiError(response: Response, customMessage?: string): AppE
     // Clear invalid token
     clearToken();
     // Redirect to home or login page if needed
-    window.location.href = '/';
+    //window.location.href = '/';
   } else if (response.status === 403) {
     type = 'auth';
     message = 'You do not have permission to access this resource.';
