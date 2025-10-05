@@ -8,12 +8,20 @@ import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
 import { v4 as uuidv4 } from 'uuid';
 import { config } from "@/utils/config";
+import { SetStateAction, useState } from "react";
 
 const ritualId = config.TACO_RITUAL_ID;
 const domain = config.TACO_DOMAIN;
-const BACKEND = config.API_BASE_URL;
 
-export default function useReplyToSecret() {
+interface ReplyPopupProps{
+    setShowReplyPopup: React.Dispatch<SetStateAction<boolean>>,
+    selectedSecret: SelectedSecretType
+}
+
+export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: ReplyPopupProps) {
+  const [isSubmittingReply, setIsSubmittingReply] = useState<boolean>(false);
+  const [replyMessage, setReplyMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const { triggerGetChildrenForSecret } = useHome();
   const { signer, provider, address } = useWallet();
   const { initDataRaw } = useUser();
@@ -23,106 +31,84 @@ export default function useReplyToSecret() {
     ritualId,
   });
 
-  const handleReplyToSecret = async (selectedSecret: SelectedSecretType) => {
-    const result = await MetroSwal.fire({
-      title: 'Reply to Secret',
-      html: `
-        <div style="text-align: left; margin-bottom: 16px;">
-          <div>
-            <label style="display: block; font-weight: 500; color: #555; font-size: 14px; margin-bottom: 6px;">Reply</label>
-            <textarea id="reply-message" placeholder="Enter your reply..." rows="5" style="
-              width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-              font-size: 14px; font-family: inherit; resize: vertical; min-height: 100px;
-              box-sizing: border-box; background: #f8f9fa; outline: none;
-            " onfocus="this.style.borderColor='var(--primary-color)'" onblur="this.style.borderColor='#ddd'"></textarea>
-          </div>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: 'Save',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: 'var(--primary-color)',
-      width: '500px',
-      showLoaderOnConfirm: true,
-      preConfirm: async () => {
-        const reply = (document.getElementById('reply-message') as HTMLTextAreaElement)?.value;
-        
-        if (!reply || !reply.trim()) {
-          MetroSwal.showValidationMessage('Reply is required!');
-          return false;
-        }
-        
-        if (!provider || !signer) {
-          MetroSwal.showValidationMessage('Wallet not connected!');
-          return false;
-        }
+ const handleReplyMessageChange = (value: string) => {
+    setReplyMessage(value);
+  };
 
-        try {
-          await handleReplayToSecret(reply.trim(), selectedSecret);
-          return { title: "", reply: reply.trim() };
-        } catch (error) {
-          handleSilentError(error, 'submitting reply');
-          MetroSwal.showValidationMessage('Failed to submit reply. Please try again.');
-          return false;
-        }
-      },
-      allowOutsideClick: () => !MetroSwal.isLoading()
-    });
+  const handleReplayToSecret = async () => {
+    setErrorMessage("");
+    if (!replyMessage || !replyMessage.trim()) {
+      setErrorMessage('Reply is required!');
+      return false;
+    }
+    
+    if (!provider || !signer) {
+      setErrorMessage('Wallet not connected!');
+      return false;
+    }
+    try {
+      setIsSubmittingReply(true)
+      let publicAddress: string[] = [];
+      publicAddress.push(selectedSecret.parentAddress ?? address!);
+      selectedSecret.shareWith.map((user) => publicAddress.push(user.publicAddress));
+      
+        const checkUsersCondition =
+          new conditions.base.contextVariable.ContextVariableCondition({
+            contextVariable: ":userAddress",
+            returnValueTest: {
+              comparator: "in",
+              value: publicAddress,
+            },
+          });
 
-    if (result.isConfirmed) {
-      MetroSwal.fire({
+      const encryptedBytes = await encryptDataToBytes(
+        replyMessage,
+        checkUsersCondition,
+        signer!
+      );
+      if (encryptedBytes) {
+        const encryptedHex = toHexString(encryptedBytes);
+        const cleanedSharedWith = selectedSecret.shareWith.map(({ shouldSendTelegramNotification, ...rest }) => rest);
+        const res = await storageEncryptedData(
+          {
+            key: `reply: ${uuidv4()}`,
+            description: "",
+            type: "text",
+            value: encryptedHex!,
+            sharedWith: cleanedSharedWith,
+            parent_secret_id: selectedSecret.parentSecretId,
+          },
+          initDataRaw!
+        );
+        triggerGetChildrenForSecret(selectedSecret.parentSecretId);
+        setShowReplyPopup(false);
+        MetroSwal.fire({
         icon: "success",
         title: `Reply submitted successfully!`,
         text: "Your reply has been encrypted and stored.",
         showConfirmButton: false,
         timer: 3000,
       });
-    }
-  };
-
-  const handleReplayToSecret = async (reply: string, selectedSecret: SelectedSecretType) => {
-    let publicAddress: string[] = [];
-    publicAddress.push(selectedSecret.parentAddress ?? address!);
-    selectedSecret.shareWith.map((user) => publicAddress.push(user.publicAddress));
-    
-     const checkUsersCondition =
-        new conditions.base.contextVariable.ContextVariableCondition({
-          contextVariable: ":userAddress",
-          returnValueTest: {
-            comparator: "in",
-            value: publicAddress,
-          },
-        });
-
-    const encryptedBytes = await encryptDataToBytes(
-      reply,
-      checkUsersCondition,
-      signer!
-    );
-    if (encryptedBytes) {
-      const encryptedHex = toHexString(encryptedBytes);
-      const cleanedSharedWith = selectedSecret.shareWith.map(({ shouldSendTelegramNotification, ...rest }) => rest);
-      const res = await storageEncryptedData(
-        {
-          key: `reply: ${uuidv4()}`,
-          description: "",
-          type: "text",
-          value: encryptedHex!,
-          sharedWith: cleanedSharedWith,
-          parent_secret_id: selectedSecret.parentSecretId,
-        },
-        initDataRaw!
-      );
-      triggerGetChildrenForSecret(selectedSecret.parentSecretId);
-      if (!res) {
-        throw new Error("Failed to store encrypted data");
+        if (!res) {
+          throw new Error("Failed to store encrypted data");
+        }
+      } else {
+        throw new Error("Failed to encrypt data");
       }
-    } else {
-      throw new Error("Failed to encrypt data");
+    } catch (error) {
+      handleSilentError(error, 'submitting reply');
+      MetroSwal.showValidationMessage('Failed to submit reply. Please try again.');
+      return false;
+    } finally {
+      setIsSubmittingReply(false);
     }
   };
 
   return {
-    handleReplyToSecret
+    replyMessage,
+    errorMessage,
+    isSubmittingReply,
+    handleReplyMessageChange,
+    handleReplayToSecret
   };
 }

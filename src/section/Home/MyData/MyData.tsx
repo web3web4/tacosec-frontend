@@ -1,10 +1,11 @@
+import ReplyPopup from "../SharedWithMy/ReplyPopup/ReplyPopup";
+import { DropdownMenu, UserDisplayToggle } from "@/components";
+import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect,  useState } from "react";
 import { ChildrenSection } from "@/section";
-import { DropdownMenu, UserDisplayToggle } from "@/components";
-import { useReplyToSecret } from "@/hooks";
 import { formatDate } from "@/utils";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
@@ -27,9 +28,10 @@ export default function MyData() {
         secretViews,
         itemRefs
     } = useHome();
+    const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentAddress: "", shareWith: []});
+    const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
     const [showManualCopy, setShowManualCopy] = useState(false);
     const [manualCopyText, setManualCopyText] = useState("");
-    const { handleReplyToSecret } = useReplyToSecret();
     const [copied, setCopied] = useState(false);
     const { address } = useWallet();
 
@@ -49,6 +51,7 @@ export default function MyData() {
 
   return (
     <div className="data-list">
+      {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
       {myData.length > 0 ? (
             myData.map((item, i) => (
               <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
@@ -72,7 +75,8 @@ export default function MyData() {
                           {
                             label: "Reply",
                             onClick: () => {
-                              handleReplyToSecret({parentSecretId: item.id, shareWith: item.sharedWith});
+                              setSelectedSecret({parentSecretId: item.id, shareWith: item.sharedWith});
+                              setShowReplyPopup(true);
                             } 
                           }
                         ]}
