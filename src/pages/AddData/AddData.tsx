@@ -32,7 +32,7 @@ const AddData: React.FC = () => {
     handleSearch,
     handleConfirmClick,
     handleSearchSelect,
-    handleDeleteUsername,
+    handleDeleteUser,
     handleAddShare,
     cleanFields,
     checkEncrypting,
@@ -483,8 +483,8 @@ const AddData: React.FC = () => {
                     <div
                       className="delete-user-btn"
                       onClick={() =>
-                        handleDeleteUsername(
-                          user.data.username || user.data.publicAddress!
+                        handleDeleteUser(
+                          user.data.publicAddress!
                         )
                       }
                     >

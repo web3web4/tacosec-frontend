@@ -133,8 +133,8 @@ export default function useAddData() {
     []
   );
 
-  const handleDeleteUsername = (username: string) => {
-    setShareList((prevList) => prevList.filter((user) => user.data.username !== username));
+  const handleDeleteUser = (address: string) => {
+    setShareList((prevList) => prevList.filter((user) => user.data.publicAddress !== address));
   };
 
 const handleSearchSelect = (user: SearchDataType) => {
@@ -153,7 +153,7 @@ const handleAddShare = (input: string): void => {
         const newProfile = {
           data: {
             img: { src: noUserImage },
-            name: input,
+            name: "",
             username: "",   
             publicAddress: input,
             invited: true,  
@@ -226,7 +226,7 @@ const handleAddShare = (input: string): void => {
     handleAddShare,
     handleConfirmClick,
     handleSearchSelect,
-    handleDeleteUsername,
+    handleDeleteUser,
     cleanFields,
     checkEncrypting,
     setMessage,

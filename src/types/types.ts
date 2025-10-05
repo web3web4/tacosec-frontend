@@ -110,7 +110,7 @@ export interface SearchDataType{
 export type GetUserProfileDetailsResponse = UserProfileDetailsType | null;
 
 export interface Report {
-  reportedUsername: string;
+  user: string;
   report_type: ReportType;
   secret_id: string;
   reason: string;
