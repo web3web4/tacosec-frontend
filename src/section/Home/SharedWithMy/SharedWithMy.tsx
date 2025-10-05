@@ -1,9 +1,10 @@
+import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
+import { DropdownMenu, UserDisplayToggle } from "@/components";
+import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
-import { ChildrenSection } from "@/section";
 import { useEffect, useState } from "react";
-import { DropdownMenu, UserDisplayToggle } from "@/components";
-import { useReplyToSecret } from "@/hooks";
+import { ChildrenSection } from "@/section";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
 import "@/components/SeedPhrase/SeedPhrase.css";
@@ -27,9 +28,10 @@ export default function SharedWithMy() {
     secretViews,
     itemRefs
   } = useHome();
+  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentAddress: "", shareWith: []});
+  const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
-  const { handleReplyToSecret } = useReplyToSecret();
   const [copied, setCopied] = useState(false);
   const { address } = useWallet();
 
@@ -49,6 +51,7 @@ export default function SharedWithMy() {
 
   return (
     <div className="data-list">
+      {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
       {sharedWithMyData.length > 0 ? (
         sharedWithMyData.map((item) =>
           item.passwords.map((pass) => {
@@ -77,7 +80,8 @@ export default function SharedWithMy() {
                           {
                             label: "Reply",
                             onClick: () => {
-                              handleReplyToSecret({parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith});
+                              setSelectedSecret({parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith});
+                              setShowReplyPopup(true);
                             } 
                           },
                           {

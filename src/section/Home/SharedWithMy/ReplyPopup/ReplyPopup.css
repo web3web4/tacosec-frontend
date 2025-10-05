@@ -2,11 +2,14 @@
   padding: 20px;
   max-width: 500px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .reply-popup h3 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: var(--text-primary);
   font-size: 1.2rem;
   font-weight: 600;
 }
@@ -15,6 +18,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .reply-form .form-group {
@@ -25,7 +29,7 @@
 
 .reply-form label {
   font-weight: 500;
-  color: #555;
+  color: var(--text-primary);
   font-size: 0.9rem;
 }
 
@@ -93,17 +97,19 @@
   cursor: not-allowed;
 }
 
+.error-message {
+  display: flex;
+  justify-content: center;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba(133, 33, 33, 0.349);
+}
+
 @media (max-width: 768px) {
   .reply-popup {
     padding: 16px;
     max-width: 90vw;
-  }
-  
-  .reply-actions {
-    flex-direction: column;
-  }
-  
-  .reply-actions button {
-    width: 100%;
   }
 }
