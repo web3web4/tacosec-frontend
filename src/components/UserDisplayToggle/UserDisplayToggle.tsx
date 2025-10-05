@@ -17,8 +17,7 @@ const hasUserFields = (obj: unknown): obj is {
   publicAddress?: string;
 } => {
   return typeof obj === 'object' && 
-         obj !== null && 
-         'username' in obj;
+         obj !== null
 };
 
 export default function UserDisplayToggle({ userData }: UserDisplayToggleProps) {

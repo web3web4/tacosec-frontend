@@ -60,7 +60,7 @@ export interface ChildDataItem {
   createdAt: string,
   firstName: string,
   lastName: string,
-  latestPublicAddress: string
+  publicAddress: string
 }
 export interface SharedWithMyDataType{
   sharedBy: {
