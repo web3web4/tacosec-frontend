@@ -475,6 +475,7 @@
 .delete-user-btn{
   position: relative;
   top: 3px;
+  cursor: pointer;
 }
 
 .popup-content button {
