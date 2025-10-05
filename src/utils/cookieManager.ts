@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie';
-import { config } from './config';
 
 const TOKEN_KEY = 'jwt_token';
 const TOKEN_EXPIRY_BUFFER = 60; // seconds
@@ -50,3 +49,4 @@ export function getToken(): string | null {
 export function clearToken(): void {
   Cookies.remove(TOKEN_KEY, { path: '/' });
 }
+
