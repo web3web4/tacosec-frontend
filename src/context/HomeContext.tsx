@@ -411,7 +411,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         secret_id: secretId,
         report_type: selectedReportType,
         reason: message,
-        reportedUsername: reportedAddress,
+        user: reportedAddress,
       };
       
       try {
