@@ -3,19 +3,62 @@
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
+import { getToken, setToken, clearToken, isTokenExpiring, parseJwt } from "@/utils/cookieManager";
 
 const API_BASE_URL = config.API_BASE_URL;
+const TOKEN_EXPIRY_BUFFER = 60; 
 
-// Helper function to get authentication headers
-const getAuthHeaders = (initData?: string | null) => {
+// Refresh token function
+async function refreshToken(): Promise<string | null> {
+  try {
+    const token = getToken();
+    if (!token) return null;
+    
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      clearToken();
+      return null;
+    }
+    
+    const data = await response.json();
+    if (data.access_token) {
+      setToken(data.access_token);
+      return data.access_token;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Failed to refresh token:', error);
+    return null;
+  }
+}
+
+// Helper function to get authentication headers with automatic token refresh
+const getAuthHeaders = async (initData?: string | null): Promise<Record<string, string>> => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json"
   };
   
-  // Try to get JWT token from localStorage first
-  const token = localStorage.getItem('jwt_token');
+  // Try to get JWT token from cookies first
+  let token = getToken();
   
   if (token) {
+    // Check if token is about to expire and refresh it proactively
+    if (isTokenExpiring(token)) {
+      console.log("Token is about to expire, refreshing...");
+      const newToken = await refreshToken();
+      if (newToken) {
+        token = newToken;
+      }
+    }
+    
     // Use JWT token if available
     headers["Authorization"] = `Bearer ${token}`;
   } else if (initData) {
@@ -28,7 +71,7 @@ const getAuthHeaders = (initData?: string | null) => {
 
 export async function signupUser(initData: string): Promise<initDataType> {
   const data = parseTelegramInitData(initData);
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   return handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/users/signup`, {
@@ -41,7 +84,7 @@ export async function signupUser(initData: string): Promise<initDataType> {
 }
 
 export async function getUserDetails(): Promise<initDataType> {
-  const headers = getAuthHeaders();
+  const headers = await getAuthHeaders();
   
   const data = await handleApiCall<UserDetails>(async () => {
     const response = await fetch(`${API_BASE_URL}/users/me`, {
@@ -55,7 +98,7 @@ export async function getUserDetails(): Promise<initDataType> {
 }
 
 export async function loginUserWeb(publicAddress:string, signature:string): Promise<AuthDataType> {
-  const headers = getAuthHeaders();
+  const headers = await getAuthHeaders();
   
   const authData = await handleApiCall<AuthDataType>(async () => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -66,16 +109,16 @@ export async function loginUserWeb(publicAddress:string, signature:string): Prom
     return response;
   });
   
-  // Store the JWT token in localStorage for future API calls
+  // Store the JWT token in cookie for future API calls
   if (authData.access_token) {
-    localStorage.setItem('jwt_token', authData.access_token);
+    setToken(authData.access_token);
   }
 
   return authData;
 }
 
 export async function GetMyData(initData?: string): Promise<Secret[]> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -98,7 +141,7 @@ export async function storageEncryptedData(
   data: DataPayload,
   initData?: string
 ): Promise<unknown> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -117,7 +160,7 @@ export async function storageEncryptedData(
 
 export async function getUserProfileDetails(username: string): Promise<UserProfileDetailsType | null> {
   if (!username) return null;
-  const headers = getAuthHeaders();
+  const headers = await getAuthHeaders();
   
   const response = await handleApiCall<ProfileDetails>(async () => {
     const response = await fetch(
@@ -147,7 +190,7 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
 }
 
 export async function getDataSharedWithMy(initData?: string): Promise<SharedWithMeResponse> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -164,7 +207,7 @@ export async function getDataSharedWithMy(initData?: string): Promise<SharedWith
 }
 
 export async function checkIfUserAvailable(initData: string, username: string): Promise<boolean> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   return handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
@@ -180,7 +223,7 @@ export async function storagePublicKeyAndPassword(
   data: StoragePublicKeyData,
   initData: string
 ): Promise<void> {
-    const headers = getAuthHeaders(initData);
+    const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -198,7 +241,7 @@ export async function storagePublicKeyAndPassword(
 }
 
 export async function hidePassword(initData: string, id: string): Promise<void> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -215,7 +258,7 @@ export async function hidePassword(initData: string, id: string): Promise<void> 
 }
 
 export async function deletePassword(initData: string, id: string): Promise<void> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
 
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] &&!headers["X-Telegram-Init-Data"]) {
@@ -232,7 +275,7 @@ export async function deletePassword(initData: string, id: string): Promise<void
 }
 
 export async function getAutoCompleteUsername(initData: string, username: string): Promise<SearchDataType[]> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   const result = await handleApiCall<{ data: SearchDataType[] }>(async () => {
     const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${username}&limit=5&searchType=contains`, {
@@ -246,7 +289,7 @@ export async function getAutoCompleteUsername(initData: string, username: string
 }
 
 export async function reportUser(initData: string, report: Report): Promise<void> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   await handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/reports`, {
@@ -259,7 +302,7 @@ export async function reportUser(initData: string, report: Report): Promise<void
 }
 
 export async function sendContractSupport(initData: string, supportData: SupportData): Promise<ContractSupportResponse> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   return handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/telegram/send-to-specific-admin`, {
@@ -272,7 +315,7 @@ export async function sendContractSupport(initData: string, supportData: Support
 }
 
 export async function getChildrenForSecret(initData: string, parentId: string): Promise<ChildDataItem[]  | { statusCode: number; message: string }> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   const result = await handleApiCall<{ passwords?: ChildDataItem[] } | { statusCode: number; message: string }>(async () => {
     const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
@@ -289,7 +332,7 @@ export async function getChildrenForSecret(initData: string, parentId: string): 
 }
 
 export async function setSecretView(initData: string, id: string): Promise<void> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   await handleApiCall(async () => {
     const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
@@ -301,7 +344,7 @@ export async function setSecretView(initData: string, id: string): Promise<void>
 }
 
 export async function getSecretViews(initData: string, id: string): Promise<SecretViews> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   const result = await handleApiCall<SecretViews>(async () => {
     const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${id}`, {
@@ -315,7 +358,7 @@ export async function getSecretViews(initData: string, id: string): Promise<Secr
 }
 
 export async function setPrivacyMode(initData: string, value: boolean): Promise<void> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -333,7 +376,7 @@ export async function setPrivacyMode(initData: string, value: boolean): Promise<
 }
 
 export async function getPublicAddresses(initData: string | null): Promise<PublicKeysResponse> {
-  const headers = getAuthHeaders(initData);
+  const headers = await getAuthHeaders(initData);
   
   // If no authentication method is available, throw an error
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
@@ -348,4 +391,5 @@ export async function getPublicAddresses(initData: string | null): Promise<Publi
     return response;
   });
 }
+
 

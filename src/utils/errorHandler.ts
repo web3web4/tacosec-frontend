@@ -1,4 +1,5 @@
 import { MetroSwal } from './metroSwal';
+import { clearToken } from './cookieManager';
 
 // Standard error types for the application
 export interface AppError {
@@ -38,7 +39,12 @@ export function handleApiError(response: Response, customMessage?: string): AppE
     type = 'auth';
     message = 'Authentication failed. Please log in again.';
     // Clear invalid token
-    // localStorage.removeItem('jwt_token');
+    clearToken();
+    // Redirect to home or login page if needed
+    //window.location.href = '/';
+  } else if (response.status === 403) {
+    type = 'auth';
+    message = 'You do not have permission to access this resource.';
   } else if (response.status >= 400 && response.status < 500) {
     type = 'validation';
   } else if (response.status >= 500) {
