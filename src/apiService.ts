@@ -3,13 +3,12 @@
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
-import { getToken, setToken, clearToken, isTokenExpiring, parseJwt } from "@/utils/cookieManager";
+import { getToken, setToken, clearToken, isTokenExpiring } from "@/utils/cookieManager";
 
 const API_BASE_URL = config.API_BASE_URL;
-const TOKEN_EXPIRY_BUFFER = 60; 
 
 // Refresh token function
-async function refreshToken(): Promise<string | null> {
+export async function refreshToken(): Promise<string | null> {
   try {
     const token = getToken();
     if (!token) return null;

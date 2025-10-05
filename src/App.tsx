@@ -7,6 +7,7 @@ import { Home, AddData, Settings } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
 import { config } from "@/utils/config";
+import { startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -40,6 +41,13 @@ const App: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+  startTokenAutoRefresh(); 
+
+  return () => stopTokenAutoRefresh(); 
+}, []);
+
 
   return (
     <AppErrorBoundary>
