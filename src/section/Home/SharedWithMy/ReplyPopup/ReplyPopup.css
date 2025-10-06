@@ -73,9 +73,9 @@
 }
 
 .reply-actions .cancel-btn {
-  background-color: #f8f9fa;
-  color: #6c757d;
-  border: 1px solid #dee2e6;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--text-primary);
 }
 
 .reply-actions .cancel-btn:hover:not(:disabled) {

@@ -1,0 +1,180 @@
+.report-popup {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  max-width: 500px;
+  width: 100%;
+}
+
+.report-popup h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-type-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.report-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.report-type-btn {
+  background-color: transparent;
+  border: 1.5px solid #e9ecef61;
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 12px 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+  position: relative;
+  font-family: inherit;
+}
+
+.report-type-btn.selected {
+  border-color: var(--metro-green);
+  background: var(--metro-green);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: white;
+}
+
+.report-type-btn.primary {
+  background: var(--metro-green);
+  border-color: var(--metro-green);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: white;
+}
+
+.report-type-btn.selected .report-type-icon {
+  filter: brightness(1.2);
+}
+
+.report-type-btn.selected .report-type-text {
+  color: white;
+}
+
+.report-type-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.report-type-text {
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.report-message-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border: 1.5px solid #e9ecef;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.report-message-textarea:focus {
+  border-color: var(--metro-green);
+}
+
+.validation-error {
+  background-color: rgba(133, 33, 33, 0.349);
+  color: var(--danger);
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  border: 1px solid var(--danger);
+  text-align: center;
+}
+
+.report-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.report-cancel-btn,
+.report-submit-btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid;
+  font-family: inherit;
+  width: 100%;
+}
+
+.report-cancel-btn {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+.report-submit-btn {
+  background: var(--metro-green);
+  color: white;
+  border-color: var(--metro-green);
+}
+
+.report-cancel-btn:disabled,
+.report-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .report-type-btn {
+    min-height: 60px;
+    padding: 8px 4px;
+  }
+  
+  .report-type-icon {
+    font-size: 20px;
+  }
+}

@@ -1,4 +1,6 @@
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
+import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
+import ViewReportsPopup from "@/section/Home/SharedWithMy/ViewReportsPopup/ViewReportsPopup";
 import { DropdownMenu, UserDisplayToggle } from "@/components";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
@@ -7,27 +9,41 @@ import { useEffect, useState } from "react";
 import { ChildrenSection } from "@/section";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
+import { useReportUser } from "@/hooks/useReportUser";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function SharedWithMy() {
   const { 
-    sharedWithMyData, 
-    toggleExpand, 
-    expandedId, 
-    decrypting, 
+    decryptedChildMessages,
     decryptedMessages, 
-    handleReportUser, 
-    handleViewReportsForSecret, 
-    toggleChildExpand, 
-    handleGetSecretViews,
-    handleDirectLink,
-    handleDirectLinkForChildren,
+    sharedWithMyData, 
     expandedChildId, 
     decryptingChild, 
-    decryptedChildMessages,
+    initDataRaw,
     secretViews,
-    itemRefs
+    expandedId, 
+    decrypting,
+    itemRefs,
+    userData,
+    handleDirectLinkForChildren,
+    handleGetSecretViews,
+    setSharedWithMyData,
+    toggleChildExpand, 
+    handleDirectLink,
+    toggleExpand, 
   } = useHome();
+  const {
+    showViewReportsPopup,
+    showReportUserPopup,
+    currentReportsData,
+    currentReportData,
+    isSubmitting,
+    handleViewReportsForSecret,
+    setShowViewReportsPopup,
+    setShowReportUserPopup,
+    handleReportUser,
+    submitReport,
+  } = useReportUser();
   const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentAddress: "", shareWith: []});
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
@@ -51,7 +67,6 @@ export default function SharedWithMy() {
 
   return (
     <div className="data-list">
-      {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
       {sharedWithMyData.length > 0 ? (
         sharedWithMyData.map((item) =>
           item.passwords.map((pass) => {
@@ -86,7 +101,7 @@ export default function SharedWithMy() {
                           },
                           {
                             label: "Report",
-                            onClick: () => handleReportUser(pass.id, item.sharedBy!.username!),
+                            onClick: () => handleReportUser(pass.id, item.sharedBy.publicAddress),
                           },
                           {
                             label: "View Reports",
@@ -174,6 +189,7 @@ export default function SharedWithMy() {
       ) : (
         <p className="no-data-message">No data available.</p>
       )}
+
       {showManualCopy && (
         <div className="manual-copy-modal">
           <div className="manual-copy-modal-content">
@@ -188,6 +204,28 @@ export default function SharedWithMy() {
             <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
           </div>
         </div>
+      )}
+      { /* Reply Popup */}
+      {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
+
+      {/* Report User Popup */}
+      {showReportUserPopup && currentReportData && (
+        <ReportUserPopup
+          showReportUserPopup={showReportUserPopup}
+          setShowReportUserPopup={setShowReportUserPopup}
+          onSubmit={(reportData) => submitReport(reportData, initDataRaw!, userData, setSharedWithMyData)}
+          isSubmitting={isSubmitting}
+        />
+      )}
+
+      {/* View Reports Popup */}
+      {showViewReportsPopup && currentReportsData && (
+        <ViewReportsPopup
+          showViewReportsPopup={showViewReportsPopup}
+          setShowViewReportsPopup={setShowViewReportsPopup}
+          reports={currentReportsData.reports}
+          secretKey={currentReportsData.secretKey}
+        />
       )}
 
     </div>

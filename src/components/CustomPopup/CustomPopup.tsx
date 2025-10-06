@@ -15,7 +15,13 @@ export default function CustomPopup({
 }: CustomPopupProps) {
   useEffect(() => {
     const preventScroll = (e: Event) => {
-      e.preventDefault();
+      // Only prevent scroll if the event target is not within the popup container
+      const target = e.target as Element;
+      const popupContainer = document.querySelector('.popup-container');
+      
+      if (popupContainer && !popupContainer.contains(target)) {
+        e.preventDefault();
+      }
     };
 
     if (open) {
