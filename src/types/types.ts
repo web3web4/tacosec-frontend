@@ -121,7 +121,8 @@ export interface ReportsResponse {
   reason: ReportType;
   createdAt: string;
   report_type: string
-  reporterUsername: string;
+  username: string;
+  publicAddress: string,
 }
 
 export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';
