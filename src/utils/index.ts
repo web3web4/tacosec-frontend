@@ -6,5 +6,5 @@ export * from "@/utils/walletIdentifiers";
 export * from "@/utils/walletImport";
 export * from "@/utils/walletUtils";
 export * from "@/utils/errorHandler";
-export { config } from "@/utils/config";
+export * from "@/utils/config";
 export * from "@/utils/cookieManager";

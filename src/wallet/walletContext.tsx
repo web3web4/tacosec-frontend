@@ -17,8 +17,7 @@ import {
 } from "@/hooks/walletDialogs";
 
 import { WalletContextProps } from "@/interfaces/wallet"
-import { MetroSwal, handleSilentError } from "@/utils";
-import { config } from "@/utils/config";
+import { MetroSwal, handleSilentError , config } from "@/utils";
 
 const RPC_URL = config.RPC_PROVIDER_URL;
 

@@ -1,6 +1,7 @@
 import { MyData , SharedWithMy} from "@/section";
 import { useHome } from "@/context";
 import { SectionErrorBoundary, DotsLoader } from "@/components";
+import { recordUserAction } from "@/utils";
 import "./Home.css";
 
 
@@ -16,13 +17,19 @@ const Home: React.FC = () => {
       <div className="tabs-row">
         <button
           className={`tab-button ${activeTab === "mydata" ? "active" : ""}`}
-          onClick={() => handleSetActiveTabClick("mydata")}
+          onClick={() => {
+            recordUserAction("Tab click: My Data");
+            handleSetActiveTabClick("mydata");
+          }}
         >
           My Data
         </button>
         <button
           className={`tab-button ${activeTab === "shared" ? "active" : ""}`}
-          onClick={() => handleSetActiveTabClick("shared")}
+          onClick={() => {
+            recordUserAction("Tab click: Shared With Me");
+            handleSetActiveTabClick("shared");
+          }}
         >
           Shared with Me
         </button>

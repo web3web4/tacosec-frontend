@@ -7,7 +7,7 @@ import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
 import { useEffect, useState } from "react";
 import { ChildrenSection } from "@/section";
-import { formatDate } from "@/utils";
+import { formatDate, recordUserAction } from "@/utils";
 import { useHome } from "@/context";
 import { useReportUser } from "@/hooks/useReportUser";
 import "@/components/SeedPhrase/SeedPhrase.css";
@@ -72,7 +72,10 @@ export default function SharedWithMy() {
           item.passwords.map((pass) => {
             return (
               <div ref={(el) => { itemRefs.current[pass.id] = el }} key={pass.id} className="data-item" >
-                <div className="item-container" onClick={() => toggleExpand(pass.value, pass.id)}>
+                <div className="item-container" onClick={() => {
+                  recordUserAction(`Expand shared item: ${pass.id}`);
+                  toggleExpand(pass.value, pass.id);
+                }}>
                   <div className="item-header-info">
                     <p className="item-title">{pass.key}</p>
                     <div className="item-group">
@@ -141,8 +144,11 @@ export default function SharedWithMy() {
                         {copied ? "Copied!" : "Copy"}
                       </button>
                       <div className="secret-view-section">
-                        <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, pass.id)}>
-                          <img src={showIcon} alt="view-icon" width={15} height={15}/>
+                        <button className="view-icon-button" onClick={(e)=> {
+                          recordUserAction(`Button click: View stats for shared item ${pass.id}`);
+                          handleGetSecretViews(e, pass.id);
+                        }}>
+                          View Stats
                         </button>
                         <span>
                           {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}

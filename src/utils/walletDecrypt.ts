@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
-import { config } from "@/utils/config";
+import { config } from "@/utils";
 
 export function decryptMnemonic(encrypted: string, password: string): string | null {
   const salt = config.TG_SECRET_SALT;

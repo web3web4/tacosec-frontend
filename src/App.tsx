@@ -6,7 +6,7 @@ import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/compo
 import { Home, AddData, Settings } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
-import { config } from "@/utils/config";
+import { config } from "@/utils";
 import { startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {

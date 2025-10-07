@@ -2,12 +2,11 @@ import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";
-import { handleSilentError } from "@/utils";
+import { handleSilentError , config } from "@/utils";
 import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
 import { v4 as uuidv4 } from 'uuid';
-import { config } from "@/utils/config";
 import { SetStateAction, useState } from "react";
 
 const ritualId = config.TACO_RITUAL_ID;

@@ -1,3 +1,5 @@
+import { AppError } from "@/utils";
+
 export type AuthMethod = "telegram" | "web";
 
 export interface initDataType {
@@ -219,4 +221,17 @@ export interface ProfileDetails {
   existsInPlatform: boolean,
   publicAddress: string,
   profile: string
+}
+
+export interface FrontendLogPayload {
+  level: 'info' | 'warn' | 'error';
+  type: AppError['type'];
+  message: string;
+  stack?: string | null;
+  statusCode?: number | null;
+  url: string;
+  userAgent: string;
+  timestamp: string;
+  context?: string;
+  userActions: string[],
 }

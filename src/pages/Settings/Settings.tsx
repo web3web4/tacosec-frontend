@@ -5,14 +5,14 @@ import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever } from "react-icons/md";
 import { useUser } from "@/context";
 import { useState, useEffect } from "react";
-import { formatAddress, getIdentifier } from "@/utils";
+import { formatAddress, getIdentifier, recordUserAction , config } from "@/utils";
 import { useSetting } from "@/hooks";
 import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import "../../components/SeedPhrase/SeedPhrase.css";
 import "./Settings.css";
-import { config } from "@/utils/config";
+
 
 const Settings: React.FC = () => {
   const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup } = useSetting();
@@ -150,7 +150,10 @@ const submitDecryption = () => {
               <span className="address-value">{formatAddress(4, address || undefined)}</span>
               <button 
                 className="copy-address-btn" 
-                onClick={copyAddressToClipboard}
+                onClick={() => {
+                  recordUserAction("Button click: Copy wallet address");
+                  copyAddressToClipboard();
+                }}
                 title="Copy full address"
               >
                 📋
@@ -184,7 +187,10 @@ const submitDecryption = () => {
         <p className="desc">Enable to receive updates and alerts.</p>
 
         <div className="seed-section">
-          <button className="seed-button" onClick={handleDecrypt}>
+          <button className="seed-button" onClick={() => {
+            recordUserAction("Button click: View seed phrase");
+            handleDecrypt();
+          }}>
             Show Seed Phrase
           </button>
         </div>
@@ -193,7 +199,10 @@ const submitDecryption = () => {
         <div className="seed-section">
           <button 
             className="seed-button" 
-            onClick={handleClearData}
+            onClick={() => {
+              recordUserAction("Button click: Clear wallet data");
+              handleClearData();
+            }}
           >
             <MdDeleteForever style={{marginRight: '4px'}} />
             Clear All Data
@@ -203,7 +212,10 @@ const submitDecryption = () => {
         <SectionErrorBoundary sectionName="SupportSection">
           <div className="support-section">
             <p>Support and Help</p>
-            <button className="support-button" onClick={() => setShowSupportPopup(true)}>Contact Support</button>
+            <button className="support-button" onClick={() => {
+              recordUserAction("Button click: Contact support");
+              setShowSupportPopup(true);
+            }}>Contact Support</button>
           </div>
         </SectionErrorBoundary>
         
