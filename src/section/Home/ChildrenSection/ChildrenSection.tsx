@@ -1,10 +1,11 @@
+import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
 import { useWallet } from "@/wallet/walletContext";
+import { UserDisplayToggle } from "@/components";
 import { ChildDataItem } from "@/types/types";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
 import { showIcon } from "@/assets";
-import { UserDisplayToggle } from "@/components";
 import "./ChildrenSection.css";
 
 interface ChildrenSectionProps {
@@ -26,9 +27,9 @@ export default function ChildrenSection({
   handleDirectLinkForChildren,
   itemRefs
 }: ChildrenSectionProps) {
-
+  const { handleGetSecretViews, setShowViewersPopup, showViewersPopup, currentSecretViews} = useHome();
   const [copied, setCopied] = useState(false);
-  const { secretViews, handleGetSecretViews } = useHome();
+  const { secretViews } = useHome();
   const { address } = useWallet();
 
   useEffect(() => {
@@ -41,9 +42,9 @@ export default function ChildrenSection({
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => {});
   };
-
   return (
     <div className="children-section">
+      {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
       <h4 className="children-title"> {children.length} Replies to Secret:</h4>
       <div className="children-list">
         {children.map((child) => (

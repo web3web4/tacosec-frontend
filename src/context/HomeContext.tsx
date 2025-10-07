@@ -27,9 +27,12 @@ interface HomeContextType {
   handleSetActiveTabClick: (tabActive: TabType) => void;
   handleDelete: (id: string, isHasSharedWith: boolean) => Promise<void>;
   triggerGetChildrenForSecret: (id: string) => void;
-  handleGetSecretViews: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => void;
   handleDirectLink: () => void;
   handleDirectLinkForChildren: () => void;
+  handleGetSecretViews: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, secretId: string) => void; 
+  setShowViewersPopup: Dispatch<SetStateAction<boolean>>;
+  showViewersPopup: boolean;
+  currentSecretViews: SecretViews | null;
   isInit: boolean;
   provider: ethers.providers.Provider | undefined;
   decrypting: boolean;
@@ -66,8 +69,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [previousPath, setPreviousPath] = useState<string>("");
-  
-
+  const [showViewersPopup, setShowViewersPopup] = useState<boolean>(false);
+  const [currentSecretViews, setCurrentSecretViews] = useState<SecretViews | null>(null);
   
   const { signer, provider, address } = useWallet();
   const { initDataRaw, userData, directLinkData } = useUser();
@@ -132,7 +135,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             item.sharedWith.map(async (user) => {
               if(!user.username){
                 return {
-                  img: noUserImage,
+                  img: { src: noUserImage },
                   publicAddress: user.publicAddress,
                 }
               }
@@ -454,51 +457,16 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     }
   };
 
-  const enrichViewDetailsWithImages = async (viewDetails: ViewDetails[]): Promise<ViewDetails[]> => {
-    return Promise.all(
-      viewDetails.map(async (viewer) => {
-        const profile = await getUserProfileDetails(viewer.username);
-  
-        return {
-          ...viewer,
-          img: profile && profile.img?.src?.trim()
-            ? profile.img.src
-            : noUserImage,
-        };
-      })
-    );
-  };
+    const handleGetSecretViews = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, secretId: string) => {
+        e.stopPropagation();
+        const data = await handleCheckSecretViewsData(e, secretId);
+        if (data) {
+            setCurrentSecretViews(data);
+            setShowViewersPopup(true);
+        }
+    };
 
-  const renderViewer = (viewer: ViewDetails) => {
-    const formattedDate =
-      viewer.type === "viewed" && viewer.viewedAt
-        ? formatDate(viewer.viewedAt)
-        : "";
-  
-    return `
-      <div style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0; text-align: left;">
-        <div style="width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 12px;">
-          <span style="display: flex; justify-content: space-between;font-size: 16px; color: #666;">
-            <img id="viewer-img-${viewer.username}" style="border-radius: 50%" src=${
-              viewer.img || noUserImage
-            } width=35 height=35 />
-          </span>
-        </div>
-        <div style="flex-grow: 1;">
-          <div style="font-weight: 500; margin-bottom: 2px; text-align: left; color: black">
-            ${viewer.firstName || ""} ${viewer.lastName || ""}
-          </div>
-          ${
-            formattedDate
-              ? `<div style="font-size: 12px; color: #666; text-align: left;">${formattedDate}</div>`
-              : ""
-          }
-        </div>
-      </div>
-    `;
-  };
-
-  const handleGetSecretViews = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+  const handleCheckSecretViewsData = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string): SecretViews | null => {
     e.stopPropagation();
     const data = secretViews[id];
     
@@ -509,108 +477,10 @@ const decryptMessage = async (id: string, encryptedText: string) => {
         text: 'No one has viewed this message yet.',
         confirmButtonColor: 'var(--primary-color)'
       });
-      return;
+      return null;
     }
-  
-    let mergedData: ViewDetails[] = [];
-  
-    mergedData = [
-      ...data.viewDetails.map(user => ({
-        telegramId: user.telegramId ?? null,
-        username: user.username,
-        viewedAt: user.viewedAt ?? null,
-        firstName: user.firstName ?? null,
-        lastName: user.lastName ?? null,
-        publicAddress: user.publicAddress,
-        img: undefined, 
-        type: "viewed"
-      })),
-    
-      ...data.notViewedUsers.map(user => ({
-        telegramId: user.telegramId ?? null,
-        username: user.username,
-        viewedAt: null,
-        firstName: user.firstName ?? null,
-        lastName: user.lastName ?? null,
-        publicAddress: user.publicAddress,
-        img: undefined,
-        type: "not-viewed"
-      })),
-    
-      ...data.unknownUsers.map(user => ({
-        telegramId: null,
-        username: user.username,
-        viewedAt: null,
-        firstName: user.firstName ?? null,
-        lastName: user.lastName ?? null,
-        publicAddress: user.publicAddress,
-        img: undefined,
-        type: "unknown"
-      })),
-    ];
-  
-    const sortedViewDetails = [...mergedData].sort((a, b) =>
-      new Date(b.viewedAt || 0).getTime() - new Date(a.viewedAt || 0).getTime()
-    );
-  
-    const viewed = sortedViewDetails.filter(v => v.type === "viewed");
-    const notViewed = sortedViewDetails.filter(v => v.type === "not-viewed");
-    const unknown = sortedViewDetails.filter(v => v.type === "unknown");
 
-    const viewedHtml = viewed.length
-    ? `<h4 style="margin: 15px 0 10px 13px;font-size: 15px;text-align:left; color: #000000c2">Decrypted by:</h4>
-        ${viewed.map(renderViewer).join("")}`
-    : "";
-
-    const notViewedHtml = notViewed.length
-    ? `<h4 style="margin: 10px 0 10px 13px;font-size: 15px;text-align:left; color: #000000c2">Not Decrypted:</h4>
-        ${notViewed.map(renderViewer).join("")}`
-    : "";
-
-    const unknownHtml = unknown.length
-    ? `<h4 style="margin: 10px 0 10px 13px;font-size: 15px;text-align:left; color: #000000c2">Unknown:</h4>
-        ${unknown.map(renderViewer).join("")}`
-    : "";
-
-    MetroSwal.fire({
-    title: ``,
-    html: `
-      <div style="max-height: 300px; overflow-y: auto; margin: -20px -24px 0; border-radius: 12px;">
-        ${viewedHtml}
-        ${notViewedHtml}
-        ${unknownHtml}
-      </div>
-    `,
-    showConfirmButton: false,
-    showCloseButton: true,
-    customClass: {
-      popup: "viewers-popup",
-      title: "viewers-title",
-      closeButton: "viewers-close",
-    },
-    width: "350px",
-    didOpen: () => {
-      const title = document.querySelector(".viewers-title") as HTMLElement;
-      const close = document.querySelector(".viewers-close") as HTMLElement;
-      if (title) {
-        title.style.marginTop = "15px";
-        close.style.marginTop = "5px";
-        close.style.marginRight = "15px";
-      }
-    },
-    });
-  
-    try {
-      if (!data) return;
-      const updatedViewDetails = await enrichViewDetailsWithImages(sortedViewDetails);
-  
-      updatedViewDetails.forEach((viewer) => {
-        const imgEl = document.querySelector(`#viewer-img-${viewer.username}`) as HTMLImageElement;
-        if (imgEl) imgEl.src = viewer.img || noUserImage;
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    return data;
   };
   
 
@@ -622,11 +492,13 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     handleAddClick, 
     handleSetActiveTabClick, 
     handleDelete, 
- 
     triggerGetChildrenForSecret,
     handleGetSecretViews,
     handleDirectLink,
     handleDirectLinkForChildren,
+    setShowViewersPopup,
+    showViewersPopup,
+    currentSecretViews,
     isInit, 
     provider, 
     userData, 
