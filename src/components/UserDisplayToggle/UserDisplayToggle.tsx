@@ -31,7 +31,7 @@ export default function UserDisplayToggle({ userData }: UserDisplayToggleProps) 
   // Now TypeScript knows userData has the required fields
   // Check if the required fields exist - prioritize name field over firstName/lastName
   const hasNameField = userData.name && userData.name.trim() !== "" && userData.username !== "Unknown";
-  const hasFirstLastName = userData.firstName && userData.lastName && userData.username !== "Unknown";
+  const hasFirstLastName = userData.firstName && userData.username !== "Unknown";
   const hasName = hasNameField || hasFirstLastName;
   const addressValue = userData.latestPublicAddress || userData.publicAddress;
   const hasAddress = !!addressValue;

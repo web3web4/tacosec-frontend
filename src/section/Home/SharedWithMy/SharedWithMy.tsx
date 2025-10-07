@@ -1,7 +1,9 @@
-import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
-import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
 import ViewReportsPopup from "@/section/Home/SharedWithMy/ViewReportsPopup/ViewReportsPopup";
+import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
+import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
+import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
 import { DropdownMenu, UserDisplayToggle } from "@/components";
+import { useReportUser } from "@/hooks/useReportUser";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
@@ -9,7 +11,6 @@ import { useEffect, useState } from "react";
 import { ChildrenSection } from "@/section";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
-import { useReportUser } from "@/hooks/useReportUser";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function SharedWithMy() {
@@ -27,6 +28,9 @@ export default function SharedWithMy() {
     userData,
     handleDirectLinkForChildren,
     handleGetSecretViews,
+    setShowViewersPopup,
+    showViewersPopup,
+    currentSecretViews,
     setSharedWithMyData,
     toggleChildExpand, 
     handleDirectLink,
@@ -207,6 +211,9 @@ export default function SharedWithMy() {
       )}
       { /* Reply Popup */}
       {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
+      
+      { /* Viewers Popup */}
+      {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
 
       {/* Report User Popup */}
       {showReportUserPopup && currentReportData && (

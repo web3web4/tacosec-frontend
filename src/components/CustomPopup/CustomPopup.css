@@ -54,7 +54,7 @@
   top: 12px;
   right: 12px;
   background: var(--background);
-  border: 2px solid var(--metro-green);
+  border: 1px solid #415b34;
   color: var(--metro-green);
   font-size: 24px;
   cursor: pointer;

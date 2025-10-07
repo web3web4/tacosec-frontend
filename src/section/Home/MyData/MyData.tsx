@@ -1,4 +1,5 @@
-import ReplyPopup from "../SharedWithMy/ReplyPopup/ReplyPopup";
+import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
+import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
 import { DropdownMenu, UserDisplayToggle } from "@/components";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
@@ -20,6 +21,9 @@ export default function MyData() {
         handleDelete,
         toggleChildExpand,
         handleGetSecretViews,
+        setShowViewersPopup,
+        showViewersPopup,
+        currentSecretViews,
         handleDirectLink,
         handleDirectLinkForChildren,
         expandedChildId,
@@ -52,6 +56,7 @@ export default function MyData() {
   return (
     <div className="data-list">
       {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
+      {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
       {myData.length > 0 ? (
             myData.map((item, i) => (
               <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
