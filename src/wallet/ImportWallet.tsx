@@ -1,7 +1,8 @@
 import { promptPasswordWithSaveOption } from "@/hooks/walletDialogs";
-import { MetroSwal , config } from "@/utils";
+import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
+import { config } from "@/utils/config";
 
 const SALT = config.TG_SECRET_SALT || "default_salt";
 

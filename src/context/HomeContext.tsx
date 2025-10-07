@@ -1,7 +1,7 @@
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
 import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails, Secret, initDataType } from "@/types/types";
 import { MetroSwal, formatDate, showError, createAppError, handleSilentError , config } from "@/utils";
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
 import { fromHexString } from "@nucypher/shared";

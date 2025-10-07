@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import CryptoJS from "crypto-js";
-import { config } from "@/utils";
+import { config } from "@/utils/config";
 
 const SALT = config.TG_SECRET_SALT;
 
