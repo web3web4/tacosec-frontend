@@ -7,7 +7,7 @@ import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect,  useState } from "react";
 import { ChildrenSection } from "@/section";
-import { formatDate } from "@/utils";
+import { formatDate, recordUserAction } from "@/utils";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function MyData() {
@@ -60,7 +60,10 @@ export default function MyData() {
       {myData.length > 0 ? (
             myData.map((item, i) => (
               <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
-                <div className="item-container" onClick={() => toggleExpand(item.value, item.id)}>
+                <div className="item-container" onClick={() => {
+                  recordUserAction(`Expand item: ${item.id}`);
+                  toggleExpand(item.value, item.id);
+                }}>
                   <div className="item-header-info">
                   <p className="item-title">{item.key}</p>
                   <div className="item-group">
@@ -135,14 +138,20 @@ export default function MyData() {
                         </button>
                         <button
                           className="delete-button"
-                          onClick={() => handleDelete(item.id, item.sharedWith.length > 0)}
+                          onClick={() => {
+                            recordUserAction(`Button click: Delete item ${item.id}`);
+                            handleDelete(item.id, item.sharedWith.length > 0);
+                          }}
                         >
                           Delete
                         </button>
                       </div>
                       {item.sharedWith.length > 0 && (
                         <div className="secret-view-section">
-                          <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, item.id)}>
+                          <button className="view-icon-button" onClick={(e)=> {
+                            recordUserAction(`Button click: View stats for ${item.id}`);
+                            handleGetSecretViews(e, item.id);
+                          }}>
                             <img src={showIcon} alt="view-icon" width={15} height={15}/>
                           </button>
                           <span>

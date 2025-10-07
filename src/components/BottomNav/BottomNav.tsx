@@ -1,7 +1,7 @@
 import { FiHome, FiPlusSquare, FiSettings } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useNavigationGuard } from "@/context";
-import { MetroSwal } from "@/utils";
+import { MetroSwal, recordUserAction } from "@/utils";
 import "./BottomNav.css";
 
 export default function BottomNav() {
@@ -20,6 +20,7 @@ export default function BottomNav() {
       return;
     }
 
+    recordUserAction(`Navigation: ${location.pathname} → ${path}`);
     navigate(path);
   };
 

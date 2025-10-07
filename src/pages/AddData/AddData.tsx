@@ -1,4 +1,4 @@
-import { parseTelegramInitData, showError, createAppError, formatAddress } from "@/utils";
+import { parseTelegramInitData, showError, createAppError, recordUserAction , config } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
 import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
@@ -12,7 +12,6 @@ import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
 
-import { config } from "@/utils/config";
 
 const ritualId = config.TACO_RITUAL_ID;
 const domain = config.TACO_DOMAIN;
@@ -227,7 +226,10 @@ const AddData: React.FC = () => {
             <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
             {!userProfile.error && (
               userProfile.data.existsInPlatform ? (
-                <button onClick={() => handleConfirmClick(userProfile.data)}>
+                <button onClick={() => {
+                  recordUserAction(`Button click: Confirm share with ${userProfile.data.name}`);
+                  handleConfirmClick(userProfile.data);
+                }}>
                   Confirm
                 </button>
               ) : (
@@ -463,7 +465,10 @@ const AddData: React.FC = () => {
             </div>
             <button
               className="add-share-button"
-              onClick={() => handleAddShare(shareWith)}
+              onClick={() => {
+                recordUserAction("Button click: Add share recipient");
+                handleAddShare(shareWith);
+              }}
             >
               +
             </button>
@@ -502,7 +507,10 @@ const AddData: React.FC = () => {
           </SectionErrorBoundary>
         )}
 
-        <button className="save-button" onClick={encryptMessage}>
+        <button className="save-button" onClick={() => {
+          recordUserAction("Button click: Save new data");
+          encryptMessage();
+        }}>
           Save
         </button>
       </div>

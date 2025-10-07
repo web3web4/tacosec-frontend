@@ -1,7 +1,7 @@
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
-import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, Secret, initDataType } from "@/types/types";
-import React, { createContext, useContext, useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
-import { MetroSwal, showError, createAppError, handleSilentError } from "@/utils";
+import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails, Secret, initDataType } from "@/types/types";
+import { MetroSwal, formatDate, showError, createAppError, handleSilentError , config } from "@/utils";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
 import { fromHexString } from "@nucypher/shared";
@@ -11,7 +11,6 @@ import { noUserImage } from "@/assets";
 import { useUser } from "@/context";
 import { useTaco } from "@/hooks";
 import { ethers } from "ethers";
-import { config } from "@/utils/config";
 
 const ritualId = config.TACO_RITUAL_ID;
 const domain = config.TACO_DOMAIN;

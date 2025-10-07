@@ -1,5 +1,7 @@
 import { MetroSwal } from './metroSwal';
 import { clearToken } from './cookieManager';
+import { storeFrontendLog } from '@/apiService';
+import { FrontendLogPayload } from '@/types/types';
 
 // Standard error types for the application
 export interface AppError {
@@ -8,6 +10,7 @@ export interface AppError {
   originalError?: Error;
   statusCode?: number;
 }
+let userActions: string[] = [];
 
 // Create standardized error from different sources
 export function createAppError(
@@ -118,8 +121,47 @@ export async function handleApiCall<T>(
   }
 }
 
+export function recordUserAction(action: string) {
+  if (userActions.length > 20) userActions.shift();
+  userActions.push(`[${new Date().toISOString()}] ${action}`);
+}
+
+
 // Silent error handling (for non-critical operations)
-export function handleSilentError(error: unknown, context?: string): void {
+export async function handleSilentError(error: unknown, context?: string): Promise<void> {
   const appError = createAppError(error, 'unknown');
   console.error(`error${context ? ` in ${context}` : ''}:`, appError);
+
+  let level: FrontendLogPayload['level'] = 'info';
+  switch (appError.type) {
+    case 'server':
+      level = 'error';
+      break;
+    case 'validation':
+    case 'network':
+      level = 'warn';
+      break;
+    default:
+      level = 'info';
+  }
+
+  const payload: FrontendLogPayload = {
+    timestamp: new Date().toISOString(),
+    context: context || 'unknown',
+    level,
+    type: appError.type,
+    message: appError.message,
+    stack: appError.originalError?.stack || null,
+    statusCode: appError.statusCode || null,
+    url: window.location.href,
+    userAgent: navigator.userAgent,
+    userActions: [...userActions],
+  };
+
+  try {
+    await storeFrontendLog(payload);
+  } catch (e) {
+    console.warn('Failed to send frontend log:', e);
+  }
 }
+
