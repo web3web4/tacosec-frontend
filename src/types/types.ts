@@ -119,12 +119,16 @@ export interface Report {
 }
 
 export interface ReportsResponse {
-  id: string;
+  reporterInfo: {
+      username?: string,
+      userId?: string,
+      telegramId?: string,
+      latestPublicAddress: string
+  },
+  secret_id: string;
   reason: ReportType;
   createdAt: string;
   report_type: string
-  username: string;
-  publicAddress: string,
 }
 
 export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';

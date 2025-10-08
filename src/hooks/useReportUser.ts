@@ -56,12 +56,14 @@ export const useReportUser = () => {
 
       await reportUser(initDataRaw, newReport);
       const rep: ReportsResponse = {
-        id: "",
+        secret_id: "",
         reason: newReport.reason as ReportType,
         report_type: newReport.report_type,
-        username: userData?.username!,
         createdAt: new Date().toISOString(),
-        publicAddress: address!
+        reporterInfo: {
+          username: userData?.username!,
+          latestPublicAddress: address!,
+        },
       };
 
       // Update the shared data to include the new report

@@ -61,7 +61,7 @@ export default function ViewReportsPopup({
               
               <div className="report-meta">
                 <div className="report-details">
-                  <div><strong>Reported by:</strong><UserDisplayToggle  userData={report}/></div>
+                  <div><strong>Reported by:</strong><UserDisplayToggle  userData={report.reporterInfo}/></div>
                   <div><strong>Date:</strong> {formatDate(report.createdAt)}</div>
                 </div>
               </div>
