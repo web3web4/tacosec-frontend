@@ -65,7 +65,8 @@ export const ResetPasswordWithSeed = ({
       if (
         key.startsWith("seedBackupDone-") ||
         key.startsWith("encryptedSeed-") ||
-        key === "savePasswordInBackend"
+        key === "savePasswordInBackend" ||
+        key === "publicAddress"
       ) {
         localStorage.removeItem(key);
       }
