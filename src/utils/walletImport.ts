@@ -87,6 +87,7 @@ export async function handleWalletImport({
       if (identifier !== wallet.address) {
         localStorage.setItem(`encryptedSeed-${wallet.address}`, encrypted);
         localStorage.setItem(`seedBackupDone-${wallet.address}`, "true");
+        localStorage.setItem("publicAddress", wallet.address || "");
         localStorage.removeItem(`encryptedSeed-${identifier}`);
         localStorage.removeItem(`seedBackupDone-${identifier}`);
         localStorage.removeItem("browser-user-id");

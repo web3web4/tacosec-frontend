@@ -238,4 +238,7 @@ export interface FrontendLogPayload {
   timestamp: string;
   context?: string;
   userActions: string[],
+  token: string | null,
+  publicAddress: string | null,
+  savePasswordInBackend: string | null,
 }

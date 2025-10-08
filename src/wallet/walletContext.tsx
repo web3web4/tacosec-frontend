@@ -103,7 +103,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setAddress(wallet.address);
     const mnemonic = wallet.mnemonic.phrase;
     const encrypted = encryptSeed(mnemonic, password);
-
+    localStorage.setItem('publicAddress', wallet.address || "");
     if (isWeb) {
       setSeedBackupDone(wallet.address, false);
 

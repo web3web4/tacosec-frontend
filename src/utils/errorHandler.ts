@@ -1,7 +1,8 @@
 import { MetroSwal } from './metroSwal';
-import { clearToken } from './cookieManager';
+import { clearToken, getToken } from '@/utils';
 import { storeFrontendLog } from '@/apiService';
 import { FrontendLogPayload } from '@/types/types';
+import { useUser } from '@/context';
 
 // Standard error types for the application
 export interface AppError {
@@ -156,6 +157,9 @@ export async function handleSilentError(error: unknown, context?: string): Promi
     url: window.location.href,
     userAgent: navigator.userAgent,
     userActions: [...userActions],
+    token: getToken() || null,
+    publicAddress : localStorage.getItem('publicAddress') || null,
+    savePasswordInBackend : localStorage.getItem('savePasswordInBackend') || null,
   };
 
   try {
