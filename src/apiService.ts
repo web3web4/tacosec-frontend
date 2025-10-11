@@ -3,32 +3,33 @@
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload } from "./types/types";
 import { parseTelegramInitData, handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
-import { getToken, setToken, clearToken, isTokenExpiring } from "@/utils/cookieManager";
+import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
 
 const API_BASE_URL = config.API_BASE_URL;
 
 // Refresh token function
 export async function refreshToken(): Promise<string | null> {
   try {
-    const token = getToken();
-    if (!token) return null;
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return null;
     
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+      },
+       body: JSON.stringify({ refreshToken }),
     });
     
     if (!response.ok) {
-      clearToken();
+      clearTokens();
       return null;
     }
     
     const data = await response.json();
-    if (data.access_token) {
-      setToken(data.access_token);
+
+    if (data.access_token && data.refresh_token) {
+      setTokens(data.access_token, data.refresh_token);
       return data.access_token;
     }
     
@@ -44,29 +45,23 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
   const headers: Record<string, string> = {
     "Content-Type": "application/json"
   };
-  
-  // Try to get JWT token from cookies first
-  let token = getToken();
-  
+
+  let token = getAccessToken();
+
   if (token) {
-    // Check if token is about to expire and refresh it proactively
     if (isTokenExpiring(token)) {
       console.log("Token is about to expire, refreshing...");
       const newToken = await refreshToken();
-      if (newToken) {
-        token = newToken;
-      }
+      if (newToken) token = newToken;
     }
-    
-    // Use JWT token if available
     headers["Authorization"] = `Bearer ${token}`;
   } else if (initData) {
-    // Fall back to Telegram initData if available
     headers["X-Telegram-Init-Data"] = initData;
   }
-  
+
   return headers;
 };
+
 
 export async function signupUser(initData: string): Promise<initDataType> {
   const data = parseTelegramInitData(initData);
@@ -109,8 +104,8 @@ export async function loginUserWeb(publicAddress:string, signature:string): Prom
   });
   
   // Store the JWT token in cookie for future API calls
-  if (authData.access_token) {
-    setToken(authData.access_token);
+  if (authData.access_token && authData.refresh_token) {
+    setTokens(authData.access_token, authData.refresh_token);
   }
 
   return authData;

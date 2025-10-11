@@ -1,8 +1,7 @@
 import { MetroSwal } from './metroSwal';
-import { clearToken, getToken } from '@/utils';
+import { clearTokens, getAccessToken,getRefreshToken } from '@/utils';
 import { storeFrontendLog } from '@/apiService';
 import { FrontendLogPayload } from '@/types/types';
-import { useUser } from '@/context';
 
 // Standard error types for the application
 export interface AppError {
@@ -43,7 +42,7 @@ export function handleApiError(response: Response, customMessage?: string): AppE
     type = 'auth';
     message = 'Authentication failed. Please log in again.';
     // Clear invalid token
-    clearToken();
+    clearTokens();
     // Redirect to home or login page if needed
     //window.location.href = '/';
   } else if (response.status === 403) {
@@ -157,7 +156,8 @@ export async function handleSilentError(error: unknown, context?: string): Promi
     url: window.location.href,
     userAgent: navigator.userAgent,
     userActions: [...userActions],
-    token: getToken() || null,
+    token: getAccessToken() || null,
+    refreshToken: getRefreshToken() || null,
     publicAddress : localStorage.getItem('publicAddress') || null,
     savePasswordInBackend : localStorage.getItem('savePasswordInBackend') || null,
   };

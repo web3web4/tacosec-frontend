@@ -1,5 +1,4 @@
-// authManager.ts
-import { getToken, isTokenExpiring } from './cookieManager';
+import { getAccessToken, isTokenExpiring } from './cookieManager';
 import { refreshToken } from '@/apiService';
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
@@ -10,11 +9,11 @@ export function startTokenAutoRefresh(intervalMs = 60000) {
 
   refreshInterval = setInterval(async () => {
     try {
-      const token = getToken();
+      const token = getAccessToken();
       if (!token) return;
 
       const now = Date.now();
-      if (now - lastAttempt < 45000) return; 
+      if (now - lastAttempt < 45000) return;
       lastAttempt = now;
 
       if (isTokenExpiring(token)) {

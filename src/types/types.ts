@@ -29,6 +29,7 @@ export interface DirectLinkData {
 }
 export interface AuthDataType {
   access_token: string,
+  refresh_token:string,
 }
 
 export type TelegramUser = {
@@ -239,6 +240,7 @@ export interface FrontendLogPayload {
   context?: string;
   userActions: string[],
   token: string | null,
+  refreshToken: string| null,
   publicAddress: string | null,
   savePasswordInBackend: string | null,
 }

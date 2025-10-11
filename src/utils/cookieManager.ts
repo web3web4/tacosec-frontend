@@ -1,9 +1,9 @@
 import Cookies from 'js-cookie';
 
-const TOKEN_KEY = 'jwt_token';
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
 const TOKEN_EXPIRY_BUFFER = 60; // seconds
 
-// Parse JWT token to get payload
 export function parseJwt(token: string) {
   try {
     const base64Url = token.split('.')[1];
@@ -20,33 +20,38 @@ export function parseJwt(token: string) {
   }
 }
 
-// Check if token is about to expire
 export function isTokenExpiring(token: string): boolean {
   const payload = parseJwt(token);
   if (!payload?.exp) return true;
-  
   const now = Math.floor(Date.now() / 1000);
-  return now >= (payload.exp - TOKEN_EXPIRY_BUFFER);
+  return now >= payload.exp - TOKEN_EXPIRY_BUFFER;
 }
 
-// Set token in HTTP-only cookie
-export function setToken(token: string): void {
-  // Set secure cookie with HttpOnly, SameSite and Secure flags
-  Cookies.set(TOKEN_KEY, token, {
-    expires: 7, // 7 days
+// Set tokens
+export function setTokens(accessToken: string, refreshToken: string): void {
+  Cookies.set(ACCESS_TOKEN_KEY, accessToken, {
+    expires: 7,
     path: '/',
     sameSite: 'strict',
-    secure: window.location.protocol === 'https:' // Only set secure in HTTPS
+    secure: window.location.protocol === 'https:',
+  });
+  Cookies.set(REFRESH_TOKEN_KEY, refreshToken, {
+    expires: 30, // refresh token valid for 30 days
+    path: '/',
+    sameSite: 'strict',
+    secure: window.location.protocol === 'https:',
   });
 }
 
-// Get token from cookie
-export function getToken(): string | null {
-  return Cookies.get(TOKEN_KEY) || null;
+export function getAccessToken(): string | null {
+  return Cookies.get(ACCESS_TOKEN_KEY) || null;
 }
 
-// Clear token from cookie
-export function clearToken(): void {
-  Cookies.remove(TOKEN_KEY, { path: '/' });
+export function getRefreshToken(): string | null {
+  return Cookies.get(REFRESH_TOKEN_KEY) || null;
 }
 
+export function clearTokens(): void {
+  Cookies.remove(ACCESS_TOKEN_KEY, { path: '/' });
+  Cookies.remove(REFRESH_TOKEN_KEY, { path: '/' });
+}
