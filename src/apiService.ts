@@ -11,8 +11,10 @@ const API_BASE_URL = config.API_BASE_URL;
 export async function refreshToken(): Promise<string | null> {
   try {
     const refreshToken = getRefreshToken();
-    if (!refreshToken) return null;
-    
+    if (!refreshToken){
+      console.warn("⚠️ No refresh token found in cookies."); 
+      return null;
+    }
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
@@ -22,14 +24,16 @@ export async function refreshToken(): Promise<string | null> {
     });
     
     if (!response.ok) {
+      console.error("❌ Refresh token request failed:", response.status);
       clearTokens();
       return null;
     }
     
     const data = await response.json();
-
+    console.log("✅ Token refresh successful.");
     if (data.access_token && data.refresh_token) {
       setTokens(data.access_token, data.refresh_token);
+       console.log("🔄 New tokens stored in cookies.");
       return data.access_token;
     }
     
@@ -43,16 +47,20 @@ export async function refreshToken(): Promise<string | null> {
 // Helper function to get authentication headers with automatic token refresh
 const getAuthHeaders = async (initData?: string | null): Promise<Record<string, string>> => {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   };
 
   let token = getAccessToken();
-
   if (token) {
     if (isTokenExpiring(token)) {
-      console.log("Token is about to expire, refreshing...");
+      console.log("⚠️ Token expiring soon, attempting refresh...");
       const newToken = await refreshToken();
-      if (newToken) token = newToken;
+      if (newToken) {
+        console.log("✅ Using newly refreshed access token");
+        token = newToken; 
+      } else {
+        console.warn("❌ Failed to refresh, token might be invalid.");
+      }
     }
     headers["Authorization"] = `Bearer ${token}`;
   } else if (initData) {
@@ -61,6 +69,7 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
 
   return headers;
 };
+
 
 
 export async function signupUser(initData: string): Promise<initDataType> {
