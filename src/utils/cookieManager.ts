@@ -54,4 +54,5 @@ export function getRefreshToken(): string | null {
 export function clearTokens(): void {
   Cookies.remove(ACCESS_TOKEN_KEY, { path: '/' });
   Cookies.remove(REFRESH_TOKEN_KEY, { path: '/' });
+  Cookies.remove("jwt_token", { path: '/' });
 }
