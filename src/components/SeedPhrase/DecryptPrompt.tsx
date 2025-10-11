@@ -26,7 +26,6 @@ async function fetchLatestSecret(initDataRaw: string | null): Promise<string | n
       );
 
       const latestAddress = sortedAddresses[0];
-      console.log("Latest address with secret:", latestAddress);
       return latestAddress.secret!;
     }
   }

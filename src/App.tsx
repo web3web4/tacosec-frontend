@@ -6,7 +6,7 @@ import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/compo
 import { Home, AddData, Settings } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
-import { config } from "@/utils";
+import { config, getAccessToken } from "@/utils";
 import { resetAppOnce, startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
@@ -42,11 +42,17 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-  startTokenAutoRefresh(); 
-
-  return () => stopTokenAutoRefresh(); 
+useEffect(() => {
+  const token = getAccessToken();
+  if (token) {
+    console.log("✅ Starting token auto-refresh loop...");
+    startTokenAutoRefresh();
+  }else{
+    console.warn("⚠️ No access token found on startup.");
+  }
+  return () => stopTokenAutoRefresh();
 }, []);
+
 
 
   return (
