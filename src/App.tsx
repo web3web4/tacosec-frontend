@@ -7,11 +7,11 @@ import { Home, AddData, Settings } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
 import { config } from "@/utils";
-import { startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
+import { resetAppOnce, startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  resetAppOnce();
   useEffect(() => { 
     const tracker = new Tracker({
       projectKey: config.OPENREPLAY_PROJECT_KEY,  
