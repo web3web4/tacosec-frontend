@@ -82,7 +82,13 @@ export async function signupUser(initData: string): Promise<initDataType> {
       headers,
       body: JSON.stringify(data),
     });
-    return response;
+    const result = await response.json();
+    
+    if (result.access_token && result.refresh_token) {
+      setTokens(result.access_token, result.refresh_token);
+    }
+    
+    return result;
   });
 }
 
