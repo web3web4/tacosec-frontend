@@ -84,7 +84,13 @@ export async function signupUser(initData: string): Promise<initDataType> {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
-  return await response.json();
+  const result = await response.json();
+  
+  if (result.access_token && result.refresh_token) {
+    setTokens(result.access_token, result.refresh_token);
+  }
+
+  return result;
 }
 
 export async function getUserDetails(): Promise<initDataType> {
