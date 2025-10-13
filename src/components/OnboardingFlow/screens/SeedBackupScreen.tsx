@@ -76,7 +76,7 @@ export function SeedBackupScreen({ mnemonic, onConfirm, onBack }: SeedBackupScre
                   gap: '4px',
                   minHeight: '60px',
                   justifyContent: 'center'
-                }}>
+                }} data-openreplay-obscured>
                   <span style={{
                     color: 'rgba(149, 255, 93, 0.7)',
                     fontSize: '12px',
