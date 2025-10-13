@@ -73,14 +73,14 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
 
 
 export async function signupUser(initData: string): Promise<initDataType> {
-  const data = parseTelegramInitData(initData);
+  //const data = parseTelegramInitData(initData);
   const headers = await getAuthHeaders(initData);
   
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/users/signup`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers,
-      body: JSON.stringify(data),
+      //body: JSON.stringify(data),
     });
     const result = await response.json();
     
