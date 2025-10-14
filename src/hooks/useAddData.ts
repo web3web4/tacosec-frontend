@@ -3,7 +3,7 @@ import { GetUserProfileDetailsResponse, SearchDataType, UserProfileDetailsType, 
 import { useCallback, useEffect, useState } from "react";
 import { noUserImage, userNotFoundSvg } from "@/assets";
 import { useUser, useNavigationGuard } from "@/context";
-import { MetroSwal, debounce,createAppError } from "@/utils";
+import { MetroSwal, debounce,createAppError, sanitizeTitle, sanitizePlainText, sanitizeUsernameInput } from "@/utils";
 import { utils  } from "ethers";
 
 const initProfileData = {
@@ -38,10 +38,13 @@ export default function useAddData() {
   }, [shareWith, message, name]);
 
   const fetchUserProfile = async (username: string) => {
-    setUserProfile({ data: initProfileData, error: username });
-    const cleanedUsername = username.startsWith("@")
-      ? username.substring(1)
-      : username;
+    // Sanitize incoming username before using
+    const safeUsername = sanitizePlainText(username, { maxLength: 64 });
+    const cleanedUsername = safeUsername.startsWith("@")
+      ? safeUsername.substring(1)
+      : safeUsername;
+
+    setUserProfile({ data: initProfileData, error: safeUsername });
 
     try {
       const response: GetUserProfileDetailsResponse =
@@ -56,7 +59,7 @@ export default function useAddData() {
           invited: false,
           existsInPlatform: false,
         };
-        setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${username}` }));
+        setUserProfile(() => ({ data: profile, error: `No Telegram user found for @${safeUsername}` }));
         return;
       }
       setUserProfile({
@@ -100,8 +103,9 @@ export default function useAddData() {
 
   const handleSearch = async (username: string) => {
     setSearchData([]);
-    setShareWith(username);
-    getUsersAutoComplete(username);
+    const sanitized = sanitizePlainText(username, { maxLength: 64 });
+    setShareWith(sanitized);
+    getUsersAutoComplete(sanitized);
   };
 
   const closePopup = () => {
@@ -145,17 +149,18 @@ const handleSearchSelect = (user: SearchDataType) => {
 
 
 const handleAddShare = (input: string): void => {
-  if (!input.trim()) return;
+  const sanitizedInput = sanitizePlainText(input, { maxLength: 128 });
+  if (!sanitizedInput.trim()) return;
 
-  if (utils.isAddress(input)) {
-    const isAlreadyInList = shareList.some((user) => user.data.publicAddress?.toLocaleLowerCase() === input.toLocaleLowerCase());
+  if (utils.isAddress(sanitizedInput)) {
+    const isAlreadyInList = shareList.some((user) => user.data.publicAddress?.toLocaleLowerCase() === sanitizedInput.toLocaleLowerCase());
     if(!isAlreadyInList){
         const newProfile = {
           data: {
             img: { src: noUserImage },
             name: "",
             username: "",   
-            publicAddress: input,
+            publicAddress: sanitizedInput,
             invited: true,  
             existsInPlatform: false,
           },
@@ -170,7 +175,7 @@ const handleAddShare = (input: string): void => {
   }
 
   setIsOpenPopup(true);
-  fetchUserProfile(input);
+  fetchUserProfile(sanitizedInput);
   setSearchData([]);
 };
 
@@ -193,7 +198,11 @@ const handleAddShare = (input: string): void => {
       );
       return false;
     }
-    if (name.trim() === "") {
+
+    const safeName = sanitizeTitle(name);
+    const safeMessage = sanitizePlainText(message, { maxLength: 5000, preserveNewlines: true });
+
+    if (!safeName.trim()) {
       MetroSwal.fire({
         icon: "warning",
         title: "Warning",
@@ -201,7 +210,7 @@ const handleAddShare = (input: string): void => {
       });
       return false;
     }
-    if (message.trim() === "") {
+    if (!safeMessage.trim()) {
       MetroSwal.fire({
         icon: "warning",
         title: "Warning",

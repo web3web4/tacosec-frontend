@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { reportUser } from "@/apiService";
 import { Report, ReportsResponse, ReportType, SharedWithMyDataType, initDataType } from "@/types/types";
-import { MetroSwal, showError, createAppError } from "@/utils";
+import { MetroSwal, showError, createAppError, sanitizePlainText } from "@/utils";
 import { useWallet } from "@/wallet/walletContext";
 
 export interface ReportData {
@@ -47,10 +47,22 @@ export const useReportUser = () => {
     setIsSubmitting(true);
 
     try {
+      // Sanitize and validate message before sending
+      const safeReason = sanitizePlainText(reportData.message, { maxLength: 2000, preserveNewlines: true });
+      if (!safeReason.trim()) {
+        await MetroSwal.fire({
+          icon: 'error',
+          title: 'Invalid Report',
+          text: 'Please provide a valid reason for your report.',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const newReport: Report = {
         secret_id: secretId,
         report_type: reportData.reportType as ReportType,
-        reason: reportData.message,
+        reason: safeReason,
         user: reportedAddress,
       };
 
