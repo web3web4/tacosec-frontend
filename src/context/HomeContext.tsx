@@ -177,7 +177,6 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       if(data.sharedWithMe.length > 0) getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
-      console.error("Error fetching shared data:", err);
       const appError = createAppError(err, 'unknown');
       
       if (appError.message.includes("Authentication")) {
@@ -410,14 +409,11 @@ const decryptMessage = async (id: string, encryptedText: string) => {
       setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
     }
   } catch (err: unknown) {
-    const errorMessage =
-      err instanceof Error ? err.message : "Unknown decryption error";
-
-    console.error("Error decrypting:", errorMessage);
-
+    const appError = createAppError(err, 'unknown');
+    handleSilentError(appError, 'Decrypt Message');
     setDecryptErrors((prev) => ({
       ...prev,
-      [id]: errorMessage,
+      [id]: appError.message,
     }));
   } finally {
     setDecrypting(false);

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useWallet } from '@/wallet/walletContext';
 import { useUser } from '@/context';
-import { handleWalletImport, MetroSwal } from '@/utils';
+import { handleWalletImport, MetroSwal, createAppError, handleSilentError } from '@/utils';
 import {
   WelcomeScreen,
   PasswordScreen,
@@ -134,11 +134,12 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         });
       }
     } catch (error) {
-      console.error('Error with wallet operation:', error);
+      const appError = createAppError(error, 'unknown', 'Wallet operation failed');
+      handleSilentError(appError, 'OnboardingFlow wallet operation');
       MetroSwal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'An error occurred. Please try again.'
+        text: appError.message || 'An error occurred. Please try again.'
       });
     }
   }, [onboardingData, createWalletWithPassword, navigateToStep, isBrowser, userData, address, addressweb, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, setDecryptedPassword, onComplete]);

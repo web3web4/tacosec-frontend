@@ -1,6 +1,7 @@
 import React, { SetStateAction, useState, useEffect } from "react";
 import CustomPopup from "@/components/CustomPopup/CustomPopup";
 import { ReportType } from "@/types/types";
+import { MetroSwal, createAppError, handleSilentError } from "@/utils";
 import "./ReportUserPopup.css";
 
 interface ReportUserPopupProps {
@@ -61,7 +62,13 @@ export default function ReportUserPopup({
       });
       setShowReportUserPopup(false);
     } catch (error) {
-      console.error('Error submitting report:', error);
+      const appError = createAppError(error, 'unknown');
+      handleSilentError(appError, 'ReportUserPopup submit');
+      MetroSwal.fire({
+        icon: 'error',
+        title: 'Submit Failed',
+        text: appError.message,
+      });
     }
   };
 
