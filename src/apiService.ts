@@ -70,26 +70,27 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
   return headers;
 };
 
-
-
 export async function signupUser(initData: string): Promise<initDataType> {
   const data = parseTelegramInitData(initData);
   const headers = await getAuthHeaders(initData);
-  
-  return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/users/signup`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-    
-    if (result.access_token && result.refresh_token) {
-      setTokens(result.access_token, result.refresh_token);
-    }
-    
-    return result;
+
+  const response = await fetch(`${API_BASE_URL}/users/signup`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
   });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  
+  if (result.access_token && result.refresh_token) {
+    setTokens(result.access_token, result.refresh_token);
+  }
+
+  return result;
 }
 
 export async function getUserDetails(): Promise<initDataType> {
