@@ -173,7 +173,7 @@ export async function getUserProfileDetails(username: string): Promise<UserProfi
   
   const response = await handleApiCall<ProfileDetails>(async () => {
     const response = await fetch(
-      `${API_BASE_URL}/users/telegram/profile?username=${username}`,
+      `${API_BASE_URL}/users/telegram/profile?username=${encodeURIComponent(username)}`,
       {
         method: "GET",
         headers,
@@ -219,7 +219,7 @@ export async function checkIfUserAvailable(initData: string, username: string): 
   const headers = await getAuthHeaders(initData);
   
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/users/username/${username}`, {
+    const response = await fetch(`${API_BASE_URL}/users/username/${encodeURIComponent(username)}`, {
       method: "GET",
       headers,
     });
@@ -258,7 +258,7 @@ export async function hidePassword(initData: string, id: string): Promise<void> 
   }
   
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/passwords/hide/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/passwords/hide/${encodeURIComponent(id)}`, {
       method: "PATCH",
       headers: headers,
     });
@@ -275,7 +275,7 @@ export async function deletePassword(initData: string, id: string): Promise<void
   }
   
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/passwords/owner/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/passwords/owner/${encodeURIComponent(id)}`, {
       method: "DELETE",
       headers: headers,
     });
@@ -287,7 +287,7 @@ export async function getAutoCompleteUsername(initData: string, username: string
   const headers = await getAuthHeaders(initData);
   
   const result = await handleApiCall<{ data: SearchDataType[] }>(async () => {
-    const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${username}&limit=5&searchType=contains`, {
+    const response = await fetch(`${API_BASE_URL}/users/search/autocomplete?query=${encodeURIComponent(username)}&limit=5&searchType=contains`, {
       method: "GET",
       headers,
     });
@@ -327,7 +327,7 @@ export async function getChildrenForSecret(initData: string, parentId: string): 
   const headers = await getAuthHeaders(initData);
   
   const result = await handleApiCall<{ passwords?: ChildDataItem[] } | { statusCode: number; message: string }>(async () => {
-    const response = await fetch(`${API_BASE_URL}/passwords/children/${parentId}?page=1&secret_count=200`, {
+    const response = await fetch(`${API_BASE_URL}/passwords/children/${encodeURIComponent(parentId)}?page=1&secret_count=200`, {
       method: "GET",
       headers,
     });
@@ -344,7 +344,7 @@ export async function setSecretView(initData: string, id: string): Promise<void>
   const headers = await getAuthHeaders(initData);
   
   await handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/passwords/secret-view/${encodeURIComponent(id)}`, {
       method: "PATCH",
       headers,
     });
@@ -356,7 +356,7 @@ export async function getSecretViews(initData: string, id: string): Promise<Secr
   const headers = await getAuthHeaders(initData);
   
   const result = await handleApiCall<SecretViews>(async () => {
-    const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/passwords/secret-view-stats/${encodeURIComponent(id)}`, {
       method: "GET",
       headers,
     });

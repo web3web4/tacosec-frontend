@@ -2,7 +2,7 @@ import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { storageEncryptedData } from "@/apiService";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";
-import { handleSilentError , config } from "@/utils";
+import { handleSilentError , config, sanitizePlainText } from "@/utils";
 import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import MetroSwal from "sweetalert2";
@@ -36,7 +36,11 @@ export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: Re
 
   const handleReplayToSecret = async () => {
     setErrorMessage("");
-    if (!replyMessage || !replyMessage.trim()) {
+
+    // Sanitize reply before validation and encryption
+    const safeReply = sanitizePlainText(replyMessage, { maxLength: 5000, preserveNewlines: true });
+
+    if (!safeReply || !safeReply.trim()) {
       setErrorMessage('Reply is required!');
       return false;
     }
@@ -61,7 +65,7 @@ export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: Re
           });
 
       const encryptedBytes = await encryptDataToBytes(
-        replyMessage,
+        safeReply,
         checkUsersCondition,
         signer!
       );

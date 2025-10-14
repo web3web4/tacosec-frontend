@@ -3,7 +3,7 @@ import { sendContractSupport } from "@/apiService";
 import MetroSwal from "sweetalert2";
 import { useUser } from "@/context";
 import { useState } from "react";
-import { showError, createAppError } from "@/utils";
+import { showError, createAppError, sanitizeTitle, sanitizePlainText } from "@/utils";
 
 export default function UseContactSupport({ setShowSupportPopup }: ContactSupportProps) {
   const { initDataRaw } = useUser();
@@ -18,16 +18,18 @@ export default function UseContactSupport({ setShowSupportPopup }: ContactSuppor
   };
 
   const handleSupportSubmit = async () => {
-    if (!supportForm.subject.trim() || !supportForm.message.trim()) {
+    // Sanitize inputs before validation and sending
+    const safeSubject = sanitizeTitle(supportForm.subject);
+    const safeMessage = sanitizePlainText(supportForm.message, { maxLength: 5000, preserveNewlines: true });
+
+    if (!safeSubject.trim() || !safeMessage.trim()) {
       MetroSwal.fire("Error", "Please fill in both subject and message fields.", "error");
       return;
     }
 
     setIsSubmittingSupportRequest(true);
-    
     try {
-   
-      const response = await sendContractSupport(initDataRaw!, {subject: supportForm.subject, message: supportForm.message});
+      const response = await sendContractSupport(initDataRaw!, {subject: safeSubject, message: safeMessage});
 
       if (response.success) {
           MetroSwal.fire("Success", "Your support request has been sent successfully!", "success");

@@ -11,6 +11,7 @@ import { useAddData, useTaco } from "@/hooks";
 import React, { useState } from "react";
 import { useUser } from "@/context";
 import "./AddData.css";
+import { sanitizeTitle, sanitizePlainText } from "@/utils";
 
 
 const ritualId = config.TACO_RITUAL_ID;
@@ -64,6 +65,10 @@ const AddData: React.FC = () => {
     if (!provider) return;
 
     if (!checkEncrypting()) return;
+
+    // Sanitize inputs prior to encryption and payload creation
+    const safeMessage = sanitizePlainText(message, { maxLength: 5000, preserveNewlines: true });
+    const safeName = sanitizeTitle(name);
 
     setEncrypting(true);
     try {
@@ -156,7 +161,7 @@ const AddData: React.FC = () => {
 
       console.log("Encrypting message...");
       const encryptedBytes = await encryptDataToBytes(
-        message,
+        safeMessage,
         compoundCondition,
         signer!
       );
@@ -173,7 +178,7 @@ const AddData: React.FC = () => {
             }));
 
         const payload: DataPayload = {
-          key: name,
+          key: safeName,
           description: "",
           type: "text",
           value: encryptedHex!,
