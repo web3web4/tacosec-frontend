@@ -39,7 +39,7 @@ export async function handleWalletImport({
   providedSavePassword,
 }: ImportParams) {
   try {
-    let identifier = isBrowser ? (address || addressweb) : userData?.user.telegramId!;
+    let identifier = isBrowser ? (address || addressweb) : userData?.user?.telegramId!;
 
     if (!identifier && isBrowser) {
       identifier = "web-" + Math.random().toString(36).substring(2, 15);

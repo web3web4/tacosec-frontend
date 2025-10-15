@@ -44,17 +44,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
   const { initDataRaw, userData } = useUser();
-  const isTelegram = Boolean(userData?.user.telegramId);
+  const isTelegram = Boolean(userData?.user?.telegramId);
   const isWeb = !isTelegram;
 
   const identifier = useMemo(() => {
     if (isWeb && addressweb) {
       return addressweb;
-    } else if (userData?.user.telegramId) {
+    } else if (userData?.user?.telegramId) {
       return userData.user.telegramId;
     }
     return null;
-  }, [isWeb, addressweb, userData?.user.telegramId]);
+  }, [isWeb, addressweb, userData?.user?.telegramId]);
 
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [identifier]);
 
   async function createWalletFlow() {
-    if (isTelegram && !userData?.user.telegramId) return;
+    if (isTelegram && !userData?.user?.telegramId) return;
 
     // Use the new merged password dialog
     const { isConfirmed, value: password, savePassword } = await promptPasswordWithSaveOption();
@@ -94,7 +94,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }
 
   async function createWalletWithPassword(password: string, saveToBackend: boolean, skipBackupReminder: boolean = false) {
-    if (isTelegram && !userData?.user.telegramId) return;
+    if (isTelegram && !userData?.user?.telegramId) return;
 
     setSavedPasswordPreference(saveToBackend);
 
@@ -116,8 +116,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         handleSilentError(err, 'loginUserWeb');
       }
     } else {
-      setSeedBackupDone(userData?.user.telegramId || "", false);
-      saveEncryptedSeed(userData?.user.telegramId || "", encrypted);
+      setSeedBackupDone(userData?.user?.telegramId || "", false);
+    saveEncryptedSeed(userData?.user?.telegramId || "", encrypted);
     }
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
