@@ -24,7 +24,7 @@ export const ResetPasswordWithSeed = ({
   const { addressweb , address  } = useWallet();
 
   const handleReset = async () => {
-    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user.telegramId);
       if (!identifier) return;
     const trimmed = seed.trim().toLowerCase();
     if (!ethers.utils.isValidMnemonic(trimmed)) {

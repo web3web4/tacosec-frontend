@@ -1,7 +1,7 @@
 "use server";
 
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload } from "./types/types";
-import { parseTelegramInitData, handleApiCall, createAppError, config } from "@/utils";
+import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
 
@@ -71,13 +71,13 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
 };
 
 export async function signupUser(initData: string): Promise<initDataType> {
-  const data = parseTelegramInitData(initData);
+  //const data = parseTelegramInitData(initData);
   const headers = await getAuthHeaders(initData);
 
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
     headers,
-    body: JSON.stringify(data),
+    //body: JSON.stringify(data),
   });
 
   if (!response.ok) {

@@ -43,7 +43,7 @@ const Settings: React.FC = () => {
    */
 
   const handleDecrypt = () => {
-    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+    const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user.telegramId);
     if (!identifier) return;
     const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
     if (!encrypted) {
@@ -60,7 +60,7 @@ const Settings: React.FC = () => {
    */
 
 const submitDecryption = () => {
-  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user.telegramId);
   if (!identifier) return;
 
   const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
@@ -144,7 +144,7 @@ const submitDecryption = () => {
               />
             </div>
             <div className="profile-name">
-              {userData?.firstName} {userData?.lastName}
+              {userData?.user.firstName} {userData?.user.lastName}
             </div>
             <div className="address-container">
               <span>Address: </span>

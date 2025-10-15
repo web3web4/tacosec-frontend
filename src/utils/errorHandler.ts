@@ -1,5 +1,5 @@
 import { MetroSwal } from './metroSwal';
-import { clearAccessTokens, getAccessToken,getRefreshToken } from '@/utils';
+import { clearTokens, getAccessToken,getRefreshToken } from '@/utils';
 import { storeFrontendLog } from '@/apiService';
 import { FrontendLogPayload } from '@/types/types';
 
@@ -42,7 +42,7 @@ export function handleApiError(response: Response, customMessage?: string): AppE
     type = 'auth';
     message = 'Authentication failed. Please log in again.';
     // Clear invalid token
-    //clearAccessTokens();
+    clearTokens();
     // Redirect to home or login page if needed
     //window.location.href = '/';
   } else if (response.status === 403) {
