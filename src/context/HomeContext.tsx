@@ -375,7 +375,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         const views = await getSecretViews(initDataRaw!, child._id);
         const hasMyView = views.viewDetails.some(sec => sec.publicAddress.toLowerCase() === address?.toLowerCase());
         views.isNewSecret = !hasMyView;
-        if(child.publicAddress.toLowerCase() === address?.toLowerCase() || userData?.privacyMode) views.isNewSecret = false;
+        if(child.publicAddress.toLowerCase() === address?.toLowerCase() || userData?.user.privacyMode) views.isNewSecret = false;
         return [child._id, views] as const;
       })
     );

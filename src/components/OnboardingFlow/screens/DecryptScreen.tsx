@@ -19,7 +19,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   const { userData, isBrowser } = useUser();
   const { address, addressweb } = useWallet();
   
-  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user.telegramId);
   
   // Check if user can restore from server
   const canRestoreFromServer = localStorage.getItem('savePasswordInBackend') === 'true';

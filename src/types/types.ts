@@ -3,18 +3,22 @@ import { AppError } from "@/utils";
 export type AuthMethod = "telegram" | "web";
 
 export interface initDataType {
-  _id: string,
-  telegramId: string,
-  firstName: string,
-  lastName: string,
-  username: string,
-  authDate: string,
-  hash: string,
-  isActive: boolean,
-  createdAt: string,
-  updatedAt: string,
-  privacyMode: boolean,
-  publicAddress: string
+  user: {
+    _id: string,
+    telegramId: string,
+    firstName: string,
+    lastName: string,
+    username: string,
+    authDate: string,
+    hash: string,
+    isActive: boolean,
+    createdAt: string,
+    updatedAt: string,
+    privacyMode: boolean,
+    publicAddress: string
+  };
+  access_token: string,
+  refresh_token: string,
 }
 
 export interface UserDetails{

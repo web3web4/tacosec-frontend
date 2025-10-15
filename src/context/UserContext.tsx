@@ -24,7 +24,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
   const [isBrowser, setIsBrowser] = useState(false);
-  const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
+  const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.user.telegramId}`)!;
 
  const signUserData = async () => {
     setError(null);
@@ -44,7 +44,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       if (hasWallet) {
         MetroSwal.success(
           "Welcome!",
-          `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`
+          `Hello, ${response.user.firstName} ${" "}${response.user.lastName}! We're glad to have you here.`
         );
       }
     } catch (err) {

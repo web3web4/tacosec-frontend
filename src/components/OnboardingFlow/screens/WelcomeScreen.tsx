@@ -9,10 +9,10 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
   const { userData } = useUser();
   
-  const displayName = userData?.firstName && userData?.lastName
-    ? `${userData.firstName} ${userData.lastName}`
-    : userData?.username
-    ? userData.username
+  const displayName = userData?.user.firstName && userData?.user.lastName
+    ? `${userData.user.firstName} ${userData.user.lastName}`
+    : userData?.user.username
+    ? userData.user.username
     : "Friend";
   return (
     <div className="onboarding-screen">
