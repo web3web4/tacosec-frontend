@@ -9,7 +9,7 @@ export default function useSetting() {
   const { userData, initDataRaw, setUserData } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
   const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
-  const [privacyModOn, setPrivacyModOn] = useState<boolean>(userData?.user.privacyMode || false);
+  const [privacyModOn, setPrivacyModOn] = useState<boolean>(userData?.user?.privacyMode || false);
   const [showSupportPopup, setShowSupportPopup] = useState(false);
 
   const handleToggleNotifications = (): void => {
@@ -56,7 +56,7 @@ const handleTogglePrivacyMod = (): void => {
 
 
 const fetchData = async () => {
-  const username = userData?.user.username;
+  const username = userData?.user?.username;
 
   if (!username) {
     console.warn("No username found. Skipping profile fetch.");

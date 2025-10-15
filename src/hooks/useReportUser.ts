@@ -73,7 +73,7 @@ export const useReportUser = () => {
         report_type: newReport.report_type,
         createdAt: new Date().toISOString(),
         reporterInfo: {
-          username: userData?.user.username!,
+          username: userData?.user?.username!,
           latestPublicAddress: address!,
         },
       };

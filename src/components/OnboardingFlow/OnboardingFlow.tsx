@@ -54,9 +54,9 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
     provider
   } = useWallet();
 
-  const displayName = userData?.user.firstName && userData?.user.lastName
-    ? `${userData.user.firstName} ${userData.user.lastName}`
-    : userData?.user.username
+  const displayName = userData?.user?.firstName && userData?.user?.lastName
+    ? `${userData?.user?.firstName} ${userData?.user?.lastName}`
+    : userData?.user?.username
     ? userData.user.username
     : 'Friend';
 
@@ -158,14 +158,14 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
 
   const handleSeedConfirmSuccess = useCallback(() => {
     // Mark seed backup as completed to prevent backup flow from triggering
-    const identifier = isBrowser ? address || addressweb : userData?.user.telegramId;
+    const identifier = isBrowser ? address || addressweb : userData?.user?.telegramId;
     
     if (identifier) {
       localStorage.setItem(`seedBackupDone-${identifier}`, "true");
     }
     
     onComplete();
-  }, [onComplete, isBrowser, address, addressweb, userData?.user.telegramId]);
+  }, [onComplete, isBrowser, address, addressweb, userData?.user?.telegramId]);
 
   const handleDecryptSuccess = useCallback((seedPhrase: string) => {
     setOnboardingData(prev => ({ ...prev, seedPhrase }));
