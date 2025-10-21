@@ -3,7 +3,7 @@ import { GetUserProfileDetailsResponse, SearchDataType, UserProfileDetailsType, 
 import { useCallback, useEffect, useState } from "react";
 import { noUserImage, userNotFoundSvg } from "@/assets";
 import { useUser, useNavigationGuard } from "@/context";
-import { MetroSwal, debounce,createAppError, sanitizeTitle, sanitizePlainText, sanitizeUsernameInput } from "@/utils";
+import { MetroSwal, debounce,createAppError, sanitizeTitle, sanitizePlainText } from "@/utils";
 import { utils  } from "ethers";
 
 const initProfileData = {

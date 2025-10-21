@@ -1,12 +1,4 @@
-import React from 'react';
-
-interface TelegramInviteButtonProps {
-  username: string;
-  botUserName: string;
-  onClick?: () => void;
-  className?: string;
-  children: React.ReactNode;
-}
+import { TelegramInviteButtonProps } from '@/types';
 
 const TelegramInviteButton: React.FC<TelegramInviteButtonProps> = ({
   username,

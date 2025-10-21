@@ -1,17 +1,12 @@
-import React, { SetStateAction, useEffect, useCallback } from "react";
 import CustomPopup from "@/components/CustomPopup/CustomPopup";
-import { ViewDetails, SecretViews } from "@/types/types";
-import { formatDate } from "@/utils";
-import { noUserImage } from "@/assets";
 import { getUserProfileDetails } from "@/apiService";
 import { UserDisplayToggle } from "@/components";
+import { useEffect, useCallback } from "react";
+import { ViewersPopupProps } from "@/types";
+import { ViewDetails } from "@/types/types";
+import { noUserImage } from "@/assets";
+import { formatDate } from "@/utils";
 import "./ViewersPopup.css";
-
-interface ViewersPopupProps {
-  showViewersPopup: boolean;
-  setShowViewersPopup: React.Dispatch<SetStateAction<boolean>>;
-  secretViews: SecretViews | null;
-}
 
 export default function ViewersPopup({
   showViewersPopup,

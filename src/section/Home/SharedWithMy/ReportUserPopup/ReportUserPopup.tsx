@@ -1,15 +1,9 @@
-import React, { SetStateAction, useState, useEffect } from "react";
-import CustomPopup from "@/components/CustomPopup/CustomPopup";
-import { ReportType } from "@/types/types";
 import { MetroSwal, createAppError, handleSilentError } from "@/utils";
+import CustomPopup from "@/components/CustomPopup/CustomPopup";
+import { ReportUserPopupProps } from "@/types";
+import { useState, useEffect } from "react";
+import { ReportType } from "@/types/types";
 import "./ReportUserPopup.css";
-
-interface ReportUserPopupProps {
-  showReportUserPopup: boolean;
-  setShowReportUserPopup: React.Dispatch<SetStateAction<boolean>>;
-  onSubmit: (reportData: { reportType: string; message: string }) => Promise<void>;
-  isSubmitting: boolean;
-}
 
 export default function ReportUserPopup({
   showReportUserPopup,

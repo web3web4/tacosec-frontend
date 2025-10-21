@@ -1,53 +1,19 @@
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
-import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, ViewDetails, Secret, initDataType } from "@/types/types";
-import { MetroSwal, formatDate, showError, createAppError, handleSilentError , config } from "@/utils";
-import React, { createContext, useContext, useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
+import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, Secret } from "@/types/types";
+import { MetroSwal, showError, createAppError, handleSilentError , config } from "@/utils";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
 import { fromHexString } from "@nucypher/shared";
 import { SweetAlertOptions } from "sweetalert2";
 import { fromBytes } from "@nucypher/taco";
+import { HomeContextType } from "@/types";
 import { noUserImage } from "@/assets";
 import { useUser } from "@/context";
 import { useTaco } from "@/hooks";
-import { ethers } from "ethers";
 
 const ritualId = config.TACO_RITUAL_ID;
 const domain = config.TACO_DOMAIN;
-
-interface HomeContextType {
-  myData: DataItem[];
-  sharedWithMyData: SharedWithMyDataType[];
-  setSharedWithMyData: React.Dispatch<React.SetStateAction<SharedWithMyDataType[]>>;
-  activeTab: TabType;
-  isLoading: boolean;
-  userData: initDataType | null;
-  initDataRaw: string | null;
-  handleAddClick: () => void;
-  handleSetActiveTabClick: (tabActive: TabType) => void;
-  handleDelete: (id: string, isHasSharedWith: boolean) => Promise<void>;
-  triggerGetChildrenForSecret: (id: string) => void;
-  handleDirectLink: () => void;
-  handleDirectLinkForChildren: () => void;
-  handleGetSecretViews: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, secretId: string) => void; 
-  setShowViewersPopup: Dispatch<SetStateAction<boolean>>;
-  showViewersPopup: boolean;
-  currentSecretViews: SecretViews | null;
-  isInit: boolean;
-  provider: ethers.providers.Provider | undefined;
-  decrypting: boolean;
-  decryptedMessages: Record<string, string>;
-  decryptErrors: Record<string, string>;
-  toggleExpand: (value: string, id: string) => Promise<void>;
-  expandedId: string | null;
-  toggleChildExpand: (value: string, childId: string) => void;
-  expandedChildId: string | null;
-  decryptingChild: boolean;
-  decryptedChildMessages: Record<string, string>;
-  authError: string | null;
-  secretViews: Record<string, SecretViews>;
-  itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
-}
 
 const HomeContext = createContext<HomeContextType | null>(null);
 
@@ -71,14 +37,9 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [previousPath, setPreviousPath] = useState<string>("");
   const [showViewersPopup, setShowViewersPopup] = useState<boolean>(false);
   const [currentSecretViews, setCurrentSecretViews] = useState<SecretViews | null>(null);
-  
   const { signer, provider, address } = useWallet();
   const { initDataRaw, userData, directLinkData } = useUser();
-  const { isInit, decryptDataFromBytes } = useTaco({
-    domain,
-    provider,
-    ritualId,
-  });
+  const { isInit, decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
   
 
 

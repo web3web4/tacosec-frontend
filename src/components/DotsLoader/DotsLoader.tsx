@@ -1,10 +1,6 @@
+import { DotsLoaderProps } from '@/types';
 import React from 'react';
 import './DotsLoader.css';
-
-interface DotsLoaderProps {
-  size?: 'small' | 'medium' | 'large';
-  className?: string;
-}
 
 const DotsLoader: React.FC<DotsLoaderProps> = ({ size = 'medium', className = '' }) => {
   return (
