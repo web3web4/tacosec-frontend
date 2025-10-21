@@ -1,19 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { DirectLinkData, initDataType, TabType } from "@/types/types";
+import { MetroSwal, showError, createAppError } from "@/utils";
 import { detectAuthMethod } from "@/hooks/useContextHelper";
 import { getUserDetails, signupUser } from "@/apiService";
-import { MetroSwal, showError, createAppError } from "@/utils";
-
-
-interface UserContextType {
-  userData: initDataType | null;
-  initDataRaw: string | null;
-  directLinkData: DirectLinkData | null;
-  error: string | null;
-  isBrowser: boolean;
-  signUserData: (initData: initDataType) => Promise<void>;
-  setUserData: React.Dispatch<React.SetStateAction<initDataType | null>>
-}
+import { UserContextType } from "@/types";
 
 const UserContext = createContext<UserContextType | null>(null);
 

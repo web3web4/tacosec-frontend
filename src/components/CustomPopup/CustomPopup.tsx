@@ -1,12 +1,7 @@
+import { CustomPopupProps } from "@/types";
 import { closeIcon } from "@/assets";
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import "./CustomPopup.css";
-
-interface CustomPopupProps {
-  children: ReactNode;
-  open: boolean;
-  closed: (value: boolean) => void;
-}
 
 export default function CustomPopup({
   children,

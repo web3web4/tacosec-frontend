@@ -1,22 +1,12 @@
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
 import { useWallet } from "@/wallet/walletContext";
 import { UserDisplayToggle } from "@/components";
-import { ChildDataItem } from "@/types/types";
+import { ChildrenSectionProps } from "@/types";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils";
 import { useHome } from "@/context";
 import { showIcon } from "@/assets";
 import "./ChildrenSection.css";
-
-interface ChildrenSectionProps {
-  children: ChildDataItem[];
-  toggleChildExpand: (value: string, childId: string) => void;
-  expandedChildId: string | null;
-  decryptingChild: boolean;
-  decryptedChildMessages: Record<string, string>;
-  itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>,
-  handleDirectLinkForChildren: () => void
-}
 
 export default function ChildrenSection({
   children,

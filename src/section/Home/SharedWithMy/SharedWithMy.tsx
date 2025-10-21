@@ -152,7 +152,7 @@ export default function SharedWithMy() {
                           recordUserAction(`Button click: View stats for shared item ${pass.id}`);
                           handleGetSecretViews(e, pass.id);
                         }}>
-                          View Stats
+                          {showIcon}
                         </button>
                         <span>
                           {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}

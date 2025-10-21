@@ -1,16 +1,8 @@
 import CustomPopup from "@/components/CustomPopup/CustomPopup";
 import { UserDisplayToggle } from "@/components";
-import { ReportsResponse } from "@/types/types";
-import React, { SetStateAction } from "react";
+import { ViewReportsPopupProps } from "@/types";
 import { formatDate } from "@/utils";
 import "./ViewReportsPopup.css";
-
-interface ViewReportsPopupProps {
-  showViewReportsPopup: boolean;
-  setShowViewReportsPopup: React.Dispatch<SetStateAction<boolean>>;
-  reports: ReportsResponse[];
-  secretKey: string;
-}
 
 export default function ViewReportsPopup({
   showViewReportsPopup,

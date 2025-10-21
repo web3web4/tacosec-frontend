@@ -1,11 +1,5 @@
+import { NavigationCheck, NavigationGuardContextType } from "@/types";
 import React, { createContext, useContext, useState } from "react";
-
-type NavigationCheck = () => boolean;
-
-type NavigationGuardContextType = {
-  setNavigationCheck: (fn: NavigationCheck) => void;
-  runNavigationCheck: () => boolean;
-};
 
 const NavigationGuardContext = createContext<NavigationGuardContextType | undefined>(undefined);
 

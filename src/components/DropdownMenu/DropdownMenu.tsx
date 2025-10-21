@@ -1,16 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { DropdownMenuProps, DropdownOption } from '@/types';
+import { useState, useRef, useEffect } from 'react';
 import './DropdownMenu.css';
-
-export interface DropdownOption {
-  label: string;
-  onClick: () => void;
-  icon?: React.ReactNode;
-}
-
-interface DropdownMenuProps {
-  options: DropdownOption[];
-  className?: string;
-}
 
 export default function DropdownMenu({ options, className = '' }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
