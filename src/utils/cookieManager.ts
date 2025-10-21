@@ -32,14 +32,14 @@ export function setTokens(accessToken: string, refreshToken: string): void {
   Cookies.set(ACCESS_TOKEN_KEY, accessToken, {
     expires: 7,
     path: '/',
-    sameSite: 'strict',
-    secure: window.location.protocol === 'https:',
+    sameSite: 'lax',
+    secure: false,
   });
   Cookies.set(REFRESH_TOKEN_KEY, refreshToken, {
     expires: 30, // refresh token valid for 30 days
     path: '/',
-    sameSite: 'strict',
-    secure: window.location.protocol === 'https:',
+    sameSite: 'lax',
+    secure: false,
   });
 }
 

@@ -28,21 +28,21 @@ export default function WalletSetup() {
   const [showResetFlow, setShowResetFlow] = useState(false);
   const { userData, isBrowser } = useUser();
 
-  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.telegramId);
+  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
   const displayName =
-  userData?.firstName && userData?.lastName
-    ? `${userData.firstName} ${userData.lastName}`
-    : userData?.username
-    ? userData.username
+  userData?.user?.firstName && userData?.user?.lastName
+    ? `${userData.user.firstName} ${userData.user.lastName}`
+    : userData?.user?.username
+    ? userData.user.username
     : "Friend";
 
       
   useEffect(() => {
-    if (!hasWallet && (userData?.telegramId || isBrowser)) {
+    if (!hasWallet && (userData?.user?.telegramId || isBrowser)) {
       setShowOnboarding(true);
     }
-  }, [hasWallet, isBrowser, userData?.telegramId]);
+  }, [hasWallet, isBrowser, userData?.user?.telegramId]);
 
   useEffect(() => {
     if (!identifier) return;

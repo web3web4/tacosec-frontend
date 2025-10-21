@@ -1,3 +1,5 @@
+
+/*
 import React from 'react';
 import { MdAccountBalanceWallet, MdDownload, MdAdd } from 'react-icons/md';
 
@@ -101,7 +103,7 @@ export function InitialPromptScreen({ onChoice, displayName = 'Friend' }: Initia
           Welcome {displayName}!
         </h1>
         <p>
-          Welcome {displayName} to our secret stashing and sharing service built on TACo! 🎉
+          Welcome {displayName} to our secret stashing and sharing service built on TACoSec! 🎉
         </p>
         <p>
           You need a wallet to start enjoying our services!
@@ -136,3 +138,4 @@ export function InitialPromptScreen({ onChoice, displayName = 'Friend' }: Initia
     </div>
   );
 }
+*/

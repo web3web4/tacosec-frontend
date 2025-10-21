@@ -14,7 +14,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
   const [isBrowser, setIsBrowser] = useState(false);
-  const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.telegramId}`)!;
+  const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.user?.telegramId}`)!;
 
  const signUserData = async () => {
     setError(null);
@@ -34,7 +34,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       if (hasWallet) {
         MetroSwal.success(
           "Welcome!",
-          `Hello, ${response.firstName} ${" "}${response.lastName}! We're glad to have you here.`
+          `Hello, ${response.user.firstName} ${" "}${response.user.lastName}! We're glad to have you here.`
         );
       }
     } catch (err) {
@@ -49,22 +49,28 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUserData(response);
   };
 
-  const getStartParams = () => {
-    const tg = window.Telegram.WebApp;
-    const startParam = tg?.initDataUnsafe?.start_param;
-    if(startParam){
-      const parts = startParam.split("_");
-      const secretId = parts[0];
-      const tabName = parts[1];
-      const childId = parts[2] || null;
-      console.log(secretId, tabName, childId);
-      setDirectLinkData({
-        secretId: secretId,
-        tabName: tabName as TabType,
-        ChildId: childId
-      })
-    }
-  };
+const getStartParams = () => {
+  if (typeof window === "undefined" || !window.Telegram?.WebApp) {
+    console.warn("Not running inside Telegram WebApp, skipping start params");
+    return;
+  }
+
+  const tg = window.Telegram.WebApp;
+  const startParam = tg?.initDataUnsafe?.start_param;
+  if (startParam) {
+    const parts = startParam.split("_");
+    const secretId = parts[0];
+    const tabName = parts[1];
+    const childId = parts[2] || null;
+    console.log(secretId, tabName, childId);
+    setDirectLinkData({
+      secretId,
+      tabName: tabName as TabType,
+      ChildId: childId,
+    });
+  }
+};
+
 
 useEffect(() => {
   const method = detectAuthMethod();
