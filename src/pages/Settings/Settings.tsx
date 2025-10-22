@@ -5,7 +5,7 @@ import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever } from "react-icons/md";
 import { useUser } from "@/context";
 import { useState, useEffect } from "react";
-import { formatAddress, getIdentifier, recordUserAction , config } from "@/utils";
+import { formatAddress, getIdentifier, recordUserAction, config, copyToClipboard } from "@/utils";
 import { useSetting } from "@/hooks";
 import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
@@ -86,14 +86,14 @@ const submitDecryption = () => {
   // Function to copy address to clipboard
   const copyAddressToClipboard = () => {
     if (address) {
-      navigator.clipboard.writeText(address)
-        .then(() => {
-          setShowCopied(true);
-        })
-        .catch(err => {
-          console.error("Failed to copy address: ", err);
-          MetroSwal.error("Error", "We couldn't copy your address. Please try again.");
-        });
+      copyToClipboard(
+        address,
+        () => setShowCopied(true),
+        () => setShowManualCopy(true)
+      ).catch(err => {
+        console.error("Failed to copy address: ", err);
+        MetroSwal.error("Error", "We couldn't copy your address. Please try again.");
+      });
     }
   };
 

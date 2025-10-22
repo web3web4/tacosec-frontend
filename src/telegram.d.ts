@@ -17,6 +17,10 @@ declare global {
             last_name?: string;
           };
         };
+        // Clipboard API methods
+        showClipboardButton?: (shown: boolean) => boolean;
+        onClipboardTextReceived?: (clipboardText: string) => void;
+        readTextFromClipboard?: (callback: (clipboardText: string) => void) => boolean;
       };
     };
   }

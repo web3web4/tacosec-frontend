@@ -7,7 +7,7 @@ import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect,  useState } from "react";
 import { ChildrenSection } from "@/section";
-import { formatDate, recordUserAction } from "@/utils";
+import { formatDate, recordUserAction, copyToClipboard } from "@/utils";
 import "@/components/SeedPhrase/SeedPhrase.css";
 
 export default function MyData() {
@@ -44,13 +44,17 @@ export default function MyData() {
     }, [address]);
 
     const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }).catch(() => {
-            setManualCopyText(text);
-            setShowManualCopy(true);
-        });
+        copyToClipboard(
+            text,
+            () => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            },
+            () => {
+                setManualCopyText(text);
+                setShowManualCopy(true);
+            }
+        );
     };
 
   return (

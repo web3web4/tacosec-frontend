@@ -23,6 +23,47 @@ export function parseTelegramInitData(initData: string){
     };
   }
 
+/**
+ * Cross-platform clipboard copy function that works in both browser and Telegram Mini Apps
+ * Falls back to manual copy if both methods fail
+ * 
+ * @param text - The text to copy to clipboard
+ * @param onSuccess - Callback function to execute on successful copy
+ * @param onManualCopy - Callback function to show manual copy UI when automatic copy fails
+ * @returns Promise<boolean> - Whether the copy was successful
+ */
+export async function copyToClipboard(
+  text: string, 
+  onSuccess?: () => void, 
+  onManualCopy?: () => void
+): Promise<boolean> {
+  // Check if we're in Telegram Mini App
+  const isTelegram = typeof window !== 'undefined' && !!window.Telegram?.WebApp;
+  
+  try {
+    // For Telegram Mini Apps, use manual copy as the primary method
+    // since direct clipboard access is restricted
+    if (isTelegram) {
+      // Immediately trigger manual copy for Telegram Mini Apps
+      if (onManualCopy) {
+        onManualCopy();
+        return true;
+      }
+    }
+    
+    // For non-Telegram environments, use standard clipboard API
+    await navigator.clipboard.writeText(text);
+    if (onSuccess) onSuccess();
+    return true;
+  } catch (error) {
+    console.error("Failed to copy to clipboard:", error);
+    
+    // If clipboard API fails, trigger manual copy UI
+    if (onManualCopy) onManualCopy();
+    return false;
+  }
+}
+
   export const debounce = <TArgs extends unknown[]>(
     functionToDebounce: (...args: TArgs) => void,
     delay: number
