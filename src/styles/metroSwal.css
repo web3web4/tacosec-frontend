@@ -219,6 +219,11 @@
   background: rgba(0, 0, 0, 0.8) !important;
 }
 
+/* SweetAlert container - higher z-index than onboarding flow */
+.swal2-container {
+  z-index: 10000 !important; /* Higher than onboarding flow's 9999 */
+}
+
 
 .metro-swal-popup .swal2-progress-steps {
   background: #1a1a1a !important;
