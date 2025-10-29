@@ -19,6 +19,7 @@ export interface initDataType {
   };
   access_token: string,
   refresh_token: string,
+  role: string,
 }
 
 export interface UserDetails{
@@ -42,6 +43,7 @@ export interface AuthDataType {
     username?: string,
     authDate?: string,
     hash?: string,
+    role: string,
     isActive?: boolean,
     createdAt?: string,
     updatedAt?: string,
