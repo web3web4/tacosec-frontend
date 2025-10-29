@@ -264,3 +264,31 @@ export interface FrontendLogPayload {
   publicAddress: string | null,
   savePasswordInBackend: string | null,
 }
+
+export interface UserData {
+  id: number;
+  username: string;
+  name: string;
+  phone: string;
+  status: string;
+  joinedDate: string;
+  lastActive: string;
+  statistics: {
+    secrets: number;
+    views: number;
+    reports: number;
+  };
+}
+
+export interface TableColumn<T> {
+  header: string;
+  key: keyof T;
+  render?: (value: T[keyof T], row: T) => React.ReactNode;
+  width?: string;
+}
+
+export interface TableProps<T> {
+  columns: TableColumn<T>[];
+  data: T[];
+  className?: string;
+}
