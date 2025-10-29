@@ -1,12 +1,12 @@
-import { UserProvider, NavigationGuardProvider, HomeProvider } from "@/context";
+import { UserProvider, NavigationGuardProvider, HomeProvider, useUser } from "@/context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Tracker , { SanitizeLevel } from '@openreplay/tracker';
 import { WalletProvider } from "@/wallet/walletContext";
 import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/components";
-import { Home, AddData, Settings } from "@/pages";
+import { Home, AddData, Settings , Dashboard } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
-import { config, getAccessToken } from "@/utils";
+import { config, getAccessToken} from "@/utils";
 import { resetAppOnce, startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
@@ -83,6 +83,11 @@ useEffect(() => {
                           <PageErrorBoundary pageName="Settings">
                             <Settings />
                           </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard" element={
+                            <PageErrorBoundary pageName="Dashboard">
+                              <Dashboard />
+                            </PageErrorBoundary>
                         } />
                       </Routes>
                     </HomeProvider>
