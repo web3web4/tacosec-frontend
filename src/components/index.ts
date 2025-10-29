@@ -14,3 +14,4 @@ export { default as TelegramInviteButton } from "@/components/TelegramInviteButt
 export { default as UserDisplayToggle } from "@/components/UserDisplayToggle/UserDisplayToggle";
 //export { showInitialPrompt, InitialPromptScreen } from "@/components/Wallet/InitialPrompt";
 export { default as AdminSidebar } from "@/components/AdminSidebar/AdminSidebar";
+export { default as Table } from "@/components/Table/Table";

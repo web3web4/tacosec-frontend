@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Tracker , { SanitizeLevel } from '@openreplay/tracker';
 import { WalletProvider } from "@/wallet/walletContext";
 import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/components";
-import { Home, AddData, Settings , Dashboard } from "@/pages";
+import { Home, AddData, Settings , Dashboard , Users } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
 import { config, getAccessToken} from "@/utils";
@@ -87,6 +87,11 @@ useEffect(() => {
                         <Route path="/dashboard" element={
                             <PageErrorBoundary pageName="Dashboard">
                               <Dashboard />
+                            </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard/users" element={
+                            <PageErrorBoundary pageName="Users">
+                              <Users />
                             </PageErrorBoundary>
                         } />
                       </Routes>
