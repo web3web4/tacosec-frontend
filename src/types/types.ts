@@ -292,3 +292,18 @@ export interface TableProps<T> {
   data: T[];
   className?: string;
 }
+
+export interface SecretRow {
+  id: number;
+  title: string;
+  ownerName: string;
+  ownerHandle: string;
+  contactEmail: string;
+  createdDate: string;
+  lastViewed: string;
+  statistics: {
+    views: number;
+    shares: number;
+    reports: number;
+  };
+};
