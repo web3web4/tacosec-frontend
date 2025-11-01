@@ -65,7 +65,7 @@ const Users: React.FC = () => {
   });
 
   useEffect(() => {
-    const isAllowed = userData && (userData?.role === 'admin' || isBrowser === true);
+    const isAllowed = userData?.role === "admin" && isBrowser;
     if (!isAllowed) navigate('/');
 
     const bottomNav = document.querySelector('.bottom-nav');
