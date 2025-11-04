@@ -1,155 +1,128 @@
-import React, { useState, useEffect } from 'react';
-import { AdminSidebar , Table } from '@/components';
-import { MdSearch, MdCheck, MdBlock, MdDelete } from 'react-icons/md';
-import { useUser } from '@/context';
-import { useNavigate } from 'react-router-dom';
-import './Dashboard.css';
-import { TableColumn, UserData } from '@/types';
-
-// Mock user data
-const mockUsers: UserData[] = [
-  {
-    id: 1,
-    username: '@crypto_master',
-    name: 'John Doe',
-    phone: 'TG: 123456789',
-    status: 'active',
-    joinedDate: '2023-01-15',
-    lastActive: '2024-01-15 14:30',
-    statistics: { secrets: 45, views: 1234, reports: 0 },
-  },
-  {
-    id: 2,
-    username: '@secure_dev',
-    name: 'Alice Smith',
-    phone: 'TG: 987654321',
-    status: 'active',
-    joinedDate: '2023-02-20',
-    lastActive: '2024-01-15 12:15',
-    statistics: { secrets: 38, views: 987, reports: 1 },
-  },
-  {
-    id: 3,
-    username: '@privacy_pro',
-    name: 'Bob Wilson',
-    phone: 'TG: 456789123',
-    status: 'inactive',
-    joinedDate: '2023-01-28',
-    lastActive: '2024-01-14 18:45',
-    statistics: { secrets: 32, views: 876, reports: 0 },
-  },
-  {
-    id: 4,
-    username: '@vault_keeper',
-    name: 'Charlie Brown',
-    phone: 'TG: 789123456',
-    status: 'banned',
-    joinedDate: '2023-03-10',
-    lastActive: '2024-01-13 09:20',
-    statistics: { secrets: 29, views: 765, reports: 3 },
-  },
-];
+import React, { useState, useEffect } from "react";
+import { AdminSidebar, Table } from "@/components";
+import { MdSearch, MdCheck, MdBlock, MdDelete } from "react-icons/md";
+import { useUser } from "@/context";
+import { useNavigate } from "react-router-dom";
+import "./Dashboard.css";
+import { TableColumn, UserData } from "@/types";
+import { useUsers } from "@/hooks";
 
 const Users: React.FC = () => {
   const { userData, isBrowser } = useUser();
   const navigate = useNavigate();
 
-  const [users, setUsers] = useState<UserData[]>(mockUsers);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All Status');
-  const [stats, setStats] = useState({
-    totalUsers: 6,
-    activeUsers: 4,
-    inactiveUsers: 1,
-    bannedUsers: 1,
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const { users, stats, totalPages, loading, error } = useUsers(
+    currentPage,
+    10
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All Status");
 
   useEffect(() => {
     const isAllowed = userData?.role === "admin" && isBrowser;
-    if (!isAllowed) navigate('/');
+    if (!isAllowed) navigate("/");
 
-    const bottomNav = document.querySelector('.bottom-nav');
-    if (bottomNav) bottomNav.setAttribute('style', 'display: none;');
+    const bottomNav = document.querySelector(".bottom-nav");
+    if (bottomNav) bottomNav.setAttribute("style", "display: none;");
 
     return () => {
-      const bottomNav = document.querySelector('.BottomNav');
-      if (bottomNav) bottomNav.setAttribute('style', 'display: flex;');
+      const bottomNav = document.querySelector(".BottomNav");
+      if (bottomNav) bottomNav.setAttribute("style", "display: flex;");
     };
   }, [userData, navigate, isBrowser]);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) 
+      user.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesStatus =
-      filterStatus === 'All Status' || user.status === filterStatus.toLowerCase();
+      filterStatus === "All Status" ||
+      (filterStatus === "Active" && user.isActive) ||
+      (filterStatus === "Inactive" && !user.isActive);
 
     return matchesSearch && matchesStatus;
   });
 
   const columns: TableColumn<UserData>[] = [
     {
-      header: 'USER',
-      key: 'username',
-      width: '25%',
+      header: "USER",
+      key: "username",
+      width: "25%",
       render: (_value, row) => (
         <div className="user-info">
-          <div className="user-avatar">{row.name.charAt(0)}</div>
+          <div className="user-avatar">{row.username?.charAt(0) || "?"}</div>
           <div className="user-details">
-            <div className="user-name">{row.name}</div>
-            <div className="user-handle">{row.username}</div>
+            <div className="user-name">{row.username}</div>
+            <div className="user-handle">@{row.username || "N/A"}</div>
           </div>
         </div>
       ),
     },
     {
-      header: 'CONTACT',
-      key: 'phone',
-      width: '20%',
+      header: "CONTACT",
+      key: "phone",
+      width: "20%",
       render: (_value, row) => (
         <div>
-          <div>{row.phone}</div>
+          {row.phone ? row.phone : "N/A"}
+          {row.telegramId && (
+            <span
+              style={{
+                marginLeft: "4px",
+                color: "rgba(255,255,255,0.7)",
+                fontSize: "12px",
+              }}
+            >
+              : {row.telegramId}
+            </span>
+          )}
         </div>
       ),
     },
     {
-      header: 'STATUS',
-      key: 'status',
-      width: '10%',
-      render: (value) => <div className={`status-badge status-${value as string}`}>{value as string}</div>,
+      header: "STATUS",
+      key: "isActive",
+      width: "10%",
+      render: (value) => (
+        <div className={`status-badge status-${value ? "active" : "inactive"}`}>
+          {value ? "Active" : "Inactive"}
+        </div>
+      ),
     },
     {
-      header: 'ACTIVITY',
-      key: 'joinedDate',
-      width: '20%',
+      header: "ACTIVITY",
+      key: "joinedDate",
+      width: "20%",
       render: (_value, row) => (
         <div>
           <div>Joined: {row.joinedDate}</div>
-          <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.7)' }}>
-            Last: {row.lastActive}
+          <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)" }}>
+            Last: {new Date(row.lastActive).toLocaleString()}
           </div>
         </div>
       ),
     },
     {
-      header: 'STATISTICS',
-      key: 'statistics',
-      width: '15%',
+      header: "STATISTICS",
+      key: "statistics",
+      width: "15%",
       render: (_value, row) => (
         <div>
-          <div>{row.statistics.secrets} secrets</div>
-          <div>{row.statistics.views} views</div>
-          <div>{row.statistics.reports} reports</div>
+          <div>{row.statistics?.secrets ?? 0} secrets</div>
+          <div>{row.statistics?.views ?? 0} views</div>
+          <div>{row.statistics?.reports ?? 0} reports</div>
         </div>
       ),
     },
     {
-      header: 'ACTIONS',
-      key: 'id',
-      width: '10%',
+      header: "ACTIONS",
+      key: "_id",
+      width: "10%",
       render: () => (
         <div className="action-buttons">
-          <div className="action-button action-edit" title="Edit User">
+          <div className="action-button action-edit" title="Approve User">
             <MdCheck />
           </div>
           <div className="action-button action-ban" title="Ban User">
@@ -163,6 +136,9 @@ const Users: React.FC = () => {
     },
   ];
 
+  if (loading) return <div className="loading">Loading users...</div>;
+  if (error) return <div className="error">{error}</div>;
+
   return (
     <div className="container">
       <AdminSidebar />
@@ -170,7 +146,9 @@ const Users: React.FC = () => {
       <div className="content">
         <div className="header">
           <h1 className="headerTitle">USER MANAGEMENT</h1>
-          <p className="headerText">Manage and monitor all users in the system</p>
+          <p className="headerText">
+            Manage and monitor all users in the system
+          </p>
         </div>
 
         <div className="statsGrid">
@@ -197,33 +175,50 @@ const Users: React.FC = () => {
           <input
             type="text"
             className="search-input"
-            placeholder="Search users by username, name, or email..."
+            placeholder="Search users by username or name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <div className="filter-dropdown">
-            <button className="filter-button">{filterStatus} ▼</button>
-            <div className="filter-menu" style={{ display: 'none' }}>
-              <div className="filter-item" onClick={() => setFilterStatus('All Status')}>
-                All Status
-              </div>
-              <div className="filter-item" onClick={() => setFilterStatus('Active')}>
-                Active
-              </div>
-              <div className="filter-item" onClick={() => setFilterStatus('Inactive')}>
-                Inactive
-              </div>
-              <div className="filter-item" onClick={() => setFilterStatus('Banned')}>
-                Banned
-              </div>
+        <div className="filter-dropdown" style={{ marginBottom: "20px" }}>
+          <button className="filter-button">{filterStatus} ▼</button>
+          <div className="filter-menu" style={{ display: "none" }}>
+            <div
+              className="filter-item"
+              onClick={() => setFilterStatus("All Status")}
+            >
+              All Status
+            </div>
+            <div
+              className="filter-item"
+              onClick={() => setFilterStatus("Active")}
+            >
+              Active
+            </div>
+            <div
+              className="filter-item"
+              onClick={() => setFilterStatus("Inactive")}
+            >
+              Inactive
+            </div>
+            <div
+              className="filter-item"
+              onClick={() => setFilterStatus("Banned")}
+            >
+              Banned
             </div>
           </div>
         </div>
 
-        <Table<UserData> columns={columns} data={filteredUsers} />
+        <Table<UserData>
+          columns={columns}
+          data={filteredUsers}
+          pagination={true}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

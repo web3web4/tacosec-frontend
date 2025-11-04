@@ -3,4 +3,6 @@ export { default as Settings} from "@/pages/Settings/Settings";
 export { default as AddData} from "@/pages/AddData/AddData";
 export { default as Dashboard} from "@/pages/Dashboard/Dashboard";
 export { default as Users} from "@/pages/Dashboard/Users";
-export { default as Secrets } from "./Dashboard/Secrets";
+export { default as Secrets } from "@/pages/Dashboard/Secrets";
+export { default as Reports } from "@/pages/Dashboard/Reports";
+

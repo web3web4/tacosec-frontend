@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse } from "./types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
@@ -422,4 +422,24 @@ export async function storeFrontendLog(payload: FrontendLogPayload): Promise<voi
   }, 'Failed to send frontend log');
 }
 
+//this section for dashboard
 
+export async function getUsersForAdmin(page: number = 1, limit: number = 20): Promise<AdminUsersResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/admin/all?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get users for admin');
+}

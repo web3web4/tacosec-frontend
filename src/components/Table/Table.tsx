@@ -2,7 +2,27 @@ import './Table.css';
 import { TableProps } from '@/types';
 
 
-function Table<T extends object>({ columns, data, className = '' }: TableProps<T>) {
+function Table<T extends object>({
+  columns,
+  data,
+  className = '',
+  pagination = false,
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+}: TableProps<T>) {
+  const handlePrev = () => {
+    if (onPageChange && currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (onPageChange && currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   return (
     <div className={`table-container ${className}`}>
       <table className="admin-table">
@@ -30,6 +50,28 @@ function Table<T extends object>({ columns, data, className = '' }: TableProps<T
           ))}
         </tbody>
       </table>
+
+      {pagination && (
+        <div className="table-pagination">
+          <button
+            className="pagination-btn"
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <span className="pagination-info">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            className="pagination-btn"
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

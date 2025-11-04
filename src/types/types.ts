@@ -4,52 +4,52 @@ export type AuthMethod = "telegram" | "web";
 
 export interface initDataType {
   user: {
-    _id?: string,
-    telegramId: string,
-    firstName: string,
-    lastName: string,
-    username: string,
-    authDate: string,
-    hash: string,
-    isActive: boolean,
-    createdAt: string,
-    updatedAt: string,
-    privacyMode: boolean,
-    publicAddress: string
+    _id?: string;
+    telegramId: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    authDate: string;
+    hash: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    privacyMode: boolean;
+    publicAddress: string;
   };
-  access_token: string,
-  refresh_token: string,
-  role: string,
+  access_token: string;
+  refresh_token: string;
+  role: string;
 }
 
-export interface UserDetails{
-  success: boolean,
-  data: initDataType
+export interface UserDetails {
+  success: boolean;
+  data: initDataType;
 }
 
 export interface DirectLinkData {
-  secretId: string,
-  tabName: TabType,
-  ChildId: string | null,
+  secretId: string;
+  tabName: TabType;
+  ChildId: string | null;
 }
 export interface AuthDataType {
-  access_token: string,
-  refresh_token:string,
+  access_token: string;
+  refresh_token: string;
   user: {
-    _id?: string,
-    telegramId?: string,
-    firstName?: string,
-    lastName?: string,
-    username?: string,
-    authDate?: string,
-    hash?: string,
-    role: string,
-    isActive?: boolean,
-    createdAt?: string,
-    updatedAt?: string,
-    privacyMode?: boolean,
-    publicAddress?: string
-  }
+    _id?: string;
+    telegramId?: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    authDate?: string;
+    hash?: string;
+    role: string;
+    isActive?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    privacyMode?: boolean;
+    publicAddress?: string;
+  };
 }
 
 export type TelegramUser = {
@@ -60,70 +60,69 @@ export type TelegramUser = {
 };
 
 export interface DataItem {
-  id : string
-  key: string,
-  value: string,
-  createdAt: string,
-  sharedWith: ShareWith[],
-  shareWithDetails?: UserProfileDetailsType[], // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
-  children?: ChildDataItem[] // also this for help my to store children for each secret
+  id: string;
+  key: string;
+  value: string;
+  createdAt: string;
+  sharedWith: ShareWith[];
+  shareWithDetails?: UserProfileDetailsType[]; // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
+  children?: ChildDataItem[]; // also this for help my to store children for each secret
 }
 interface ShareWith {
-  publicAddress: string,
-  username: string, 
-  invited?: boolean,
-  shouldSendTelegramNotification?: boolean
+  publicAddress: string;
+  username: string;
+  invited?: boolean;
+  shouldSendTelegramNotification?: boolean;
 }
 
 export interface ChildDataItem {
-  _id: string,
-  key: string,
-  value: string,
-  username: string  
-  createdAt: string,
-  firstName: string,
-  lastName: string,
-  publicAddress: string
+  _id: string;
+  key: string;
+  value: string;
+  username: string;
+  createdAt: string;
+  firstName: string;
+  lastName: string;
+  publicAddress: string;
 }
-export interface SharedWithMyDataType{
+export interface SharedWithMyDataType {
   sharedBy: {
-    userId: string,
-    username: string,
-    telegramId: string,
-    publicAddress: string,
+    userId: string;
+    username: string;
+    telegramId: string;
+    publicAddress: string;
     // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
-    img?: { src: string} | null,
-    name?: string,
-  },
+    img?: { src: string } | null;
+    name?: string;
+  };
   passwords: {
-    id: string,
-    key: string,
-    value: string,
-    reports: ReportsResponse[],
-    sharedWith: ShareWith[],
-    createdAt: string,
-    children?: ChildDataItem[] // also this for help my to store children for each secret
-  }[]
+    id: string;
+    key: string;
+    value: string;
+    reports: ReportsResponse[];
+    sharedWith: ShareWith[];
+    createdAt: string;
+    children?: ChildDataItem[]; // also this for help my to store children for each secret
+  }[];
 }
-  
+
 export type TabType = "mydata" | "shared";
 
-
-export interface UserProfileType{
-  data: UserProfileDetailsType,
-  error: string | null
+export interface UserProfileType {
+  data: UserProfileDetailsType;
+  error: string | null;
 }
 
-export interface UserProfileDetailsType{
-  img: { src: string} | null,
-  name: string,
-  username: string | null,
-  existsInPlatform: boolean | null,
-  publicAddress?: string | null,
-  invited?: boolean
+export interface UserProfileDetailsType {
+  img: { src: string } | null;
+  name: string;
+  username: string | null;
+  existsInPlatform: boolean | null;
+  publicAddress?: string | null;
+  invited?: boolean;
 }
 
-export interface SearchDataType{
+export interface SearchDataType {
   username: string;
   firstName: string;
   lastName: string;
@@ -141,18 +140,18 @@ export interface Report {
 
 export interface ReportsResponse {
   reporterInfo: {
-      username?: string,
-      userId?: string,
-      telegramId?: string,
-      latestPublicAddress: string
-  },
+    username?: string;
+    userId?: string;
+    telegramId?: string;
+    latestPublicAddress: string;
+  };
   secret_id: string;
   reason: ReportType;
   createdAt: string;
-  report_type: string
+  report_type: string;
 }
 
-export type ReportType = 'Security' | 'Abuse' | 'Spam' | 'Other';
+export type ReportType = "Security" | "Abuse" | "Spam" | "Other";
 
 export interface ContactSupportProps {
   setShowSupportPopup: (value: boolean) => void;
@@ -163,40 +162,44 @@ export interface SupportData {
   message: string;
 }
 
-export interface SelectedSecretType{
-  parentSecretId: string,
-  parentAddress?: string,
-  shareWith: {publicAddress: string, invited?:boolean, shouldSendTelegramNotification?: boolean}[],
-  }
+export interface SelectedSecretType {
+  parentSecretId: string;
+  parentAddress?: string;
+  shareWith: {
+    publicAddress: string;
+    invited?: boolean;
+    shouldSendTelegramNotification?: boolean;
+  }[];
+}
 
 export interface SecretViews {
   totalViews: number;
-  uniqueViewers: number,
+  uniqueViewers: number;
   totalSharedUsers: number;
   viewDetails: ViewDetails[];
   notViewedUsers: userViewDetails[];
   unknownUsers: userViewDetails[];
-  isNewSecret: boolean
-} 
+  isNewSecret: boolean;
+}
 
- export interface userViewDetails {
-  publicAddress: string,
-  telegramId: string,
-  username: string,
-  firstName: string,
-  lastName: string,
-  img?: string, // This property not get from backend, we used for stored img from another endpoint 
- }
+export interface userViewDetails {
+  publicAddress: string;
+  telegramId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  img?: string; // This property not get from backend, we used for stored img from another endpoint
+}
 
-export interface ViewDetails{
+export interface ViewDetails {
   publicAddress: string;
   telegramId?: string | null;
   username: string;
   viewedAt?: string | null;
   firstName?: string | null;
   lastName?: string | null;
-  img?: string, // This property not get from backend, we used for stored img from another endpoint 
-  type?: string // Just For Help My 
+  img?: string; // This property not get from backend, we used for stored img from another endpoint
+  type?: string; // Just For Help My
 }
 
 export interface Secret {
@@ -218,13 +221,13 @@ export interface SharedWithMeResponse {
 }
 
 export interface StoragePublicKeyData {
-  publicKey: string,
-  secret?: string
+  publicKey: string;
+  secret?: string;
 }
 
 export interface ContractSupportResponse {
-  success: string,
-  adminTelegramId: string
+  success: string;
+  adminTelegramId: string;
 }
 
 export interface PublicKeysResponse {
@@ -243,14 +246,14 @@ export interface PublicKeyRecord {
 }
 
 export interface ProfileDetails {
-  existsInPlatform: boolean,
-  publicAddress: string,
-  profile: string
+  existsInPlatform: boolean;
+  publicAddress: string;
+  profile: string;
 }
 
 export interface FrontendLogPayload {
-  level: 'info' | 'warn' | 'error';
-  type: AppError['type'];
+  level: "info" | "warn" | "error";
+  type: AppError["type"];
   message: string;
   stack?: string | null;
   statusCode?: number | null;
@@ -258,19 +261,25 @@ export interface FrontendLogPayload {
   userAgent: string;
   timestamp: string;
   context?: string;
-  userActions: string[],
-  token: string | null,
-  refreshToken: string| null,
-  publicAddress: string | null,
-  savePasswordInBackend: string | null,
+  userActions: string[];
+  token: string | null;
+  refreshToken: string | null;
+  publicAddress: string | null;
+  savePasswordInBackend: string | null;
 }
 
 export interface UserData {
-  id: number;
+  _id: string;
   username: string;
-  name: string;
+  Name: string;
   phone: string;
-  status: string;
+  telegramId: string;
+  authDate: string;
+  isActive: boolean;
+  role: string;
+  sharingRestricted: boolean;
+  reportCount: number;
+  privacyMode: boolean;
   joinedDate: string;
   lastActive: string;
   statistics: {
@@ -278,6 +287,18 @@ export interface UserData {
     views: number;
     reports: number;
   };
+}
+
+export interface AdminUsersResponse {
+  data: UserData[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
+  sharingRestrictedUsers: number;
 }
 
 export interface TableColumn<T> {
@@ -291,6 +312,10 @@ export interface TableProps<T> {
   columns: TableColumn<T>[];
   data: T[];
   className?: string;
+  pagination?: boolean;
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export interface SecretRow {
@@ -306,4 +331,19 @@ export interface SecretRow {
     shares: number;
     reports: number;
   };
-};
+}
+
+export interface ReportRow {
+  id: number;
+  reportType: string;
+  reportDetails: string;
+  reportedContent: string;
+  contentOwner: string;
+  secretId: string;
+  reporter: string;
+  reporterHandle: string;
+  status: string;
+  priority: string;
+  createdDate: string;
+  updatedDate: string;
+}

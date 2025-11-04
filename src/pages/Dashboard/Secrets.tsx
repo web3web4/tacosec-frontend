@@ -52,7 +52,7 @@ const mockSecrets: SecretRow[] = [
   }
 ];
 
-function Secrets() {
+const Secrets: React.FC = () => {
   const { userData, isBrowser } = useUser();
   const navigate = useNavigate();
 

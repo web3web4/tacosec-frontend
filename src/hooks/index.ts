@@ -6,3 +6,4 @@ export { default as useReplyToSecret } from "@/hooks/useReplyToSecret";
 export { default as useSetting } from "@/hooks/useSetting";
 export { default as useTaco } from "@/hooks/useTaco";
 export { promptPassword } from "@/hooks/walletDialogs";
+export { default as useUsers } from "@/hooks/useUser";
