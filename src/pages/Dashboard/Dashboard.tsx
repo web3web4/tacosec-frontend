@@ -60,7 +60,7 @@ const Dashboard: React.FC = () => {
       <div className="content">
         <div className="header">
           <h1 className="headerTitle">DASHBOARD OVERVIEW</h1>
-          <p className="headerText">Welcome to the TACO Admin Panel. Here's your system overview.</p>
+          <p className="headerText">Welcome to the TACOSEC Admin Panel. Here's your system overview.</p>
         </div>
         
         <div className="statsGrid">
