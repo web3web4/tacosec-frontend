@@ -6,59 +6,18 @@ import Table from "@/components/Table/Table";
 import { AdminSidebar } from "@/components";
 import "./Dashboard.css";
 import { SecretRow, TableColumn } from "@/types";
+import { useSecrets } from "@/hooks";
 
-
-
-const mockSecrets: SecretRow[] = [
-  {
-    id: 1,
-    title: "API Keys",
-    ownerName: "John Doe",
-    ownerHandle: "@crypto_master",
-    contactEmail: "john.doe@example.com",
-    createdDate: "2023-01-15",
-    lastViewed: "2024-01-15 14:30",
-    statistics: { views: 300, shares: 12, reports: 0 }
-  },
-  {
-    id: 2,
-    title: "Vault Passwords",
-    ownerName: "Alice Smith",
-    ownerHandle: "@secure_dev",
-    contactEmail: "alice.smith@example.com",
-    createdDate: "2023-02-20",
-    lastViewed: "2024-01-15 12:15",
-    statistics: { views: 300, shares: 8, reports: 1 }
-  },
-  {
-    id: 3,
-    title: "Private Notes",
-    ownerName: "Bob Wilson",
-    ownerHandle: "@privacy_pro",
-    contactEmail: "bob.wilson@example.com",
-    createdDate: "2023-01-28",
-    lastViewed: "2024-01-14 18:45",
-    statistics: { views: 300, shares: 5, reports: 0 }
-  },
-  {
-    id: 4,
-    title: "Server Credentials",
-    ownerName: "Charlie Brown",
-    ownerHandle: "@vault_keeper",
-    contactEmail: "charlie.brown@example.com",
-    createdDate: "2023-03-10",
-    lastViewed: "2024-01-13 09:20",
-    statistics: { views: 300, shares: 4, reports: 3 }
-  }
-];
 
 const Secrets: React.FC = () => {
   const { userData, isBrowser } = useUser();
   const navigate = useNavigate();
 
-  const [secrets, setSecrets] = useState<SecretRow[]>(mockSecrets);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive" | "flagged">("all");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const { secrets, stats, totalPages, loading, error } = useSecrets(currentPage, 10);
 
   useEffect(() => {
     const isAllowed = userData?.role === "admin" && isBrowser;
@@ -73,15 +32,6 @@ const Secrets: React.FC = () => {
       if (bn) bn.setAttribute("style", "display: flex;");
     };
   }, [userData, isBrowser, navigate]);
-
-  const stats = useMemo(() => {
-    const total = secrets.length;
-    // Since status property was removed, we'll set these to 0
-    const active = 0;
-    const inactive = 0;
-    const flagged = 0;
-    return { total, active, inactive, flagged };
-  }, [secrets]);
 
   const filteredSecrets = useMemo(() => {
     const term = searchTerm.toLowerCase();
@@ -210,7 +160,19 @@ const Secrets: React.FC = () => {
           </div>
         </div>
 
-        <Table<SecretRow> columns={columns} data={filteredSecrets} />
+        {loading && <div className="loading">Loading secrets...</div>}
+        {error && <div className="error">{error}</div>}
+
+        {!loading && !error && (
+          <Table<SecretRow>
+            columns={columns}
+            data={filteredSecrets}
+            pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </div>
   );

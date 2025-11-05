@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse } from "./types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
@@ -410,7 +410,7 @@ export async function storeFrontendLog(payload: FrontendLogPayload): Promise<voi
   }
 
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/frontend-logs`, {
+    const response = await fetch(`${API_BASE_URL}/logger`, {
       method: 'POST',
       headers: {
         ...headers,
@@ -442,4 +442,44 @@ export async function getUsersForAdmin(page: number = 1, limit: number = 20): Pr
 
     return response;
   }, 'Failed to get users for admin');
+}
+
+export async function getReportsForAdmin(page: number = 1, limit: number = 20): Promise<AdminReportsResponse > {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/reports/admin/reported-users?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get users for admin');
+}
+
+export async function getSecretsForAdmin(page: number = 1, limit: number = 20): Promise<AdminSecretsResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/admin/all?isActive=true&page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get secrets for admin');
 }
