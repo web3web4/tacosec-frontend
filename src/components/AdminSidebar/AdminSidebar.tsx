@@ -12,7 +12,7 @@ import "./AdminSidebar.css";
 const AdminSidebar = () => {
   return (
     <div className="sidebar">
-      <div className="logo">TACO ADMIN</div>
+      <div className="logo">TACOSec ADMIN</div>
       <nav className="nav">
         <NavLink
           to="/dashboard"
