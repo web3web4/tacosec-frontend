@@ -301,6 +301,46 @@ export interface AdminUsersResponse {
   sharingRestrictedUsers: number;
 }
 
+export interface AdminReportsResponse {
+  reports: ReportApiItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages?: number;
+  // Aggregate stats from backend (string-literal keys)
+  "TOTAL REPORTS"?: number;
+  "PENDING"?: number;
+  "HIGH PRIORITY"?: number;
+  "RESOLVED"?: number;
+}
+
+export interface ReportApiItem {
+  id: string;
+  reportType: string;
+  reportDetails: string;
+  reportedContent: string;
+  contentOwner: string;
+  secretId: string;
+  reporterHandle: string;
+  status: string;
+  priority: string;
+  reporterInfo?: {
+    username?: string;
+    userId?: string;
+    telegramId?: string;
+    latestPublicAddress?: string;
+  };
+  reportedUserInfo?: {
+    username?: string;
+    userId?: string;
+    telegramId?: string;
+    latestPublicAddress?: string;
+  };
+  createdDate: string;
+  updatedDate: string;
+  resolved?: boolean;
+}
+
 export interface TableColumn<T> {
   header: string;
   key: keyof T;
@@ -330,6 +370,49 @@ export interface SecretRow {
     views: number;
     shares: number;
     reports: number;
+  };
+}
+
+export interface AdminSecretsResponse {
+  data: SecretApiItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages?: number;
+}
+
+export interface SecretApiItem {
+  _id: string;
+  title: string;
+  description: string;
+  isActive: boolean;
+  sharedWith: {
+    publicAddress: string;
+    invited?: boolean;
+    username?: string;
+    userId?: string;
+    shouldSendTelegramNotification?: boolean;
+  }[];
+  hidden: boolean;
+  secretViews: unknown[];
+  publicAddress: string;
+  createdAt: string;
+  updatedAt: string;
+  ownerName: string;
+  ownerHandle: string;
+  contactEmail: string;
+  statistics: {
+    views: number;
+    shares: number;
+    reports: number;
+  };
+  lastViewed: string | null;
+  userId?: {
+    _id?: string;
+    telegramId?: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
   };
 }
 

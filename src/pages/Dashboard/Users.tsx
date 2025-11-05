@@ -136,9 +136,6 @@ const Users: React.FC = () => {
     },
   ];
 
-  if (loading) return <div className="loading">Loading users...</div>;
-  if (error) return <div className="error">{error}</div>;
-
   return (
     <div className="container">
       <AdminSidebar />
@@ -211,6 +208,10 @@ const Users: React.FC = () => {
           </div>
         </div>
 
+        {loading && <div className="loading">Loading users...</div>}
+        {error && <div className="error">{error}</div>}
+        
+      {!loading && !error && (
         <Table<UserData>
           columns={columns}
           data={filteredUsers}
@@ -219,6 +220,7 @@ const Users: React.FC = () => {
           totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
+        )}
       </div>
     </div>
   );
