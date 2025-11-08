@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { TableColumn, UserData } from "@/types";
 import { useUsers } from "@/hooks";
-import { MetroSwal } from "@/utils";
+import { MetroSwal, recordUserAction } from "@/utils";
 
 const Users: React.FC = () => {
   const { userData, isBrowser } = useUser();
@@ -146,13 +146,20 @@ const handleBanClick = async (userId: string, isActive: boolean) => {
         <div className="action-buttons">
           <div className="action-button action-edit"
            title="Approve User"
-           onClick={() => handleBanClick(row._id , true)}
+           onClick={() => {
+            handleBanClick(row._id , true);
+            recordUserAction('approve_user');
+           }}
            >
             <MdCheck />
+            
           </div>
           <div className="action-button action-ban"
            title="Ban User"
-           onClick={() => handleBanClick(row._id , false)}
+           onClick={() => {
+            handleBanClick(row._id , false);
+            recordUserAction('ban_user');
+           }}
           >
             <MdBlock />
           </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { changeIsActiveUser, getUsersForAdmin } from "@/apiService";
 import { UserData } from "@/types";
+import { handleSilentError } from "@/utils";
 
 export default function useUsers(page: number = 1, limit: number = 20) {
   const [users, setUsers] = useState<UserData[]>([]);
@@ -55,8 +56,8 @@ export default function useUsers(page: number = 1, limit: number = 20) {
     try {
       const res = await changeIsActiveUser(userId, isActive);
       return res;
-      console.log('Response:', res);
     } catch (error) {
+      handleSilentError(error, 'toggleActiveStatus');
       console.error('Failed to change active status:', error);
       throw error;
     } finally {
