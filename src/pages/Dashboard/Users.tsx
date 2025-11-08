@@ -50,7 +50,7 @@ const handleBanClick = async (userId: string, isActive: boolean) => {
   try {
     const res = await toggleActiveStatus(userId, isActive);
     console.log('Response:', res);
-    if (res.success) {
+    if (res?.success) {
       MetroSwal.fire({
         title: isActive ? "User unbanned successfully" : "User banned successfully",
         icon: "success",
