@@ -57,9 +57,7 @@ export default function useUsers(page: number = 1, limit: number = 20) {
       const res = await changeIsActiveUser(userId, isActive);
       return res;
     } catch (error) {
-      handleSilentError(error, 'toggleActiveStatus');
       console.error('Failed to change active status:', error);
-      throw error;
     }
   }
 
