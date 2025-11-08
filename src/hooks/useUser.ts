@@ -60,7 +60,6 @@ export default function useUsers(page: number = 1, limit: number = 20) {
       handleSilentError(error, 'toggleActiveStatus');
       console.error('Failed to change active status:', error);
       throw error;
-    } finally {
     }
   }
 
