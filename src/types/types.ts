@@ -430,3 +430,33 @@ export interface ReportRow {
   createdDate: string;
   updatedDate: string;
 }
+export interface AdminResponseActive {
+  success: boolean;
+  message: string;
+  user: {
+    _id: string;
+    username: string;
+    telegramId: string;
+    isActive: boolean;
+    firstName: string;
+    lastName: string;
+  };
+}
+
+export interface AddInformationUser {
+  phone: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+export interface AddInformationUserResponse {
+  success: boolean;
+  data: {
+    id: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    telegramId: string;
+  };
+}
