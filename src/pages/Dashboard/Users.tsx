@@ -6,13 +6,14 @@ import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { TableColumn, UserData } from "@/types";
 import { useUsers } from "@/hooks";
+import { MetroSwal } from "@/utils";
 
 const Users: React.FC = () => {
   const { userData, isBrowser } = useUser();
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const { users, stats, totalPages, loading, error } = useUsers(
+  const { users, stats, totalPages, loading, error, toggleActiveStatus } = useUsers(
     currentPage,
     10
   );
@@ -45,6 +46,27 @@ const Users: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
+const handleBanClick = async (userId: string, isActive: boolean) => {
+  try {
+    const res = await toggleActiveStatus(userId, isActive);
+    console.log('Response:', res);
+    if (res.success) {
+      MetroSwal.fire({
+        title: isActive ? "User unbanned successfully" : "User banned successfully",
+        icon: "success",
+      });
+    }
+  } catch (error) {
+    MetroSwal.fire({
+      title: "Error",
+      text: "Failed to change user status",
+      icon: "error",
+    });
+  }
+};
+
+
+
   const columns: TableColumn<UserData>[] = [
     {
       header: "USER",
@@ -54,7 +76,7 @@ const Users: React.FC = () => {
         <div className="user-info">
           <div className="user-avatar">{row.username?.charAt(0) || "?"}</div>
           <div className="user-details">
-            <div className="user-name">{row.username}</div>
+            <div className="user-name">{row.Name}</div>
             <div className="user-handle">@{row.username || "N/A"}</div>
           </div>
         </div>
@@ -120,12 +142,18 @@ const Users: React.FC = () => {
       header: "ACTIONS",
       key: "_id",
       width: "10%",
-      render: () => (
+      render: (_value, row) => (
         <div className="action-buttons">
-          <div className="action-button action-edit" title="Approve User">
+          <div className="action-button action-edit"
+           title="Approve User"
+           onClick={() => handleBanClick(row._id , true)}
+           >
             <MdCheck />
           </div>
-          <div className="action-button action-ban" title="Ban User">
+          <div className="action-button action-ban"
+           title="Ban User"
+           onClick={() => handleBanClick(row._id , false)}
+          >
             <MdBlock />
           </div>
           <div className="action-button action-delete" title="Delete User">

@@ -15,7 +15,7 @@ import "./Settings.css";
 
 
 const Settings: React.FC = () => {
-  const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup } = useSetting();
+  const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup , email, setEmail ,phone, setPhone,firstName, setFirstName,lastName, setLastName,saveUserInfo,isSavingUserInfo} = useSetting();
   const { userData , isBrowser } = useUser();
   const { address , addressweb } = useWallet();
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -186,6 +186,63 @@ const submitDecryption = () => {
           </label>
         </div>
         <p className="desc">Enable to receive updates and alerts.</p>
+
+        {/* New: Browser-only user info fields under notifications */}
+        {isBrowser && (
+          <div className="user-info-section">
+            <div className="input-row">
+              <label>Email address</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className="input-row">
+              <label>Phone number</label>
+              <input
+                type="tel"
+                placeholder="+1234567890"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+
+            <div className="input-row">
+              <label>First name</label>
+              <input
+                type="text"
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </div>
+
+            <div className="input-row">
+              <label>Last name</label>
+              <input
+                type="text"
+                placeholder="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+
+            <button
+              className="seed-button"
+              onClick={() => {
+                recordUserAction("Button click: Save user info");
+                saveUserInfo();
+              }}
+              disabled={isSavingUserInfo}
+              title="Save user information"
+            >
+              {isSavingUserInfo ? "Saving..." : "Save"}
+            </button>
+          </div>
+        )}
 
         <div className="seed-section">
           <button className="seed-button" onClick={() => {

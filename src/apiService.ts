@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse } from "./types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
@@ -422,6 +422,26 @@ export async function storeFrontendLog(payload: FrontendLogPayload): Promise<voi
   }, 'Failed to send frontend log');
 }
 
+export async function addInformationUser(payload: AddInformationUser): Promise<AddInformationUserResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/update-info`, {
+      method: 'PATCH',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    return response;
+  }, 'Failed to add information user');
+}
+
 //this section for dashboard
 
 export async function getUsersForAdmin(page: number = 1, limit: number = 20): Promise<AdminUsersResponse> {
@@ -482,4 +502,29 @@ export async function getSecretsForAdmin(page: number = 1, limit: number = 20): 
 
     return response;
   }, 'Failed to get secrets for admin');
+}
+
+export async function changeIsActiveUser(userId:string , isActive: boolean): Promise<AdminResponseActive> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/admin/active-status/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isActive :isActive }),
+    });
+
+    if (!response.ok) {
+      throw createAppError('Failed to change user active status', 'server');
+    }
+
+    return response;
+  }, 'Failed to change user active status');
 }

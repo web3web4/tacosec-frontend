@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getUsersForAdmin } from "@/apiService";
+import { changeIsActiveUser, getUsersForAdmin } from "@/apiService";
 import { UserData } from "@/types";
 
 export default function useUsers(page: number = 1, limit: number = 20) {
@@ -51,5 +51,17 @@ export default function useUsers(page: number = 1, limit: number = 20) {
     fetchUsers();
   }, [page, limit]);
 
-  return { users, stats, totalPages, loading, error };
+    async function toggleActiveStatus(userId: string, isActive: boolean) {
+    try {
+      const res = await changeIsActiveUser(userId, isActive);
+      return res;
+      console.log('Response:', res);
+    } catch (error) {
+      console.error('Failed to change active status:', error);
+      throw error;
+    } finally {
+    }
+  }
+
+  return { users, stats, totalPages, loading, error, toggleActiveStatus };
 }
