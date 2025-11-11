@@ -164,3 +164,21 @@
   border: 1px solid #95ff5d;
   padding: 20px;
 }
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #95ff5d;
+  font-size: 16px;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #ff5d5d;
+  font-size: 16px;
+  background-color: rgba(255, 93, 93, 0.1);
+  border: 1px solid rgba(255, 93, 93, 0.3);
+  border-radius: 4px;
+  margin: 20px 0;
+}

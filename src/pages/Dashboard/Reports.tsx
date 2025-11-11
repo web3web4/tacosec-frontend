@@ -25,7 +25,7 @@ const Reports: React.FC = () => {
     const bottomNav = document.querySelector(".bottom-nav");
     if (bottomNav) bottomNav.setAttribute("style", "display: none;");
     return () => {
-      const bn = document.querySelector(".BottomNav");
+      const bn = document.querySelector(".bottom-nav");
       if (bn) bn.setAttribute("style", "display: flex;");
     };
   }, [userData, isBrowser, navigate]);

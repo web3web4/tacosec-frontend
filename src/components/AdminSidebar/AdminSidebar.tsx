@@ -1,10 +1,11 @@
 import {
   MdPerson,
   MdLock,
-  MdVisibility,
   MdAssignment,
-  MdHomeWork,
   MdAdminPanelSettings,
+  MdNotificationImportant,
+  MdTerminal,
+  MdHomeWork,
 } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import "./AdminSidebar.css";
@@ -40,11 +41,11 @@ const AdminSidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/dashboard/analytics"
-          onClick={() => recordUserAction('view_analytics')}
+          to="/dashboard/notifications"
+          onClick={() => recordUserAction('view_Notifications')}
           className={({ isActive }) => `navItem ${isActive ? "navItemActive" : ""}`}
         >
-          <MdVisibility className="navIcon" /> ANALYTICS
+          <MdNotificationImportant className="navIcon" /> NOTIFICATIONS
         </NavLink>
 
         <NavLink
@@ -61,6 +62,14 @@ const AdminSidebar = () => {
           className={({ isActive }) => `navItem ${isActive ? "navItemActive" : ""}`}
         >
           <MdAdminPanelSettings className="navIcon" /> SETTINGS
+        </NavLink>
+
+        <NavLink
+          to="/dashboard/logger"
+          onClick={() => recordUserAction('view_logger')}
+          className={({ isActive }) => `navItem ${isActive ? "navItemActive" : ""}`}
+        >
+          <MdTerminal className="navIcon" /> LOGGER
         </NavLink>
 
         <NavLink

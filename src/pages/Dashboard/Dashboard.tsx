@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
     
     return () => {
       // Show bottom navigation when leaving dashboard
-      const bottomNav = document.querySelector('.BottomNav');
+      const bottomNav = document.querySelector('.bottom-nav');
       if (bottomNav) {
         bottomNav.setAttribute('style', 'display: flex;');
       }
