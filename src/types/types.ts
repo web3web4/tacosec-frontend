@@ -460,3 +460,90 @@ export interface AddInformationUserResponse {
     telegramId: string;
   };
 }
+
+export interface NotificationMetadata {
+  senderPublicAddress?: string;
+  recipientPublicAddress?: string;
+  [key: string]: unknown;
+}
+
+export interface NotificationItem {
+  _id: string;
+  message: string;
+  type: string;
+  recipientUserId: string;
+  senderUserId: string;
+  subject: string;
+  metadata?: NotificationMetadata;
+  sentAt: string;
+}
+
+export interface AdminNotificationsResponse {
+  notifications: NotificationItem[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export interface NotificationRow {
+  id: string;
+  subject: string;
+  message: string;
+  type: string;
+  recipientUserId: string;
+  senderUserId: string;
+  metadata?: NotificationMetadata;
+  sentAt: string;
+}
+
+export interface LogData {
+  timestamp: string;
+  context?: string;
+  level: string;
+  type: string;
+  message: string;
+  url?: string;
+  userAgent?: string;
+  userActions?: string[];
+  publicAddress?: string | null;
+  savePasswordInBackend?: string | null;
+  stack?: string | null;
+  statusCode?: number | null;
+  token?: string | null;
+  refreshToken?: string | null;
+}
+
+export interface LoggerItem {
+  _id: string;
+  userId: string;
+  telegramId: string;
+  username: string;
+  logData: LogData;
+  createdAt: string;
+}
+
+export interface AdminLoggerResponse {
+  data: LoggerItem[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export interface LoggerRow {
+  id: string;
+  userId: string;
+  telegramId: string;
+  username: string;
+  logData: LogData;
+  createdAt: string;
+}

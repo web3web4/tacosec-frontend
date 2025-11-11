@@ -3,7 +3,7 @@ import { AdminSidebar, Table } from "@/components";
 import { MdSearch, MdCheck, MdBlock, MdDelete } from "react-icons/md";
 import { useUser } from "@/context";
 import { useNavigate } from "react-router-dom";
-import "./Dashboard.css";
+import "@/pages/Dashboard/Dashboard.css";
 import { TableColumn, UserData } from "@/types";
 import { useUsers } from "@/hooks";
 import { MetroSwal, recordUserAction } from "@/utils";
@@ -28,7 +28,7 @@ const Users: React.FC = () => {
     if (bottomNav) bottomNav.setAttribute("style", "display: none;");
 
     return () => {
-      const bottomNav = document.querySelector(".BottomNav");
+      const bottomNav = document.querySelector(".bottom-nav");
       if (bottomNav) bottomNav.setAttribute("style", "display: flex;");
     };
   }, [userData, navigate, isBrowser]);

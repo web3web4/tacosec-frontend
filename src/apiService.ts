@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse, AdminNotificationsResponse, AdminLoggerResponse } from "./types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
@@ -527,4 +527,44 @@ export async function changeIsActiveUser(userId:string , isActive: boolean): Pro
 
     return response;
   }, 'Failed to change user active status');
+}
+
+export async function getNotificationsForAdmin(page: number = 1, limit: number = 10): Promise<AdminNotificationsResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/notifications?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get notifications for admin');
+}
+
+export async function getLoggerForAdmin(page: number = 1, limit: number = 10): Promise<AdminLoggerResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/logger?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get logger data for admin');
 }
