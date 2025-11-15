@@ -127,6 +127,7 @@ export default function useAddData() {
           : username;
 
         const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
+        if(response[0].username === "User has no Telegram account currently") return;
         setSearchData(response);
       }catch(error){
         console.log(error);
