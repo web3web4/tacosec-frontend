@@ -38,7 +38,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [showViewersPopup, setShowViewersPopup] = useState<boolean>(false);
   const [currentSecretViews, setCurrentSecretViews] = useState<SecretViews | null>(null);
   const { signer, provider, address } = useWallet();
-  const { initDataRaw, userData, directLinkData } = useUser();
+  const { initDataRaw, userData, directLinkData, setDirectLinkData } = useUser();
   const { isInit, decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
   
 
@@ -196,11 +196,11 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (directLinkData) {
       handleSetActiveTabClick(directLinkData.tabName);
-    } else {
+    } else if(myData.length === 0 && activeTab === "mydata"){
       fetchMyData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [directLinkData]);
 
   useEffect(() => {
     if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
@@ -272,6 +272,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
             element.classList.add("highlight");
             setTimeout(() => {
               element.classList.remove("highlight");
+              // Clear the direct link data once handled to avoid re-triggering
+              if(!directLinkData.ChildId) setDirectLinkData(null);
             }, 500);
           }, 1000);
         }
@@ -305,6 +307,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         element.classList.add("highlight");
         setTimeout(() => {
           element.classList.remove("highlight");
+          // Clear the direct link data once handled to avoid re-triggering
+          setDirectLinkData(null);
         }, 500);
       }, 1000);
     }

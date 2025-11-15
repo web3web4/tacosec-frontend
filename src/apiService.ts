@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse, AdminNotificationsResponse, AdminLoggerResponse } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse, AdminNotificationsResponse, AdminLoggerResponse, AlertsType } from "./types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
@@ -567,4 +567,18 @@ export async function getLoggerForAdmin(page: number = 1, limit: number = 10): P
 
     return response;
   }, 'Failed to get logger data for admin');
+}
+
+export async function getAlerts(initData: string | null, page: number): Promise<AlertsType> {
+  const headers = await getAuthHeaders(initData);
+
+  const result = await handleApiCall<AlertsType>(async () => {
+    const response = await fetch(`${API_BASE_URL}/notifications/my?page=${page}&limit=10`, {
+      method: "GET",
+      headers,
+    });
+    return response;
+  });
+
+  return result;
 }
