@@ -1,6 +1,6 @@
 "use server";
 
-import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload } from "./types/types";
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AlertsType } from "@/types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
 import { getRefreshToken, setTokens, getAccessToken , clearTokens, isTokenExpiring } from "@/utils/cookieManager";
@@ -422,4 +422,16 @@ export async function storeFrontendLog(payload: FrontendLogPayload): Promise<voi
   }, 'Failed to send frontend log');
 }
 
+export async function getAlerts(initData: string | null, page: number): Promise<AlertsType> {
+  const headers = await getAuthHeaders(initData);
 
+  const result = await handleApiCall<AlertsType>(async () => {
+    const response = await fetch(`${API_BASE_URL}/notifications/my?page=${page}&limit=10`, {
+      method: "GET",
+      headers,
+    });
+    return response;
+  });
+
+  return result;
+}

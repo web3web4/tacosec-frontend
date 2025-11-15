@@ -95,6 +95,7 @@ useEffect(() => {
     userData,
     initDataRaw,
     directLinkData,
+    setDirectLinkData,
     error,
     isBrowser,
     signUserData,

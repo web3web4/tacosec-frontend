@@ -1,4 +1,5 @@
 import { FiHome, FiPlusSquare, FiSettings } from "react-icons/fi";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useNavigationGuard } from "@/context";
 import { MetroSwal, recordUserAction } from "@/utils";
@@ -37,6 +38,12 @@ export default function BottomNav() {
         onClick={() => handleNavClick("/add")}>
         <FiPlusSquare className="bottom-nav-icon" />
         <span className="bottom-nav-text">Add</span>
+      </div>
+       <div
+        className={`nav-item ${location.pathname === "/alerts" ? "active" : ""}`}
+        onClick={() => handleNavClick("/alerts")}>
+        <IoMdNotificationsOutline className="bottom-nav-icon" />
+        <span className="bottom-nav-text">Alerts</span>
       </div>
       <div
         className={`nav-item ${location.pathname === "/settings" ? "active" : ""}`}

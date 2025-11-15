@@ -40,6 +40,7 @@ export interface UserContextType {
   userData: initDataType | null;
   initDataRaw: string | null;
   directLinkData: DirectLinkData | null;
+  setDirectLinkData: React.Dispatch<React.SetStateAction<DirectLinkData | null>>;
   error: string | null;
   isBrowser: boolean;
   signUserData: (initData: initDataType) => Promise<void>;
