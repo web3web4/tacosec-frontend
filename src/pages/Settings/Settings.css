@@ -363,3 +363,65 @@ input:checked + .slider:before {
 .metro-MetroSwal-backdrop {
   background: rgba(0, 0, 0, 0.8) !important;
 }
+
+.user-info-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 2px solid var(--border-color);
+  border-radius: 0;
+  box-shadow: var(--box-shadow);
+}
+
+.user-info-section .input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.user-info-section .input-row label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.user-info-section .input-row input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--background);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 0;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.user-info-section .input-row input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.user-info-section .input-row input:focus {
+  border-color: var(--metro-green);
+  box-shadow: 0 0 0 3px rgba(0, 200, 81, 0.15);
+}
+
+/* Responsive two-column layout for inputs, button spans full width */
+@media (min-width: 640px) {
+  .user-info-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .user-info-section .input-row {
+    margin-bottom: 0;
+  }
+  .user-info-section .seed-button {
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: 8px;
+  }
+}

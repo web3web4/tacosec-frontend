@@ -1,5 +1,6 @@
 "use server";
 
+import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse, AdminNotificationsResponse, AdminLoggerResponse } from "./types/types";
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AlertsType } from "@/types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
@@ -410,7 +411,7 @@ export async function storeFrontendLog(payload: FrontendLogPayload): Promise<voi
   }
 
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/frontend-logs`, {
+    const response = await fetch(`${API_BASE_URL}/logger`, {
       method: 'POST',
       headers: {
         ...headers,
@@ -422,6 +423,152 @@ export async function storeFrontendLog(payload: FrontendLogPayload): Promise<voi
   }, 'Failed to send frontend log');
 }
 
+export async function addInformationUser(payload: AddInformationUser): Promise<AddInformationUserResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/update-info`, {
+      method: 'PATCH',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    return response;
+  }, 'Failed to add information user');
+}
+
+//this section for dashboard
+
+export async function getUsersForAdmin(page: number = 1, limit: number = 20): Promise<AdminUsersResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/admin/all?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get users for admin');
+}
+
+export async function getReportsForAdmin(page: number = 1, limit: number = 20): Promise<AdminReportsResponse > {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/reports/admin/reported-users?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get users for admin');
+}
+
+export async function getSecretsForAdmin(page: number = 1, limit: number = 20): Promise<AdminSecretsResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/passwords/admin/all?isActive=true&page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get secrets for admin');
+}
+
+export async function changeIsActiveUser(userId:string , isActive: boolean): Promise<AdminResponseActive> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/users/admin/active-status/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isActive :isActive }),
+    });
+
+    if (!response.ok) {
+      throw createAppError('Failed to change user active status', 'server');
+    }
+
+    return response;
+  }, 'Failed to change user active status');
+}
+
+export async function getNotificationsForAdmin(page: number = 1, limit: number = 10): Promise<AdminNotificationsResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/notifications?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get notifications for admin');
+}
+
+export async function getLoggerForAdmin(page: number = 1, limit: number = 10): Promise<AdminLoggerResponse> {
+  const headers = await getAuthHeaders();
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw createAppError('Authentication required', 'auth');
+  }
+
+  return handleApiCall(async () => {
+    const response = await fetch(`${API_BASE_URL}/logger?page=${page}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response;
+  }, 'Failed to get logger data for admin');
+}
 export async function getAlerts(initData: string | null, page: number): Promise<AlertsType> {
   const headers = await getAuthHeaders(initData);
 

@@ -59,7 +59,7 @@ export const config: EnvConfig = {
   BOT_USER_NAME: getEnv('BOT_USER_NAME', '@Taco_Front_Test_bot'),
   
   // API and Services
-  API_BASE_URL: getEnv('API_BASE_URL', 'https://taco-backend-git-t1-auth-con3x.vercel.app'),
+  API_BASE_URL: getEnv('API_BASE_URL', 'https://taco-backend-git-staging-con3x.vercel.app'),
   RPC_PROVIDER_URL: getEnv('RPC_PROVIDER_URL', 'https://rpc-amoy.polygon.technology'),
   
   // Analytics

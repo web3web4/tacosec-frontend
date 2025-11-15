@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Tracker , { SanitizeLevel } from '@openreplay/tracker';
 import { WalletProvider } from "@/wallet/walletContext";
 import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/components";
-import { Home, AddData, Settings, Alerts } from "@/pages";
+import { Home, AddData, Settings , Dashboard , Users, Secrets, Reports, Notifications, Logger, Alerts } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
-import { config, getAccessToken } from "@/utils";
+import { config, getAccessToken} from "@/utils";
 import { resetAppOnce, startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
@@ -88,6 +88,36 @@ useEffect(() => {
                           <PageErrorBoundary pageName="Settings">
                             <Settings />
                           </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard" element={
+                            <PageErrorBoundary pageName="Dashboard">
+                              <Dashboard />
+                            </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard/users" element={
+                            <PageErrorBoundary pageName="Users">
+                              <Users />
+                            </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard/secrets" element={
+                            <PageErrorBoundary pageName="Secrets">
+                              <Secrets />
+                            </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard/reports" element={
+                            <PageErrorBoundary pageName="Reports">
+                              <Reports />
+                            </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard/notifications" element={
+                            <PageErrorBoundary pageName="Notifications">
+                              <Notifications />
+                            </PageErrorBoundary>
+                        } />
+                        <Route path="/dashboard/logger" element={
+                            <PageErrorBoundary pageName="Logger">
+                              <Logger />
+                            </PageErrorBoundary>
                         } />
                       </Routes>
                     </HomeProvider>
