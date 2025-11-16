@@ -26,7 +26,16 @@ const RPC_URL = config.RPC_PROVIDER_URL;
 const WalletContext = createContext<WalletContextProps | null>(null);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [address, setAddress] = useState<string | null>(null);
+  // Initialize address from storage on mount
+  const [address, setAddress] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      // Try to get from publicAddress first, then from encryptedSeed keys
+      const storedAddress = localStorage.getItem('publicAddress');
+      if (storedAddress) return storedAddress;
+      return findAddressInStorage();
+    }
+    return null;
+  });
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [hasWallet, setHasWallet] = useState<boolean>(false);
   const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
@@ -48,29 +57,64 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const isWeb = !isTelegram;
 
   const identifier = useMemo(() => {
-    if (isWeb && addressweb) {
-      return addressweb;
+    if (isWeb && (address || addressweb)) {
+      return address || addressweb;
     } else if (userData?.user?.telegramId) {
       return userData.user.telegramId;
     }
     return null;
-  }, [isWeb, addressweb, userData?.user?.telegramId]);
+  }, [isWeb, address, addressweb, userData?.user?.telegramId]);
 
+  // Keep address and addressweb in sync for web users
+  useEffect(() => {
+    if (!isWeb) return;
+    
+    // If address is set but addressweb is different or null, sync addressweb
+    if (address && address !== addressweb) {
+      setAddressweb(address);
+      if (!localStorage.getItem('publicAddress')) {
+        localStorage.setItem('publicAddress', address);
+      }
+    }
+    // If addressweb is set but address is null, sync address
+    else if (addressweb && !address) {
+      setAddress(addressweb);
+      if (!localStorage.getItem('publicAddress')) {
+        localStorage.setItem('publicAddress', addressweb);
+      }
+    }
+  }, [isWeb, address, addressweb]);
 
   useEffect(() => {
-    if (!identifier) return;
-    const encrypted = getEncryptedSeed(identifier);
+    // For web users, try to find identifier even if it's not set in the memo yet
+    let currentIdentifier = identifier;
+    if (!currentIdentifier && isWeb) {
+      currentIdentifier = address || addressweb;
+    }
+    
+    if (!currentIdentifier) return;
+    
+    const encrypted = getEncryptedSeed(currentIdentifier);
     setHasWallet(!!encrypted);
     
-    // Only show decrypt prompt if wallet exists and user is not in onboarding flow
-    // Check if this is a fresh wallet creation by looking for recent activity
+    // Show decrypt prompt if:
+    // 1. There's an encrypted seed (wallet exists)
+    // 2. Wallet is not unlocked (no signer) - meaning we need to decrypt
     const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
-    if (encrypted && !recentWalletCreation) {
+    
+    // If there's an encrypted seed but no signer, we need to decrypt
+    // Clear recentWalletCreation flag on page load if wallet needs to be unlocked
+    if (encrypted && !signer) {
+      // Clear the flag if we're refreshing and the wallet isn't unlocked
+      // This ensures the prompt shows after refresh, even if recentWalletCreation was set
+      if (recentWalletCreation) {
+        sessionStorage.removeItem('recentWalletCreation');
+      }
       setShowDecryptPrompt(true);
     } else {
       setShowDecryptPrompt(false);
     }
-  }, [identifier]);
+  }, [identifier, signer, isWeb, address, addressweb]);
 
   async function createWalletFlow() {
     if (isTelegram && !userData?.user?.telegramId) return;
@@ -101,6 +145,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const wallet = ethers.Wallet.createRandom();
     setSigner(wallet.connect(provider));
     setAddress(wallet.address);
+    // Sync addressweb for web users
+    if (isWeb) {
+      setAddressweb(wallet.address);
+    }
     const mnemonic = wallet.mnemonic.phrase;
     const encrypted = encryptSeed(mnemonic, password);
     localStorage.setItem('publicAddress', wallet.address || "");
@@ -151,18 +199,30 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   function handleDecryption() {
     const encryptedSeed = getEncryptedSeed(identifier!);
-    if (!encryptedSeed) return;
+    if (!encryptedSeed) {
+      setPasswordError("Encrypted seed not found. Please refresh the page.");
+      return;
+    }
 
     const wallet = restoreWalletFromEncryptedSeed(encryptedSeed, password);
     if (wallet) {
-      setSigner(wallet.connect(provider));
+      const walletSigner = wallet.connect(provider);
+      setSigner(walletSigner);
       setAddress(wallet.address);
+      // Sync addressweb for web users
+      if (isWeb) {
+        setAddressweb(wallet.address);
+        localStorage.setItem('publicAddress', wallet.address);
+      }
       setHasWallet(true);
       setShowDecryptPrompt(false);
       setPasswordError("");
       
       // Clear the recent wallet creation flag since user successfully decrypted
       sessionStorage.removeItem('recentWalletCreation');
+      
+      // Clear password field after successful decryption
+      setPassword("");
       
       MetroSwal.fire({
         icon: 'success',
