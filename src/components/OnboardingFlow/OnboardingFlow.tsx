@@ -41,7 +41,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   const [onboardingData, setOnboardingData] = useState<OnboardingData>(initialData);
   const [stepHistory, setStepHistory] = useState<OnboardingStep[]>([initialStep]);
   
-  const { userData, isBrowser } = useUser();
+  const { userData, isBrowser, initDataRaw } = useUser();
   const {
     createWalletWithPassword,
     restoreWalletFromEncryptedSeed,
@@ -116,6 +116,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
           setDecryptedPassword,
           providedPassword: password,
           providedSavePassword: saveInBackend,
+          initDataRaw,
           onDone: () => {
             MetroSwal.fire({
               icon: 'success',

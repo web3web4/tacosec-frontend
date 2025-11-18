@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
-import { loginUserWeb } from "@/apiService";
+import { loginUserWeb, storagePublicKeyAndPassword } from "@/apiService";
 import { importWalletFlow } from "@/wallet/ImportWallet";
 import { initDataType } from "@/types/types";
+import { handleSilentError } from "@/utils";
 
 type ImportParams = {
   importedMnemonic: string;
@@ -19,6 +20,7 @@ type ImportParams = {
   onError?: (message: string) => void;
   providedPassword?: string;
   providedSavePassword?: boolean;
+  initDataRaw?: string | null;
 };
 
 export async function handleWalletImport({
@@ -37,6 +39,7 @@ export async function handleWalletImport({
   onError,
   providedPassword,
   providedSavePassword,
+  initDataRaw,
 }: ImportParams) {
   try {
     let identifier = isBrowser ? (address || addressweb) : userData?.user?.telegramId!;
@@ -92,6 +95,22 @@ export async function handleWalletImport({
         localStorage.removeItem(`seedBackupDone-${identifier}`);
         localStorage.removeItem("browser-user-id");
       }
+    }
+
+    // After successful import and authentication, call storagePublicKeyAndPassword
+    // Only send the public address (not the password) when importing from one place to another
+    try {
+      // Call storagePublicKeyAndPassword with only the public key (no secret/password)
+      // This is for cross-platform wallet import (web to Telegram or vice versa)
+      // For web users, authentication is already set up via loginUserWeb
+      // For Telegram users, initDataRaw is passed for authentication
+      await storagePublicKeyAndPassword(
+        { publicKey: wallet.address },
+        initDataRaw || ""
+      );
+    } catch (err) {
+      // Silently handle errors - don't block the import process if storage fails
+      handleSilentError(err, 'storagePublicKeyAndPassword on import');
     }
 
     onDone?.();

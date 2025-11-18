@@ -27,7 +27,7 @@ export default function WalletSetup() {
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
-  const { userData, isBrowser } = useUser();
+  const { userData, isBrowser, initDataRaw } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
@@ -152,6 +152,7 @@ export default function WalletSetup() {
       setAddress,
       setHasWallet,
       setDecryptedPassword,
+      initDataRaw,
       onDone: () => MetroSwal.fire({
         icon: 'success',
         title: 'Success',

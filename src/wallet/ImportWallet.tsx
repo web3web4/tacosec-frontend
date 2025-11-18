@@ -45,7 +45,7 @@ export const importWalletFlow = async (
   localStorage.setItem("savePasswordInBackend", savePassword.toString());
   
   const savedEncrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
-  console.log("Verification - Data saved to localStorage:", savedEncrypted ? "Success" : "Failed"); // إضافة للتصحيح
+  console.log("Verification - Data saved to localStorage:", savedEncrypted ? "Success" : "Failed");
 
   if (onImported) {
     onImported(password);
