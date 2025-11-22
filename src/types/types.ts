@@ -560,8 +560,11 @@ export interface AlertsType {
   }
 }
 
-export interface AlertsDetails extends DirectLinkData {
+export interface AlertsDetails {
   _id: string;
   message: string;
-  createdAt: string
+  createdAt: string;
+  tabName: TabType;
+  parentId: string;
+  relatedEntityId: string
 }
