@@ -87,13 +87,36 @@ export async function handleWalletImport({
         console.error("Web login failed:", err);
       }
 
+      // Always save wallet data with wallet address as key for browser users
+      // This ensures data persists after refresh
+      localStorage.setItem(`encryptedSeed-${wallet.address}`, encrypted);
+      localStorage.setItem(`seedBackupDone-${wallet.address}`, "true");
+      localStorage.setItem("publicAddress", wallet.address || "");
+      
+      // If identifier was different from wallet address, clean up old keys
       if (identifier !== wallet.address) {
-        localStorage.setItem(`encryptedSeed-${wallet.address}`, encrypted);
-        localStorage.setItem(`seedBackupDone-${wallet.address}`, "true");
-        localStorage.setItem("publicAddress", wallet.address || "");
         localStorage.removeItem(`encryptedSeed-${identifier}`);
         localStorage.removeItem(`seedBackupDone-${identifier}`);
         localStorage.removeItem("browser-user-id");
+      }
+      
+      // Ensure savePasswordInBackend is saved if provided
+      if (providedSavePassword !== undefined) {
+        localStorage.setItem("savePasswordInBackend", providedSavePassword.toString());
+      }
+    } else {
+      // For Telegram users, ensure data is saved with telegramId
+      const telegramId = userData?.user?.telegramId;
+      if (telegramId && identifier !== telegramId) {
+        localStorage.setItem(`encryptedSeed-${telegramId}`, encrypted);
+        localStorage.setItem(`seedBackupDone-${telegramId}`, "true");
+        localStorage.removeItem(`encryptedSeed-${identifier}`);
+        localStorage.removeItem(`seedBackupDone-${identifier}`);
+      }
+      
+      // Ensure savePasswordInBackend is saved if provided
+      if (providedSavePassword !== undefined) {
+        localStorage.setItem("savePasswordInBackend", providedSavePassword.toString());
       }
     }
 
