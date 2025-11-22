@@ -18,6 +18,7 @@ export default function WalletSetup() {
     setDecryptedPassword,
     address,
     addressweb,
+    signer,
   } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -26,7 +27,7 @@ export default function WalletSetup() {
   const [passwordError, setPasswordError] = useState("");
   const [password, setPassword] = useState("");
   const [showResetFlow, setShowResetFlow] = useState(false);
-  const { userData, isBrowser } = useUser();
+  const { userData, isBrowser, initDataRaw } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
@@ -39,10 +40,18 @@ export default function WalletSetup() {
 
       
   useEffect(() => {
+    // Show onboarding only if:
+    // 1. No wallet exists (!hasWallet)
+    // 2. Wallet is not unlocked (!signer)
+    // 3. User is authenticated (telegramId or browser)
+    // Hide onboarding if wallet exists and is unlocked
     if (!hasWallet && (userData?.user?.telegramId || isBrowser)) {
       setShowOnboarding(true);
+    } else if (hasWallet || signer) {
+      // If wallet exists or is unlocked, hide onboarding
+      setShowOnboarding(false);
     }
-  }, [hasWallet, isBrowser, userData?.user?.telegramId]);
+  }, [hasWallet, signer, isBrowser, userData?.user?.telegramId]);
 
   useEffect(() => {
     if (!identifier) return;
@@ -143,6 +152,7 @@ export default function WalletSetup() {
       setAddress,
       setHasWallet,
       setDecryptedPassword,
+      initDataRaw,
       onDone: () => MetroSwal.fire({
         icon: 'success',
         title: 'Success',

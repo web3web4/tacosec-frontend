@@ -85,9 +85,10 @@ const submitDecryption = () => {
 
   // Function to copy address to clipboard
   const copyAddressToClipboard = () => {
-    if (address) {
+    const addressToCopy = address || addressweb;
+    if (addressToCopy) {
       copyToClipboard(
-        address,
+        addressToCopy,
         () => setShowCopied(true),
         () => setShowManualCopy(true)
       ).catch(err => {
@@ -148,7 +149,7 @@ const submitDecryption = () => {
             </div>
             <div className="address-container">
               <span>Address: </span>
-              <span className="address-value">{formatAddress(4, address || undefined)}</span>
+              <span className="address-value">{formatAddress(4, address || addressweb || undefined)}</span>
               <button 
                 className="copy-address-btn" 
                 onClick={() => {
@@ -320,7 +321,7 @@ const submitDecryption = () => {
             <p>Copy your address manually:</p>
             <textarea
               className="manual-copy-textarea"
-              value={address || ""}
+              value={address || addressweb || ""}
               readOnly
               onFocus={e => e.target.select()}
             />
