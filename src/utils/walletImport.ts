@@ -100,12 +100,16 @@ export async function handleWalletImport({
     // After successful import and authentication, call storagePublicKeyAndPassword
     // Only send the public address (not the password) when importing from one place to another
     try {
-      // Call storagePublicKeyAndPassword with only the public key (no secret/password)
+      // Generate signature for wallet import verification
+      const message = `Import wallet to Taco App: ${wallet.address}:${Date.now()}`;
+      const signature = await wallet.signMessage(message);
+      
+      // Call storagePublicKeyAndPassword with public key and signature
       // This is for cross-platform wallet import (web to Telegram or vice versa)
       // For web users, authentication is already set up via loginUserWeb
       // For Telegram users, initDataRaw is passed for authentication
       await storagePublicKeyAndPassword(
-        { publicKey: wallet.address },
+        { publicKey: wallet.address, signature },
         initDataRaw || ""
       );
     } catch (err) {

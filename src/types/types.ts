@@ -223,6 +223,7 @@ export interface SharedWithMeResponse {
 export interface StoragePublicKeyData {
   publicKey: string;
   secret?: string;
+  signature?: string;
 }
 
 export interface ContractSupportResponse {

@@ -231,7 +231,7 @@ export async function checkIfUserAvailable(initData: string, username: string): 
 
 export async function storagePublicKeyAndPassword(
   data: StoragePublicKeyData,
-  initData: string
+  initData: string,
 ): Promise<void> {
     const headers = await getAuthHeaders(initData);
   
