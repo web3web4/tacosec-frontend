@@ -105,13 +105,18 @@ export async function handleWalletImport({
         localStorage.setItem("savePasswordInBackend", providedSavePassword.toString());
       }
     } else {
-      // For Telegram users, ensure data is saved with telegramId
+      // For Telegram users, always save wallet data with telegramId as key
+      // This ensures data persists after refresh
       const telegramId = userData?.user?.telegramId;
-      if (telegramId && identifier !== telegramId) {
+      if (telegramId) {
         localStorage.setItem(`encryptedSeed-${telegramId}`, encrypted);
         localStorage.setItem(`seedBackupDone-${telegramId}`, "true");
-        localStorage.removeItem(`encryptedSeed-${identifier}`);
-        localStorage.removeItem(`seedBackupDone-${identifier}`);
+        
+        // If identifier was different from telegramId, clean up old keys
+        if (identifier !== telegramId) {
+          localStorage.removeItem(`encryptedSeed-${identifier}`);
+          localStorage.removeItem(`seedBackupDone-${identifier}`);
+        }
       }
       
       // Ensure savePasswordInBackend is saved if provided
@@ -124,7 +129,7 @@ export async function handleWalletImport({
     // Only send the public address (not the password) when importing from one place to another
     try {
       // Generate signature for wallet import verification
-      const message = `Import wallet to Taco App: ${wallet.address}:${Date.now()}`;
+      const message = `Import wallet to TacoSec App: ${wallet.address}:${Date.now()}`;
       const signature = await wallet.signMessage(message);
       
       // Call storagePublicKeyAndPassword with public key and signature

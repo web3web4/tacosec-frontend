@@ -92,6 +92,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       currentIdentifier = address || addressweb;
     }
     
+    // For Telegram users, wait for userData to load before checking for wallet
+    // This ensures we have the correct telegramId to check localStorage
+    if (!currentIdentifier && isTelegram) {
+      // If userData is not loaded yet, wait for it
+      if (!userData?.user?.telegramId) {
+        return;
+      }
+      currentIdentifier = userData.user.telegramId;
+    }
+    
     if (!currentIdentifier) return;
     
     const encrypted = getEncryptedSeed(currentIdentifier);
@@ -114,7 +124,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     } else {
       setShowDecryptPrompt(false);
     }
-  }, [identifier, signer, isWeb, address, addressweb]);
+  }, [identifier, signer, isWeb, isTelegram, address, addressweb, userData?.user?.telegramId]);
 
   async function createWalletFlow() {
     if (isTelegram && !userData?.user?.telegramId) return;
