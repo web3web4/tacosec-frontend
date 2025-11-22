@@ -1,6 +1,6 @@
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader } from "@/components";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
@@ -30,8 +30,9 @@ export default function MyData() {
         decryptingChild,
         decryptedChildMessages,
         secretViews,
+        childrenLoading,
         itemRefs
-    } = useHome();
+      } = useHome();
     const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentAddress: "", shareWith: []});
     const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
     const [showManualCopy, setShowManualCopy] = useState(false);
@@ -187,6 +188,11 @@ export default function MyData() {
                       </div>
                     )}
                     
+                    {childrenLoading[item.id] && (
+                      <div className="children-loading">
+                        <DotsLoader />
+                      </div>
+                    )}
                     {item.children && item.children.length > 0 && (
                       <ChildrenSection
                         children={item.children}

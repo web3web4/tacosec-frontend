@@ -1,6 +1,4 @@
 import { DotsLoader } from "@/components";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "@/context";
 import useAlerts from "@/hooks/useAlerts";
 import "./Alerts.css";
 

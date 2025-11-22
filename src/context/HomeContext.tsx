@@ -33,6 +33,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
   const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [childrenLoading, setChildrenLoading] = useState<Record<string, boolean>>({});
   const [authError, setAuthError] = useState<string | null>(null);
   const [previousPath, setPreviousPath] = useState<string>("");
   const [showViewersPopup, setShowViewersPopup] = useState<boolean>(false);
@@ -325,6 +326,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         decryptMessage(id, value);
       }
       await setSecretView(initDataRaw!, id);
+      setChildrenLoading((prev) => ({ ...prev, [id]: true }));
       triggerGetChildrenForSecret(id);
       const secretViews = await getSecretViews(initDataRaw!, id);
       setSecretViews((prev) => ({ ...prev, [id]: secretViews }));
@@ -332,33 +334,48 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const triggerGetChildrenForSecret = async (id: string) => {
-    const response = await getChildrenForSecret(initDataRaw!, id);
-    if ("message" in response) { return; }
-
-    const entries = await Promise.all(
-      response.map(async (child) => {
-        const views = await getSecretViews(initDataRaw!, child._id);
-        const hasMyView = views.viewDetails.some(sec => sec.publicAddress.toLowerCase() === address?.toLowerCase());
-        views.isNewSecret = !hasMyView;
-        if(child.publicAddress.toLowerCase() === address?.toLowerCase() || userData?.user?.privacyMode) views.isNewSecret = false;
-        return [child._id, views] as const;
-      })
-    );
-
-    setSecretViews((prev) => ({
-      ...prev,
-      ...Object.fromEntries(entries),
-    }));
-    
-    if (activeTab === "mydata") {
-        setMyData((prev) => prev.map((item) =>
-            item.id === id ? { ...item, children: response } : item ));
-      } else {
-        setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
+    try {
+      const response = await getChildrenForSecret(initDataRaw!, id);
+      if ("message" in response) {
+        if (activeTab === "mydata") {
+          setMyData((prev) => prev.map((item) =>
+            item.id === id ? { ...item, children: [] } : item ));
+        } else {
+          setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
             passwords: item.passwords.map((pw) =>
-            pw.id === id ? { ...pw, children: response } : pw )}))
-        );
+              pw.id === id ? { ...pw, children: [] } : pw )}))
+          );
+        }
+        return;
       }
+
+      const entries = await Promise.all(
+        response.map(async (child) => {
+          const views = await getSecretViews(initDataRaw!, child._id);
+          const hasMyView = views.viewDetails.some(sec => sec.publicAddress.toLowerCase() === address?.toLowerCase());
+          views.isNewSecret = !hasMyView;
+          if(child.publicAddress.toLowerCase() === address?.toLowerCase() || userData?.user?.privacyMode) views.isNewSecret = false;
+          return [child._id, views] as const;
+        })
+      );
+
+      setSecretViews((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+      
+      if (activeTab === "mydata") {
+          setMyData((prev) => prev.map((item) =>
+              item.id === id ? { ...item, children: response } : item ));
+        } else {
+          setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
+              passwords: item.passwords.map((pw) =>
+              pw.id === id ? { ...pw, children: response } : pw )}))
+          );
+        }
+    } finally {
+      setChildrenLoading((prev) => ({ ...prev, [id]: false }));
+    }
   };
   
 const decryptMessage = async (id: string, encryptedText: string) => {
@@ -476,6 +493,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     isLoading,
     authError,
     secretViews,
+    childrenLoading,
     itemRefs
   };
 

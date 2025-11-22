@@ -33,6 +33,7 @@ export interface HomeContextType {
   decryptedChildMessages: Record<string, string>;
   authError: string | null;
   secretViews: Record<string, SecretViews>;
+  childrenLoading: Record<string, boolean>;
   itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
 }
 

@@ -426,6 +426,12 @@
   align-items: center;
 }
 
+.children-loading {
+  display: flex;
+  margin-top: 35px;
+  margin-left: 10px;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

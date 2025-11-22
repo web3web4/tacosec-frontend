@@ -2,7 +2,7 @@ import ViewReportsPopup from "@/section/Home/SharedWithMy/ViewReportsPopup/ViewR
 import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader } from "@/components";
 import { useReportUser } from "@/hooks/useReportUser";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
@@ -25,6 +25,7 @@ export default function SharedWithMy() {
     expandedId, 
     decrypting,
     itemRefs,
+    childrenLoading,
     userData,
     handleDirectLinkForChildren,
     handleGetSecretViews,
@@ -177,6 +178,11 @@ export default function SharedWithMy() {
                             <span><UserDisplayToggle userData={item.sharedBy}/></span>
                           </div>
                         </div>
+                      </div>
+                    )}
+                    {childrenLoading[pass.id] && (
+                      <div className="children-loading">
+                        <DotsLoader />
                       </div>
                     )}
                     {pass.children && pass.children.length > 0 && (
