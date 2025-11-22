@@ -1,6 +1,6 @@
 .alerts-container {
   padding: 12px;
-  height: calc(100vh - 65px);
+  height: calc(100vh - 55px);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -74,6 +74,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+}
+
+.alerts-observer {
+  width: 100%;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.alerts-loading-more {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
 }

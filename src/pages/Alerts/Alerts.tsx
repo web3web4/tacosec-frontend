@@ -1,11 +1,17 @@
 import { DotsLoader } from "@/components";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "@/context";
 import useAlerts from "@/hooks/useAlerts";
 import "./Alerts.css";
 
 export default function Alerts() {
-  const { data, isLoading, getTabLabel, getDateText, handleClick } = useAlerts();
+  const { 
+    data, 
+    isLoading, 
+    getTabLabel, 
+    getDateText, 
+    handleClick,
+    observerTarget,
+    isFetchingMore 
+  } = useAlerts();
 
   if (isLoading) return <div className="alerts-loading"> <DotsLoader /> </div>;
 
@@ -34,6 +40,16 @@ export default function Alerts() {
           </div>
         </div>
       ))}
+
+      {data?.pagination.hasNextPage && (
+        <div ref={observerTarget} className="alerts-observer">
+          {isFetchingMore && (
+            <div className="alerts-loading-more">
+              <DotsLoader />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
