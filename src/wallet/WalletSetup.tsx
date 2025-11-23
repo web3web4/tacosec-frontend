@@ -4,7 +4,7 @@ import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
-import { ResetPasswordScreen } from "@/components/OnboardingFlow/screens";
+
 
 export default function WalletSetup() {
   const {
@@ -202,7 +202,7 @@ export default function WalletSetup() {
           onForgotPassword={() => setShowResetFlow(true)}
         />
         {showResetFlow && (
-          <ResetPasswordScreen
+          <ResetPasswordWithSeed
             onSuccess={() => {
               setShowResetFlow(false);
               MetroSwal.fire({
@@ -211,7 +211,7 @@ export default function WalletSetup() {
                 text: 'You can now unlock your wallet.'
               });
             }}
-            onBack={() => {
+            onCancel={() => {
               setShowResetFlow(false);
             }}
           />
