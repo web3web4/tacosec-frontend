@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
 
+
 export default function WalletSetup() {
   const {
     hasWallet,
-    createWalletFlow,
+    //createWalletFlow,
     provider,
     restoreWalletFromEncryptedSeed,
     setSigner,
@@ -18,7 +19,7 @@ export default function WalletSetup() {
     setDecryptedPassword,
     address,
     addressweb,
-    signer,
+    //signer,
   } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -47,11 +48,8 @@ export default function WalletSetup() {
     // Hide onboarding if wallet exists and is unlocked
     if (!hasWallet && (userData?.user?.telegramId || isBrowser)) {
       setShowOnboarding(true);
-    } else if (hasWallet || signer) {
-      // If wallet exists or is unlocked, hide onboarding
-      setShowOnboarding(false);
     }
-  }, [hasWallet, signer, isBrowser, userData?.user?.telegramId]);
+  }, [hasWallet, isBrowser, userData?.user?.telegramId]);
 
   useEffect(() => {
     if (!identifier) return;
