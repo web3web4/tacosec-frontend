@@ -18,7 +18,7 @@ export default function Alerts() {
   return (
     <div className="alerts-container">
       {data?.notifications.length === 0 && (
-        <div className="alerts-empty">No notifications yet.</div>
+        <div className="alerts-empty">No alerts yet.</div>
       )}
 
       {data?.notifications.map((item) => (
