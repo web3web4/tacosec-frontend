@@ -6,6 +6,10 @@
 }
 
 .alerts-empty {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   padding: 24px 0;
 }
