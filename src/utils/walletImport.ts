@@ -87,13 +87,41 @@ export async function handleWalletImport({
         console.error("Web login failed:", err);
       }
 
+      // Always save wallet data with wallet address as key for browser users
+      // This ensures data persists after refresh
+      localStorage.setItem(`encryptedSeed-${wallet.address}`, encrypted);
+      localStorage.setItem(`seedBackupDone-${wallet.address}`, "true");
+      localStorage.setItem("publicAddress", wallet.address || "");
+      
+      // If identifier was different from wallet address, clean up old keys
       if (identifier !== wallet.address) {
-        localStorage.setItem(`encryptedSeed-${wallet.address}`, encrypted);
-        localStorage.setItem(`seedBackupDone-${wallet.address}`, "true");
-        localStorage.setItem("publicAddress", wallet.address || "");
         localStorage.removeItem(`encryptedSeed-${identifier}`);
         localStorage.removeItem(`seedBackupDone-${identifier}`);
         localStorage.removeItem("browser-user-id");
+      }
+      
+      // Ensure savePasswordInBackend is saved if provided
+      if (providedSavePassword !== undefined) {
+        localStorage.setItem("savePasswordInBackend", providedSavePassword.toString());
+      }
+    } else {
+      // For Telegram users, always save wallet data with telegramId as key
+      // This ensures data persists after refresh
+      const telegramId = userData?.user?.telegramId;
+      if (telegramId) {
+        localStorage.setItem(`encryptedSeed-${telegramId}`, encrypted);
+        localStorage.setItem(`seedBackupDone-${telegramId}`, "true");
+        
+        // If identifier was different from telegramId, clean up old keys
+        if (identifier !== telegramId) {
+          localStorage.removeItem(`encryptedSeed-${identifier}`);
+          localStorage.removeItem(`seedBackupDone-${identifier}`);
+        }
+      }
+      
+      // Ensure savePasswordInBackend is saved if provided
+      if (providedSavePassword !== undefined) {
+        localStorage.setItem("savePasswordInBackend", providedSavePassword.toString());
       }
     }
 
@@ -101,7 +129,7 @@ export async function handleWalletImport({
     // Only send the public address (not the password) when importing from one place to another
     try {
       // Generate signature for wallet import verification
-      const message = `Import wallet to Taco App: ${wallet.address}:${Date.now()}`;
+      const message = `Import wallet to TacoSec App: ${wallet.address}:${Date.now()}`;
       const signature = await wallet.signMessage(message);
       
       // Call storagePublicKeyAndPassword with public key and signature
