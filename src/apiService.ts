@@ -49,9 +49,11 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-
   let token = getAccessToken();
-  if (token) {
+  
+  if (initData) {
+    headers["X-Telegram-Init-Data"] = initData;
+  } else if (token) {
     if (isTokenExpiring(token)) {
       console.log("⚠️ Token expiring soon, attempting refresh...");
       const newToken = await refreshToken();
@@ -63,9 +65,7 @@ const getAuthHeaders = async (initData?: string | null): Promise<Record<string, 
       }
     }
     headers["Authorization"] = `Bearer ${token}`;
-  } else if (initData) {
-    headers["X-Telegram-Init-Data"] = initData;
-  }
+  }  
 
   return headers;
 };
