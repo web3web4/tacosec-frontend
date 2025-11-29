@@ -8,3 +8,4 @@ export * from "@/utils/walletUtils";
 export * from "@/utils/errorHandler";
 export {config} from "@/utils/config";
 export * from "@/utils/cookieManager";
+export * from "@/utils/gdpr";
