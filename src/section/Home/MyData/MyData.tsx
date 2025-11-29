@@ -8,7 +8,7 @@ import { useHome } from "@/context/HomeContext";
 import { useEffect,  useState } from "react";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction, copyToClipboard } from "@/utils";
-import "@/components/SeedPhrase/SeedPhrase.css";
+import "@/pages/Home/Home.css";
 
 export default function MyData() {
     const { 

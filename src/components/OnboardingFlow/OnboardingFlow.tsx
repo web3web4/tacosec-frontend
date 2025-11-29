@@ -34,9 +34,11 @@ interface OnboardingFlowProps {
   onComplete: () => void;
   initialStep?: OnboardingStep;
   initialData?: OnboardingData;
+  isDecryptOnly?: boolean; // If true, unlock wallet after decrypt without showing backup
+  viewSeedOnly?: boolean; // If true, show seed phrase in view-only mode (no backup confirmation)
 }
 
-export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialData = {} }: OnboardingFlowProps) {
+export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialData = {}, isDecryptOnly = false, viewSeedOnly = false }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(initialStep);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>(initialData);
   const [stepHistory, setStepHistory] = useState<OnboardingStep[]>([initialStep]);
@@ -54,11 +56,6 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
     provider
   } = useWallet();
 
-  const displayName = userData?.user?.firstName && userData?.user?.lastName
-    ? `${userData?.user?.firstName} ${userData?.user?.lastName}`
-    : userData?.user?.username
-    ? userData.user.username
-    : 'Friend';
 
   const navigateToStep = useCallback((step: OnboardingStep, data?: Partial<OnboardingData>) => {
     setCurrentStep(step);
@@ -143,7 +140,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         text: appError.message || 'An error occurred. Please try again.'
       });
     }
-  }, [onboardingData, createWalletWithPassword, navigateToStep, isBrowser, userData, address, addressweb, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, setDecryptedPassword, onComplete]);
+  }, [onboardingData, createWalletWithPassword, navigateToStep, isBrowser, userData, address, addressweb, provider, restoreWalletFromEncryptedSeed, setSigner, setAddress, setHasWallet, setDecryptedPassword, onComplete, initDataRaw]);
 
   const handleImportWallet = useCallback((seedPhrase: string) => {
     setOnboardingData(prev => ({ ...prev, seedPhrase }));
@@ -151,8 +148,12 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   }, [navigateToStep]);
 
   const handleSeedBackupConfirm = useCallback((mnemonic: string) => {
-    // Generate random indices for seed phrase verification
-    const verifyIndices = Array.from({ length: 3 }, () => Math.floor(Math.random() * 12));
+    // Generate random unique indices for seed phrase verification (no duplicates)
+    const indices = new Set<number>();
+    while (indices.size < 3) {
+      indices.add(Math.floor(Math.random() * 12));
+    }
+    const verifyIndices = Array.from(indices);
     setOnboardingData(prev => ({ ...prev, verifyIndices }));
     navigateToStep('seed-confirm');
   }, [navigateToStep]);
@@ -165,18 +166,113 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
       localStorage.setItem(`seedBackupDone-${identifier}`, "true");
     }
     
+    // Complete the flow - if this was decrypt flow, wallet is already unlocked
     onComplete();
   }, [onComplete, isBrowser, address, addressweb, userData?.user?.telegramId]);
 
-  const handleDecryptSuccess = useCallback((seedPhrase: string) => {
-    setOnboardingData(prev => ({ ...prev, seedPhrase }));
-    navigateToStep('seed-backup');
-  }, [navigateToStep]);
+  const handleDecryptSuccess = useCallback(async (seedPhrase: string) => {
+    try {
+      const { ethers } = await import('ethers');
+      
+      // Restore wallet from seed phrase and unlock it
+      const restoredWallet = ethers.Wallet.fromMnemonic(seedPhrase);
+      const walletSigner = restoredWallet.connect(provider);
+      
+      setSigner(walletSigner);
+      setAddress(restoredWallet.address);
+      if (isBrowser) {
+        if (!localStorage.getItem('publicAddress')) {
+          localStorage.setItem('publicAddress', restoredWallet.address);
+        }
+      }
+      setHasWallet(true);
+      sessionStorage.removeItem('recentWalletCreation');
+      
+      // Check if backup is needed
+      const identifier = isBrowser ? restoredWallet.address : userData?.user?.telegramId;
+      const seedBackupDone = identifier ? localStorage.getItem(`seedBackupDone-${identifier}`) === "true" : true;
 
-  const handleResetPasswordSuccess = useCallback((seedPhrase: string, password: string, saveInBackend: boolean) => {
-    setOnboardingData(prev => ({ ...prev, seedPhrase, password, saveInBackend }));
-    navigateToStep('seed-backup');
-  }, [navigateToStep]);
+      // If view-only mode (for Settings)
+      if (viewSeedOnly) {
+        setOnboardingData(prev => ({ ...prev, seedPhrase }));
+        navigateToStep('seed-backup');
+        return;
+      }
+
+      // If backup is needed (seedBackupDone = false), continue to backup flow
+      if (!seedBackupDone) {
+        setOnboardingData(prev => ({ ...prev, seedPhrase }));
+        navigateToStep('seed-backup');
+        return;
+      }
+
+      // If backup is done, complete immediately (wallet is unlocked)
+      MetroSwal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Wallet unlocked successfully'
+      });
+      onComplete();
+    } catch (error) {
+      MetroSwal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to restore wallet from seed phrase'
+      });
+    }
+  }, [navigateToStep, viewSeedOnly, isBrowser, provider, setSigner, setAddress, setHasWallet, onComplete, userData?.user?.telegramId]);
+
+  const handleResetPasswordSuccess = useCallback(async (seedPhrase: string, password: string, saveInBackend: boolean) => {
+    try {
+      const identifier = isBrowser ? address || addressweb : userData?.user?.telegramId;
+      if (!identifier) {
+        MetroSwal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Unable to identify wallet'
+        });
+        return;
+      }
+
+      // Encrypt seed phrase with new password
+      const { encryptSeed } = await import('@/utils');
+      const encrypted = encryptSeed(seedPhrase.trim(), password);
+      
+      // Save encrypted seed
+      localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
+      localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+      
+      // Save password preference
+      localStorage.setItem("savePasswordInBackend", saveInBackend.toString());
+
+      // If save in backend is enabled, store on server
+      if (saveInBackend) {
+        try {
+          const { ethers } = await import('ethers');
+          const wallet = ethers.Wallet.fromMnemonic(seedPhrase.trim());
+          const { storagePublicKeyAndPassword } = await import('@/apiService');
+          await storagePublicKeyAndPassword(
+            { publicKey: wallet.address, secret: password },
+            initDataRaw || ""
+          );
+        } catch (err) {
+          console.error('Failed to save password on server:', err);
+        }
+      }
+
+      // Update onboarding data and navigate to seed backup
+      setOnboardingData(prev => ({ ...prev, seedPhrase, password, saveInBackend }));
+      navigateToStep('seed-backup');
+    } catch (error) {
+      const appError = createAppError(error, 'unknown', 'Failed to reset password');
+      handleSilentError(appError, 'OnboardingFlow reset password');
+      MetroSwal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: appError.message || 'Failed to reset password. Please try again.'
+      });
+    }
+  }, [navigateToStep, isBrowser, address, addressweb, userData?.user?.telegramId, initDataRaw]);
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -210,6 +306,8 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             mnemonic={onboardingData.seedPhrase || ''}
             onConfirm={handleSeedBackupConfirm}
             onBack={canGoBack ? goBack : undefined}
+            viewOnly={viewSeedOnly}
+            onClose={onComplete}
           />
         );
       

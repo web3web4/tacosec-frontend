@@ -30,7 +30,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
   };
 
   const validatePassword = (password: string): boolean => {
-    return password.length >= 6;
+    return password.length >= 4;
   };
 
   const handleSubmit = async () => {
@@ -47,7 +47,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
     if (!newPassword) {
       newErrors.newPassword = 'New password is required';
     } else if (!validatePassword(newPassword)) {
-      newErrors.newPassword = 'Password must be at least 6 characters long';
+      newErrors.newPassword = 'Password must be at least 4 characters long';
     }
     
     // Validate password confirmation
@@ -89,6 +89,19 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
           Enter your 12-word seed phrase and create a new password to restore your wallet.
         </p>
       </div>
+
+      <div style={{
+          background: '#fff3cd',
+          border: '1px solid #ffeaa7',
+          borderRadius: '8px',
+          padding: '16px',
+          margin: '20px 0',
+          fontSize: '14px',
+          color: 'black'
+        }}>
+          <strong>⚠️ Important:</strong> Make sure you have the correct 12-word seed phrase. 
+          An incorrect seed phrase will create a different wallet.
+        </div>
       
       <div className="onboarding-content">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -123,7 +136,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
               <input
                 type={showPassword ? 'text' : 'password'}
                 className={`onboarding-input ${errors.newPassword ? 'error' : ''}`}
-                placeholder="Enter new password (min 6 characters)"
+                placeholder="Enter new password (min 4 characters)"
                 value={newPassword}
                 onChange={(e) => {
                   setNewPassword(e.target.value);
@@ -214,17 +227,6 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
           )}
         </div>
         
-        <div style={{
-          background: '#fff3cd',
-          border: '1px solid #ffeaa7',
-          borderRadius: '8px',
-          padding: '16px',
-          margin: '20px 0',
-          fontSize: '14px'
-        }}>
-          <strong>⚠️ Important:</strong> Make sure you have the correct 12-word seed phrase. 
-          An incorrect seed phrase will create a different wallet.
-        </div>
       </div>
       
       <div className={`onboarding-actions ${onBack ? 'with-back' : 'single'}`}>
