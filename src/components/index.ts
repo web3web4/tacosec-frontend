@@ -6,6 +6,6 @@ export { ErrorBoundary, AppErrorBoundary, PageErrorBoundary, SectionErrorBoundar
 export { default as Loading } from "@/components/Loading/Loading";
 export { default as TelegramInviteButton } from "@/components/TelegramInviteButton/TelegramInviteButton";
 export { default as UserDisplayToggle } from "@/components/UserDisplayToggle/UserDisplayToggle";
-//export { showInitialPrompt, InitialPromptScreen } from "@/components/Wallet/InitialPrompt";
 export { default as AdminSidebar } from "@/components/AdminSidebar/AdminSidebar";
 export { default as Table } from "@/components/Table/Table";
+export { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
