@@ -29,7 +29,6 @@
 .onboarding-screen {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   padding: 40px 20px 20px 20px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -37,8 +36,6 @@
 
 .onboarding-header {
   text-align: center;
-  margin-bottom: 40px;
-  padding-top: 20px;
 }
 
 .onboarding-header h1 {
@@ -60,6 +57,11 @@
   opacity: 0.8;
 }
 
+.reset-password-screen {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
 .onboarding-content {
   flex: 1;
   display: flex;
@@ -71,10 +73,11 @@
 .onboarding-actions {
   display: flex;
   gap: 12px;
-  margin-top: auto;
-  padding: 20px 0;
+  padding: 20px 16px;
   border-top: 1px solid #95ff5d;
   border-top: 1px solid rgba(149, 255, 93, 0.3);
+  position: relative;
+  bottom: -3px;
 }
 
 .onboarding-actions.single {
@@ -133,7 +136,7 @@
   color: #95ff5d;
   border: 1px solid rgba(149, 255, 93, 0.5);
   flex: 0 0 auto;
-  min-width: 100px;
+  max-width: 120px;
 }
 
 .onboarding-btn.back:hover:not(:disabled) {
@@ -217,12 +220,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 16px 0;
   cursor: pointer;
 }
 
 .onboarding-checkbox input[type="checkbox"] {
-  margin: 0;
   cursor: pointer;
 }
 
@@ -298,54 +299,39 @@
     padding: 0;
     min-height: 100vh;
   }
-  
-  .onboarding-screen {
-    padding: 20px 16px 16px 16px;
-    min-height: 100vh;
-  }
-  
-  .onboarding-header {
-    margin-bottom: 20px;
-  }
-  
+
   .onboarding-header h1 {
     font-size: 24px;
   }
-  
-  .onboarding-content {
-    padding-bottom: 20px;
-  }
-  
+
   .onboarding-actions {
     flex-direction: column;
-    margin-top: 20px;
-    position: sticky;
-    bottom: 0;
     background: #000000;
-    padding: 20px 0;
+    padding: 20px 16px;
   }
-  
+
   .onboarding-actions.with-back {
-    flex-direction: column-reverse;
+
+    flex-direction: row;
   }
-  
+
   .onboarding-btn {
     width: 100%;
   }
-  
+
   .seed-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin: 16px 0;
   }
-  
+
   /* Mobile responsive adjustments for inline seed grid */
   .onboarding-content div[style*="gridTemplateColumns"] {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     padding: 0 4px !important;
   }
-  
+
   .onboarding-content div[style*="minHeight: 60px"] {
     min-height: 50px !important;
     padding: 12px 8px !important;
