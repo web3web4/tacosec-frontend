@@ -7,7 +7,7 @@ import { useUser } from "@/context";
 import { useState, useEffect } from "react";
 import { formatAddress, getIdentifier, recordUserAction, config, copyToClipboard } from "@/utils";
 import { useSetting } from "@/hooks";
-import { MetroSwal } from "@/utils";
+import { MetroSwal, showGDPR } from "@/utils";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import "../../components/SeedPhrase/SeedPhrase.css";
@@ -275,6 +275,16 @@ const submitDecryption = () => {
               recordUserAction("Button click: Contact support");
               setShowSupportPopup(true);
             }}>Contact Support</button>
+            <button 
+              className="support-button" 
+              style={{marginTop: '10px'}} 
+              onClick={() => {
+                recordUserAction("Button click: View GDPR");
+                showGDPR();
+              }}
+            >
+              Privacy & GDPR
+            </button>
           </div>
         </SectionErrorBoundary>
         
