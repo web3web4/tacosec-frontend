@@ -5,9 +5,11 @@ interface SeedBackupScreenProps {
   mnemonic: string;
   onConfirm: (mnemonic: string) => void;
   onBack?: () => void;
+  viewOnly?: boolean; // If true, show "Close" button instead of "Next" (for Settings view)
+  onClose?: () => void; // Callback when Close is clicked (for view-only mode)
 }
 
-export function SeedBackupScreen({ mnemonic, onConfirm, onBack }: SeedBackupScreenProps) {
+export function SeedBackupScreen({ mnemonic, onConfirm, onBack, viewOnly = false, onClose }: SeedBackupScreenProps) {
   const [copied, setCopied] = useState(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
 
@@ -147,12 +149,21 @@ export function SeedBackupScreen({ mnemonic, onConfirm, onBack }: SeedBackupScre
           </button>
         )}
         
-        <button 
-          className="onboarding-btn primary"
-          onClick={handleNext}
-        >
-          I've Saved It Securely
-        </button>
+        {viewOnly ? (
+          <button 
+            className="onboarding-btn secondary"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        ) : (
+          <button 
+            className="onboarding-btn primary"
+            onClick={handleNext}
+          >
+            I've Saved It Securely
+          </button>
+        )}
       </div>
       
       {showManualCopy && (

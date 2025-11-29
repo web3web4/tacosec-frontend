@@ -1,5 +1,4 @@
-import { ConfirmSeedPopup, DecryptPrompt, SeedImportPopup, ResetPasswordWithSeed, SeedBackupPopup } from "@/components";
-import { shouldShowBackup, getIdentifier, decryptMnemonic, handleWalletImport, MetroSwal } from "@/utils";
+import { shouldShowBackup, getIdentifier, MetroSwal, getEncryptedSeed } from "@/utils";
 import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
@@ -9,51 +8,53 @@ import { useUser } from "@/context";
 export default function WalletSetup() {
   const {
     hasWallet,
-    //createWalletFlow,
-    provider,
-    restoreWalletFromEncryptedSeed,
-    setSigner,
-    setAddress,
-    setHasWallet,
-    decryptedPassword,
-    setDecryptedPassword,
     address,
     addressweb,
     signer,
   } = useWallet();
   const [showBackup, setShowBackup] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [mnemonic, setMnemonic] = useState<string>("");
-  const [verifyIndices, setVerifyIndices] = useState<number[] | null>(null);
-  const [passwordError, setPasswordError] = useState("");
-  const [password, setPassword] = useState("");
-  const [showResetFlow, setShowResetFlow] = useState(false);
-  const { userData, isBrowser, initDataRaw } = useUser();
+  const [showDecrypt, setShowDecrypt] = useState(false);
+  const { userData, isBrowser } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
-  const displayName =
-  userData?.user?.firstName && userData?.user?.lastName
-    ? `${userData.user.firstName} ${userData.user.lastName}`
-    : userData?.user?.username
-    ? userData.user.username
-    : "Friend";
-
+  // Check if we need to show decrypt flow (wallet exists but not unlocked)
+  useEffect(() => {
+    if (!identifier) return;
+    
+    const encrypted = getEncryptedSeed(identifier);
+    const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
+    
+    // Don't show decrypt if backup flow is already showing
+    if (showBackup) {
+      setShowDecrypt(false);
+      return;
+    }
+    
+    // Show decrypt if:
+    // 1. Encrypted seed exists (has wallet)
+    // 2. No signer (wallet not unlocked)
+    // 3. Not a recent wallet creation (to avoid showing after onboarding)
+    // 4. User is authenticated
+    if (encrypted && !signer && !recentWalletCreation && (userData?.user?.telegramId || isBrowser)) {
+      setShowDecrypt(true);
+    } else {
+      setShowDecrypt(false);
+    }
+  }, [identifier, signer, hasWallet, isBrowser, userData?.user?.telegramId, showBackup]);
       
   useEffect(() => {
     // Show onboarding only if:
     // 1. No wallet exists (!hasWallet)
-    // 2. Wallet is not unlocked (!signer)
-    // 3. User is authenticated (telegramId or browser)
-    // Hide onboarding if wallet exists and is unlocked
-    if (!hasWallet && (userData?.user?.telegramId || isBrowser)) {
+    // 2. User is authenticated (telegramId or browser)
+    // Don't show if decrypt flow is active
+    if (!hasWallet && !showDecrypt && (userData?.user?.telegramId || isBrowser)) {
       setShowOnboarding(true);
-    } else if (hasWallet || signer) {
-      // If wallet exists or is unlocked, hide onboarding
+    } else {
       setShowOnboarding(false);
     }
-
-  }, [hasWallet, isBrowser, signer,  userData?.user?.telegramId]);
+  }, [hasWallet, isBrowser, userData?.user?.telegramId, showDecrypt]);
 
   useEffect(() => {
     if (!identifier) return;
@@ -76,13 +77,14 @@ export default function WalletSetup() {
 
   useEffect(() => {
     const checkBackup = () => {
-      // Don't show backup popups if user is in onboarding flow
-      if (showOnboarding) {
+      // Don't show backup popups if user is in onboarding flow or decrypt flow
+      if (showOnboarding || showDecrypt) {
         setShowBackup(false);
         return;
       }
       
-      if (shouldShowBackup(identifier, hasWallet)) {
+      // Only show backup if wallet is unlocked (has signer)
+      if (signer && shouldShowBackup(identifier, hasWallet)) {
         setShowBackup(true);
       } else {
         setShowBackup(false);
@@ -93,47 +95,10 @@ export default function WalletSetup() {
     window.addEventListener("focus", checkBackup);
     window.addEventListener("wallet-imported", checkBackup);
     return () => {
-    window.removeEventListener("focus", checkBackup);
-    window.removeEventListener("wallet-imported", checkBackup); 
-  };
-  }, [identifier, hasWallet, showOnboarding]);
-
-  useEffect(() => {
-    if (showBackup && decryptedPassword && !mnemonic) {
-      setPassword(decryptedPassword);
-      handleDecrypt();
-    }
-  }, [showBackup, decryptedPassword, mnemonic]);
-
-  const handleDecrypt = async () => {
-    if (!identifier) return;
-
-    const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
-    if (!encrypted) {
-      MetroSwal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No encrypted seed found.'
-      });
-      return;
-    }
-
-    const phrase = decryptMnemonic(encrypted, password);
-    if (!phrase) {
-      setPasswordError("❌ Invalid password. Please try again.");
-      return;
-    }
-
-    setMnemonic(phrase);
-    setPassword("");
-    setPasswordError("");
-  };
-
-  const confirmBackup = () => {
-    const indices = new Set<number>();
-    while (indices.size < 4) indices.add(Math.floor(Math.random() * 12));
-    setVerifyIndices(Array.from(indices));
-  };
+      window.removeEventListener("focus", checkBackup);
+      window.removeEventListener("wallet-imported", checkBackup); 
+    };
+  }, [identifier, hasWallet, showOnboarding, showDecrypt, signer]);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
@@ -141,91 +106,41 @@ export default function WalletSetup() {
     setShowBackup(false);
   };
 
-  const handleImport = async (importedMnemonic: string) => {
-    handleWalletImport({
-      importedMnemonic,
-      isBrowser,
-      userData,
-      address,
-      addressweb,
-      provider,
-      restoreWalletFromEncryptedSeed,
-      setSigner,
-      setAddress,
-      setHasWallet,
-      setDecryptedPassword,
-      initDataRaw,
-      onDone: () => MetroSwal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Wallet restored successfully.'
-      }),
-      onError: (msg) => MetroSwal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: msg
-      }),
+  const handleBackupComplete = () => {
+    setShowBackup(false);
+    MetroSwal.fire({
+      icon: 'success',
+      title: '✅ Success',
+      text: 'Backup complete'
     });
   };
 
-  if (verifyIndices && mnemonic) {
+  const handleDecryptComplete = () => {
+    setShowDecrypt(false);
+    // After successful decryption, wallet will be unlocked
+    // The backup flow will automatically show if seedBackupDone is false
+    // No need to reload - the state will update naturally
+  };
+
+  // Show decrypt flow (wallet exists but not unlocked)
+  if (showDecrypt) {
     return (
-      <ConfirmSeedPopup
-        words={mnemonic.split(" ")}
-        indices={verifyIndices}
-        onSuccess={() => {
-          if (identifier) localStorage.setItem(`seedBackupDone-${identifier}`, "true");
-          setShowBackup(false);
-          setVerifyIndices(null);
-          MetroSwal.fire({
-            icon: 'success',
-            title: '✅ Success',
-            text: 'Backup complete'
-          });
-        }}
-        onFailure={() => {
-          MetroSwal.fire({
-            icon: 'error',
-            title: '❌ Failed',
-            text: 'Verification failed. Try again.'
-          });
-          setVerifyIndices(null);
-        }}
+      <OnboardingFlow
+        initialStep="decrypt"
+        onComplete={handleDecryptComplete}
+        isDecryptOnly={false} // Always allow backup flow check after decrypt
       />
     );
   }
 
-  if (showBackup && !mnemonic) {
+  // Show backup flow using new OnboardingFlow screens (only if wallet is unlocked)
+  if (showBackup && signer) {
     return (
-      <>
-        <DecryptPrompt
-          password={password}
-          passwordError={passwordError}
-          onChange={setPassword}
-          onSubmit={handleDecrypt}
-          onForgotPassword={() => setShowResetFlow(true)}
-        />
-        {showResetFlow && (
-          <ResetPasswordWithSeed
-            onSuccess={() => {
-              setShowResetFlow(false);
-              MetroSwal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'You can now unlock your wallet.'
-              });
-            }}
-            onCancel={() => {
-              setShowResetFlow(false);
-            }}
-          />
-        )}
-      </>
+      <OnboardingFlow
+        initialStep="decrypt"
+        onComplete={handleBackupComplete}
+      />
     );
-  }
-
-  if (showBackup && mnemonic) {
-    return <SeedBackupPopup mnemonic={mnemonic} onConfirm={confirmBackup} />;
   }
 
   // Show onboarding flow for new users

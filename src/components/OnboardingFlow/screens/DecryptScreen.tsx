@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { MdLock, MdLockOpen, MdArrowBack, MdExpandMore, MdExpandLess } from 'react-icons/md';
-import { getIdentifier, decryptMnemonic } from '@/utils';
+import { MdLock, MdLockOpen, MdArrowBack, MdExpandMore, MdExpandLess, MdRestorePage } from 'react-icons/md';
+import { getIdentifier, decryptMnemonic, MetroSwal } from '@/utils';
 import { useUser } from '@/context';
 import { useWallet } from '@/wallet/walletContext';
+import { getPublicAddresses } from '@/apiService';
 
 interface DecryptScreenProps {
   onSuccess: (mnemonic: string) => void;
@@ -15,14 +16,45 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   const [error, setError] = useState('');
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [restoreError, setRestoreError] = useState('');
   
-  const { userData, isBrowser } = useUser();
+  const { userData, isBrowser, initDataRaw } = useUser();
   const { address, addressweb } = useWallet();
   
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
   
   // Check if user can restore from server
   const canRestoreFromServer = localStorage.getItem('savePasswordInBackend') === 'true';
+
+  // Helper function to fetch latest secret from server
+  const fetchLatestSecret = async (): Promise<string | null> => {
+    try {
+      const response = await getPublicAddresses(initDataRaw);
+      
+      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+        // Filter elements containing secret
+        const withSecrets = response.data.filter(
+          (item: { secret?: string }) => !!item.secret
+        );
+
+        if (withSecrets.length > 0) {
+          // Sort them by most recent
+          const sortedAddresses = withSecrets.sort(
+            (a: { createdAt: string }, b: { createdAt: string }) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+
+          const latestAddress = sortedAddresses[0];
+          return latestAddress.secret!;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to fetch latest secret:', error);
+      return null;
+    }
+  };
 
   const handleDecrypt = async () => {
     if (!identifier) {
@@ -62,9 +94,28 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   };
 
   const handleRestoreFromServer = async () => {
-    // This would implement server-side password restoration
-    // For now, we'll show a placeholder message
-    setError('Server restoration feature coming soon');
+    try {
+      setIsRestoring(true);
+      setRestoreError('');
+      setError('');
+
+      const latestSecret = await fetchLatestSecret();
+
+      if (latestSecret) {
+        setPassword(latestSecret);
+        MetroSwal.fire({
+          icon: 'success',
+          title: '✅ Success',
+          text: 'Password restored successfully'
+        });
+      } else {
+        setRestoreError('No password found on server');
+      }
+    } catch (error) {
+      setRestoreError(error instanceof Error ? error.message : 'Failed to restore password');
+    } finally {
+      setIsRestoring(false);
+    }
   };
 
   return (
@@ -150,12 +201,30 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
                 }}>
                   You can try to restore your password from our servers:
                 </p>
+                {restoreError && (
+                  <div style={{ 
+                    color: '#c62828', 
+                    fontSize: '12px', 
+                    marginBottom: '12px',
+                    textAlign: 'center'
+                  }}>
+                    {restoreError}
+                  </div>
+                )}
                 <button 
                   className="onboarding-btn secondary"
                   onClick={handleRestoreFromServer}
+                  disabled={isRestoring}
                   style={{ width: '100%' }}
                 >
-                  Restore from Server
+                  {isRestoring ? (
+                    'Restoring...'
+                  ) : (
+                    <>
+                      <MdRestorePage style={{ marginRight: '4px' }} />
+                      Restore from Server
+                    </>
+                  )}
                 </button>
               </div>
             )}

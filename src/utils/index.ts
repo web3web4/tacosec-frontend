@@ -9,3 +9,4 @@ export * from "@/utils/errorHandler";
 export {config} from "@/utils/config";
 export * from "@/utils/cookieManager";
 export * from "@/utils/gdpr";
+export * from "@/localstorage/walletStorage";

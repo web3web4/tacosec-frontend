@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
 import { loginUserWeb, storagePublicKeyAndPassword } from "@/apiService";
-import { DecryptPrompt, ResetPasswordWithSeed } from "@/components";
 import { encryptSeed, restoreWallet } from "@/utils";
 import { useUser } from "@/context";
 import { ethers } from "ethers";
@@ -38,11 +37,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   });
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [hasWallet, setHasWallet] = useState<boolean>(false);
-  const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState<string>("");
   const [decryptedPassword, setDecryptedPassword] = useState<string | undefined>("");
-  const [showResetFlow, setShowResetFlow] = useState(false);
   const [addressweb, setAddressweb] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
       return findAddressInStorage();
@@ -112,18 +107,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // 2. Wallet is not unlocked (no signer) - meaning we need to decrypt
     const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
     
-    // If there's an encrypted seed but no signer, we need to decrypt
-    // Clear recentWalletCreation flag on page load if wallet needs to be unlocked
-    if (encrypted && !signer) {
-      // Clear the flag if we're refreshing and the wallet isn't unlocked
-      // This ensures the prompt shows after refresh, even if recentWalletCreation was set
-      if (recentWalletCreation) {
-        sessionStorage.removeItem('recentWalletCreation');
-      }
-      setShowDecryptPrompt(true);
-    } else {
-      setShowDecryptPrompt(false);
-    }
+    // Note: Decrypt prompt is now handled by WalletSetup.tsx using OnboardingFlow
+    // We just need to ensure hasWallet state is correct
   }, [identifier, signer, isWeb, isTelegram, address, addressweb, userData?.user?.telegramId]);
 
   async function createWalletFlow() {
@@ -207,43 +192,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return restoreWallet(encryptedSeed, password);
   }
 
-  function handleDecryption() {
-    const encryptedSeed = getEncryptedSeed(identifier!);
-    if (!encryptedSeed) {
-      setPasswordError("Encrypted seed not found. Please refresh the page.");
-      return;
-    }
-
-    const wallet = restoreWalletFromEncryptedSeed(encryptedSeed, password);
-    if (wallet) {
-      const walletSigner = wallet.connect(provider);
-      setSigner(walletSigner);
-      setAddress(wallet.address);
-      // Sync addressweb for web users
-      if (isWeb) {
-        setAddressweb(wallet.address);
-        localStorage.setItem('publicAddress', wallet.address);
-      }
-      setHasWallet(true);
-      setShowDecryptPrompt(false);
-      setPasswordError("");
-      
-      // Clear the recent wallet creation flag since user successfully decrypted
-      sessionStorage.removeItem('recentWalletCreation');
-      
-      // Clear password field after successful decryption
-      setPassword("");
-      
-      MetroSwal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Wallet restored successfully.'
-      });
-      setDecryptedPassword(password);
-    } else {
-      setPasswordError("Password incorrect or failed to restore wallet.");
-    }
-  }
+  // Decryption is now handled by OnboardingFlow in WalletSetup.tsx
 
   return (
     <WalletContext.Provider
@@ -264,45 +213,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-
-      {showDecryptPrompt && (
-        <DecryptPrompt
-          password={password}
-          passwordError={passwordError}
-          onChange={setPassword}
-          onSubmit={handleDecryption}
-          onForgotPassword={() => {
-            setShowDecryptPrompt(false);
-            setShowResetFlow(true);
-          }}
-          onHidePrompt={(show) => {
-            setShowDecryptPrompt(show === true);
-          }}
-        />
-      )}
-
-      {showResetFlow &&
-        (
-          <ResetPasswordWithSeed
-            onSuccess=
-            {() => {
-              setShowResetFlow(false);
-              MetroSwal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'You can now unlock your wallet with your new password.'
-              }).then(() => {
-                window.location.reload();
-              })
-
-            }}
-            onCancel=
-            {() => {
-              setShowResetFlow(false);
-              setShowDecryptPrompt(true);
-            }}
-          />
-        )}
     </WalletContext.Provider>
   );
 }

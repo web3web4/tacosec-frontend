@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction } from "@/utils";
 import { useHome } from "@/context";
-import "@/components/SeedPhrase/SeedPhrase.css";
+import "@/pages/Home/Home.css";
 
 export default function SharedWithMy() {
   const { 

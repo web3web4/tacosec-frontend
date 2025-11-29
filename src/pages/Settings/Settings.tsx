@@ -1,16 +1,15 @@
-import { SeedPharseSettingPage, DecryptPrompt, ResetPasswordWithSeed, CustomPopup, SectionErrorBoundary } from "@/components";
+import { CustomPopup, SectionErrorBoundary } from "@/components";
 import { ContactSupport } from "@/section";
 import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever } from "react-icons/md";
 import { useUser } from "@/context";
 import { useState, useEffect } from "react";
-import { formatAddress, getIdentifier, recordUserAction, config, copyToClipboard } from "@/utils";
+import { formatAddress, getIdentifier, recordUserAction, copyToClipboard } from "@/utils";
 import { useSetting } from "@/hooks";
 import { MetroSwal, showGDPR } from "@/utils";
-import CryptoJS from "crypto-js";
-import { ethers } from "ethers";
-import "../../components/SeedPhrase/SeedPhrase.css";
+import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
+import "@/pages/Home/Home.css";
 import "./Settings.css";
 
 
@@ -18,11 +17,7 @@ const Settings: React.FC = () => {
   const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup , email, setEmail ,phone, setPhone,firstName, setFirstName,lastName, setLastName,saveUserInfo,isSavingUserInfo} = useSetting();
   const { userData , isBrowser } = useUser();
   const { address , addressweb } = useWallet();
-  const [mnemonic, setMnemonic] = useState<string | null>(null);
-  const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [showResetFlow, setShowResetFlow] = useState(false);
+  const [showSeedFlow, setShowSeedFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
 
@@ -37,51 +32,30 @@ const Settings: React.FC = () => {
   }, [showCopied]);
 
   /**
-   * Handles the decryption process by checking if an encrypted seed exists in local storage.
-   * If no encrypted seed is found, displays an error message.
-   * If an encrypted seed is found, shows the decryption prompt to the user.
+   * Handles showing the seed phrase flow.
+   * Checks if encrypted seed exists and shows the decrypt flow.
    */
-
-  const handleDecrypt = () => {
+  const handleShowSeedPhrase = () => {
     const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
-    if (!identifier) return;
-    const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
-    if (!encrypted) {
-      MetroSwal.error("Error", "We couldn't find a saved seed on this device.");
+    if (!identifier) {
+      MetroSwal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Unable to identify wallet'
+      });
       return;
     }
-    setShowDecryptPrompt(true);
+    const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
+    if (!encrypted) {
+      MetroSwal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "We couldn't find a saved seed on this device."
+      });
+      return;
+    }
+    setShowSeedFlow(true);
   };
-
-  /**
-   * Attempts to decrypt the mnemonic seed phrase stored as an encrypted seed in local storage.
-   * If successful, updates the state with the decrypted mnemonic and resets UI elements.
-   * Otherwise, sets an error message indicating invalid password or corrupted data.
-   */
-
-const submitDecryption = () => {
-  const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
-  if (!identifier) return;
-
-  const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
-  if (!encrypted) return;
-
-  const fullKey = password + "|" + config.TG_SECRET_SALT;
-
-  try {
-    const bytes = CryptoJS.AES.decrypt(encrypted, fullKey);
-    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-
-    if (!ethers.utils.isValidMnemonic(decrypted)) throw new Error();
-
-    setMnemonic(decrypted);
-    setShowDecryptPrompt(false);
-    setPassword("");
-    setPasswordError("");
-  } catch {
-    setPasswordError("❌ Invalid password or corrupted data.");
-  }
-};
 
   // Function to copy address to clipboard
   const copyAddressToClipboard = () => {
@@ -248,7 +222,7 @@ const submitDecryption = () => {
         <div className="seed-section">
           <button className="seed-button" onClick={() => {
             recordUserAction("Button click: View seed phrase");
-            handleDecrypt();
+            handleShowSeedPhrase();
           }}>
             Show Seed Phrase
           </button>
@@ -290,36 +264,11 @@ const submitDecryption = () => {
         
       </div>
 
-      {mnemonic && (
-        <SeedPharseSettingPage
-          mnemonic={mnemonic}
-          onCancel={() => setMnemonic(null)}
-        />
-      )}
-
-      {showDecryptPrompt && (
-        <DecryptPrompt
-          password={password}
-          passwordError={passwordError}
-          onChange={setPassword}
-          onSubmit={submitDecryption}
-          onForgotPassword={() => {
-            setShowDecryptPrompt(false);
-            setShowResetFlow(true);
-          }}
-        />
-      )}
-
-      {showResetFlow && (
-        <ResetPasswordWithSeed
-          onSuccess={() => {
-            setShowResetFlow(false);
-            MetroSwal.success("Password updated", "Your password has been updated. You can now unlock your wallet.");
-          }}
-          onCancel={() => {
-            setShowResetFlow(false);
-            setShowDecryptPrompt(true); // Re-show the DecryptPrompt when Cancel is clicked
-          }}
+      {showSeedFlow && (
+        <OnboardingFlow
+          initialStep="decrypt"
+          onComplete={() => setShowSeedFlow(false)}
+          viewSeedOnly={true}
         />
       )}
 
