@@ -57,6 +57,11 @@
   opacity: 0.8;
 }
 
+.reset-password-screen {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
 .onboarding-content {
   flex: 1;
   display: flex;
