@@ -1,4 +1,4 @@
-import { CustomPopup, SectionErrorBoundary } from "@/components";
+import { CustomPopup, SectionErrorBoundary , OnboardingFlow } from "@/components";
 import { ContactSupport } from "@/section";
 import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import { formatAddress, getIdentifier, recordUserAction, copyToClipboard } from "@/utils";
 import { useSetting } from "@/hooks";
 import { MetroSwal, showGDPR } from "@/utils";
-import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
 import "@/pages/Home/Home.css";
 import "./Settings.css";
 

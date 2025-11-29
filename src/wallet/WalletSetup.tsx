@@ -1,5 +1,5 @@
 import { shouldShowBackup, getIdentifier, MetroSwal, getEncryptedSeed } from "@/utils";
-import { OnboardingFlow } from "@/components/OnboardingFlow/OnboardingFlow";
+import { OnboardingFlow } from "@/components";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
