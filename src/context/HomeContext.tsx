@@ -1,6 +1,6 @@
 import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
 import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, Secret } from "@/types/types";
-import { MetroSwal, showError, createAppError, handleSilentError , config } from "@/utils";
+import { MetroSwal, showError, createAppError, handleSilentError, config } from "@/utils";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useWallet } from "@/wallet/walletContext";
@@ -41,7 +41,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   const { signer, provider, address } = useWallet();
   const { initDataRaw, userData, directLinkData, setDirectLinkData } = useUser();
   const { isInit, decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
-  
+
 
 
   const handleAddClick = (): void => {
@@ -62,18 +62,18 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       const response: Secret[] = await GetMyData(initDataRaw || undefined);
       const data: DataItem[] = response.map((item: Secret) => ({
-        id: item._id, 
+        id: item._id,
         key: item.key,
         value: item.value,
         sharedWith: item.sharedWith,
         createdAt: item.createdAt,
       }));
       setMyData(data);
-      if(data.length > 0) getProfilesDetailsForUsers(data);
+      if (data.length > 0) getProfilesDetailsForUsers(data);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       const appError = createAppError(err, 'unknown');
-      
+
       // Handle authentication errors specifically
       if (appError.type === 'auth' || appError.message.includes("Authentication")) {
         setAuthError(appError.message);
@@ -90,12 +90,12 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getProfilesDetailsForUsers = async (data: DataItem[]) => {
-    try{
+    try {
       const enrichedData: DataItem[] = await Promise.all(
         data.map(async (item) => {
           const userDetails = await Promise.all(
             item.sharedWith.map(async (user) => {
-              if(!user.username){
+              if (!user.username) {
                 return {
                   img: { src: noUserImage },
                   publicAddress: user.publicAddress,
@@ -109,15 +109,15 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
                   img: { src: noUserImage },
                 };
               }
-  
+
               return profile;
             })
           );
-  
+
           const filteredDetails = userDetails.filter(
             (profile): profile is UserProfileDetailsType => profile !== null
           );
-  
+
           return {
             ...item,
             shareWithDetails: filteredDetails,
@@ -130,17 +130,17 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       console.log(error);
     }
   };
-  
+
   const fetchSharedWithMyData = async () => {
     try {
       setIsLoading(true);
       const data = await getDataSharedWithMy(initDataRaw || undefined);
       setSharedWithMyData(data.sharedWithMe);
-      if(data.sharedWithMe.length > 0) getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
+      if (data.sharedWithMe.length > 0) getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       const appError = createAppError(err, 'unknown');
-      
+
       if (appError.message.includes("Authentication")) {
         setAuthError(appError.message);
         // Only show error alert for non-authentication errors or if we're not in Telegram
@@ -159,23 +159,23 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     const enrichedData = await Promise.all(
       data.map(async (item) => {
         const profile = await getUserProfileDetails(item.sharedBy.username);
-        
+
         if (!profile) {
           const enhancedSharedBy = {
             ...item.sharedBy,
             img: { src: noUserImage },
             name: ""
           };
-          
+
           return {
             ...item,
             sharedBy: enhancedSharedBy,
           };
         }
-  
+
         const profileWithDefaultImg = {
           ...profile,
-          img: profile.img ?? { src: noUserImage},
+          img: profile.img ?? { src: noUserImage },
         };
 
         const enhancedSharedBy = {
@@ -183,7 +183,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
           img: profileWithDefaultImg.img,
           name: profileWithDefaultImg.name
         };
-  
+
         return {
           ...item,
           sharedBy: enhancedSharedBy,
@@ -192,26 +192,26 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     );
     setSharedWithMyData(enrichedData);
   };
-  
+
 
   useEffect(() => {
-    if (directLinkData) {
+    if (directLinkData && signer) {
       handleSetActiveTabClick(directLinkData.tabName);
-    } else if(myData.length === 0 && activeTab === "mydata"){
+    } else if (myData.length === 0 && activeTab === "mydata") {
       fetchMyData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [directLinkData]);
+  }, [directLinkData, signer]);
 
   useEffect(() => {
     if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
       handleSetActiveTabClick(activeTab);
     }
-    
+
     // Update previous path
     setPreviousPath(location.pathname);
-  }, [location.pathname]); 
- 
+  }, [location.pathname]);
+
   const handleDelete = async (id: string, isHasSharedWith: boolean) => {
     const MetroSwalOptions: string | SweetAlertOptions = {
       title: 'Do you want to delete this Secret?',
@@ -220,7 +220,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       cancelButtonText: 'Cancel',
       confirmButtonColor: `var(--primary-color)`
     };
-    
+
     if (isHasSharedWith) {
       MetroSwalOptions.input = 'checkbox';
       MetroSwalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
@@ -229,17 +229,17 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         input: 'metro-swal-checkbox-input'
       };
     }
-  
+
     const result = await MetroSwal.fire(MetroSwalOptions);
     if (result.isConfirmed) {
       try {
         if (isHasSharedWith) {
           const alsoDeleteForEveryone = result.value === 1;
-          alsoDeleteForEveryone ? 
-            await deletePassword(initDataRaw || ""  , id ) : 
-            await hidePassword(initDataRaw || ""  , id);
+          alsoDeleteForEveryone ?
+            await deletePassword(initDataRaw || "", id) :
+            await hidePassword(initDataRaw || "", id);
         } else {
-          await deletePassword(initDataRaw || "" , id);
+          await deletePassword(initDataRaw || "", id);
         }
         setMyData((prev) => prev.filter((secret) => secret.id !== id));
       } catch (error) {
@@ -252,57 +252,57 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
 
   // This function is to handle the case of pressing the button of the message that arrived to him as a notification
   const handleDirectLink = () => {
-    if(directLinkData){
-        const element = itemRefs.current[directLinkData.secretId];
-        if (element) {
-          let pass;
-          if(directLinkData.tabName === "shared"){
-            pass = sharedWithMyData
+    if (directLinkData) {
+      const element = itemRefs.current[directLinkData.secretId];
+      if (element) {
+        let pass;
+        if (directLinkData.tabName === "shared") {
+          pass = sharedWithMyData
             .flatMap(item => item.passwords)
             .find(p => p.id === directLinkData.secretId);
-          } else {
-            pass = myData.find(p => p.id === directLinkData.secretId);
-          }
-    
-          if (pass) {
-            toggleExpand(pass.value, pass.id);
-          }
-          
-          setTimeout(() => {
-            element.scrollIntoView({ behavior: "smooth", block: "center" });
-            element.classList.add("highlight");
-            setTimeout(() => {
-              element.classList.remove("highlight");
-              // Clear the direct link data once handled to avoid re-triggering
-              if(!directLinkData.ChildId) setDirectLinkData(null);
-            }, 500);
-          }, 1000);
+        } else {
+          pass = myData.find(p => p.id === directLinkData.secretId);
         }
+
+        if (pass) {
+          toggleExpand(pass.value, pass.id);
+        }
+
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.classList.add("highlight");
+          setTimeout(() => {
+            element.classList.remove("highlight");
+            // Clear the direct link data once handled to avoid re-triggering
+            if (!directLinkData.ChildId) setDirectLinkData(null);
+          }, 500);
+        }, 1000);
+      }
     }
   };
-  
+
   const handleDirectLinkForChildren = () => {
-    if(!directLinkData || !directLinkData.ChildId){ return; }
+    if (!directLinkData || !directLinkData.ChildId) { return; }
     const targetId = directLinkData?.ChildId;
-    if(!targetId) return;
+    if (!targetId) return;
     const element = itemRefs.current[targetId];
     if (element) {
       let pass;
-      if(activeTab === "mydata"){
+      if (activeTab === "mydata") {
         pass = myData.find(p => p.id === directLinkData.secretId)
-                ?.children?.find(e => e._id === targetId);
+          ?.children?.find(e => e._id === targetId);
 
       } else {
         pass = sharedWithMyData
-        .flatMap(item => item.passwords)
-        .find(p => p.id === directLinkData.secretId)
-        ?.children?.find(e => e._id === targetId);
+          .flatMap(item => item.passwords)
+          .find(p => p.id === directLinkData.secretId)
+          ?.children?.find(e => e._id === targetId);
       }
 
       if (pass) {
         toggleChildExpand(pass.value, pass._id);
       }
-      
+
       setTimeout(() => {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
         element.classList.add("highlight");
@@ -321,7 +321,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       setExpandedId(null);
     } else {
       setExpandedId(id);
-  
+
       if (!decryptedMessages[id]) {
         decryptMessage(id, value);
       }
@@ -339,11 +339,13 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       if ("message" in response) {
         if (activeTab === "mydata") {
           setMyData((prev) => prev.map((item) =>
-            item.id === id ? { ...item, children: [] } : item ));
+            item.id === id ? { ...item, children: [] } : item));
         } else {
-          setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
+          setSharedWithMyData((prev) => prev.map((item) => ({
+            ...item,
             passwords: item.passwords.map((pw) =>
-              pw.id === id ? { ...pw, children: [] } : pw )}))
+              pw.id === id ? { ...pw, children: [] } : pw)
+          }))
           );
         }
         return;
@@ -354,7 +356,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
           const views = await getSecretViews(initDataRaw!, child._id);
           const hasMyView = views.viewDetails.some(sec => sec.publicAddress.toLowerCase() === address?.toLowerCase());
           views.isNewSecret = !hasMyView;
-          if(child.publicAddress.toLowerCase() === address?.toLowerCase() || userData?.user?.privacyMode) views.isNewSecret = false;
+          if (child.publicAddress.toLowerCase() === address?.toLowerCase() || userData?.user?.privacyMode) views.isNewSecret = false;
           return [child._id, views] as const;
         })
       );
@@ -363,44 +365,46 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         ...prev,
         ...Object.fromEntries(entries),
       }));
-      
+
       if (activeTab === "mydata") {
-          setMyData((prev) => prev.map((item) =>
-              item.id === id ? { ...item, children: response } : item ));
-        } else {
-          setSharedWithMyData((prev) => prev.map((item) => ({ ...item,
-              passwords: item.passwords.map((pw) =>
-              pw.id === id ? { ...pw, children: response } : pw )}))
-          );
-        }
+        setMyData((prev) => prev.map((item) =>
+          item.id === id ? { ...item, children: response } : item));
+      } else {
+        setSharedWithMyData((prev) => prev.map((item) => ({
+          ...item,
+          passwords: item.passwords.map((pw) =>
+            pw.id === id ? { ...pw, children: response } : pw)
+        }))
+        );
+      }
     } finally {
       setChildrenLoading((prev) => ({ ...prev, [id]: false }));
     }
   };
-  
-const decryptMessage = async (id: string, encryptedText: string) => {
-  if (!encryptedText || !provider || !signer) return;
-  try {
-    setDecrypting(true);
-    console.log("Decrypting message...");
-    const decryptedBytes = await decryptDataFromBytes(
-      fromHexString(encryptedText)
-    );
-    if (decryptedBytes) {
-      const decrypted = fromBytes(decryptedBytes);
-      setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+
+  const decryptMessage = async (id: string, encryptedText: string) => {
+    if (!encryptedText || !provider || !signer) return;
+    try {
+      setDecrypting(true);
+      console.log("Decrypting message...");
+      const decryptedBytes = await decryptDataFromBytes(
+        fromHexString(encryptedText)
+      );
+      if (decryptedBytes) {
+        const decrypted = fromBytes(decryptedBytes);
+        setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+      }
+    } catch (err: unknown) {
+      const appError = createAppError(err, 'unknown');
+      handleSilentError(appError, 'Decrypt Message');
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: appError.message,
+      }));
+    } finally {
+      setDecrypting(false);
     }
-  } catch (err: unknown) {
-    const appError = createAppError(err, 'unknown');
-    handleSilentError(appError, 'Decrypt Message');
-    setDecryptErrors((prev) => ({
-      ...prev,
-      [id]: appError.message,
-    }));
-  } finally {
-    setDecrypting(false);
-  }
-};
+  };
 
 
   const toggleChildExpand = async (value: string, childId: string) => {
@@ -426,7 +430,7 @@ const decryptMessage = async (id: string, encryptedText: string) => {
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
-        if(secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+        if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
       }
     } catch (e) {
       console.error("Error decrypting child:", e);
@@ -435,19 +439,19 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     }
   };
 
-    const handleGetSecretViews = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, secretId: string) => {
-        e.stopPropagation();
-        const data = await handleCheckSecretViewsData(e, secretId);
-        if (data) {
-            setCurrentSecretViews(data);
-            setShowViewersPopup(true);
-        }
-    };
+  const handleGetSecretViews = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, secretId: string) => {
+    e.stopPropagation();
+    const data = await handleCheckSecretViewsData(e, secretId);
+    if (data) {
+      setCurrentSecretViews(data);
+      setShowViewersPopup(true);
+    }
+  };
 
   const handleCheckSecretViewsData = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string): SecretViews | null => {
     e.stopPropagation();
     const data = secretViews[id];
-    
+
     if (!data || data.viewDetails.length === 0) {
       MetroSwal.fire({
         icon: 'info',
@@ -460,16 +464,16 @@ const decryptMessage = async (id: string, encryptedText: string) => {
 
     return data;
   };
-  
+
 
   const value = {
-    myData, 
-    sharedWithMyData, 
+    myData,
+    sharedWithMyData,
     setSharedWithMyData,
-    activeTab, 
-    handleAddClick, 
-    handleSetActiveTabClick, 
-    handleDelete, 
+    activeTab,
+    handleAddClick,
+    handleSetActiveTabClick,
+    handleDelete,
     triggerGetChildrenForSecret,
     handleGetSecretViews,
     handleDirectLink,
@@ -477,18 +481,18 @@ const decryptMessage = async (id: string, encryptedText: string) => {
     setShowViewersPopup,
     showViewersPopup,
     currentSecretViews,
-    isInit, 
-    provider, 
-    userData, 
+    isInit,
+    provider,
+    userData,
     initDataRaw,
-    decrypting, 
+    decrypting,
     decryptedMessages,
-    decryptErrors, 
-    toggleExpand, 
-    expandedId, 
-    toggleChildExpand, 
-    expandedChildId, 
-    decryptingChild, 
+    decryptErrors,
+    toggleExpand,
+    expandedId,
+    toggleChildExpand,
+    expandedChildId,
+    decryptingChild,
     decryptedChildMessages,
     isLoading,
     authError,
