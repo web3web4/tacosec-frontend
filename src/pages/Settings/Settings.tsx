@@ -1,4 +1,4 @@
-import { CustomPopup, SectionErrorBoundary , OnboardingFlow } from "@/components";
+import { CustomPopup, SectionErrorBoundary, OnboardingFlow } from "@/components";
 import { ContactSupport } from "@/section";
 import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
@@ -13,9 +13,9 @@ import "./Settings.css";
 
 
 const Settings: React.FC = () => {
-  const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod,showSupportPopup, setShowSupportPopup , email, setEmail ,phone, setPhone,firstName, setFirstName,lastName, setLastName,saveUserInfo,isSavingUserInfo} = useSetting();
-  const { userData , isBrowser } = useUser();
-  const { address , addressweb } = useWallet();
+  const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod, showSupportPopup, setShowSupportPopup, email, setEmail, phone, setPhone, firstName, setFirstName, lastName, setLastName, saveUserInfo, isSavingUserInfo } = useSetting();
+  const { userData, isBrowser } = useUser();
+  const { address, addressweb } = useWallet();
   const [showSeedFlow, setShowSeedFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
@@ -93,7 +93,7 @@ const Settings: React.FC = () => {
             localStorage.removeItem(key);
           }
         });
-        
+
         // Reload the page to reflect changes
         window.location.reload();
       }
@@ -123,8 +123,8 @@ const Settings: React.FC = () => {
             <div className="address-container">
               <span>Address: </span>
               <span className="address-value">{formatAddress(4, address || addressweb || undefined)}</span>
-              <button 
-                className="copy-address-btn" 
+              <button
+                className="copy-address-btn"
                 onClick={() => {
                   recordUserAction("Button click: Copy wallet address");
                   copyAddressToClipboard();
@@ -138,7 +138,7 @@ const Settings: React.FC = () => {
           </div>
         </SectionErrorBoundary>
         <div className="checkbox-row">
-          <span>Activate privacy mode</span>
+          <span>Max privacy mode</span>
           <label className="toggle-switch">
             <input
               type="checkbox"
@@ -229,14 +229,14 @@ const Settings: React.FC = () => {
 
         {/* New Clear Data section */}
         <div className="seed-section">
-          <button 
-            className="seed-button" 
+          <button
+            className="seed-button"
             onClick={() => {
               recordUserAction("Button click: Clear wallet data");
               handleClearData();
             }}
           >
-            <MdDeleteForever style={{marginRight: '4px'}} />
+            <MdDeleteForever style={{ marginRight: '4px' }} />
             Clear All Data
           </button>
         </div>
@@ -248,9 +248,9 @@ const Settings: React.FC = () => {
               recordUserAction("Button click: Contact support");
               setShowSupportPopup(true);
             }}>Contact Support</button>
-            <button 
-              className="support-button" 
-              style={{marginTop: '10px'}} 
+            <button
+              className="support-button"
+              style={{ marginTop: '10px' }}
               onClick={() => {
                 recordUserAction("Button click: View GDPR");
                 showGDPR();
@@ -260,7 +260,7 @@ const Settings: React.FC = () => {
             </button>
           </div>
         </SectionErrorBoundary>
-        
+
       </div>
 
       {showSeedFlow && (
@@ -273,7 +273,7 @@ const Settings: React.FC = () => {
 
       {/* Manual Copy Modal Fallback */}
       {showManualCopy && (
-          <div className="manual-copy-modal">
+        <div className="manual-copy-modal">
           <div className="manual-copy-modal-content">
             <h3>Manual Copy</h3>
             <p>Copy your address manually:</p>
@@ -290,7 +290,7 @@ const Settings: React.FC = () => {
 
       <CustomPopup open={showSupportPopup} closed={setShowSupportPopup}>
         <SectionErrorBoundary sectionName="ContactSupport">
-          <ContactSupport setShowSupportPopup={setShowSupportPopup}/>
+          <ContactSupport setShowSupportPopup={setShowSupportPopup} />
         </SectionErrorBoundary>
       </CustomPopup>
     </>
