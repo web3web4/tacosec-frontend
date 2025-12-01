@@ -1,16 +1,17 @@
+import RenderContent from "@/components/RenderContent/RenderContent";
 import { DotsLoader } from "@/components";
 import useAlerts from "@/hooks/useAlerts";
 import "./Alerts.css";
 
 export default function Alerts() {
-  const { 
-    data, 
-    isLoading, 
-    getTabLabel, 
-    getDateText, 
+  const {
+    data,
+    isLoading,
+    getTabLabel,
+    getDateText,
     handleClick,
     observerTarget,
-    isFetchingMore 
+    isFetchingMore
   } = useAlerts();
 
   if (isLoading) return <div className="alerts-loading"> <DotsLoader /> </div>;
@@ -32,7 +33,7 @@ export default function Alerts() {
           </div>
           <div className="alert-content">
             <div className="alert-message" title={item.message}>
-              {item.message}
+              <RenderContent htmlContent={item.message} />
             </div>
             <div className="alert-meta">
               <span className="alert-date">{getDateText(item.createdAt)}</span>
