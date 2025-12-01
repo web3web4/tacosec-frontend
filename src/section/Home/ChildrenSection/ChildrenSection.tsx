@@ -17,20 +17,20 @@ export default function ChildrenSection({
   handleDirectLinkForChildren,
   itemRefs
 }: ChildrenSectionProps) {
-  const { handleGetSecretViews, setShowViewersPopup, showViewersPopup, currentSecretViews} = useHome();
+  const { handleGetSecretViews, setShowViewersPopup, showViewersPopup, currentSecretViews } = useHome();
   const [copied, setCopied] = useState(false);
   const { secretViews } = useHome();
-  const { address } = useWallet();
+  const { address, signer } = useWallet();
 
   useEffect(() => {
-    if(address) handleDirectLinkForChildren();
-  }, [address]);
+    if (address && signer) handleDirectLinkForChildren();
+  }, [address, signer]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    }).catch(() => { });
   };
   return (
     <div className="children-section">
@@ -38,12 +38,12 @@ export default function ChildrenSection({
       <h4 className="children-title"> {children.length} Replies to Secret:</h4>
       <div className="children-list">
         {children.map((child) => (
-          <div 
-            key={child._id} 
+          <div
+            key={child._id}
             className="child-item"
-            ref={(el) => { itemRefs.current[child._id] = el }} 
+            ref={(el) => { itemRefs.current[child._id] = el }}
           >
-            <div 
+            <div
               className="child-header"
               onClick={(e) => {
                 e.stopPropagation();
@@ -53,17 +53,17 @@ export default function ChildrenSection({
               }}
             >
               <div className="child-info">
-              <div className="child-meta">
+                <div className="child-meta">
                   <strong>By:</strong>
-                    <div className="child-date">
-                      <UserDisplayToggle userData={child}/>
-                    </div>
-                    {secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
+                  <div className="child-date">
+                    <UserDisplayToggle userData={child} />
+                  </div>
+                  {secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>
                   <span className="child-date">
-                      {child.createdAt ? formatDate(child.createdAt) : "Hidden for privacy"}
+                    {child.createdAt ? formatDate(child.createdAt) : "Hidden for privacy"}
                   </span>
                 </div>
               </div>
@@ -71,7 +71,7 @@ export default function ChildrenSection({
                 {expandedChildId === child._id ? '▼' : '▶'}
               </span>
             </div>
-            
+
             {expandedChildId === child._id && (
               <div className="child-expanded">
                 <p className="child-secret">
@@ -88,7 +88,7 @@ export default function ChildrenSection({
                     decryptedChildMessages[child._id] || "Failed to decrypt"
                   )}
                 </p>
-                
+
                 <div className="child-button-group">
                   <button
                     className="copy-button child-copy"
@@ -99,11 +99,11 @@ export default function ChildrenSection({
                       }
                     }}
                   >
-                     {copied ? "Copied!" : "Copy"}
+                    {copied ? "Copied!" : "Copy"}
                   </button>
                   <div className="secret-view-section">
-                    <button className="view-icon-button" onClick={(e)=> handleGetSecretViews(e, child._id)}>
-                      <img src={showIcon} alt="view-icon" width={15} height={15}/>
+                    <button className="view-icon-button" onClick={(e) => handleGetSecretViews(e, child._id)}>
+                      <img src={showIcon} alt="view-icon" width={15} height={15} />
                     </button>
                     <span>
                       {secretViews[child._id] ? secretViews[child._id].totalViews : 0}

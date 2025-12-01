@@ -14,15 +14,15 @@ import { useHome } from "@/context";
 import "@/pages/Home/Home.css";
 
 export default function SharedWithMy() {
-  const { 
+  const {
     decryptedChildMessages,
-    decryptedMessages, 
-    sharedWithMyData, 
-    expandedChildId, 
-    decryptingChild, 
+    decryptedMessages,
+    sharedWithMyData,
+    expandedChildId,
+    decryptingChild,
     initDataRaw,
     secretViews,
-    expandedId, 
+    expandedId,
     decrypting,
     itemRefs,
     childrenLoading,
@@ -33,9 +33,9 @@ export default function SharedWithMy() {
     showViewersPopup,
     currentSecretViews,
     setSharedWithMyData,
-    toggleChildExpand, 
+    toggleChildExpand,
     handleDirectLink,
-    toggleExpand, 
+    toggleExpand,
   } = useHome();
   const {
     showViewReportsPopup,
@@ -49,16 +49,16 @@ export default function SharedWithMy() {
     handleReportUser,
     submitReport,
   } = useReportUser();
-  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({parentSecretId: "", parentAddress: "", shareWith: []});
+  const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({ parentSecretId: "", parentAddress: "", shareWith: [] });
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const [copied, setCopied] = useState(false);
-  const { address } = useWallet();
+  const { address, signer } = useWallet();
 
   useEffect(() => {
-    if(address) handleDirectLink();
-  }, [address]);
+    if (address && signer) handleDirectLink();
+  }, [address, signer]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -103,9 +103,9 @@ export default function SharedWithMy() {
                           {
                             label: "Reply",
                             onClick: () => {
-                              setSelectedSecret({parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith});
+                              setSelectedSecret({ parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith });
                               setShowReplyPopup(true);
-                            } 
+                            }
                           },
                           {
                             label: "Report",
@@ -149,11 +149,11 @@ export default function SharedWithMy() {
                         {copied ? "Copied!" : "Copy"}
                       </button>
                       <div className="secret-view-section">
-                        <button className="view-icon-button" onClick={(e)=> {
+                        <button className="view-icon-button" onClick={(e) => {
                           recordUserAction(`Button click: View stats for shared item ${pass.id}`);
                           handleGetSecretViews(e, pass.id);
                         }}>
-                            <img src={showIcon} alt="view-icon" width={15} height={15}/>
+                          <img src={showIcon} alt="view-icon" width={15} height={15} />
                         </button>
                         <span>
                           {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}
@@ -175,7 +175,7 @@ export default function SharedWithMy() {
                                 target.src = noUserImage;
                               }}
                             />
-                            <span><UserDisplayToggle userData={item.sharedBy}/></span>
+                            <span><UserDisplayToggle userData={item.sharedBy} /></span>
                           </div>
                         </div>
                       </div>
@@ -223,7 +223,7 @@ export default function SharedWithMy() {
       )}
       { /* Reply Popup */}
       {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
-      
+
       { /* Viewers Popup */}
       {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
 
