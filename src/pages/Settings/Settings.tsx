@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { formatAddress, getIdentifier, recordUserAction, copyToClipboard } from "@/utils";
 import { useSetting } from "@/hooks";
 import { MetroSwal, showGDPR } from "@/utils";
+import { clearTokens } from "@/utils/cookieManager";
 import "@/pages/Home/Home.css";
 import "./Settings.css";
 
@@ -93,6 +94,15 @@ const Settings: React.FC = () => {
             localStorage.removeItem(key);
           }
         });
+
+        // For web users: clear auth cookies (access_token, refresh_token)
+        if (isBrowser) {
+          try {
+            clearTokens();
+          } catch (err) {
+            console.error("Failed to clear auth tokens:", err);
+          }
+        }
 
         // Reload the page to reflect changes
         window.location.reload();
@@ -268,6 +278,7 @@ const Settings: React.FC = () => {
           initialStep="decrypt"
           onComplete={() => setShowSeedFlow(false)}
           viewSeedOnly={true}
+          viewBack={false}
         />
       )}
 
