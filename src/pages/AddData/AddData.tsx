@@ -332,7 +332,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={seconds}
                         onChange={(e) =>
-                          setSeconds(parseInt(e.target.value) || 0)
+                          setSeconds(parseInt(e.target.value) )
                         }
                         className="time-input"
                       />
@@ -344,7 +344,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={minutes}
                         onChange={(e) =>
-                          setMinutes(parseInt(e.target.value) || 0)
+                          setMinutes(parseInt(e.target.value) )
                         }
                         className="time-input"
                       />
@@ -356,7 +356,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={hours}
                         onChange={(e) =>
-                          setHours(parseInt(e.target.value) || 0)
+                          setHours(parseInt(e.target.value) )
                         }
                         className="time-input"
                       />
@@ -368,7 +368,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={months}
                         onChange={(e) =>
-                          setMonths(parseInt(e.target.value) || 0)
+                          setMonths(parseInt(e.target.value) )
                         }
                         className="time-input"
                       />
