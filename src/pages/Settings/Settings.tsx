@@ -1,4 +1,4 @@
-import { CustomPopup, SectionErrorBoundary, OnboardingFlow } from "@/components";
+import { SectionErrorBoundary, OnboardingFlow, SheetModal } from "@/components";
 import { ContactSupport } from "@/section";
 import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
@@ -299,11 +299,11 @@ const Settings: React.FC = () => {
         </div>
       )}
 
-      <CustomPopup open={showSupportPopup} closed={setShowSupportPopup}>
+      <SheetModal open={showSupportPopup} onClose={setShowSupportPopup} title="Contact Support">
         <SectionErrorBoundary sectionName="ContactSupport">
           <ContactSupport setShowSupportPopup={setShowSupportPopup} />
         </SectionErrorBoundary>
-      </CustomPopup>
+      </SheetModal>
     </>
   );
 };
