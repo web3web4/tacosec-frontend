@@ -37,14 +37,15 @@ export default function useSetting() {
       // Show message only if enabling and not hidden before
       if (newStatus && !localStorage.getItem("hidePrivacyModeMessage")) {
         MetroSwal.fire({
-          title: "Privacy Mode Activated",
+          title: "Max Privacy Mode Activated",
           html: `
-            <p>When Privacy Mode is enabled:</p>
+            <p>With Max Privacy Mode enabled:</p>
             <ul style="text-align:left; margin-left:25px">
-              <li>Viewing a secret will not be recorded.</li>
-              <li>Views on your secrets will not be tracked.</li>
-              <li>Reply dates and shared secret details will be hidden.</li>
-              <li>Notifications will only say: <em>"Please check your data"</em>.</li>
+              <li>Viewing any secret will not be tracked or recorded.</li>
+              <li>Your own secret views will remain anonymous; others cannot see if you've viewed theirs.</li>
+              <li>Reply timestamps and details about shared secrets are hidden from all users.</li>
+              <li>Notifications will only display: <em>"Please check your data."</em></li>
+              <li>No metadata or activity logs are saved during this mode.</li>
             </ul>
           `,
           showCancelButton: true,
