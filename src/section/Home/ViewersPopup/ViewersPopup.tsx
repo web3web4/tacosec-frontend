@@ -1,6 +1,5 @@
-import CustomPopup from "@/components/CustomPopup/CustomPopup";
 import { getUserProfileDetails } from "@/apiService";
-import { UserDisplayToggle } from "@/components";
+import { UserDisplayToggle, SheetModal } from "@/components";
 import { useEffect, useCallback } from "react";
 import { ViewersPopupProps } from "@/types";
 import { ViewDetails } from "@/types/types";
@@ -20,9 +19,9 @@ export default function ViewersPopup({
         try {
           if (viewer.username) {
             const userProfile = await getUserProfileDetails(viewer.username);
-            return { 
-                ...viewer, 
-                img: userProfile && userProfile.img?.src.trim()
+            return {
+              ...viewer,
+              img: userProfile && userProfile.img?.src.trim()
                 ? userProfile.img.src
                 : noUserImage
             };
@@ -46,12 +45,12 @@ export default function ViewersPopup({
     return (
       <div key={`${viewer.username}-${viewer.publicAddress}`} className="viewer-item">
         <div className="viewer-avatar">
-          <img 
+          <img
             id={`viewer-img-${viewer.username}`}
-            src={viewer.img || noUserImage} 
+            src={viewer.img || noUserImage}
             alt={`${viewer.firstName || ''} ${viewer.lastName || ''}`}
-            width={35} 
-            height={35} 
+            width={35}
+            height={35}
           />
         </div>
         <div className="viewer-info">
@@ -68,7 +67,7 @@ export default function ViewersPopup({
 
   const createMergedData = useCallback((): ViewDetails[] => {
     if (!secretViews) return [];
-    
+
     return [
       ...secretViews.viewDetails.map(user => ({
         telegramId: user.telegramId ?? null,
@@ -77,10 +76,10 @@ export default function ViewersPopup({
         firstName: user.firstName ?? null,
         lastName: user.lastName ?? null,
         publicAddress: user.publicAddress,
-        img: undefined, 
+        img: undefined,
         type: "viewed" as const
       })),
-    
+
       ...secretViews.notViewedUsers.map(user => ({
         telegramId: user.telegramId ?? null,
         username: user.username,
@@ -91,7 +90,7 @@ export default function ViewersPopup({
         img: undefined,
         type: "not-viewed" as const
       })),
-    
+
       ...secretViews.unknownUsers.map(user => ({
         telegramId: null,
         username: user.username,
@@ -117,7 +116,7 @@ export default function ViewersPopup({
           const updatedViewDetails = await enrichViewDetailsWithImages(sortedViewDetails);
 
           updatedViewDetails.forEach((viewer) => {
-            
+
             const imgEl = document.querySelector(`#viewer-img-${viewer.username}`) as HTMLImageElement;
             if (imgEl) imgEl.src = viewer.img || noUserImage;
           });
@@ -143,7 +142,11 @@ export default function ViewersPopup({
   const unknown = sortedViewDetails.filter(v => v.type === "unknown");
 
   return (
-    <CustomPopup open={showViewersPopup} closed={setShowViewersPopup}>
+    <SheetModal
+      open={showViewersPopup}
+      onClose={() => setShowViewersPopup(false)}
+      title="Secret Views"
+    >
       <div className="viewers-popup">
         <div className="viewers-content">
           {viewed.length > 0 && (
@@ -174,6 +177,6 @@ export default function ViewersPopup({
           )}
         </div>
       </div>
-    </CustomPopup>
+    </SheetModal>
   );
 }

@@ -1,5 +1,5 @@
 import { MetroSwal, createAppError, handleSilentError } from "@/utils";
-import CustomPopup from "@/components/CustomPopup/CustomPopup";
+import { SheetModal } from "@/components";
 import { ReportUserPopupProps } from "@/types";
 import { useState, useEffect } from "react";
 import { ReportType } from "@/types/types";
@@ -66,12 +66,12 @@ export default function ReportUserPopup({
     }
   };
 
-  const handleCancel = () => {
-    setShowReportUserPopup(false);
-  };
-
   return (
-    <CustomPopup open={showReportUserPopup} closed={setShowReportUserPopup}>
+    <SheetModal
+      open={showReportUserPopup}
+      onClose={setShowReportUserPopup}
+      title="Report User"
+    >
       <div className="report-popup">
         <div className="report-form">
           <div className="form-group">
@@ -111,15 +111,8 @@ export default function ReportUserPopup({
           )}
 
           <div className="report-actions">
-            <button 
-              className="report-cancel-btn" 
-              onClick={handleCancel}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button 
-              className="report-submit-btn" 
+            <button
+              className="report-submit-btn"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
@@ -128,6 +121,6 @@ export default function ReportUserPopup({
           </div>
         </div>
       </div>
-    </CustomPopup>
+    </SheetModal>
   );
 }

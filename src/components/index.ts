@@ -1,5 +1,6 @@
 export { default as BottomNav } from "@/components/BottomNav/BottomNav";
 export { default as CustomPopup } from "@/components/CustomPopup/CustomPopup";
+export { default as SheetModal } from "@/components/SheetModal/SheetModal";
 export { DotsLoader } from "@/components/DotsLoader";
 export { default as DropdownMenu} from "@/components/DropdownMenu/DropdownMenu";
 export { ErrorBoundary, AppErrorBoundary, PageErrorBoundary, SectionErrorBoundary } from "@/components/ErrorBoundary";

@@ -1,4 +1,4 @@
-import CustomPopup from "@/components/CustomPopup/CustomPopup";
+import { SheetModal } from "@/components";
 import { UserDisplayToggle } from "@/components";
 import { ViewReportsPopupProps } from "@/types";
 import { formatDate } from "@/utils";
@@ -31,29 +31,32 @@ export default function ViewReportsPopup({
   };
 
   return (
-    <CustomPopup open={showViewReportsPopup} closed={setShowViewReportsPopup}>
+    <SheetModal
+      open={showViewReportsPopup}
+      onClose={setShowViewReportsPopup}
+      title={`Reports for: ${secretKey} (${reports.length} total)`}
+    >
       <div className="view-reports-popup">
-        <h3>Reports for: {secretKey} ({reports.length} total)</h3>
         <div className="reports-container">
           {reports.map((report, i) => (
             <div key={i} className="report-item">
               <div className="report-header">
                 <span className="report-icon">{getTypeIcon(report.report_type)}</span>
-                <div 
+                <div
                   className="report-title"
                   style={{ color: getTypeColor(report.report_type) }}
                 >
                   {report.report_type} Report #{i + 1}
                 </div>
               </div>
-              
+
               <div className="report-reason">
                 {report.reason}
               </div>
-              
+
               <div className="report-meta">
                 <div className="report-details">
-                  <div><strong>Reported by:</strong><UserDisplayToggle  userData={report.reporterInfo}/></div>
+                  <div><strong>Reported by:</strong><UserDisplayToggle userData={report.reporterInfo} /></div>
                   <div><strong>Date:</strong> {formatDate(report.createdAt)}</div>
                 </div>
               </div>
@@ -61,6 +64,6 @@ export default function ViewReportsPopup({
           ))}
         </div>
       </div>
-    </CustomPopup>
+    </SheetModal>
   );
 }

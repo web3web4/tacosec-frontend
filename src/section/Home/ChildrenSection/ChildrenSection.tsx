@@ -1,4 +1,3 @@
-import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
 import { useWallet } from "@/wallet/walletContext";
 import { UserDisplayToggle } from "@/components";
 import { ChildrenSectionProps } from "@/types";
@@ -17,9 +16,9 @@ export default function ChildrenSection({
   handleDirectLinkForChildren,
   itemRefs
 }: ChildrenSectionProps) {
-  const { handleGetSecretViews, setShowViewersPopup, showViewersPopup, currentSecretViews } = useHome();
-  const [copied, setCopied] = useState(false);
+  const { handleGetSecretViews } = useHome();
   const { secretViews } = useHome();
+  const [copied, setCopied] = useState(false);
   const { address, signer } = useWallet();
 
   useEffect(() => {
@@ -32,9 +31,9 @@ export default function ChildrenSection({
       setTimeout(() => setCopied(false), 2000);
     }).catch(() => { });
   };
+
   return (
     <div className="children-section">
-      {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
       <h4 className="children-title"> {children.length} Replies to Secret:</h4>
       <div className="children-list">
         {children.map((child) => (
@@ -58,7 +57,7 @@ export default function ChildrenSection({
                   <div className="child-date">
                     <UserDisplayToggle userData={child} />
                   </div>
-                  {secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
+                  {secretViews[child._id] && secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>
