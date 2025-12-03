@@ -12,6 +12,7 @@ import {
   ResetPasswordScreen
 } from './screens';
 import './OnboardingFlow.css';
+import { storagePublicKeyAndPassword, loginUserWeb } from '@/apiService';
 
 export type OnboardingStep = 
   | 'welcome'
@@ -35,10 +36,11 @@ interface OnboardingFlowProps {
   initialStep?: OnboardingStep;
   initialData?: OnboardingData;
   isDecryptOnly?: boolean; // If true, unlock wallet after decrypt without showing backup
-  viewSeedOnly?: boolean; // If true, show seed phrase in view-only mode (no backup confirmation)
+  viewSeedOnly?: boolean;// If true, show seed phrase in view-only mode (no backup confirmation)
+  viewBack?: boolean;
 }
 
-export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialData = {}, isDecryptOnly = false, viewSeedOnly = false }: OnboardingFlowProps) {
+export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialData = {}, isDecryptOnly = false, viewSeedOnly = false, viewBack = true }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(initialStep);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>(initialData);
   const [stepHistory, setStepHistory] = useState<OnboardingStep[]>([initialStep]);
@@ -224,8 +226,17 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
 
   const handleResetPasswordSuccess = useCallback(async (seedPhrase: string, password: string, saveInBackend: boolean) => {
     try {
-      const identifier = isBrowser ? address || addressweb : userData?.user?.telegramId;
-      if (!identifier) {
+      const trimmedSeed = seedPhrase.trim();
+
+      // Derive wallet from provided seed phrase (may be a different wallet than the old one)
+      const { ethers } = await import('ethers');
+      const wallet = ethers.Wallet.fromMnemonic(trimmedSeed);
+
+      // Old identifier (for cleanup) and new identifier (for storage)
+      const oldIdentifier = isBrowser ? address || addressweb : userData?.user?.telegramId;
+      const newIdentifier = isBrowser ? wallet.address : userData?.user?.telegramId;
+
+      if (!newIdentifier) {
         MetroSwal.fire({
           icon: 'error',
           title: 'Error',
@@ -236,21 +247,35 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
 
       // Encrypt seed phrase with new password
       const { encryptSeed } = await import('@/utils');
-      const encrypted = encryptSeed(seedPhrase.trim(), password);
+      const encrypted = encryptSeed(trimmedSeed, password);
       
-      // Save encrypted seed
-      localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
-      localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+      // Save encrypted seed and backup status using the *new* identifier
+      localStorage.setItem(`encryptedSeed-${newIdentifier}`, encrypted);
+      localStorage.setItem(`seedBackupDone-${newIdentifier}`, "true");
+
+      // If identifier changed (e.g. importing a different wallet on web), clean up old keys
+      if (oldIdentifier && oldIdentifier !== newIdentifier) {
+        localStorage.removeItem(`encryptedSeed-${oldIdentifier}`);
+        localStorage.removeItem(`seedBackupDone-${oldIdentifier}`);
+      }
       
       // Save password preference
       localStorage.setItem("savePasswordInBackend", saveInBackend.toString());
 
-      // If save in backend is enabled, store on server
+      // For browser users, keep publicAddress in sync with the newly imported wallet
+      if (isBrowser) {
+        localStorage.setItem('publicAddress', wallet.address);
+      }
+
+      // Update in-memory wallet state so UI reflects the new wallet immediately
+      const walletSigner = wallet.connect(provider);
+      setSigner(walletSigner);
+      setAddress(wallet.address);
+      setHasWallet(true);
+
+      // If save in backend is enabled, store on server with the new public key
       if (saveInBackend) {
         try {
-          const { ethers } = await import('ethers');
-          const wallet = ethers.Wallet.fromMnemonic(seedPhrase.trim());
-          const { storagePublicKeyAndPassword } = await import('@/apiService');
           await storagePublicKeyAndPassword(
             { publicKey: wallet.address, secret: password },
             initDataRaw || ""
@@ -258,6 +283,36 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         } catch (err) {
           console.error('Failed to save password on server:', err);
         }
+      }
+
+      try {
+        // For web users: clear old auth cookies/tokens and log in again with the new wallet
+        if (isBrowser) {
+          try {
+            // loginUserWeb will internally set new tokens in cookies
+            const message = `Login to Taco App: ${Date.now()}`;
+            const loginSignature = await wallet.signMessage(message);
+            await loginUserWeb(wallet.address, loginSignature);
+          } catch (err) {
+            console.error('Failed to refresh web login after password reset:', err);
+          }
+        }
+
+        // Generate signature for wallet import verification
+        const message = `Import wallet to TacoSec App: ${wallet.address}:${Date.now()}`;
+        const signature = await wallet.signMessage(message);
+        
+        // Call storagePublicKeyAndPassword with public key and signature
+        // This is for cross-platform wallet import (web to Telegram or vice versa)
+        // For web users, authentication is already set up via loginUserWeb
+        // For Telegram users, initDataRaw is passed for authentication
+        await storagePublicKeyAndPassword(
+          { publicKey: wallet.address, signature },
+          initDataRaw || ""
+        );
+      } catch (err) {
+        // Silently handle errors - don't block the import process if storage fails
+        handleSilentError(err, 'storagePublicKeyAndPassword on import');
       }
 
       // Update onboarding data and navigate to seed backup
@@ -272,7 +327,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         text: appError.message || 'Failed to reset password. Please try again.'
       });
     }
-  }, [navigateToStep, isBrowser, address, addressweb, userData?.user?.telegramId, initDataRaw]);
+  }, [navigateToStep, isBrowser, address, addressweb, userData?.user?.telegramId, initDataRaw, provider, setSigner, setAddress, setHasWallet]);
 
   const renderCurrentStep = () => {
     switch (currentStep) {
@@ -308,6 +363,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onBack={canGoBack ? goBack : undefined}
             viewOnly={viewSeedOnly}
             onClose={onComplete}
+            viewBack={viewBack}
           />
         );
       

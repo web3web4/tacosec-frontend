@@ -51,7 +51,8 @@ export const importWalletFlow = async (
     onImported(password);
     // Skip showing alert if callback is provided
   } else {
-    await MetroSwal.fire("Wallet Imported!", "Your wallet has been securely saved.", "success");
+    console.log('"Wallet Imported!", "Your wallet has been securely saved.", "success"');
+    //await MetroSwal.fire("Wallet Imported!", "Your wallet has been securely saved.", "success");
   }
   
   return password;
