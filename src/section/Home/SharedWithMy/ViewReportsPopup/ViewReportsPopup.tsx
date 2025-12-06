@@ -1,5 +1,4 @@
-import { SheetModal } from "@/components";
-import { UserDisplayToggle } from "@/components";
+import { UserDisplayToggle, SheetModal } from "@/components";
 import { ViewReportsPopupProps } from "@/types";
 import { formatDate } from "@/utils";
 import "./ViewReportsPopup.css";

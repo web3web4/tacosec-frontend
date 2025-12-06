@@ -16,7 +16,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [isBrowser, setIsBrowser] = useState(false);
   const hasWallet = typeof window !== "undefined" && localStorage.getItem(`encryptedSeed-${userData?.user?.telegramId}`)!;
 
- const signUserData = async () => {
+  const signUserData = async () => {
     setError(null);
     try {
       if (typeof window === "undefined" || !window.Telegram?.WebApp) {
@@ -46,49 +46,60 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const getUserData = async () => {
     const response = await getUserDetails();
-    setUserData(response);
+    setUserData({
+      user: {
+        ...response,
+        authDate: "",
+        hash: "",
+        createdAt: "",
+        updatedAt: "",
+      },
+      access_token: "",
+      refresh_token: "",
+      role: response.role,
+    });
   };
 
-const getStartParams = () => {
-  if (typeof window === "undefined" || !window.Telegram?.WebApp) {
-    console.warn("Not running inside Telegram WebApp, skipping start params");
-    return;
-  }
+  const getStartParams = () => {
+    if (typeof window === "undefined" || !window.Telegram?.WebApp) {
+      console.warn("Not running inside Telegram WebApp, skipping start params");
+      return;
+    }
 
-  const tg = window.Telegram.WebApp;
-  const startParam = tg?.initDataUnsafe?.start_param;
-  if (startParam) {
-    const parts = startParam.split("_");
-    const secretId = parts[0];
-    const tabName = parts[1];
-    const childId = parts[2] || null;
-    console.log(secretId, tabName, childId);
-    setDirectLinkData({
-      secretId,
-      tabName: tabName as TabType,
-      ChildId: childId,
-    });
-  }
-};
+    const tg = window.Telegram.WebApp;
+    const startParam = tg?.initDataUnsafe?.start_param;
+    if (startParam) {
+      const parts = startParam.split("_");
+      const secretId = parts[0];
+      const tabName = parts[1];
+      const childId = parts[2] || null;
+      console.log(secretId, tabName, childId);
+      setDirectLinkData({
+        secretId,
+        tabName: tabName as TabType,
+        ChildId: childId,
+      });
+    }
+  };
 
 
-useEffect(() => {
-  const method = detectAuthMethod();
-  switch (method) {
-    case "telegram":
-      signUserData();
-      getStartParams();
-      break;
+  useEffect(() => {
+    const method = detectAuthMethod();
+    switch (method) {
+      case "telegram":
+        signUserData();
+        getStartParams();
+        break;
 
-    case "web":
-      getUserData();
-      setIsBrowser(true);
-      break;
+      case "web":
+        getUserData();
+        setIsBrowser(true);
+        break;
 
-    default:
-      console.warn("Unknown auth method");
-  }
-}, []);
+      default:
+        console.warn("Unknown auth method");
+    }
+  }, []);
 
 
   const value = {

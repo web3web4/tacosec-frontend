@@ -31,7 +31,13 @@ export default function useSetting() {
       setPrivacyMode(initDataRaw!, newStatus);
       setUserData((prev: initDataType | null) => {
         if (!prev) return prev;
-        return { ...prev, privacyMode: newStatus };
+        return {
+          ...prev,
+          user: {
+            ...prev.user,
+            privacyMode: newStatus,
+          },
+        };
       });
   
       // Show message only if enabling and not hidden before
