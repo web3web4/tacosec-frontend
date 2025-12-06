@@ -93,7 +93,7 @@ export async function signupUser(initData: string): Promise<initDataType> {
   return result;
 }
 
-export async function getUserDetails(): Promise<initDataType> {
+export async function getUserDetails(): Promise<initDataType["user"]> {
   const headers = await getAuthHeaders();
   
   const data = await handleApiCall<UserDetails>(async () => {

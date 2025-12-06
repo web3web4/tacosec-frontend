@@ -16,6 +16,7 @@ export interface initDataType {
     updatedAt: string;
     privacyMode: boolean;
     publicAddress: string;
+    role: string;
   };
   access_token: string;
   refresh_token: string;
@@ -24,7 +25,7 @@ export interface initDataType {
 
 export interface UserDetails {
   success: boolean;
-  data: initDataType;
+  data: initDataType["user"];
 }
 
 export interface DirectLinkData {
