@@ -13,6 +13,8 @@ import {
 } from './screens';
 import './OnboardingFlow.css';
 import { storagePublicKeyAndPassword, loginUserWeb } from '@/apiService';
+import CryptoJS from 'crypto-js';
+import { config } from '@/utils/config';
 
 export type OnboardingStep = 
   | 'welcome'
@@ -275,9 +277,13 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
 
       // If save in backend is enabled, store on server with the new public key
       if (saveInBackend) {
+        // Encrypt password using public key + SALT for secure transmission
+        const SALT = config.TG_SECRET_SALT || "default_salt";
+        const encryptionKey = wallet.address + "|" + SALT;
+        const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
         try {
           await storagePublicKeyAndPassword(
-            { publicKey: wallet.address, secret: password },
+            { publicKey: wallet.address, secret: encryptedPassword },
             initDataRaw || ""
           );
         } catch (err) {
