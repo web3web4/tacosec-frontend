@@ -4,6 +4,8 @@ import { getIdentifier, decryptMnemonic, MetroSwal } from '@/utils';
 import { useUser } from '@/context';
 import { useWallet } from '@/wallet/walletContext';
 import { getPublicAddresses } from '@/apiService';
+import CryptoJS from 'crypto-js';
+import { config } from '@/utils/config';
 
 interface DecryptScreenProps {
   onSuccess: (mnemonic: string) => void;
@@ -27,15 +29,15 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   // Check if user can restore from server
   const canRestoreFromServer = localStorage.getItem('savePasswordInBackend') === 'true';
 
-  // Helper function to fetch latest secret from server
-  const fetchLatestSecret = async (): Promise<string | null> => {
+  // Helper function to fetch latest secret and publicKey from server
+  const fetchLatestSecret = async (): Promise<{ secret: string; publicKey: string } | null> => {
     try {
       const response = await getPublicAddresses(initDataRaw);
       
       if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         // Filter elements containing secret
         const withSecrets = response.data.filter(
-          (item: { secret?: string }) => !!item.secret
+          (item: { secret?: string; publicKey?: string }) => !!item.secret && !!item.publicKey
         );
 
         if (withSecrets.length > 0) {
@@ -46,7 +48,10 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
           );
 
           const latestAddress = sortedAddresses[0];
-          return latestAddress.secret!;
+          return {
+            secret: latestAddress.secret!,
+            publicKey: latestAddress.publicKey!
+          };
         }
       }
       return null;
@@ -99,15 +104,32 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
       setRestoreError('');
       setError('');
 
-      const latestSecret = await fetchLatestSecret();
+      const latestData = await fetchLatestSecret();
 
-      if (latestSecret) {
-        setPassword(latestSecret);
-        MetroSwal.fire({
-          icon: 'success',
-          title: '✅ Success',
-          text: 'Password restored successfully'
-        });
+      if (latestData && latestData.secret && latestData.publicKey) {
+        try {
+          // Decrypt the password using the same key used for encryption (publicKey + SALT)
+          const SALT = config.TG_SECRET_SALT || "default_salt";
+          const decryptionKey = latestData.publicKey + "|" + SALT;
+          
+          const decryptedBytes = CryptoJS.AES.decrypt(latestData.secret, decryptionKey);
+          const decryptedPassword = decryptedBytes.toString(CryptoJS.enc.Utf8);
+          
+          if (!decryptedPassword) {
+            setRestoreError('Failed to decrypt password. The encryption key may be incorrect.');
+            return;
+          }
+          
+          setPassword(decryptedPassword);
+          MetroSwal.fire({
+            icon: 'success',
+            title: '✅ Success',
+            text: 'Password restored successfully'
+          });
+        } catch (decryptError) {
+          console.error('Failed to decrypt password:', decryptError);
+          setRestoreError('Failed to decrypt password. Please try resetting your password.');
+        }
       } else {
         setRestoreError('No password found on server');
       }

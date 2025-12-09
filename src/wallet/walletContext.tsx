@@ -17,6 +17,7 @@ import {
 
 import { WalletContextProps } from "@/interfaces/wallet"
 import { MetroSwal, handleSilentError , config } from "@/utils";
+import CryptoJS from 'crypto-js';
 
 const RPC_URL = config.RPC_PROVIDER_URL;
 
@@ -166,7 +167,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
     const data = saveToBackend
-      ? { publicKey: wallet.address, secret: password }
+      ? (() => {
+          // Encrypt password using public key + SALT for secure transmission
+          const SALT = config.TG_SECRET_SALT || "default_salt";
+          const encryptionKey = wallet.address + "|" + SALT;
+          const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
+          return { publicKey: wallet.address, secret: encryptedPassword };
+        })()
       : { publicKey: wallet.address };
 
     try {
