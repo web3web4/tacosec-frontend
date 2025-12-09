@@ -45,7 +45,8 @@ export interface UserContextType {
   error: string | null;
   isBrowser: boolean;
   signUserData: (initData: initDataType) => Promise<void>;
-  setUserData: React.Dispatch<React.SetStateAction<initDataType | null>>
+  setUserData: React.Dispatch<React.SetStateAction<initDataType | null>>,
+  getUserData: () => Promise<void>
 }
 
 export type NavigationCheck = () => boolean;
