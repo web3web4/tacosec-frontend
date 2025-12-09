@@ -111,6 +111,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     isBrowser,
     signUserData,
     setUserData,
+    getUserData
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

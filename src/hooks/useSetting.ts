@@ -6,7 +6,7 @@ import { MetroSwal, handleSilentError } from "@/utils";
 import Swal from "sweetalert2";
 
 export default function useSetting() {
-  const { userData, initDataRaw, setUserData } = useUser();
+  const { userData, initDataRaw, setUserData, getUserData } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
   const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
   const [privacyModOn, setPrivacyModOn] = useState<boolean>(userData?.user?.privacyMode || false);
@@ -24,11 +24,14 @@ export default function useSetting() {
     console.log("Notifications toggled:", !notificationsOn);
   };
 
-  const handleTogglePrivacyMod = (): void => {
+  const handleTogglePrivacyMod = async (): Promise<void> => {
     try {
       const newStatus = !privacyModOn;
       setPrivacyModOn(newStatus);
       setPrivacyMode(initDataRaw!, newStatus);
+      if(!userData) {
+        await getUserData();
+      }
       setUserData((prev: initDataType | null) => {
         if (!prev) return prev;
         return {
