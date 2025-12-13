@@ -1,5 +1,3 @@
-"use server";
-
 import { Report, SearchDataType, ChildDataItem, SupportData, UserProfileDetailsType, initDataType, AuthDataType, SecretViews, Secret, SharedWithMeResponse, StoragePublicKeyData, ContractSupportResponse, PublicKeysResponse, ProfileDetails, UserDetails, FrontendLogPayload, AdminUsersResponse, AdminReportsResponse, AdminSecretsResponse, AdminResponseActive, AddInformationUser, AddInformationUserResponse, AdminNotificationsResponse, AdminLoggerResponse, AlertsType } from "./types/types";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { DataPayload } from "@/interfaces/addData";
@@ -573,7 +571,7 @@ export async function getAlerts(initData: string | null, page: number): Promise<
   const headers = await getAuthHeaders(initData);
 
   const result = await handleApiCall<AlertsType>(async () => {
-    const response = await fetch(`${API_BASE_URL}/notifications/my?page=${page}&limit=10`, {
+    const response = await fetch(`${API_BASE_URL}/notifications/my?page=${page}&limit=10&senderOrrecipient=recipient`, {
       method: "GET",
       headers,
     });
