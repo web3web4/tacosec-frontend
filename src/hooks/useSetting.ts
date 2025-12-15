@@ -21,7 +21,6 @@ export default function useSetting() {
 
   const handleToggleNotifications = (): void => {
     setNotificationsOn(!notificationsOn);
-    console.log("Notifications toggled:", !notificationsOn);
   };
 
   const handleTogglePrivacyMod = async (): Promise<void> => {
@@ -119,7 +118,6 @@ export default function useSetting() {
     const username = userData?.user?.username;
   
     if (!username) {
-      console.warn("No username found. Skipping profile fetch.");
       return;
     }
   
@@ -133,7 +131,6 @@ export default function useSetting() {
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
