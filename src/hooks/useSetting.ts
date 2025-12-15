@@ -1,5 +1,5 @@
 import { GetUserProfileDetailsResponse, initDataType, AddInformationUser } from "@/types/types";
-import { getUserProfileDetails, setPrivacyMode, addInformationUser } from "@/apiService";
+import { getUserProfileDetails, setPrivacyMode, addInformationUser } from "@/services";
 import { useEffect, useState } from "react";
 import { useUser } from "@/context";
 import { MetroSwal, handleSilentError } from "@/utils";
@@ -81,7 +81,7 @@ export default function useSetting() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       };
-      const res = await addInformationUser(payload);
+      await addInformationUser(payload);
   
       // reflect name updates locally if available
       setUserData((prev: initDataType | null) => {

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { changeIsActiveUser, getUsersForAdmin } from "@/apiService";
+import { changeIsActiveUser, getUsersForAdmin } from "@/services";
 import { UserData } from "@/types";
-import { handleSilentError } from "@/utils";
 
 export default function useUsers(page: number = 1, limit: number = 20) {
   const [users, setUsers] = useState<UserData[]>([]);

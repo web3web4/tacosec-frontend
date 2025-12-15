@@ -55,12 +55,12 @@ export const config: EnvConfig = {
   
   // Taco App
   TACO_DOMAIN: getEnv('TACO_DOMAIN', 'tapir'),
-  TACO_RITUAL_ID: getEnv('TACO_RITUAL_ID', 6, (v) => parseInt(v, 10)),
-  BOT_USER_NAME: getEnv('BOT_USER_NAME', '@Taco_Front_Test_bot'),
+  TACO_RITUAL_ID: getEnv('TACO_RITUAL_ID', 27, (v) => parseInt(v, 10)),
+  BOT_USER_NAME: getEnv('BOT_USER_NAME', ''),
   
   // API and Services
-  API_BASE_URL: getEnv('API_BASE_URL', 'https://taco-backend-git-staging-con3x.vercel.app'),
-  RPC_PROVIDER_URL: getEnv('RPC_PROVIDER_URL', 'https://rpc-amoy.polygon.technology'),
+  API_BASE_URL: getEnv('API_BASE_URL', ''),
+  RPC_PROVIDER_URL: getEnv('RPC_PROVIDER_URL', ''),
   
   // Analytics
   OPENREPLAY_PROJECT_KEY: getEnv('OPENREPLAY_PROJECT_KEY', ''),

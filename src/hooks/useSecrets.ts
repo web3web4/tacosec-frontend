@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSecretsForAdmin } from "@/apiService";
+import { getSecretsForAdmin } from "@/services";
 import { SecretRow } from "@/types";
 
 export default function useSecrets(page: number = 1, limit: number = 10) {

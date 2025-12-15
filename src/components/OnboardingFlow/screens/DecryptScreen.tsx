@@ -3,7 +3,7 @@ import { MdLock, MdLockOpen, MdArrowBack, MdExpandMore, MdExpandLess, MdRestoreP
 import { getIdentifier, decryptMnemonic, MetroSwal } from '@/utils';
 import { useUser } from '@/context';
 import { useWallet } from '@/wallet/walletContext';
-import { getPublicAddresses } from '@/apiService';
+import { getPublicAddresses } from '@/services';
 import CryptoJS from 'crypto-js';
 import { config } from '@/utils/config';
 
@@ -20,12 +20,12 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   const [isLoading, setIsLoading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [restoreError, setRestoreError] = useState('');
-  
+
   const { userData, isBrowser, initDataRaw } = useUser();
   const { address, addressweb } = useWallet();
-  
+
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
-  
+
   // Check if user can restore from server
   const canRestoreFromServer = localStorage.getItem('savePasswordInBackend') === 'true';
 
@@ -33,7 +33,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   const fetchLatestSecret = async (): Promise<{ secret: string; publicKey: string } | null> => {
     try {
       const response = await getPublicAddresses(initDataRaw);
-      
+
       if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         // Filter elements containing secret
         const withSecrets = response.data.filter(
@@ -111,15 +111,15 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
           // Decrypt the password using the same key used for encryption (publicKey + SALT)
           const SALT = config.TG_SECRET_SALT || "default_salt";
           const decryptionKey = latestData.publicKey + "|" + SALT;
-          
+
           const decryptedBytes = CryptoJS.AES.decrypt(latestData.secret, decryptionKey);
           const decryptedPassword = decryptedBytes.toString(CryptoJS.enc.Utf8);
-          
+
           if (!decryptedPassword) {
             setRestoreError('Failed to decrypt password. The encryption key may be incorrect.');
             return;
           }
-          
+
           setPassword(decryptedPassword);
           MetroSwal.fire({
             icon: 'success',
@@ -151,7 +151,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
           Enter your password to unlock your wallet and continue.
         </p>
       </div>
-      
+
       <div className="onboarding-content">
         <div>
           <label className="onboarding-label">Password</label>
@@ -168,12 +168,12 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
             autoFocus
             disabled={isLoading}
           />
-          
+
           {error && (
             <div className="onboarding-error">{error}</div>
           )}
         </div>
-        
+
         <div style={{ textAlign: 'center', margin: '20px 0' }}>
           <button
             onClick={onForgotPassword}
@@ -189,7 +189,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
             Forgot password?
           </button>
         </div>
-        
+
         {canRestoreFromServer && (
           <div style={{ marginTop: '20px' }}>
             <div
@@ -207,7 +207,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
               {showMoreOptions ? <MdExpandLess /> : <MdExpandMore />}
               More options
             </div>
-            
+
             {showMoreOptions && (
               <div style={{
                 marginTop: '15px',
@@ -216,24 +216,24 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
                 borderRadius: '8px',
                 background: '#f9f9f9'
               }}>
-                <p style={{ 
-                  fontSize: '14px', 
-                  color: '#666', 
-                  margin: '0 0 12px 0' 
+                <p style={{
+                  fontSize: '14px',
+                  color: '#666',
+                  margin: '0 0 12px 0'
                 }}>
                   You can try to restore your password from our servers:
                 </p>
                 {restoreError && (
-                  <div style={{ 
-                    color: '#c62828', 
-                    fontSize: '12px', 
+                  <div style={{
+                    color: '#c62828',
+                    fontSize: '12px',
                     marginBottom: '12px',
                     textAlign: 'center'
                   }}>
                     {restoreError}
                   </div>
                 )}
-                <button 
+                <button
                   className="onboarding-btn secondary"
                   onClick={handleRestoreFromServer}
                   disabled={isRestoring}
@@ -253,7 +253,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
           </div>
         )}
       </div>
-      
+
       <div className={`onboarding-actions ${onBack ? 'with-back' : 'single'}`}>
         {onBack && (
           <button className="onboarding-btn back" onClick={onBack}>
@@ -261,8 +261,8 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
             Back
           </button>
         )}
-        
-        <button 
+
+        <button
           className="onboarding-btn primary"
           onClick={handleDecrypt}
           disabled={!password || isLoading}

@@ -1,4 +1,4 @@
-import { getUserProfileDetails, getAutoCompleteUsername } from "@/apiService";
+import { getUserProfileDetails, getAutoCompleteUsername } from "@/services";
 import { GetUserProfileDetailsResponse, SearchDataType, UserProfileDetailsType, UserProfileType } from "@/types/types";
 import { useCallback, useEffect, useState } from "react";
 import { noUserImage, userNotFoundSvg } from "@/assets";

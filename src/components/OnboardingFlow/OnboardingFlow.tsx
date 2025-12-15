@@ -12,11 +12,11 @@ import {
   ResetPasswordScreen
 } from './screens';
 import './OnboardingFlow.css';
-import { storagePublicKeyAndPassword, loginUserWeb } from '@/apiService';
+import { storagePublicKeyAndPassword, loginUserWeb } from '@/services';
 import CryptoJS from 'crypto-js';
 import { config } from '@/utils/config';
 
-export type OnboardingStep = 
+export type OnboardingStep =
   | 'welcome'
   | 'password'
   | 'import-wallet'
@@ -46,7 +46,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(initialStep);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>(initialData);
   const [stepHistory, setStepHistory] = useState<OnboardingStep[]>([initialStep]);
-  
+
   const { userData, isBrowser, initDataRaw } = useUser();
   const {
     createWalletWithPassword,
@@ -92,7 +92,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   const handlePasswordSet = useCallback(async (password: string, saveInBackend: boolean) => {
     try {
       setOnboardingData(prev => ({ ...prev, password, saveInBackend }));
-      
+
       if (onboardingData.choice === 'create') {
         // Create new wallet with backup handled in wizard
         const result = await createWalletWithPassword(password, saveInBackend, true);
@@ -165,11 +165,11 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   const handleSeedConfirmSuccess = useCallback(() => {
     // Mark seed backup as completed to prevent backup flow from triggering
     const identifier = isBrowser ? address || addressweb : userData?.user?.telegramId;
-    
+
     if (identifier) {
       localStorage.setItem(`seedBackupDone-${identifier}`, "true");
     }
-    
+
     // Complete the flow - if this was decrypt flow, wallet is already unlocked
     onComplete();
   }, [onComplete, isBrowser, address, addressweb, userData?.user?.telegramId]);
@@ -177,11 +177,11 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   const handleDecryptSuccess = useCallback(async (seedPhrase: string) => {
     try {
       const { ethers } = await import('ethers');
-      
+
       // Restore wallet from seed phrase and unlock it
       const restoredWallet = ethers.Wallet.fromMnemonic(seedPhrase);
       const walletSigner = restoredWallet.connect(provider);
-      
+
       setSigner(walletSigner);
       setAddress(restoredWallet.address);
       if (isBrowser) {
@@ -191,7 +191,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
       }
       setHasWallet(true);
       sessionStorage.removeItem('recentWalletCreation');
-      
+
       // Check if backup is needed
       const identifier = isBrowser ? restoredWallet.address : userData?.user?.telegramId;
       const seedBackupDone = identifier ? localStorage.getItem(`seedBackupDone-${identifier}`) === "true" : true;
@@ -250,7 +250,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
       // Encrypt seed phrase with new password
       const { encryptSeed } = await import('@/utils');
       const encrypted = encryptSeed(trimmedSeed, password);
-      
+
       // Save encrypted seed and backup status using the *new* identifier
       localStorage.setItem(`encryptedSeed-${newIdentifier}`, encrypted);
       localStorage.setItem(`seedBackupDone-${newIdentifier}`, "true");
@@ -260,7 +260,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         localStorage.removeItem(`encryptedSeed-${oldIdentifier}`);
         localStorage.removeItem(`seedBackupDone-${oldIdentifier}`);
       }
-      
+
       // Save password preference
       localStorage.setItem("savePasswordInBackend", saveInBackend.toString());
 
@@ -307,7 +307,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         // Generate signature for wallet import verification
         const message = `Import wallet to TacoSec App: ${wallet.address}:${Date.now()}`;
         const signature = await wallet.signMessage(message);
-        
+
         // Call storagePublicKeyAndPassword with public key and signature
         // This is for cross-platform wallet import (web to Telegram or vice versa)
         // For web users, authentication is already set up via loginUserWeb
@@ -343,7 +343,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onChoice={handleWelcomeChoice}
           />
         );
-      
+
       case 'password':
         return (
           <PasswordScreen
@@ -352,7 +352,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onBack={canGoBack ? goBack : undefined}
           />
         );
-      
+
       case 'import-wallet':
         return (
           <ImportWalletScreen
@@ -360,7 +360,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onBack={canGoBack ? goBack : undefined}
           />
         );
-      
+
       case 'seed-backup':
         return (
           <SeedBackupScreen
@@ -372,7 +372,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             viewBack={viewBack}
           />
         );
-      
+
       case 'seed-confirm':
         return (
           <SeedConfirmScreen
@@ -382,7 +382,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onBack={canGoBack ? goBack : undefined}
           />
         );
-      
+
       case 'decrypt':
         return (
           <DecryptScreen
@@ -391,7 +391,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onBack={canGoBack ? goBack : undefined}
           />
         );
-      
+
       case 'reset-password':
         return (
           <ResetPasswordScreen
@@ -399,7 +399,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onBack={canGoBack ? goBack : undefined}
           />
         );
-      
+
       default:
         return null;
     }

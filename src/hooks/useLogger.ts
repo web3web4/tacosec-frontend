@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getLoggerForAdmin } from "@/apiService";
+import { getLoggerForAdmin } from "@/services";
 import { LoggerRow, AdminLoggerResponse } from "@/types";
 
 export default function useLogger(page: number = 1, limit: number = 10) {

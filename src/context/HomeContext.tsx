@@ -1,4 +1,4 @@
-import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/apiService";
+import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/services";
 import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, Secret } from "@/types/types";
 import { MetroSwal, showError, createAppError, handleSilentError, config } from "@/utils";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";

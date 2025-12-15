@@ -1,7 +1,7 @@
 import { AlertsDetails, AlertsType, TabType } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { getAlerts } from "@/apiService";
+import { getAlerts } from "@/services";
 import { formatDate } from "@/utils";
 import { useUser } from "@/context";
 

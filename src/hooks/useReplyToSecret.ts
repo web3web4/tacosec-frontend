@@ -1,5 +1,5 @@
 import { conditions, toHexString } from "@nucypher-experimental2/taco";
-import { storageEncryptedData } from "@/apiService";
+import { storageEncryptedData } from "@/services";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";
 import { handleSilentError , config, sanitizePlainText } from "@/utils";

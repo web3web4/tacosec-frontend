@@ -1,5 +1,5 @@
 import { ContactSupportProps, SupportData } from "@/types/types";
-import { sendContractSupport } from "@/apiService";
+import { sendContractSupport } from "@/services";
 import MetroSwal from "sweetalert2";
 import { useUser } from "@/context";
 import { useState } from "react";

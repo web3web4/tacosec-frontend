@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { loginUserWeb, storagePublicKeyAndPassword } from "@/apiService";
+import { loginUserWeb, storagePublicKeyAndPassword } from "@/services";
 import { importWalletFlow } from "@/wallet/ImportWallet";
 import { initDataType } from "@/types/types";
 import { handleSilentError } from "@/utils";
