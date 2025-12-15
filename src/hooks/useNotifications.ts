@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getNotificationsForAdmin } from "@/apiService";
+import { getNotificationsForAdmin } from "@/services";
 import { NotificationRow, AdminNotificationsResponse } from "@/types";
 
 export default function useNotifications(page: number = 1, limit: number = 10) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { reportUser } from "@/apiService";
+import { reportUser } from "@/services";
 import { Report, ReportsResponse, ReportType, SharedWithMyDataType, initDataType } from "@/types/types";
 import { MetroSwal, showError, createAppError, sanitizePlainText } from "@/utils";
 import { useWallet } from "@/wallet/walletContext";

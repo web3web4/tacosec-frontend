@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { DirectLinkData, initDataType, TabType } from "@/types/types";
 import { MetroSwal, showError, createAppError } from "@/utils";
 import { detectAuthMethod } from "@/hooks/useContextHelper";
-import { getUserDetails, signupUser } from "@/apiService";
+import { getUserDetails, signupUser } from "@/services";
 import { UserContextType } from "@/types";
 
 const UserContext = createContext<UserContextType | null>(null);

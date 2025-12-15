@@ -1,8 +1,8 @@
-import { parseTelegramInitData, showError, createAppError, recordUserAction , config } from "@/utils";
+import { parseTelegramInitData, showError, createAppError, recordUserAction, config } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
 import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { storageEncryptedData } from "@/apiService";
+import { storageEncryptedData } from "@/services";
 import { DataPayload } from "@/interfaces/addData";
 import { noUserImage, deleteIcon } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
@@ -332,7 +332,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={seconds}
                         onChange={(e) =>
-                          setSeconds(parseInt(e.target.value) )
+                          setSeconds(parseInt(e.target.value))
                         }
                         className="time-input"
                       />
@@ -344,7 +344,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={minutes}
                         onChange={(e) =>
-                          setMinutes(parseInt(e.target.value) )
+                          setMinutes(parseInt(e.target.value))
                         }
                         className="time-input"
                       />
@@ -356,7 +356,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={hours}
                         onChange={(e) =>
-                          setHours(parseInt(e.target.value) )
+                          setHours(parseInt(e.target.value))
                         }
                         className="time-input"
                       />
@@ -368,7 +368,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={months}
                         onChange={(e) =>
-                          setMonths(parseInt(e.target.value) )
+                          setMonths(parseInt(e.target.value))
                         }
                         className="time-input"
                       />

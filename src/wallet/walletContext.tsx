@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
-import { loginUserWeb, storagePublicKeyAndPassword } from "@/apiService";
+import { loginUserWeb, storagePublicKeyAndPassword } from "@/services";
 import { encryptSeed, restoreWallet } from "@/utils";
 import { useUser } from "@/context";
 import { ethers } from "ethers";
@@ -16,7 +16,7 @@ import {
 } from "@/hooks/walletDialogs";
 
 import { WalletContextProps } from "@/interfaces/wallet"
-import { MetroSwal, handleSilentError , config } from "@/utils";
+import { MetroSwal, handleSilentError, config } from "@/utils";
 import CryptoJS from 'crypto-js';
 
 const RPC_URL = config.RPC_PROVIDER_URL;
@@ -64,7 +64,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   // Keep address and addressweb in sync for web users
   useEffect(() => {
     if (!isWeb) return;
-    
+
     // If address is set but addressweb is different or null, sync addressweb
     if (address && address !== addressweb) {
       setAddressweb(address);
@@ -87,7 +87,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!currentIdentifier && isWeb) {
       currentIdentifier = address || addressweb;
     }
-    
+
     // For Telegram users, wait for userData to load before checking for wallet
     // This ensures we have the correct telegramId to check localStorage
     if (!currentIdentifier && isTelegram) {
@@ -97,17 +97,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
       currentIdentifier = userData.user.telegramId;
     }
-    
+
     if (!currentIdentifier) return;
-    
+
     const encrypted = getEncryptedSeed(currentIdentifier);
     setHasWallet(!!encrypted);
-    
+
     // Show decrypt prompt if:
     // 1. There's an encrypted seed (wallet exists)
     // 2. Wallet is not unlocked (no signer) - meaning we need to decrypt
     const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
-    
+
     // Note: Decrypt prompt is now handled by WalletSetup.tsx using OnboardingFlow
     // We just need to ensure hasWallet state is correct
   }, [identifier, signer, isWeb, isTelegram, address, addressweb, userData?.user?.telegramId]);
@@ -117,7 +117,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     // Use the new merged password dialog
     const { isConfirmed, value: password, savePassword } = await promptPasswordWithSaveOption();
-    
+
     if (!isConfirmed || !password) {
       await MetroSwal.fire({
         icon: "warning",
@@ -161,19 +161,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     } else {
       setSeedBackupDone(userData?.user?.telegramId || "", false);
-    saveEncryptedSeed(userData?.user?.telegramId || "", encrypted);
+      saveEncryptedSeed(userData?.user?.telegramId || "", encrypted);
     }
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
     const data = saveToBackend
       ? (() => {
-          // Encrypt password using public key + SALT for secure transmission
-          const SALT = config.TG_SECRET_SALT || "default_salt";
-          const encryptionKey = wallet.address + "|" + SALT;
-          const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
-          return { publicKey: wallet.address, secret: encryptedPassword };
-        })()
+        // Encrypt password using public key + SALT for secure transmission
+        const SALT = config.TG_SECRET_SALT || "default_salt";
+        const encryptionKey = wallet.address + "|" + SALT;
+        const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
+        return { publicKey: wallet.address, secret: encryptedPassword };
+      })()
       : { publicKey: wallet.address };
 
     try {
@@ -183,15 +183,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     setHasWallet(true);
-    
+
     // Mark as recent wallet creation to prevent decrypt prompt
     sessionStorage.setItem('recentWalletCreation', 'true');
-    
+
     // Only show backup reminder if not skipped (for onboarding flow)
     if (!skipBackupReminder) {
       showBackupReminder();
     }
-    
+
     return { wallet, mnemonic };
   }
 

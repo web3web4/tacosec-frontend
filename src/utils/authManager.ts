@@ -1,5 +1,5 @@
 import { clearTokens, getAccessToken, isTokenExpiring } from './cookieManager';
-import { refreshToken } from '@/apiService';
+import { refreshToken } from '@/services';
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 let lastAttempt = 0;

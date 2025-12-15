@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getReportsForAdmin } from "@/apiService";
+import { getReportsForAdmin } from "@/services";
 import { ReportRow, AdminReportsResponse } from "@/types";
 
 export default function useReports(page: number = 1, limit: number = 10) {

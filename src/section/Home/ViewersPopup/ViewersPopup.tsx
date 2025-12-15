@@ -1,4 +1,4 @@
-import { getUserProfileDetails } from "@/apiService";
+import { getUserProfileDetails } from "@/services";
 import { UserDisplayToggle, SheetModal } from "@/components";
 import { useEffect, useCallback } from "react";
 import { ViewersPopupProps } from "@/types";

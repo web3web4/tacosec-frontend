@@ -1,6 +1,6 @@
 import { MetroSwal } from './metroSwal';
 import { clearTokens, getAccessToken,getRefreshToken } from '@/utils';
-import { storeFrontendLog } from '@/apiService';
+import { storeFrontendLog } from '@/services';
 import { FrontendLogPayload } from '@/types/types';
 
 // Standard error types for the application
