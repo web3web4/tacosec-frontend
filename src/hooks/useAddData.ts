@@ -34,7 +34,6 @@ export default function useAddData() {
       );
     });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shareWith, message, name]);
 
   const fetchUserProfile = async (username: string) => {
@@ -113,7 +112,6 @@ export default function useAddData() {
     setSearchData([]);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getUsersAutoComplete = useCallback(
     debounce(async (username: string) => {
       if (!username) {

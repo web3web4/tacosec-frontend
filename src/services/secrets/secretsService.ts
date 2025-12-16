@@ -6,7 +6,7 @@ import type {
   StoragePublicKeyData,
   PublicKeysResponse 
 } from "@/types/types";
-import type { DataPayload } from "@/interfaces/addData";
+import type { DataPayload } from "@/types/component";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { getAuthHeaders } from "@/services/auth/authService";
 
@@ -61,7 +61,7 @@ export async function getDataSharedWithMy(initData?: string): Promise<SharedWith
   const headers = await getAuthHeaders(initData);
   
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw createAppError("Authentication required", 'auth');
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
   return handleApiCall(async () => {
@@ -80,7 +80,7 @@ export async function hidePassword(initData: string, id: string): Promise<void> 
   const headers = await getAuthHeaders(initData);
   
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw createAppError("Authentication required", 'auth');
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
   return handleApiCall(async () => {
@@ -99,7 +99,7 @@ export async function deletePassword(initData: string, id: string): Promise<void
   const headers = await getAuthHeaders(initData);
 
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw createAppError("Authentication required", 'auth');
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
   return handleApiCall(async () => {
@@ -176,7 +176,7 @@ export async function storagePublicKeyAndPassword(
   const headers = await getAuthHeaders(initData);
   
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw createAppError("Authentication required", 'auth');
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
   await handleApiCall(async () => {
@@ -196,7 +196,7 @@ export async function getPublicAddresses(initData: string | null): Promise<Publi
   const headers = await getAuthHeaders(initData);
   
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw createAppError("Authentication required", 'auth');
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
   return handleApiCall(async () => {
@@ -215,7 +215,7 @@ export async function setPrivacyMode(initData: string, value: boolean): Promise<
   const headers = await getAuthHeaders(initData);
   
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
-    throw createAppError("Authentication required", 'auth');
+    throw createAppError(new Error("Authentication required"), 'auth');
   }
   
   await handleApiCall(async () => {

@@ -200,7 +200,6 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     } else if (myData.length === 0 && activeTab === "mydata") {
       fetchMyData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [directLinkData, signer]);
 
   useEffect(() => {
@@ -282,7 +281,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleDirectLinkForChildren = () => {
-    if (!directLinkData || !directLinkData.ChildId) { return; }
+    if (!directLinkData || !directLinkData.ChildId) return;
     const targetId = directLinkData?.ChildId;
     if (!targetId) return;
     const element = itemRefs.current[targetId];

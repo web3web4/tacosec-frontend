@@ -15,7 +15,7 @@ import {
   promptPasswordWithSaveOption,
 } from "@/hooks/walletDialogs";
 
-import { WalletContextProps } from "@/interfaces/wallet"
+import { WalletContextProps } from "@/types/wallet"
 import { MetroSwal, handleSilentError, config } from "@/utils";
 import CryptoJS from 'crypto-js';
 
