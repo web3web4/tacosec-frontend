@@ -3,6 +3,7 @@ import { MetroSwal } from "@/utils";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import { config } from "@/utils/config";
+import { saveEncryptedSeed, setSeedBackupDone, setSavedPasswordPreference, getEncryptedSeed } from "@/localstorage/walletStorage";
 
 const SALT = config.TG_SECRET_SALT || "default_salt";
 
@@ -40,11 +41,11 @@ export const importWalletFlow = async (
   const fullKey = password + "|" + SALT;
   const encrypted = CryptoJS.AES.encrypt(mnemonic, fullKey).toString();
 
-  localStorage.setItem(`encryptedSeed-${identifier}`, encrypted);
-  localStorage.setItem(`seedBackupDone-${identifier}`, "true");
-  localStorage.setItem("savePasswordInBackend", savePassword.toString());
+  saveEncryptedSeed(identifier || "", encrypted);
+  setSeedBackupDone(identifier || "", true);
+  setSavedPasswordPreference(savePassword);
   
-  const savedEncrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
+  const savedEncrypted = getEncryptedSeed(identifier || "");
   console.log("Verification - Data saved to localStorage:", savedEncrypted ? "Success" : "Failed");
 
   if (onImported) {
