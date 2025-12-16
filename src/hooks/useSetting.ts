@@ -24,24 +24,11 @@ export default function useSetting() {
   };
 
   const handleTogglePrivacyMod = async (): Promise<void> => {
+    const previousStatus = privacyModOn;
     try {
       const newStatus = !privacyModOn;
       setPrivacyModOn(newStatus);
-      setPrivacyMode(initDataRaw!, newStatus);
-      if(!userData) {
-        await getUserData();
-      }
-      setUserData((prev: initDataType | null) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          user: {
-            ...prev.user,
-            privacyMode: newStatus,
-          },
-        };
-      });
-  
+
       // Show message only if enabling and not hidden before
       if (newStatus && !localStorage.getItem("hidePrivacyModeMessage")) {
         MetroSwal.fire({
@@ -65,7 +52,34 @@ export default function useSetting() {
           }
         });
       }
+      
+      await setPrivacyMode(initDataRaw!, newStatus);
+      if(!userData) {
+        await getUserData();
+      }
+      setUserData((prev: initDataType | null) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          user: {
+            ...prev.user,
+            privacyMode: newStatus,
+          },
+        };
+      });
     } catch (error) {
+      // Revert to previous state on error
+      setPrivacyModOn(previousStatus);
+      setUserData((prev: initDataType | null) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          user: {
+            ...prev.user,
+            privacyMode: previousStatus,
+          },
+        };
+      });
       handleSilentError(error, 'setting privacy mode');
     }
   };

@@ -3,7 +3,7 @@ import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayTog
 import { conditions, toHexString } from "@nucypher-experimental2/taco";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { storageEncryptedData } from "@/services";
-import { DataPayload } from "@/interfaces/addData";
+import { DataPayload } from "@/types/component";
 import { noUserImage, deleteIcon } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
 import { MetroSwal } from "@/utils/metroSwal";
@@ -77,11 +77,12 @@ const AddData: React.FC = () => {
         return;
       }
 
-      let publicAddresses: string[] = [];
-      publicAddresses.push(address!);
-      shareList
-        .filter((item) => item.data.publicAddress !== null)
-        .map((item) => publicAddresses.push(item.data.publicAddress!));
+      let publicAddresses: string[] = [
+        address!,
+        ...shareList
+          .filter((item) => item.data.publicAddress !== null)
+          .map((item) => item.data.publicAddress!)
+      ];
 
       const checkUsersCondition =
         new conditions.base.contextVariable.ContextVariableCondition({
@@ -332,7 +333,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={seconds}
                         onChange={(e) =>
-                          setSeconds(parseInt(e.target.value))
+                          setSeconds(parseInt(e.target.value) || 0)
                         }
                         className="time-input"
                       />
@@ -344,7 +345,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={minutes}
                         onChange={(e) =>
-                          setMinutes(parseInt(e.target.value))
+                          setMinutes(parseInt(e.target.value) || 0)
                         }
                         className="time-input"
                       />
@@ -356,7 +357,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={hours}
                         onChange={(e) =>
-                          setHours(parseInt(e.target.value))
+                          setHours(parseInt(e.target.value) || 0)
                         }
                         className="time-input"
                       />
@@ -368,7 +369,7 @@ const AddData: React.FC = () => {
                         min="0"
                         value={months}
                         onChange={(e) =>
-                          setMonths(parseInt(e.target.value))
+                          setMonths(parseInt(e.target.value) || 0)
                         }
                         className="time-input"
                       />
