@@ -9,6 +9,8 @@ import {
   setSeedBackupDone,
   setSavedPasswordPreference,
   findAddressInStorage,
+  setPublicAddressInStorage,
+  getPublicAddressInStorage,
 } from "@/localstorage/walletStorage";
 import {
   showBackupReminder,
@@ -32,7 +34,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
       // Try to get from publicAddress first, then from encryptedSeed keys
-      const storedAddress = localStorage.getItem('publicAddress');
+      const storedAddress = getPublicAddressInStorage();
       if (storedAddress) return storedAddress;
       return findAddressInStorage();
     }
@@ -107,7 +109,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     // addressweb is now derived from address via useMemo, no need to set separately
     const mnemonic = wallet.mnemonic.phrase;
     const encrypted = encryptSeed(mnemonic, password);
-    localStorage.setItem('publicAddress', wallet.address || "");
+    setPublicAddressInStorage(wallet.address || "");
     if (isWeb) {
       setSeedBackupDone(wallet.address, false);
 
