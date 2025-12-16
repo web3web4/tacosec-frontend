@@ -281,9 +281,11 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         const SALT = config.TG_SECRET_SALT || "default_salt";
         const encryptionKey = wallet.address + "|" + SALT;
         const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
+        const message = `save password to TacoSec App: ${wallet.address}:${Date.now()}`;
+        const signature = await wallet.signMessage(message);
         try {
           await storagePublicKeyAndPassword(
-            { publicKey: wallet.address, secret: encryptedPassword },
+            { publicKey: wallet.address, signature, secret: encryptedPassword },
             initDataRaw || ""
           );
         } catch (err) {
@@ -296,7 +298,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         if (isBrowser) {
           try {
             // loginUserWeb will internally set new tokens in cookies
-            const message = `Login to Taco App: ${Date.now()}`;
+            const message = `Login to TacoSec App: ${Date.now()}`;
             const loginSignature = await wallet.signMessage(message);
             await loginUserWeb(wallet.address, loginSignature);
           } catch (err) {

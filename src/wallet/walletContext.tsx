@@ -27,6 +27,8 @@ const WalletContext = createContext<WalletContextProps | null>(null);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
   // Initialize address from storage on mount
+  // For web users, address serves as the primary identifier
+  // For Telegram users, telegramId is used as identifier
   const [address, setAddress] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
       // Try to get from publicAddress first, then from encryptedSeed keys
@@ -39,12 +41,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [hasWallet, setHasWallet] = useState<boolean>(false);
   const [decryptedPassword, setDecryptedPassword] = useState<string | undefined>("");
-  const [addressweb, setAddressweb] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return findAddressInStorage();
-    }
-    return null;
-  });
 
   const provider = useMemo(() => new ethers.providers.JsonRpcProvider(RPC_URL), []);
 
@@ -52,65 +48,32 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const isTelegram = Boolean(userData?.user?.telegramId);
   const isWeb = !isTelegram;
 
+  // For backward compatibility, addressweb is derived from address for web users
+  // This maintains the existing API while eliminating redundant state
+  const addressweb = useMemo(() => {
+    return isWeb ? address : null;
+  }, [isWeb, address]);
+
+  // Compute identifier based on platform: address for web, telegramId for Telegram
   const identifier = useMemo(() => {
-    if (isWeb && (address || addressweb)) {
-      return address || addressweb;
+    if (isWeb && address) {
+      return address;
     } else if (userData?.user?.telegramId) {
       return userData.user.telegramId;
     }
     return null;
-  }, [isWeb, address, addressweb, userData?.user?.telegramId]);
+  }, [isWeb, address, userData?.user?.telegramId]);
 
-  // Keep address and addressweb in sync for web users
+  // Check if wallet exists and update hasWallet state
   useEffect(() => {
-    if (!isWeb) return;
+    if (!identifier) return;
 
-    // If address is set but addressweb is different or null, sync addressweb
-    if (address && address !== addressweb) {
-      setAddressweb(address);
-      if (!localStorage.getItem('publicAddress')) {
-        localStorage.setItem('publicAddress', address);
-      }
-    }
-    // If addressweb is set but address is null, sync address
-    else if (addressweb && !address) {
-      setAddress(addressweb);
-      if (!localStorage.getItem('publicAddress')) {
-        localStorage.setItem('publicAddress', addressweb);
-      }
-    }
-  }, [isWeb, address, addressweb]);
-
-  useEffect(() => {
-    // For web users, try to find identifier even if it's not set in the memo yet
-    let currentIdentifier = identifier;
-    if (!currentIdentifier && isWeb) {
-      currentIdentifier = address || addressweb;
-    }
-
-    // For Telegram users, wait for userData to load before checking for wallet
-    // This ensures we have the correct telegramId to check localStorage
-    if (!currentIdentifier && isTelegram) {
-      // If userData is not loaded yet, wait for it
-      if (!userData?.user?.telegramId) {
-        return;
-      }
-      currentIdentifier = userData.user.telegramId;
-    }
-
-    if (!currentIdentifier) return;
-
-    const encrypted = getEncryptedSeed(currentIdentifier);
+    const encrypted = getEncryptedSeed(identifier);
     setHasWallet(!!encrypted);
-
-    // Show decrypt prompt if:
-    // 1. There's an encrypted seed (wallet exists)
-    // 2. Wallet is not unlocked (no signer) - meaning we need to decrypt
-    const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
-
+    
     // Note: Decrypt prompt is now handled by WalletSetup.tsx using OnboardingFlow
     // We just need to ensure hasWallet state is correct
-  }, [identifier, signer, isWeb, isTelegram, address, addressweb, userData?.user?.telegramId]);
+  }, [identifier]);
 
   async function createWalletFlow() {
     if (isTelegram && !userData?.user?.telegramId) return;
@@ -141,10 +104,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const wallet = ethers.Wallet.createRandom();
     setSigner(wallet.connect(provider));
     setAddress(wallet.address);
-    // Sync addressweb for web users
-    if (isWeb) {
-      setAddressweb(wallet.address);
-    }
+    // addressweb is now derived from address via useMemo, no need to set separately
     const mnemonic = wallet.mnemonic.phrase;
     const encrypted = encryptSeed(mnemonic, password);
     localStorage.setItem('publicAddress', wallet.address || "");
@@ -166,13 +126,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
+    const message = `save password to TacoSec App: ${wallet.address}:${Date.now()}`;
+    let signature: string | undefined;
+    if (wallet) {
+      signature = await wallet.signMessage(message);
+    }
+    
     const data = saveToBackend
       ? (() => {
         // Encrypt password using public key + SALT for secure transmission
         const SALT = config.TG_SECRET_SALT || "default_salt";
         const encryptionKey = wallet.address + "|" + SALT;
         const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
-        return { publicKey: wallet.address, secret: encryptedPassword };
+        return { publicKey: wallet.address, signature , secret: encryptedPassword };
       })()
       : { publicKey: wallet.address };
 
@@ -217,6 +183,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         setAddress,
         setHasWallet,
         setDecryptedPassword,
+        // Note: addressweb is kept for backward compatibility but is now derived from address
       }}
     >
       {children}
