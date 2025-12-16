@@ -24,3 +24,19 @@ export function findAddressInStorage(): string | null {
   const encryptedKey = keys.find((k) => k.startsWith("encryptedSeed-"));
   return encryptedKey?.split("encryptedSeed-")[1] || null;
 }
+
+export function getPublicAddressInStorage(): string | null {
+  return localStorage.getItem("publicAddress");
+}
+
+export function setPublicAddressInStorage(address: string) {
+  localStorage.setItem("publicAddress", address);
+}
+
+export function removeEncryptedSeed(identifier: string) {
+  localStorage.removeItem(`encryptedSeed-${identifier}`);
+}
+
+export function removeSeedBackupDone(identifier: string) {
+  localStorage.removeItem(`seedBackupDone-${identifier}`);
+}

@@ -11,6 +11,17 @@ import {
   DecryptScreen,
   ResetPasswordScreen
 } from './screens';
+
+import {
+  saveEncryptedSeed,
+  setSeedBackupDone,
+  setSavedPasswordPreference,
+  setPublicAddressInStorage,
+  getPublicAddressInStorage,
+  removeEncryptedSeed,
+  removeSeedBackupDone,
+} from "@/localstorage/walletStorage";
+
 import './OnboardingFlow.css';
 import { storagePublicKeyAndPassword, loginUserWeb } from '@/services';
 import CryptoJS from 'crypto-js';
@@ -154,8 +165,10 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
   const handleSeedBackupConfirm = useCallback((mnemonic: string) => {
     // Generate random unique indices for seed phrase verification (no duplicates)
     const indices = new Set<number>();
-    while (indices.size < 3) {
-      indices.add(Math.floor(Math.random() * 12));
+    const words = mnemonic.trim().split(/\s+/);
+    const max = words.length;
+    while (indices.size < 3 && max > 0) {
+      indices.add(Math.floor(Math.random() * max));
     }
     const verifyIndices = Array.from(indices);
     setOnboardingData(prev => ({ ...prev, verifyIndices }));
@@ -167,7 +180,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
     const identifier = isBrowser ? address || addressweb : userData?.user?.telegramId;
 
     if (identifier) {
-      localStorage.setItem(`seedBackupDone-${identifier}`, "true");
+      setSeedBackupDone(identifier, true);
     }
 
     // Complete the flow - if this was decrypt flow, wallet is already unlocked
@@ -185,8 +198,8 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
       setSigner(walletSigner);
       setAddress(restoredWallet.address);
       if (isBrowser) {
-        if (!localStorage.getItem('publicAddress')) {
-          localStorage.setItem('publicAddress', restoredWallet.address);
+        if (!getPublicAddressInStorage()) {
+          setPublicAddressInStorage(restoredWallet.address);
         }
       }
       setHasWallet(true);
@@ -252,21 +265,21 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
       const encrypted = encryptSeed(trimmedSeed, password);
 
       // Save encrypted seed and backup status using the *new* identifier
-      localStorage.setItem(`encryptedSeed-${newIdentifier}`, encrypted);
-      localStorage.setItem(`seedBackupDone-${newIdentifier}`, "true");
+      saveEncryptedSeed(newIdentifier, encrypted);
+      setSeedBackupDone(newIdentifier, true);
 
       // If identifier changed (e.g. importing a different wallet on web), clean up old keys
       if (oldIdentifier && oldIdentifier !== newIdentifier) {
-        localStorage.removeItem(`encryptedSeed-${oldIdentifier}`);
-        localStorage.removeItem(`seedBackupDone-${oldIdentifier}`);
+        removeEncryptedSeed(oldIdentifier);
+        removeSeedBackupDone(oldIdentifier);
       }
 
       // Save password preference
-      localStorage.setItem("savePasswordInBackend", saveInBackend.toString());
+      setSavedPasswordPreference(saveInBackend);
 
       // For browser users, keep publicAddress in sync with the newly imported wallet
       if (isBrowser) {
-        localStorage.setItem('publicAddress', wallet.address);
+        setPublicAddressInStorage(wallet.address);
       }
 
       // Update in-memory wallet state so UI reflects the new wallet immediately
@@ -281,9 +294,11 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         const SALT = config.TG_SECRET_SALT || "default_salt";
         const encryptionKey = wallet.address + "|" + SALT;
         const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
+        const message = `save password to TacoSec App: ${wallet.address}:${Date.now()}`;
+        const signature = await wallet.signMessage(message);
         try {
           await storagePublicKeyAndPassword(
-            { publicKey: wallet.address, secret: encryptedPassword },
+            { publicKey: wallet.address, signature, secret: encryptedPassword },
             initDataRaw || ""
           );
         } catch (err) {
@@ -296,7 +311,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         if (isBrowser) {
           try {
             // loginUserWeb will internally set new tokens in cookies
-            const message = `Login to Taco App: ${Date.now()}`;
+            const message = `Login to TacoSec App: ${Date.now()}`;
             const loginSignature = await wallet.signMessage(message);
             await loginUserWeb(wallet.address, loginSignature);
           } catch (err) {
