@@ -1,25 +1,25 @@
+import { formatAddress, getIdentifier, recordUserAction, copyToClipboard } from "@/utils";
 import { SectionErrorBoundary, OnboardingFlow, SheetModal } from "@/components";
-import { ContactSupport } from "@/section";
-import { noUserImage } from "@/assets";
+import { clearTokens } from "@/utils/cookieManager";
 import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever } from "react-icons/md";
-import { useUser } from "@/context";
-import { useState, useEffect } from "react";
-import { formatAddress, getIdentifier, recordUserAction, copyToClipboard } from "@/utils";
-import { useSetting } from "@/hooks";
 import { MetroSwal, showGDPR } from "@/utils";
-import { clearTokens } from "@/utils/cookieManager";
+import { useState, useEffect } from "react";
+import { ContactSupport } from "@/section";
+import { noUserImage } from "@/assets";
+import { useSetting } from "@/hooks";
+import { useUser } from "@/context";
 import "@/pages/Home/Home.css";
 import "./Settings.css";
 
 
 const Settings: React.FC = () => {
-  const { profileImage, notificationsOn, privacyModOn, handleToggleNotifications, handleTogglePrivacyMod, showSupportPopup, setShowSupportPopup, email, setEmail, phone, setPhone, firstName, setFirstName, lastName, setLastName, saveUserInfo, isSavingUserInfo } = useSetting();
-  const { userData, isBrowser } = useUser();
-  const { address, addressweb } = useWallet();
+  const { profileImage, privacyModOn, handleTogglePrivacyMod, showSupportPopup, setShowSupportPopup, email, setEmail, phone, setPhone, firstName, setFirstName, lastName, setLastName, saveUserInfo, isSavingUserInfo } = useSetting();
+  const [showManualCopy, setShowManualCopy] = useState(false);
   const [showSeedFlow, setShowSeedFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
-  const [showManualCopy, setShowManualCopy] = useState(false);
+  const { address, addressweb } = useWallet();
+  const { userData, isBrowser } = useUser();
 
   // Hide the "Copied" message after 2 seconds
   useEffect(() => {
@@ -158,18 +158,6 @@ const Settings: React.FC = () => {
             <span className="slider round"></span>
           </label>
         </div>
-        <div className="checkbox-row">
-          <span>Turn on Notifications</span>
-          <label className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={notificationsOn}
-              onChange={handleToggleNotifications}
-            />
-            <span className="slider round"></span>
-          </label>
-        </div>
-        <p className="desc">Enable to receive updates and alerts.</p>
 
         {/* New: Browser-only user info fields under notifications */}
         {isBrowser && (

@@ -8,20 +8,13 @@ import Swal from "sweetalert2";
 export default function useSetting() {
   const { userData, initDataRaw, setUserData, getUserData } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
-  const [notificationsOn, setNotificationsOn] = useState<boolean>(true);
   const [privacyModOn, setPrivacyModOn] = useState<boolean>(userData?.user?.privacyMode || false);
   const [showSupportPopup, setShowSupportPopup] = useState(false);
-
-  // New: user info fields state
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [firstName, setFirstName] = useState<string>(userData?.user?.firstName || "");
   const [lastName, setLastName] = useState<string>(userData?.user?.lastName || "");
   const [isSavingUserInfo, setIsSavingUserInfo] = useState<boolean>(false);
-
-  const handleToggleNotifications = (): void => {
-    setNotificationsOn(!notificationsOn);
-  };
 
   const handleTogglePrivacyMod = async (): Promise<void> => {
     const previousStatus = privacyModOn;
@@ -149,21 +142,19 @@ export default function useSetting() {
 
   return {
     showSupportPopup,
-    setShowSupportPopup,
-    profileImage,
-    notificationsOn,
-    handleTogglePrivacyMod,
-    handleToggleNotifications,
-    privacyModOn,
-    email,
-    setEmail,
-    phone,
-    setPhone,
-    firstName,
-    setFirstName,
-    lastName,
-    setLastName,
-    saveUserInfo,
     isSavingUserInfo,
+    profileImage,
+    privacyModOn,
+    firstName,
+    lastName,
+    email,
+    phone,
+    handleTogglePrivacyMod,
+    setShowSupportPopup,
+    setFirstName,
+    saveUserInfo,
+    setLastName,
+    setEmail,
+    setPhone,
   };
 }
