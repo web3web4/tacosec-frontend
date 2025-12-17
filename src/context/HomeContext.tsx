@@ -19,30 +19,26 @@ const domain = config.TACO_DOMAIN;
 const HomeContext = createContext<HomeContextType | null>(null);
 
 export function HomeProvider({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate();
-  const [childrenLoading, setChildrenLoading] = useState<Record<string, boolean>>({});
-  const location = useLocation();
   const { provider, address, signer } = useWallet();
+  const secretDataHook = useSecretData();
+  const secretViewsHook = useSecretViews();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { secretViews, setSecretViews } = secretViewsHook;
   const { initDataRaw, userData, directLinkData } = useUser();
   const { isInit } = useTaco({ domain, provider, ritualId });
   const [previousPath, setPreviousPath] = useState<string>("");
-
-  // Use custom hooks
-  const secretDataHook = useSecretData();
-  const { myData, setMyData, sharedWithMyData, setSharedWithMyData, activeTab, setActiveTab } = secretDataHook;
-
-  const secretViewsHook = useSecretViews();
-  const { secretViews, setSecretViews } = secretViewsHook;
+  const [childrenLoading, setChildrenLoading] = useState<Record<string, boolean>>({});
 
   const triggerGetChildrenForSecret = async (id: string) => {
     try {
       const response = await getChildrenForSecret(initDataRaw!, id);
       if ("message" in response) {
-        if (activeTab === "mydata") {
-          setMyData((prev) => prev.map((item) =>
+        if (secretDataHook.activeTab === "mydata") {
+          secretDataHook.setMyData((prev) => prev.map((item) =>
             item.id === id ? { ...item, children: [] } : item));
         } else {
-          setSharedWithMyData((prev) => prev.map((item) => ({
+          secretDataHook.setSharedWithMyData((prev) => prev.map((item) => ({
             ...item,
             passwords: item.passwords.map((pw) =>
               pw.id === id ? { ...pw, children: [] } : pw)
@@ -67,11 +63,11 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         ...Object.fromEntries(entries),
       }));
 
-      if (activeTab === "mydata") {
-        setMyData((prev) => prev.map((item) =>
+      if (secretDataHook.activeTab === "mydata") {
+        secretDataHook.setMyData((prev) => prev.map((item) =>
           item.id === id ? { ...item, children: response } : item));
       } else {
-        setSharedWithMyData((prev) => prev.map((item) => ({
+        secretDataHook.setSharedWithMyData((prev) => prev.map((item) => ({
           ...item,
           passwords: item.passwords.map((pw) =>
             pw.id === id ? { ...pw, children: response } : pw)
@@ -105,14 +101,14 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (directLinkData && signer) {
       secretDataHook.handleSetActiveTab(directLinkData.tabName);
-    } else if (myData.length === 0 && activeTab === "mydata") {
+    } else if (secretDataHook.myData.length === 0 && secretDataHook.activeTab === "mydata") {
       secretDataHook.fetchMyData();
     }
   }, [directLinkData, decryptionHook.toggleExpand]);
 
   useEffect(() => {
     if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
-      handleSetActiveTabClick(activeTab);
+      handleSetActiveTabClick(secretDataHook.activeTab);
     }
 
     // Update previous path
@@ -149,7 +145,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         } else {
           await deletePassword(initDataRaw || "", id);
         }
-        setMyData((prev) => prev.filter((secret) => secret.id !== id));
+        secretDataHook.setMyData((prev) => prev.filter((secret) => secret.id !== id));
       } catch (error) {
         const appError = createAppError(error, 'unknown');
         showError(appError, 'Delete Secret Error');
@@ -165,8 +161,8 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     handleSetActiveTabClick,
     handleDelete,
     triggerGetChildrenForSecret,
-    handleDirectLink: () => directLinkHook.handleDirectLink(myData, sharedWithMyData, decryptionHook.toggleExpand),
-    handleDirectLinkForChildren: () => directLinkHook.handleDirectLinkForChildren(myData, sharedWithMyData, activeTab, decryptionHook.toggleChildExpand),
+    handleDirectLink: () => directLinkHook.handleDirectLink(secretDataHook.myData, secretDataHook.sharedWithMyData, decryptionHook.toggleExpand),
+    handleDirectLinkForChildren: () => directLinkHook.handleDirectLinkForChildren(secretDataHook.myData, secretDataHook.sharedWithMyData, secretDataHook.activeTab, decryptionHook.toggleChildExpand),
     isInit,
     provider,
     userData,

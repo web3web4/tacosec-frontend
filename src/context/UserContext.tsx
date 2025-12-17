@@ -8,7 +8,6 @@ import { UserContextType } from "@/types";
 const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-
   const [userData, setUserData] = useState<initDataType | null>(null);
   const [directLinkData, setDirectLinkData] = useState<DirectLinkData | null>(null);
   const [error, setError] = useState<string | null>(null);
