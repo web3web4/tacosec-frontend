@@ -1,16 +1,17 @@
-import { getDataSharedWithMy, getUserProfileDetails, hidePassword, deletePassword, GetMyData, getChildrenForSecret, setSecretView, getSecretViews } from "@/services";
-import { DataItem, SharedWithMyDataType, TabType, UserProfileDetailsType, SecretViews, Secret } from "@/types/types";
-import { MetroSwal, showError, createAppError, handleSilentError, config } from "@/utils";
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { hidePassword, deletePassword, getChildrenForSecret, getSecretViews } from "@/services";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { MetroSwal, createAppError, showError, config } from "@/utils";
+import useSecretDecryption from "@/hooks/useSecretDecryption";
+import { useLocation, useNavigate } from "react-router-dom";
+import useSecretViews from "@/hooks/useSecretViews";
 import { useWallet } from "@/wallet/walletContext";
-import { fromHexString } from "@nucypher/shared";
+import useDirectLink from "@/hooks/useDirectLink";
+import useSecretData from "@/hooks/useSecretData";
 import { SweetAlertOptions } from "sweetalert2";
-import { fromBytes } from "@nucypher/taco";
-import { HomeContextType } from "@/types";
-import { noUserImage } from "@/assets";
+import { HomeContextType, TabType } from "@/types";
 import { useUser } from "@/context";
 import { useTaco } from "@/hooks";
+
 
 const ritualId = config.TACO_RITUAL_ID;
 const domain = config.TACO_DOMAIN;
@@ -19,318 +20,19 @@ const HomeContext = createContext<HomeContextType | null>(null);
 
 export function HomeProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [myData, setMyData] = useState<DataItem[]>([]);
-  const [sharedWithMyData, setSharedWithMyData] = useState<SharedWithMyDataType[]>([]);
-  const [activeTab, setActiveTab] = useState<TabType>("mydata");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
-  const [decryptErrors, setDecryptErrors] = useState<{ [id: string]: string }>({});
-  const [decrypting, setDecrypting] = useState<boolean>(false);
-  const [expandedChildId, setExpandedChildId] = useState<string | null>(null);
-  const [decryptedChildMessages, setDecryptedChildMessages] = useState<Record<string, string>>({});
-  const [secretViews, setSecretViews] = useState<Record<string, SecretViews>>({});
-  const [decryptingChild, setDecryptingChild] = useState<boolean>(false);
-  const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [childrenLoading, setChildrenLoading] = useState<Record<string, boolean>>({});
-  const [authError, setAuthError] = useState<string | null>(null);
+  const location = useLocation();
+  const { provider, address, signer } = useWallet();
+  const { initDataRaw, userData, directLinkData } = useUser();
+  const { isInit } = useTaco({ domain, provider, ritualId });
   const [previousPath, setPreviousPath] = useState<string>("");
-  const [showViewersPopup, setShowViewersPopup] = useState<boolean>(false);
-  const [currentSecretViews, setCurrentSecretViews] = useState<SecretViews | null>(null);
-  const { signer, provider, address } = useWallet();
-  const { initDataRaw, userData, directLinkData, setDirectLinkData } = useUser();
-  const { isInit, decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
 
+  // Use custom hooks
+  const secretDataHook = useSecretData();
+  const { myData, setMyData, sharedWithMyData, setSharedWithMyData, activeTab, setActiveTab } = secretDataHook;
 
-
-  const handleAddClick = (): void => {
-    navigate("/add");
-  };
-
-  const handleSetActiveTabClick = (tabActive: TabType): void => {
-    setMyData([]);
-    setExpandedId(null);
-    setExpandedChildId(null);
-    tabActive === "mydata" ? fetchMyData() : fetchSharedWithMyData();
-    setActiveTab(tabActive);
-  };
-
-  const fetchMyData = async () => {
-    try {
-      // Pass initDataRaw which might be null for web login
-      setIsLoading(true);
-      const response: Secret[] = await GetMyData(initDataRaw || undefined);
-      const data: DataItem[] = response.map((item: Secret) => ({
-        id: item._id,
-        key: item.key,
-        value: item.value,
-        sharedWith: item.sharedWith,
-        createdAt: item.createdAt,
-      }));
-      setMyData(data);
-      if (data.length > 0) getProfilesDetailsForUsers(data);
-      setAuthError(null); // Clear any previous auth errors on success
-    } catch (err) {
-      const appError = createAppError(err, 'unknown');
-
-      // Handle authentication errors specifically
-      if (appError.type === 'auth' || appError.message.includes("Authentication")) {
-        setAuthError(appError.message);
-        // Only show error alert if we're not in Telegram
-        if (!window.Telegram?.WebApp) {
-          showError(appError, "Authentication Error");
-        }
-      } else {
-        handleSilentError(appError, "Failed to Load Data");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getProfilesDetailsForUsers = async (data: DataItem[]) => {
-    try {
-      const enrichedData: DataItem[] = await Promise.all(
-        data.map(async (item) => {
-          const userDetails = await Promise.all(
-            item.sharedWith.map(async (user) => {
-              if (!user.username) {
-                return {
-                  img: { src: noUserImage },
-                  publicAddress: user.publicAddress,
-                }
-              }
-              const profile = await getUserProfileDetails(user.username);
-
-              if (profile && (!profile.img || !profile.img.src || profile.img.src.trim() === "")) {
-                return {
-                  ...profile,
-                  img: { src: noUserImage },
-                };
-              }
-
-              return profile;
-            })
-          );
-
-          const filteredDetails = userDetails.filter(
-            (profile): profile is UserProfileDetailsType => profile !== null
-          );
-
-          return {
-            ...item,
-            shareWithDetails: filteredDetails,
-          };
-        })
-      );
-
-      setMyData(enrichedData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchSharedWithMyData = async () => {
-    try {
-      setIsLoading(true);
-      const data = await getDataSharedWithMy(initDataRaw || undefined);
-      setSharedWithMyData(data.sharedWithMe);
-      if (data.sharedWithMe.length > 0) getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
-      setAuthError(null); // Clear any previous auth errors on success
-    } catch (err) {
-      const appError = createAppError(err, 'unknown');
-
-      if (appError.message.includes("Authentication")) {
-        setAuthError(appError.message);
-        // Only show error alert for non-authentication errors or if we're not in Telegram
-        if (!window.Telegram?.WebApp) {
-          showError(appError, "Authentication Error");
-        }
-      } else {
-        handleSilentError(appError, "Failed to Load Shared Data");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getProfilesDetailsForUsersSharedBy = async (data: SharedWithMyDataType[]) => {
-    const enrichedData = await Promise.all(
-      data.map(async (item) => {
-        const profile = await getUserProfileDetails(item.sharedBy.username);
-
-        if (!profile) {
-          const enhancedSharedBy = {
-            ...item.sharedBy,
-            img: { src: noUserImage },
-            name: ""
-          };
-
-          return {
-            ...item,
-            sharedBy: enhancedSharedBy,
-          };
-        }
-
-        const profileWithDefaultImg = {
-          ...profile,
-          img: profile.img ?? { src: noUserImage },
-        };
-
-        const enhancedSharedBy = {
-          ...item.sharedBy,
-          img: profileWithDefaultImg.img,
-          name: profileWithDefaultImg.name
-        };
-
-        return {
-          ...item,
-          sharedBy: enhancedSharedBy,
-        };
-      })
-    );
-    setSharedWithMyData(enrichedData);
-  };
-
-
-  useEffect(() => {
-    if (directLinkData && signer) {
-      handleSetActiveTabClick(directLinkData.tabName);
-    } else if (myData.length === 0 && activeTab === "mydata") {
-      fetchMyData();
-    }
-  }, [directLinkData, signer]);
-
-  useEffect(() => {
-    if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
-      handleSetActiveTabClick(activeTab);
-    }
-
-    // Update previous path
-    setPreviousPath(location.pathname);
-  }, [location.pathname]);
-
-  const handleDelete = async (id: string, isHasSharedWith: boolean) => {
-    const MetroSwalOptions: string | SweetAlertOptions = {
-      title: 'Do you want to delete this Secret?',
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: `var(--primary-color)`
-    };
-
-    if (isHasSharedWith) {
-      MetroSwalOptions.input = 'checkbox';
-      MetroSwalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
-      MetroSwalOptions.customClass = {
-        ...MetroSwalOptions.customClass,
-        input: 'metro-swal-checkbox-input'
-      };
-    }
-
-    const result = await MetroSwal.fire(MetroSwalOptions);
-    if (result.isConfirmed) {
-      try {
-        if (isHasSharedWith) {
-          const alsoDeleteForEveryone = result.value === 1;
-          alsoDeleteForEveryone ?
-            await deletePassword(initDataRaw || "", id) :
-            await hidePassword(initDataRaw || "", id);
-        } else {
-          await deletePassword(initDataRaw || "", id);
-        }
-        setMyData((prev) => prev.filter((secret) => secret.id !== id));
-      } catch (error) {
-        const appError = createAppError(error, 'unknown');
-        showError(appError, 'Delete Secret Error');
-      }
-    }
-  };
-
-
-  // This function is to handle the case of pressing the button of the message that arrived to him as a notification
-  const handleDirectLink = () => {
-    if (directLinkData) {
-      const element = itemRefs.current[directLinkData.secretId];
-      if (element) {
-        let pass;
-        if (directLinkData.tabName === "shared") {
-          pass = sharedWithMyData
-            .flatMap(item => item.passwords)
-            .find(p => p.id === directLinkData.secretId);
-        } else {
-          pass = myData.find(p => p.id === directLinkData.secretId);
-        }
-
-        if (pass) {
-          toggleExpand(pass.value, pass.id);
-        }
-
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth", block: "center" });
-          element.classList.add("highlight");
-          setTimeout(() => {
-            element.classList.remove("highlight");
-            // Clear the direct link data once handled to avoid re-triggering
-            if (!directLinkData.ChildId) setDirectLinkData(null);
-          }, 500);
-        }, 1000);
-      }
-    }
-  };
-
-  const handleDirectLinkForChildren = () => {
-    if (!directLinkData || !directLinkData.ChildId) return;
-    const targetId = directLinkData?.ChildId;
-    if (!targetId) return;
-    const element = itemRefs.current[targetId];
-    if (element) {
-      let pass;
-      if (activeTab === "mydata") {
-        pass = myData.find(p => p.id === directLinkData.secretId)
-          ?.children?.find(e => e._id === targetId);
-
-      } else {
-        pass = sharedWithMyData
-          .flatMap(item => item.passwords)
-          .find(p => p.id === directLinkData.secretId)
-          ?.children?.find(e => e._id === targetId);
-      }
-
-      if (pass) {
-        toggleChildExpand(pass.value, pass._id);
-      }
-
-      setTimeout(() => {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        element.classList.add("highlight");
-        setTimeout(() => {
-          element.classList.remove("highlight");
-          // Clear the direct link data once handled to avoid re-triggering
-          setDirectLinkData(null);
-        }, 500);
-      }, 1000);
-    }
-  };
-
-  const toggleExpand = async (value: string, id: string) => {
-    setDecrypting(false);
-    if (expandedId === id) {
-      setExpandedId(null);
-    } else {
-      setExpandedId(id);
-
-      if (!decryptedMessages[id]) {
-        decryptMessage(id, value);
-      }
-      await setSecretView(initDataRaw!, id);
-      setChildrenLoading((prev) => ({ ...prev, [id]: true }));
-      triggerGetChildrenForSecret(id);
-      const secretViews = await getSecretViews(initDataRaw!, id);
-      setSecretViews((prev) => ({ ...prev, [id]: secretViews }));
-    }
-  };
+  const secretViewsHook = useSecretViews();
+  const { secretViews, setSecretViews } = secretViewsHook;
 
   const triggerGetChildrenForSecret = async (id: string) => {
     try {
@@ -381,123 +83,96 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const decryptMessage = async (id: string, encryptedText: string) => {
-    if (!encryptedText || !provider || !signer) return;
-    try {
-      setDecrypting(true);
-      console.log("Decrypting message...");
-      const decryptedBytes = await decryptDataFromBytes(
-        fromHexString(encryptedText)
-      );
-      if (decryptedBytes) {
-        const decrypted = fromBytes(decryptedBytes);
-        setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+  const decryptionHook = useSecretDecryption({
+    setChildrenLoading,
+    triggerGetChildrenForSecret,
+    secretViews,
+    setSecretViews,
+  });
+
+  const directLinkHook = useDirectLink();
+
+  const handleAddClick = (): void => {
+    navigate("/add");
+  };
+
+  const handleSetActiveTabClick = (tabActive: string): void => {
+    decryptionHook.setExpandedId(null);
+    decryptionHook.setExpandedChildId(null);
+    secretDataHook.handleSetActiveTab(tabActive as TabType);
+  };
+
+  useEffect(() => {
+    if (directLinkData && signer) {
+      secretDataHook.handleSetActiveTab(directLinkData.tabName);
+    } else if (myData.length === 0 && activeTab === "mydata") {
+      secretDataHook.fetchMyData();
+    }
+  }, [directLinkData, decryptionHook.toggleExpand]);
+
+  useEffect(() => {
+    if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
+      handleSetActiveTabClick(activeTab);
+    }
+
+    // Update previous path
+    setPreviousPath(location.pathname);
+  }, [location.pathname]);
+
+
+  const handleDelete = async (id: string, isHasSharedWith: boolean) => {
+    const MetroSwalOptions: string | SweetAlertOptions = {
+      title: 'Do you want to delete this Secret',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: `var(--primary-color)`
+    };
+
+    if (isHasSharedWith) {
+      MetroSwalOptions.input = 'checkbox';
+      MetroSwalOptions.inputPlaceholder = 'Also delete for everyone it was shared with';
+      MetroSwalOptions.customClass = {
+        ...MetroSwalOptions.customClass,
+        input: 'metro-swal-checkbox-input'
+      };
+    }
+
+    const result = await MetroSwal.fire(MetroSwalOptions);
+    if (result.isConfirmed) {
+      try {
+        if (isHasSharedWith) {
+          const alsoDeleteForEveryone = result.value === 1;
+          alsoDeleteForEveryone ?
+            await deletePassword(initDataRaw || "", id) :
+            await hidePassword(initDataRaw || "", id);
+        } else {
+          await deletePassword(initDataRaw || "", id);
+        }
+        setMyData((prev) => prev.filter((secret) => secret.id !== id));
+      } catch (error) {
+        const appError = createAppError(error, 'unknown');
+        showError(appError, 'Delete Secret Error');
       }
-    } catch (err: unknown) {
-      const appError = createAppError(err, 'unknown');
-      handleSilentError(appError, 'Decrypt Message');
-      setDecryptErrors((prev) => ({
-        ...prev,
-        [id]: appError.message,
-      }));
-    } finally {
-      setDecrypting(false);
     }
   };
-
-
-  const toggleChildExpand = async (value: string, childId: string) => {
-    setDecryptingChild(false);
-    await setSecretView(initDataRaw!, childId);
-    if (expandedChildId === childId) {
-      setExpandedChildId(null);
-    } else {
-      setExpandedChildId(childId);
-      if (!decryptedChildMessages[childId]) {
-        decryptChildMessage(childId, value);
-      }
-    }
-  };
-
-  const decryptChildMessage = async (childId: string, encryptedText: string) => {
-    if (!encryptedText || !provider || !signer) return;
-    try {
-      setDecryptingChild(true);
-      const decryptedBytes = await decryptDataFromBytes(
-        fromHexString(encryptedText)
-      );
-      if (decryptedBytes) {
-        const decrypted = fromBytes(decryptedBytes);
-        setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
-        if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
-      }
-    } catch (e) {
-      console.error("Error decrypting child:", e);
-    } finally {
-      setDecryptingChild(false);
-    }
-  };
-
-  const handleGetSecretViews = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, secretId: string) => {
-    e.stopPropagation();
-    const data = await handleCheckSecretViewsData(e, secretId);
-    if (data) {
-      setCurrentSecretViews(data);
-      setShowViewersPopup(true);
-    }
-  };
-
-  const handleCheckSecretViewsData = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string): SecretViews | null => {
-    e.stopPropagation();
-    const data = secretViews[id];
-
-    if (!data || data.viewDetails.length === 0) {
-      MetroSwal.fire({
-        icon: 'info',
-        title: 'No Views',
-        text: 'No one has viewed this message yet.',
-        confirmButtonColor: 'var(--primary-color)'
-      });
-      return null;
-    }
-
-    return data;
-  };
-
 
   const value = {
-    myData,
-    sharedWithMyData,
-    setSharedWithMyData,
-    activeTab,
+    ...secretDataHook,
+    ...decryptionHook,
+    ...secretViewsHook,
     handleAddClick,
     handleSetActiveTabClick,
     handleDelete,
     triggerGetChildrenForSecret,
-    handleGetSecretViews,
-    handleDirectLink,
-    handleDirectLinkForChildren,
-    setShowViewersPopup,
-    showViewersPopup,
-    currentSecretViews,
+    handleDirectLink: () => directLinkHook.handleDirectLink(myData, sharedWithMyData, decryptionHook.toggleExpand),
+    handleDirectLinkForChildren: () => directLinkHook.handleDirectLinkForChildren(myData, sharedWithMyData, activeTab, decryptionHook.toggleChildExpand),
     isInit,
     provider,
     userData,
     initDataRaw,
-    decrypting,
-    decryptedMessages,
-    decryptErrors,
-    toggleExpand,
-    expandedId,
-    toggleChildExpand,
-    expandedChildId,
-    decryptingChild,
-    decryptedChildMessages,
-    isLoading,
-    authError,
-    secretViews,
     childrenLoading,
-    itemRefs
+    itemRefs: directLinkHook.itemRefs
   };
 
   return (

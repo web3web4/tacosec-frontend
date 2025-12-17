@@ -11,3 +11,7 @@ export { default as useSecrets } from "@/hooks/useSecrets";
 export { default as useReports } from "@/hooks/useReports";
 export { default as useNotifications } from "@/hooks/useNotifications";
 export { default as useLogger } from "@/hooks/useLogger";
+export { default as useSecretDecryption } from "@/hooks/useSecretDecryption";
+export { default as useSecretViews } from "@/hooks/useSecretViews";
+export { default as useDirectLink } from "@/hooks/useDirectLink";
+export { default as useSecretData } from "@/hooks/useSecretData";
