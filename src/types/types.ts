@@ -564,9 +564,12 @@ export interface AlertsType {
 
 export interface AlertsDetails {
   _id: string;
+  type: AlertType;
   message: string;
   createdAt: string;
   tabName: TabType;
   parentId: string;
   relatedEntityId: string
 }
+
+export type AlertType = "password_shared" | "report_notification"; 

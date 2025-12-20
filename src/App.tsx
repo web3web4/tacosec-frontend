@@ -1,30 +1,30 @@
-import { UserProvider, NavigationGuardProvider, HomeProvider } from "@/context";
+import { UserProvider, NavigationGuardProvider, HomeProvider, SnackbarProvider } from "@/context";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Tracker , { SanitizeLevel } from '@openreplay/tracker';
+import Tracker, { SanitizeLevel } from '@openreplay/tracker';
 import { WalletProvider } from "@/wallet/walletContext";
 import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/components";
-import { Home, AddData, Settings , Dashboard , Users, Secrets, Reports, Notifications, Logger, Alerts } from "@/pages";
+import { Home, AddData, Settings, Dashboard, Users, Secrets, Reports, Notifications, Logger, Alerts } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
-import { config, getAccessToken} from "@/utils";
+import { config, getAccessToken } from "@/utils";
 import { resetAppOnce, startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   resetAppOnce();
-  useEffect(() => { 
+  useEffect(() => {
     const tracker = new Tracker({
-      projectKey: config.OPENREPLAY_PROJECT_KEY,  
+      projectKey: config.OPENREPLAY_PROJECT_KEY,
       obscureTextEmails: true,
       obscureTextNumbers: true,
       obscureInputEmails: true,
       obscureInputDates: true,
       obscureInputNumbers: true,
       domSanitizer: (node: Element) => {
-        const sensitiveClasses = [ "child-date", "password-text", "shared-user", "child-secret", "address-value", "seed-word" ];
+        const sensitiveClasses = ["child-date", "password-text", "shared-user", "child-secret", "address-value", "seed-word"];
         for (let className of sensitiveClasses) {
           if (node.classList.contains(className)) {
-            return SanitizeLevel.Obscured; 
+            return SanitizeLevel.Obscured;
           }
         }
         return SanitizeLevel.Plain;
@@ -42,93 +42,95 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-useEffect(() => {
-  const token = getAccessToken();
-  if (token) {
-    console.log("✅ Starting token auto-refresh loop...");
-    startTokenAutoRefresh();
-  }else{
-    console.warn("⚠️ No access token found on startup.");
-  }
-  return () => stopTokenAutoRefresh();
-}, []);
+  useEffect(() => {
+    const token = getAccessToken();
+    if (token) {
+      console.log("✅ Starting token auto-refresh loop...");
+      startTokenAutoRefresh();
+    } else {
+      console.warn("⚠️ No access token found on startup.");
+    }
+    return () => stopTokenAutoRefresh();
+  }, []);
 
 
 
   return (
     <AppErrorBoundary>
-      <UserProvider>
-        <NavigationGuardProvider>
-          <WalletProvider>
-            <WalletSetup />
-            <Router>
-              <div className="app-container">
-                {isLoading && <Loading />}
+      <SnackbarProvider>
+        <UserProvider>
+          <NavigationGuardProvider>
+            <WalletProvider>
+              <WalletSetup />
+              <Router>
+                <div className="app-container">
+                  {isLoading && <Loading />}
 
-                {!isLoading && (
-                  <>
-                    <HomeProvider>
-                      <Routes>
-                        <Route path="/" element={
-                          <PageErrorBoundary pageName="Home">
-                            <Home />
-                          </PageErrorBoundary>
-                        } />
-                        <Route path="/add" element={
-                          <PageErrorBoundary pageName="AddData">
-                            <AddData />
-                          </PageErrorBoundary>
-                        } />
-                        <Route path="/alerts" element={
-                          <PageErrorBoundary pageName="alerts">
-                            <Alerts />
-                          </PageErrorBoundary>
-                        } />
-                        <Route path="/settings" element={
-                          <PageErrorBoundary pageName="Settings">
-                            <Settings />
-                          </PageErrorBoundary>
-                        } />
-                        <Route path="/dashboard" element={
+                  {!isLoading && (
+                    <>
+                      <HomeProvider>
+                        <Routes>
+                          <Route path="/" element={
+                            <PageErrorBoundary pageName="Home">
+                              <Home />
+                            </PageErrorBoundary>
+                          } />
+                          <Route path="/add" element={
+                            <PageErrorBoundary pageName="AddData">
+                              <AddData />
+                            </PageErrorBoundary>
+                          } />
+                          <Route path="/alerts" element={
+                            <PageErrorBoundary pageName="alerts">
+                              <Alerts />
+                            </PageErrorBoundary>
+                          } />
+                          <Route path="/settings" element={
+                            <PageErrorBoundary pageName="Settings">
+                              <Settings />
+                            </PageErrorBoundary>
+                          } />
+                          <Route path="/dashboard" element={
                             <PageErrorBoundary pageName="Dashboard">
                               <Dashboard />
                             </PageErrorBoundary>
-                        } />
-                        <Route path="/dashboard/users" element={
+                          } />
+                          <Route path="/dashboard/users" element={
                             <PageErrorBoundary pageName="Users">
                               <Users />
                             </PageErrorBoundary>
-                        } />
-                        <Route path="/dashboard/secrets" element={
+                          } />
+                          <Route path="/dashboard/secrets" element={
                             <PageErrorBoundary pageName="Secrets">
                               <Secrets />
                             </PageErrorBoundary>
-                        } />
-                        <Route path="/dashboard/reports" element={
+                          } />
+                          <Route path="/dashboard/reports" element={
                             <PageErrorBoundary pageName="Reports">
                               <Reports />
                             </PageErrorBoundary>
-                        } />
-                        <Route path="/dashboard/notifications" element={
+                          } />
+                          <Route path="/dashboard/notifications" element={
                             <PageErrorBoundary pageName="Notifications">
                               <Notifications />
                             </PageErrorBoundary>
-                        } />
-                        <Route path="/dashboard/logger" element={
+                          } />
+                          <Route path="/dashboard/logger" element={
                             <PageErrorBoundary pageName="Logger">
                               <Logger />
                             </PageErrorBoundary>
-                        } />
-                      </Routes>
-                    </HomeProvider>
-                    <BottomNav />
-                  </>
-                )}
-              </div>
-            </Router>
-          </WalletProvider>
-        </NavigationGuardProvider>
-      </UserProvider>
+                          } />
+                        </Routes>
+                      </HomeProvider>
+                      <BottomNav />
+                    </>
+                  )}
+                </div>
+              </Router>
+            </WalletProvider>
+          </NavigationGuardProvider>
+        </UserProvider>
+      </SnackbarProvider>
     </AppErrorBoundary>
   );
 };
