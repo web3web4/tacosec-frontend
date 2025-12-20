@@ -61,9 +61,9 @@ export default function useSecretDecryption({
     }
   };
 
-  const toggleExpand = async (value: string, id: string) => {
+  const toggleExpand = async (value: string, id: string, isIgnored: boolean = false) => {
     setDecrypting(false);
-    if (expandedId === id) {
+    if (expandedId === id && !isIgnored) {
       setExpandedId(null);
     } else {
       setExpandedId(id);
@@ -98,10 +98,10 @@ export default function useSecretDecryption({
     }
   };
 
-  const toggleChildExpand = async (value: string, childId: string) => {
+  const toggleChildExpand = async (value: string, childId: string, isIgnored: boolean = false) => {
     setDecryptingChild(false);
     await setSecretView(initDataRaw!, childId);
-    if (expandedChildId === childId) {
+    if (expandedChildId === childId && !isIgnored) {
       setExpandedChildId(null);
     } else {
       setExpandedChildId(childId);

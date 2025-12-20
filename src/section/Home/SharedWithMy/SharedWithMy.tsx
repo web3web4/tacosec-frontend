@@ -80,7 +80,7 @@ export default function SharedWithMy() {
               <div ref={(el) => { itemRefs.current[pass.id] = el }} key={pass.id} className="data-item" >
                 <div className="item-container" onClick={() => {
                   recordUserAction(`Expand shared item: ${pass.id}`);
-                  toggleExpand(pass.value, pass.id);
+                  toggleExpand(pass.value, pass.id, false);
                 }}>
                   <div className="item-header-info">
                     <p className="item-title">{pass.key}</p>

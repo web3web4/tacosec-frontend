@@ -11,7 +11,7 @@ export default function useDirectLink() {
   const handleDirectLink = (
     myData: DataItem[],
     sharedWithMyData: SharedWithMyDataType[],
-    toggleExpand: (value: string, id: string) => Promise<void>
+    toggleExpand: (value: string, id: string, isIgnored: boolean) => Promise<void>
   ) => {
     if (directLinkData && processingRef.current !== directLinkData.secretId) {
       const currentId = directLinkData.secretId;
@@ -36,7 +36,7 @@ export default function useDirectLink() {
         }
 
         if (pass) {
-          toggleExpand(pass.value, pass.id);
+          toggleExpand(pass.value, pass.id, true);
         }
 
         // Use requestAnimationFrame or a very short timeout for the scroll
@@ -61,7 +61,7 @@ export default function useDirectLink() {
     myData: DataItem[],
     sharedWithMyData: SharedWithMyDataType[],
     activeTab: TabType,
-    toggleChildExpand: (value: string, childId: string) => Promise<void>
+    toggleChildExpand: (value: string, childId: string, isIgnored: boolean) => Promise<void>
   ) => {
     if (!directLinkData || !directLinkData.ChildId || processingRef.current === directLinkData.ChildId) return;
     
@@ -87,7 +87,7 @@ export default function useDirectLink() {
       }
 
       if (pass) {
-        toggleChildExpand(pass.value, pass._id);
+        toggleChildExpand(pass.value, pass._id, true);
       }
 
       setTimeout(() => {
