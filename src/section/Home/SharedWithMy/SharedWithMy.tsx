@@ -221,31 +221,23 @@ export default function SharedWithMy() {
           </div>
         </div>
       )}
-      { /* Reply Popup */}
-      {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
+      <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />
 
-      { /* Viewers Popup */}
-      {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
+      <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />
 
-      {/* Report User Popup */}
-      {showReportUserPopup && currentReportData && (
-        <ReportUserPopup
-          showReportUserPopup={showReportUserPopup}
-          setShowReportUserPopup={setShowReportUserPopup}
-          onSubmit={(reportData) => submitReport(reportData, initDataRaw!, userData, setSharedWithMyData)}
-          isSubmitting={isSubmitting}
-        />
-      )}
+      <ReportUserPopup
+        showReportUserPopup={showReportUserPopup}
+        setShowReportUserPopup={setShowReportUserPopup}
+        onSubmit={(reportData) => submitReport(reportData, initDataRaw!, userData, setSharedWithMyData)}
+        isSubmitting={isSubmitting}
+      />
 
-      {/* View Reports Popup */}
-      {showViewReportsPopup && currentReportsData && (
-        <ViewReportsPopup
-          showViewReportsPopup={showViewReportsPopup}
-          setShowViewReportsPopup={setShowViewReportsPopup}
-          reports={currentReportsData.reports}
-          secretKey={currentReportsData.secretKey}
-        />
-      )}
+      <ViewReportsPopup
+        showViewReportsPopup={showViewReportsPopup}
+        setShowViewReportsPopup={setShowViewReportsPopup}
+        reports={currentReportsData?.reports || []}
+        secretKey={currentReportsData?.secretKey || ""}
+      />
 
     </div>
   );
