@@ -104,7 +104,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     } else if (secretDataHook.myData.length === 0 && secretDataHook.activeTab === "mydata") {
       secretDataHook.fetchMyData();
     }
-  }, [directLinkData, decryptionHook.toggleExpand]);
+  }, [directLinkData, signer]);
 
   useEffect(() => {
     if (location.pathname === '/' && (previousPath === '/add' || previousPath === '/settings')) {
