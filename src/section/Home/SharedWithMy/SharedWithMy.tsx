@@ -36,6 +36,7 @@ export default function SharedWithMy() {
     toggleChildExpand,
     handleDirectLink,
     toggleExpand,
+    directLinkData
   } = useHome();
   const {
     showViewReportsPopup,
@@ -58,7 +59,7 @@ export default function SharedWithMy() {
 
   useEffect(() => {
     if (address && signer) handleDirectLink();
-  }, [address, signer]);
+  }, [address, signer, directLinkData]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {

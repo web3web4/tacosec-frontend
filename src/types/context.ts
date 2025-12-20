@@ -35,6 +35,7 @@ export interface HomeContextType {
   secretViews: Record<string, SecretViews>;
   childrenLoading: Record<string, boolean>;
   itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
+  directLinkData: DirectLinkData | null;
 }
 
 export interface UserContextType {

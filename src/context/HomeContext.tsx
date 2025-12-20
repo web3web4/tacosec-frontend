@@ -168,6 +168,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     userData,
     initDataRaw,
     childrenLoading,
+    directLinkData,
     itemRefs: directLinkHook.itemRefs
   };
 
