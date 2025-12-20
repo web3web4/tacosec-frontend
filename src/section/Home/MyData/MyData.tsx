@@ -31,7 +31,8 @@ export default function MyData() {
     decryptedChildMessages,
     secretViews,
     childrenLoading,
-    itemRefs
+    itemRefs,
+    directLinkData
   } = useHome();
   const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({ parentSecretId: "", parentAddress: "", shareWith: [] });
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
@@ -42,7 +43,7 @@ export default function MyData() {
 
   useEffect(() => {
     if (address && signer) handleDirectLink();
-  }, [address, signer]);
+  }, [address, signer, directLinkData]);
 
   const handleCopy = (text: string) => {
     copyToClipboard(
@@ -67,7 +68,7 @@ export default function MyData() {
           <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
             <div className="item-container" onClick={() => {
               recordUserAction(`Expand item: ${item.id}`);
-              toggleExpand(item.value, item.id);
+              toggleExpand(item.value, item.id, false);
             }}>
               <div className="item-header-info">
                 <p className="item-title">{item.key}</p>

@@ -36,6 +36,7 @@ export default function SharedWithMy() {
     toggleChildExpand,
     handleDirectLink,
     toggleExpand,
+    directLinkData
   } = useHome();
   const {
     showViewReportsPopup,
@@ -58,7 +59,7 @@ export default function SharedWithMy() {
 
   useEffect(() => {
     if (address && signer) handleDirectLink();
-  }, [address, signer]);
+  }, [address, signer, directLinkData]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -79,7 +80,7 @@ export default function SharedWithMy() {
               <div ref={(el) => { itemRefs.current[pass.id] = el }} key={pass.id} className="data-item" >
                 <div className="item-container" onClick={() => {
                   recordUserAction(`Expand shared item: ${pass.id}`);
-                  toggleExpand(pass.value, pass.id);
+                  toggleExpand(pass.value, pass.id, false);
                 }}>
                   <div className="item-header-info">
                     <p className="item-title">{pass.key}</p>

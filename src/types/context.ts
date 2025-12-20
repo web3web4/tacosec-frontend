@@ -25,7 +25,7 @@ export interface HomeContextType {
   decrypting: boolean;
   decryptedMessages: Record<string, string>;
   decryptErrors: Record<string, string>;
-  toggleExpand: (value: string, id: string) => Promise<void>;
+  toggleExpand: (value: string, id: string, isIgnored: boolean) => Promise<void>;
   expandedId: string | null;
   toggleChildExpand: (value: string, childId: string) => void;
   expandedChildId: string | null;
@@ -35,6 +35,7 @@ export interface HomeContextType {
   secretViews: Record<string, SecretViews>;
   childrenLoading: Record<string, boolean>;
   itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
+  directLinkData: DirectLinkData | null;
 }
 
 export interface UserContextType {
