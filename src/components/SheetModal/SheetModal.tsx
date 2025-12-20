@@ -31,19 +31,26 @@ export default function SheetModal({
         };
     }, [open]);
 
-    // Animation effect
+    // Handle rendering state
     useEffect(() => {
         if (open) {
             setShouldRender(true);
-            const timer = setTimeout(() => {
-                setIsAnimating(true);
-            }, 10);
-            return () => clearTimeout(timer);
-        } else if (shouldRender) {
+        } else {
             setIsAnimating(false);
             const timer = setTimeout(() => {
                 setShouldRender(false);
             }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [open]);
+
+    // Handle animation trigger
+    useEffect(() => {
+        if (open && shouldRender) {
+            // Use a small timeout to ensure the DOM has been updated and painted
+            const timer = setTimeout(() => {
+                setIsAnimating(true);
+            }, 50);
             return () => clearTimeout(timer);
         }
     }, [open, shouldRender]);
