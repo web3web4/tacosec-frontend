@@ -82,6 +82,7 @@ export default function useAlerts() {
   const getDateText = (createdAt: string) => formatDate(createdAt);
 
   const handleClick = (item: AlertsDetails) => {
+    if(item.type === "report_notification") return;
     navigate("/");
     setDirectLinkData({
       secretId: item.parentId ? item.parentId : item.relatedEntityId,

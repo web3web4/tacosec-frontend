@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useUser } from '@/context';
+import { useUser, useSnackbar } from '@/context';
 import { DataItem, SharedWithMyDataType, TabType } from '@/types/types';
 
 export default function useDirectLink() {
   const { directLinkData, setDirectLinkData } = useUser();
+  const { showSnackbar } = useSnackbar();
   const location = useLocation();
   const itemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -38,6 +39,10 @@ export default function useDirectLink() {
             if (!directLinkData.ChildId) setDirectLinkData(null);
           }, 500);
         }, 1000);
+      } else {
+        // Element not found, likely deleted or not in this tab
+        showSnackbar("Secret not found or deleted");
+        setDirectLinkData(null);
       }
     }
   };
@@ -78,6 +83,10 @@ export default function useDirectLink() {
           setDirectLinkData(null);
         }, 500);
       }, 1000);
+    } else {
+      // Child element not found
+      showSnackbar("Secret not found or deleted");
+      setDirectLinkData(null);
     }
   };
 
