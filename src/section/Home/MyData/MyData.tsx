@@ -60,8 +60,8 @@ export default function MyData() {
 
   return (
     <div className="data-list">
-      {showReplyPopup && <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />}
-      {showViewersPopup && <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />}
+      <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />
+      <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />
       {myData.length > 0 ? (
         myData.map((item, i) => (
           <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
