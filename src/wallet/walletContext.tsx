@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react";
-import { loginUserWeb, storagePublicKeyAndPassword } from "@/services";
+import { loginUserWeb, storagePublicKeyAndPassword, getChallangeForLogin, publicAddressChallange } from "@/services";
 import { encryptSeed, restoreWallet } from "@/utils";
 import { useUser } from "@/context";
 import { ethers } from "ethers";
@@ -114,11 +114,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setSeedBackupDone(wallet.address, false);
 
       try {
-        const message = `Login to Taco App: ${Date.now()}`;
+        const challangeForLogin = await getChallangeForLogin(wallet.address);
+        const message = challangeForLogin.challange;
         const signature = await wallet.signMessage(message);
         await loginUserWeb(wallet.address, signature);
         saveEncryptedSeed(wallet.address, encrypted);
       } catch (err) {
+        handleSilentError(err, 'getChallangeForLogin');
         handleSilentError(err, 'loginUserWeb');
       }
     } else {
@@ -128,7 +130,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
 
-    const message = `save password to TacoSec App: ${wallet.address}:${Date.now()}`;
+    const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
+    const message = publicAddressChallangeResponse.data.challange;
     let signature: string | undefined;
     if (wallet) {
       signature = await wallet.signMessage(message);

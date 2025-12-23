@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { loginUserWeb, storagePublicKeyAndPassword } from "@/services";
+import { getChallangeForLogin, loginUserWeb, publicAddressChallange, storagePublicKeyAndPassword } from "@/services";
 import { importWalletFlow } from "@/wallet/ImportWallet";
 import { initDataType } from "@/types/types";
 import { handleSilentError } from "@/utils";
@@ -80,7 +80,8 @@ export async function handleWalletImport({
 
     if (isBrowser) {
       try {
-        const message = `Login to Taco App: ${Date.now()}`;
+        const challangeForLogin = await getChallangeForLogin(wallet.address);
+        const message = challangeForLogin.challange;
         const signature = await wallet.signMessage(message);
         await loginUserWeb(wallet.address, signature);
       } catch (err) {
@@ -129,7 +130,8 @@ export async function handleWalletImport({
     // Only send the public address (not the password) when importing from one place to another
     try {
       // Generate signature for wallet import verification
-      const message = `Import wallet to TacoSec App: ${wallet.address}:${Date.now()}`;
+      const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
+      const message = publicAddressChallangeResponse.data.challange;
       const signature = await wallet.signMessage(message);
       
       // Call storagePublicKeyAndPassword with public key and signature
