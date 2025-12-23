@@ -1,4 +1,4 @@
-import type { initDataType, AuthDataType, UserDetails } from "@/types/types";
+import type { initDataType, AuthDataType, UserDetails , ChallangeForLoginResponse } from "@/types/types";
 import { handleApiCall, config } from "@/utils";
 import { getRefreshToken, setTokens, getAccessToken, clearTokens, isTokenExpiring } from "@/utils/cookieManager";
 
@@ -135,4 +135,24 @@ export async function loginUserWeb(publicAddress: string, signature: string): Pr
   }
 
   return authData;
+}
+
+
+/**
+ * Get challange for login
+ */
+
+export async function getChallangeForLogin(publicAddress: string): Promise<ChallangeForLoginResponse> {
+  const headers = await getAuthHeaders();
+  
+  const challangeForLogin = await handleApiCall<ChallangeForLoginResponse>(async () => {
+    const response = await fetch(`${API_BASE_URL}/auth/challange`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ publicAddress: publicAddress }),
+    });
+    return response;
+  });
+
+  return challangeForLogin;
 }
