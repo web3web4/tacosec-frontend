@@ -117,11 +117,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         const challangeForLogin = await getChallangeForLogin(wallet.address);
         const message = challangeForLogin.challange;
         const signature = await wallet.signMessage(message);
+        if (!signature) throw new Error("Signature is required");
         await loginUserWeb(wallet.address, signature);
         saveEncryptedSeed(wallet.address, encrypted);
       } catch (err) {
         handleSilentError(err, 'getChallangeForLogin');
         handleSilentError(err, 'loginUserWeb');
+        throw err;
       }
     } else {
       setSeedBackupDone(userData?.user?.telegramId || "", false);

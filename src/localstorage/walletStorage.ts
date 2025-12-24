@@ -40,3 +40,7 @@ export function removeEncryptedSeed(identifier: string) {
 export function removeSeedBackupDone(identifier: string) {
   localStorage.removeItem(`seedBackupDone-${identifier}`);
 }
+
+export function removeBrowserUserId() {
+  localStorage.removeItem("browser-user-id");
+}

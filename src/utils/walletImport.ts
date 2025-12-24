@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { getChallangeForLogin, loginUserWeb, publicAddressChallange, storagePublicKeyAndPassword } from "@/services";
 import { importWalletFlow } from "@/wallet/ImportWallet";
 import { initDataType } from "@/types/types";
-import { handleSilentError } from "@/utils";
+import { handleSilentError, removeBrowserUserId, removeEncryptedSeed, removeSeedBackupDone, saveEncryptedSeed, setPublicAddressInStorage, setSeedBackupDone } from "@/utils";
 
 type ImportParams = {
   importedMnemonic: string;
@@ -83,22 +83,24 @@ export async function handleWalletImport({
         const challangeForLogin = await getChallangeForLogin(wallet.address);
         const message = challangeForLogin.challange;
         const signature = await wallet.signMessage(message);
+        if (!signature) throw new Error("signature is required");
         await loginUserWeb(wallet.address, signature);
       } catch (err) {
         console.error("Web login failed:", err);
+        throw err;
       }
 
-      // Always save wallet data with wallet address as key for browser users
+      // save wallet data with wallet address as key for browser users
       // This ensures data persists after refresh
-      localStorage.setItem(`encryptedSeed-${wallet.address}`, encrypted);
-      localStorage.setItem(`seedBackupDone-${wallet.address}`, "true");
-      localStorage.setItem("publicAddress", wallet.address || "");
+      saveEncryptedSeed(wallet.address, encrypted);
+      setSeedBackupDone(wallet.address, true);
+      setPublicAddressInStorage(wallet.address || "");
       
       // If identifier was different from wallet address, clean up old keys
       if (identifier !== wallet.address) {
-        localStorage.removeItem(`encryptedSeed-${identifier}`);
-        localStorage.removeItem(`seedBackupDone-${identifier}`);
-        localStorage.removeItem("browser-user-id");
+        removeEncryptedSeed(identifier || "");
+        removeSeedBackupDone(identifier || "");
+        removeBrowserUserId();
       }
       
       // Ensure savePasswordInBackend is saved if provided
@@ -133,7 +135,7 @@ export async function handleWalletImport({
       const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
       const message = publicAddressChallangeResponse.data.challange;
       const signature = await wallet.signMessage(message);
-      
+      if (!signature) throw new Error("signature is required");
       // Call storagePublicKeyAndPassword with public key and signature
       // This is for cross-platform wallet import (web to Telegram or vice versa)
       // For web users, authentication is already set up via loginUserWeb
@@ -145,6 +147,7 @@ export async function handleWalletImport({
     } catch (err) {
       // Silently handle errors - don't block the import process if storage fails
       handleSilentError(err, 'storagePublicKeyAndPassword on import');
+      throw err;
     }
 
     onDone?.();
