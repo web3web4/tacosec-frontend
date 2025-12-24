@@ -129,10 +129,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
+    
 
     const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
     const message = publicAddressChallangeResponse.data.challange;
     const signature = await wallet.signMessage(message);
+
+    if (!signature) throw new Error("signature is required");
 
     const data = saveToBackend
       ? (() => {
@@ -148,6 +151,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       await storagePublicKeyAndPassword(data, initDataRaw || "");
     } catch (err) {
       handleSilentError(err, 'storagePublicKeyAndPassword');
+      throw err;
     }
 
     setHasWallet(true);
