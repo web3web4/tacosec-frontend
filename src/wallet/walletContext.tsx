@@ -132,20 +132,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
     const message = publicAddressChallangeResponse.data.challange;
-    let signature: string | undefined;
-    if (wallet) {
-      signature = await wallet.signMessage(message);
-    }
-    
+    const signature = await wallet.signMessage(message);
+
     const data = saveToBackend
       ? (() => {
         // Encrypt password using public key + SALT for secure transmission
         const SALT = config.TG_SECRET_SALT || "default_salt";
         const encryptionKey = wallet.address + "|" + SALT;
         const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
-        return { publicKey: wallet.address, signature , secret: encryptedPassword };
+        return { publicKey: wallet.address, signature:signature , secret: encryptedPassword };
       })()
-      : { publicKey: wallet.address };
+      : { publicKey: wallet.address , signature:signature };
 
     try {
       await storagePublicKeyAndPassword(data, initDataRaw || "");
