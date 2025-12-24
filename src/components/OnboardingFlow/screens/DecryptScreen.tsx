@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MdLock, MdLockOpen, MdArrowBack, MdExpandMore, MdExpandLess, MdRestorePage } from 'react-icons/md';
-import { getIdentifier, decryptMnemonic, MetroSwal } from '@/utils';
+import { getIdentifier, decryptMnemonic, MetroSwal, getSavedPasswordPreference, getEncryptedSeed } from '@/utils';
 import { useUser } from '@/context';
 import { useWallet } from '@/wallet/walletContext';
 import { getPublicAddresses } from '@/services';
@@ -27,7 +27,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
   // Check if user can restore from server
-  const canRestoreFromServer = localStorage.getItem('savePasswordInBackend') === 'true';
+  const canRestoreFromServer = getSavedPasswordPreference();
 
   // Helper function to fetch latest secret and publicKey from server
   const fetchLatestSecret = async (): Promise<{ secret: string; publicKey: string } | null> => {
@@ -71,9 +71,9 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
     setError('');
 
     try {
-      const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
-      if (!encrypted) {
-        setError('No encrypted seed found');
+      const encrypted = getEncryptedSeed(identifier || "");
+      if (!encrypted || encrypted === null) {
+        setError('We couldn\'t find a saved seed on this device.');
         setIsLoading(false);
         return;
       }
