@@ -1,4 +1,4 @@
-import { formatAddress, getIdentifier, recordUserAction, copyToClipboard } from "@/utils";
+import { formatAddress, getIdentifier, recordUserAction, copyToClipboard, getEncryptedSeed } from "@/utils";
 import { SectionErrorBoundary, OnboardingFlow, SheetModal } from "@/components";
 import { clearTokens } from "@/utils/cookieManager";
 import { useWallet } from "@/wallet/walletContext";
@@ -45,8 +45,8 @@ const Settings: React.FC = () => {
       });
       return;
     }
-    const encrypted = localStorage.getItem(`encryptedSeed-${identifier}`);
-    if (!encrypted) {
+    const encrypted = getEncryptedSeed(identifier || "");
+    if (!encrypted || encrypted === null) {
       MetroSwal.fire({
         icon: 'error',
         title: 'Error',

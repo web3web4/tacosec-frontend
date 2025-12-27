@@ -5,7 +5,8 @@ import type {
   AddInformationUser,
   AddInformationUserResponse, 
   AlertsType,
-  Report
+  Report,
+  PublicAddressChallangeResponse
 } from "@/types/types";
 import { handleApiCall, config } from "@/utils";
 import { getAuthHeaders } from "@/services/auth/authService";
@@ -138,4 +139,22 @@ export async function reportUser(initData: string, report: Report): Promise<void
     });
     return response;
   });
+}
+
+
+export async function publicAddressChallange(publicAddress: string , initData: string): Promise<PublicAddressChallangeResponse> {
+  const headers = await getAuthHeaders(initData);
+
+  if (!headers['Authorization'] && !headers['X-Telegram-Init-Data']) {
+    throw new Error('Authentication required');
+  }
+  
+  return handleApiCall<PublicAddressChallangeResponse>(async () => {
+    const response = await fetch(`${API_BASE_URL}/public-addresses/challange`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ publicAddress:publicAddress }),
+    });
+    return response;
+  }, 'Failed to get public address challange');
 }

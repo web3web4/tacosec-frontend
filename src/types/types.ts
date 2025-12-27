@@ -224,7 +224,7 @@ export interface SharedWithMeResponse {
 export interface StoragePublicKeyData {
   publicKey: string;
   secret?: string;
-  signature?: string;
+  signature: string;
 }
 
 export interface ContractSupportResponse {
@@ -573,3 +573,18 @@ export interface AlertsDetails {
 }
 
 export type AlertType = "password_shared" | "report_notification"; 
+
+export interface ChallangeForLoginResponse {
+  expiresAt: string;
+  expiresInMinutes: number;
+  challange: string;
+}
+
+export interface PublicAddressChallangeResponse {
+  success: boolean;
+  data: {
+    challange: string;
+    expiresAt: string;
+    expiresInMinutes: number;
+  }
+}

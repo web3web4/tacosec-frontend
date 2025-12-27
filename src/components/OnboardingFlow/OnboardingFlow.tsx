@@ -23,7 +23,7 @@ import {
 } from "@/localstorage/walletStorage";
 
 import './OnboardingFlow.css';
-import { storagePublicKeyAndPassword, loginUserWeb } from '@/services';
+import { storagePublicKeyAndPassword, loginUserWeb, publicAddressChallange, getChallangeForLogin } from '@/services';
 import CryptoJS from 'crypto-js';
 import { config } from '@/utils/config';
 
@@ -294,7 +294,8 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         const SALT = config.TG_SECRET_SALT || "default_salt";
         const encryptionKey = wallet.address + "|" + SALT;
         const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
-        const message = `save password to TacoSec App: ${wallet.address}:${Date.now()}`;
+        const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
+        const message = publicAddressChallangeResponse.data.challange;
         const signature = await wallet.signMessage(message);
         try {
           await storagePublicKeyAndPassword(
@@ -311,16 +312,18 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         if (isBrowser) {
           try {
             // loginUserWeb will internally set new tokens in cookies
-            const message = `Login to TacoSec App: ${Date.now()}`;
-            const loginSignature = await wallet.signMessage(message);
-            await loginUserWeb(wallet.address, loginSignature);
+            const challangeForLogin = await getChallangeForLogin(wallet.address);
+            const message = challangeForLogin.challange;
+            const signature = await wallet.signMessage(message);
+            await loginUserWeb(wallet.address, signature);
           } catch (err) {
             console.error('Failed to refresh web login after password reset:', err);
           }
         }
 
         // Generate signature for wallet import verification
-        const message = `Import wallet to TacoSec App: ${wallet.address}:${Date.now()}`;
+        const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
+        const message = publicAddressChallangeResponse.data.challange;
         const signature = await wallet.signMessage(message);
 
         // Call storagePublicKeyAndPassword with public key and signature
