@@ -46,24 +46,23 @@ const Users: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-const handleBanClick = async (userId: string, isActive: boolean) => {
-  try {
-    const res = await toggleActiveStatus(userId, isActive);
-    console.log('Response:', res);
-    if (res?.success) {
+  const handleBanClick = async (userId: string, isActive: boolean) => {
+    try {
+      const res = await toggleActiveStatus(userId, isActive);
+      if (res?.success) {
+        MetroSwal.fire({
+          title: isActive ? "User unbanned successfully" : "User banned successfully",
+          icon: "success",
+        });
+      }
+    } catch (error) {
       MetroSwal.fire({
-        title: isActive ? "User unbanned successfully" : "User banned successfully",
-        icon: "success",
+        title: "Error",
+        text: "Failed to change user status ",
+        icon: "error",
       });
     }
-  } catch (error) {
-    MetroSwal.fire({
-      title: "Error",
-      text: "Failed to change user status ",
-      icon: "error",
-    });
-  }
-};
+  };
 
 
 
@@ -145,21 +144,21 @@ const handleBanClick = async (userId: string, isActive: boolean) => {
       render: (_value, row) => (
         <div className="action-buttons">
           <div className="action-button action-edit"
-           title="Approve User"
-           onClick={() => {
-            handleBanClick(row._id , true);
-            recordUserAction('approve_user');
-           }}
-           >
+            title="Approve User"
+            onClick={() => {
+              handleBanClick(row._id, true);
+              recordUserAction('approve_user');
+            }}
+          >
             <MdCheck />
-            
+
           </div>
           <div className="action-button action-ban"
-           title="Ban User"
-           onClick={() => {
-            handleBanClick(row._id , false);
-            recordUserAction('ban_user');
-           }}
+            title="Ban User"
+            onClick={() => {
+              handleBanClick(row._id, false);
+              recordUserAction('ban_user');
+            }}
           >
             <MdBlock />
           </div>
@@ -245,16 +244,16 @@ const handleBanClick = async (userId: string, isActive: boolean) => {
 
         {loading && <div className="loading">Loading users...</div>}
         {error && <div className="error">{error}</div>}
-        
-      {!loading && !error && (
-        <Table<UserData>
-          columns={columns}
-          data={filteredUsers}
-          pagination={true}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+
+        {!loading && !error && (
+          <Table<UserData>
+            columns={columns}
+            data={filteredUsers}
+            pagination={true}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         )}
       </div>
     </div>

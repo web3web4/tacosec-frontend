@@ -36,7 +36,6 @@ export default function ViewersPopup({
   };
 
   const renderViewer = (viewer: ViewDetails) => {
-    console.log(viewer)
     const formattedDate =
       viewer.type === "viewed" && viewer.viewedAt
         ? formatDate(viewer.viewedAt)
