@@ -1735,7 +1735,7 @@
     bech32 "1.1.4"
     ws "7.4.6"
 
-"@ethersproject/providers@^5.7.2", "@ethersproject/providers@^5.8.0":
+"@ethersproject/providers@^5.8.0":
   version "5.8.0"
   resolved "https://registry.npmjs.org/@ethersproject/providers/-/providers-5.8.0.tgz"
   integrity sha512-3Il3oTzEx3o6kzcg9ZzbE+oCZYyY+3Zh83sKkn4s1DZfTUjIegHnN2Cm0kbn9YFy45FDVcuCLLONhU7ny0SsCw==
@@ -2427,138 +2427,50 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nucypher-experimental2/shared@0.6.0-alpha.3", "@nucypher-experimental2/shared@workspace:*":
-  version "0.6.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/shared/-/shared-0.6.0-alpha.3.tgz#04922c062d1a1af1cad2a1c2924020a5b34c49e7"
-  integrity sha512-q3OrexYu/iXKV4zngi5USrYKRh9KCErhwo90LGXn5s89EM8rU0fYQ9WdWQjRNZ9dcge2+m4Q45f8UovA3MZ4rA==
+"@nucypher/nucypher-contracts@^0.26.0-alpha.2":
+  version "0.26.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-contracts/-/nucypher-contracts-0.26.0-alpha.2.tgz#e51b79f2861b97f0849b53f78a6aabdf78e1845d"
+  integrity sha512-Vo5AeJ+7iqj1PNpIKfgajkVK7BGNETre8fxDtKyYSaW+9SNXh5ext7eacdvDRdQg/EDmhk0IItch1wXVyVydtQ==
+
+"@nucypher/nucypher-core@^0.15.1-dev.3":
+  version "0.15.1-dev.3"
+  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-core/-/nucypher-core-0.15.1-dev.3.tgz#a4ad9372e0e8ce869b02b9c2384819a5b2ac1e6a"
+  integrity sha512-0MJ8XvH2X5OyEx+f2i9A2iA+KosHzxZbOt8V3Ye6ZDlMC5N4aeDOEJ02ftwnc0C0NO0CPqTuLlYGbrreW57K+w==
+
+"@nucypher/shared@0.6.0-alpha.5":
+  version "0.6.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@nucypher/shared/-/shared-0.6.0-alpha.5.tgz#3f47642697ffb824bd4d2b0121c2c7591292af7e"
+  integrity sha512-gCIKkyMNgczKLL2xKN6sZFXWFCxZG1b8vSwiEVwwOLUv8aIrm0HcK6PjfvE4Ko4IsMzdhwGV2h05N6x7HCz9CQ==
   dependencies:
     "@ethersproject/abi" "^5.8.0"
     "@ethersproject/providers" "^5.8.0"
-    "@nucypher/nucypher-contracts" "0.26.0-alpha.1"
-    "@nucypher/nucypher-core" "^0.14.5"
+    "@nucypher/nucypher-contracts" "^0.26.0-alpha.2"
+    "@nucypher/nucypher-core" "^0.15.1-dev.3"
     axios "^1.8.4"
     deep-equal "^2.2.3"
     ethers "^5.8.0"
     qs "^6.14.0"
     zod "^3.24.2"
 
-"@nucypher-experimental2/shared@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/shared/-/shared-0.5.0.tgz#5dec1584d0eb88f5ef5e2cc1300511cf31b892b7"
-  integrity sha512-RyzcNQ6OJ5wXstQW7e4Ysx9DnSxhtdlr+QzQpqhVdnT7tRNOKsUg/RPmheZOXPW9AQYARy8B5LCN3fGgMEaaFg==
-  dependencies:
-    "@ethersproject/abi" "^5.8.0"
-    "@ethersproject/providers" "^5.8.0"
-    "@nucypher/nucypher-contracts" "0.26.0-alpha.1"
-    "@nucypher/nucypher-core" "^0.14.5"
-    axios "^1.8.4"
-    deep-equal "^2.2.3"
-    ethers "^5.8.0"
-    qs "^6.14.0"
-    zod "^3.24.2"
-
-"@nucypher-experimental2/taco-auth@^0.4.0-alpha.2", "@nucypher-experimental2/taco-auth@workspace:*":
-  version "0.4.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/taco-auth/-/taco-auth-0.4.0-alpha.2.tgz#c9fafbdf52ed21d35001edf354bb6e0ded403f17"
-  integrity sha512-jiL5BzXl36CNoFuOiLh3rIXA1sa+rfmN5a3zvnIyTmm1aNdXg4aQ9dWq4FCMWoQj3BBn2+UPV4Tf59GohVjDDw==
+"@nucypher/taco-auth@0.4.0-alpha.5":
+  version "0.4.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@nucypher/taco-auth/-/taco-auth-0.4.0-alpha.5.tgz#b667109dd3ceae04b225b35aa5ebc7ff7a363b81"
+  integrity sha512-SPKWO3b3BttzFoepLVxJiIYN7vjDh0UiEQRowQIxr3M652ZZpc3PMiDqNkFI6BP50CxLqMKnjD0TW6NQsLejug==
   dependencies:
     "@ethersproject/abstract-signer" "^5.8.0"
-    "@nucypher-experimental2/shared" "0.6.0-alpha.3"
+    "@nucypher/shared" "0.6.0-alpha.5"
     siwe "^3.0.0"
     zod "^3.24.2"
 
-"@nucypher-experimental2/taco@^0.7.0-alpha.2":
-  version "0.7.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@nucypher-experimental2/taco/-/taco-0.7.0-alpha.2.tgz#fc0ae9ea99052b10bc581321326eb2ab0af28c87"
-  integrity sha512-Guqy4WaYcJ9p1aSLC9tJgZ3z3C/HPVHu91bsJji+gc9XDSCBWXnW5nic2IJ75ydJ6cxM7rlpm5sENw7K045M7A==
+"@nucypher/taco@0.7.0-alpha.5":
+  version "0.7.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@nucypher/taco/-/taco-0.7.0-alpha.5.tgz#77151d0d89a1042fccde81b1df50fb90313e411e"
+  integrity sha512-y2ls4ruHJ+ZSgw1Nzcsot30TP5VqoNpJzsfso8xXX7ogKAIklMS2oqv76pYkSh6Ou14Zwc5K9F/V/XucX9Mewg==
   dependencies:
     "@astronautlabs/jsonpath" "^1.1.2"
-    "@nucypher-experimental2/shared" "workspace:*"
-    "@nucypher-experimental2/taco-auth" "workspace:*"
-    "@nucypher/nucypher-core" "^0.14.5"
-    ethers "^5.8.0"
-    semver "^7.7.1"
-    zod "^3.24.2"
-
-"@nucypher/nucypher-contracts@0.26.0-alpha.1":
-  version "0.26.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-contracts/-/nucypher-contracts-0.26.0-alpha.1.tgz#29ef0f9a8f8bff6d638ac7ce011792e757900f6f"
-  integrity sha512-ISS66SyKbDLXFF88Z6k8Tnc/L6Shx6tq22CjPpovbSD2PGS/UzE3uDxvFTKZfgcIJYsi7GV/ho2Brsx4sHYTLg==
-
-"@nucypher/nucypher-contracts@^0.23.0":
-  version "0.23.0"
-  resolved "https://registry.npmjs.org/@nucypher/nucypher-contracts/-/nucypher-contracts-0.23.0.tgz"
-  integrity sha512-vilcgICbFzSP2x5otEJHzmaKsbX4t6DIU8aj4U33taTeCdR62LDFS6tCG1r+XzgSmIJZO8ksO5bGzaEHF+r1Ww==
-
-"@nucypher/nucypher-contracts@^0.25.0":
-  version "0.25.0"
-  resolved "https://registry.npmjs.org/@nucypher/nucypher-contracts/-/nucypher-contracts-0.25.0.tgz"
-  integrity sha512-4fRPKY6RzkXY1Zv2O0auJZsvP6z7tuj+Fsy83yJvADqFwRuIJfSlwgSgLwISX6q838SRG/Ve2i+sMLZRaVJfYw==
-
-"@nucypher/nucypher-core@*", "@nucypher/nucypher-core@^0.14.5":
-  version "0.14.5"
-  resolved "https://registry.npmjs.org/@nucypher/nucypher-core/-/nucypher-core-0.14.5.tgz"
-  integrity sha512-Q3kBuJL0qtTtnxrM5DEQauQUvDlXmwubm9u1h7gbyLhs+aZNC9WDyjEUbE43+uahlHu4k1hKEMxD1gjV165ChA==
-
-"@nucypher/shared@0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@nucypher/shared/-/shared-0.4.0.tgz"
-  integrity sha512-hy3q91TY6T9ZQVUXvzlzTJu+dWvikdy+g6NffW+nAuT6e670/R16F7lD1yw1kLn3YdALX3ueDmXD5YFlF21XBQ==
-  dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/providers" "^5.7.2"
-    "@nucypher/nucypher-contracts" "^0.23.0"
-    "@nucypher/nucypher-core" "*"
-    axios "^1.6.8"
-    deep-equal "^2.2.3"
-    ethers "*"
-    qs "^6.12.1"
-    zod "*"
-
-"@nucypher/shared@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.npmjs.org/@nucypher/shared/-/shared-0.5.0.tgz"
-  integrity sha512-Y+0oEgVtoud4BP/pvj2elPm5igrQ8AAUwYYmUiLpXNqQMRF4zFnYaGbl+xhKk45CYG8S9cDKJEN8nopzVADTNw==
-  dependencies:
-    "@ethersproject/abi" "^5.8.0"
-    "@ethersproject/providers" "^5.8.0"
-    "@nucypher/nucypher-contracts" "^0.25.0"
-    "@nucypher/nucypher-core" "^0.14.5"
-    axios "^1.8.4"
-    deep-equal "^2.2.3"
-    ethers "^5.8.0"
-    qs "^6.14.0"
-    zod "^3.24.2"
-
-"@nucypher/taco-auth@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@nucypher/taco-auth/-/taco-auth-0.3.0.tgz"
-  integrity sha512-z3s7kzshUkR/F5Xd0/TBFePvqW0sweta+WbZ5I+4OGsMrS2TkWm4uamvhf+NYhi3jvPjOplTWUbBH99JDCd+AQ==
-  dependencies:
-    "@ethersproject/abstract-signer" "^5.8.0"
-    "@nucypher/shared" "0.5.0"
-    siwe "^3.0.0"
-    zod "^3.24.2"
-
-"@nucypher/taco-auth@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/@nucypher/taco-auth/-/taco-auth-0.2.0.tgz"
-  integrity sha512-TW4RkF8ayeeZyVyLGoRLF1v85/e1th8zSQ9O8E1RcYdbXeKZcGv6J8/iKwaFxtqAf0GTKdGlk1d5pgeF/+khPQ==
-  dependencies:
-    "@ethersproject/abstract-signer" "^5.7.0"
-    "@nucypher/shared" "0.4.0"
-    siwe "^2.3.2"
-    zod "^3.22.4"
-
-"@nucypher/taco@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/@nucypher/taco/-/taco-0.6.0.tgz"
-  integrity sha512-LehkMgoM7VDgqg3kqvMX8PFOiVgyFMVAqsbdbcffj31z2tf7C0q8RBinj61YDaLotx++py6us6M+T2cJAywnaA==
-  dependencies:
-    "@astronautlabs/jsonpath" "^1.1.2"
-    "@nucypher/nucypher-core" "^0.14.5"
-    "@nucypher/shared" "0.5.0"
-    "@nucypher/taco-auth" "0.3.0"
+    "@nucypher/nucypher-core" "^0.15.1-dev.3"
+    "@nucypher/shared" "0.6.0-alpha.5"
+    "@nucypher/taco-auth" "0.4.0-alpha.5"
     ethers "^5.8.0"
     semver "^7.7.1"
     zod "^3.24.2"
@@ -2672,16 +2584,6 @@
   integrity sha512-OAPJUAtgeINhh/TAlUID4QTs53Njm7xzddaVlEs/SXwgtiD1tW22zAB/W1wdqfrpmikgaWQ9Fw6Ws+hsiRm5Vg==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
-
-"@spruceid/siwe-parser@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@spruceid/siwe-parser/-/siwe-parser-2.1.2.tgz"
-  integrity sha512-d/r3S1LwJyMaRAKQ0awmo9whfXeE88Qt00vRj91q5uv5ATtWIQEGJ67Yr5eSZw5zp1/fZCXZYuEckt8lSkereQ==
-  dependencies:
-    "@noble/hashes" "^1.1.2"
-    apg-js "^4.3.0"
-    uri-js "^4.4.1"
-    valid-url "^1.0.9"
 
 "@spruceid/siwe-parser@^3.0.0":
   version "3.0.0"
@@ -3658,7 +3560,7 @@ anymatch@^3.0.3, anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-apg-js@^4.3.0, apg-js@^4.4.0:
+apg-js@^4.4.0:
   version "4.4.0"
   resolved "https://registry.npmjs.org/apg-js/-/apg-js-4.4.0.tgz"
   integrity sha512-fefmXFknJmtgtNEXfPwZKYkMFX4Fyeyz+fNF6JWp87biGOPslJbCBVU158zvKRZfHBKnJDy8CMM40oLFGkXT8Q==
@@ -3873,13 +3775,13 @@ axe-core@^4.10.0:
   resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.10.3.tgz"
   integrity sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==
 
-axios@^1.6.8, axios@^1.8.4:
-  version "1.8.4"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.8.4.tgz"
-  integrity sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==
+axios@^1.8.4:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.2.tgz#9ada120b7b5ab24509553ec3e40123521117f687"
+  integrity sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==
   dependencies:
     follow-redirects "^1.15.6"
-    form-data "^4.0.0"
+    form-data "^4.0.4"
     proxy-from-env "^1.1.0"
 
 axobject-query@^4.1.0:
@@ -4317,9 +4219,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001688, caniuse-lite@^1.0.30001702:
-  version "1.0.30001712"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001712.tgz"
-  integrity sha512-MBqPpGYYdQ7/hfKiet9SCI+nmN5/hp4ZzveOJubl5DTAMa5oggjAuoi0Z4onBpKPFI2ePGnQuQIzF3VxDjDJig==
+  version "1.0.30001761"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001761.tgz"
+  integrity sha512-JF9ptu1vP2coz98+5051jZ4PwQgd2ni8A+gYSN7EA7dPKIMf0pDlSUxhdmVOaV3/fYK5uWBkgSXJaRLr4+3A6g==
 
 case-sensitive-paths-webpack-plugin@^2.4.0:
   version "2.4.0"
@@ -5881,7 +5783,7 @@ etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-ethers@*, ethers@5.7.2, ethers@^5.7.2, ethers@^5.8.0:
+ethers@5.7.2, ethers@^5.7.2, ethers@^5.8.0:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -6222,14 +6124,15 @@ form-data@^3.0.0:
     es-set-tostringtag "^2.1.0"
     mime-types "^2.1.35"
 
-form-data@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/form-data/-/form-data-4.0.2.tgz"
-  integrity sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==
+form-data@^4.0.4:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.5.tgz#b49e48858045ff4cbf6b03e1805cebcad3679053"
+  integrity sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
     mime-types "^2.1.12"
 
 forwarded@0.2.0:
@@ -9441,7 +9344,7 @@ qs@6.13.0:
   dependencies:
     side-channel "^1.0.6"
 
-qs@^6.12.1, qs@^6.14.0:
+qs@^6.14.0:
   version "6.14.0"
   resolved "https://registry.npmjs.org/qs/-/qs-6.14.0.tgz"
   integrity sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==
@@ -10263,16 +10166,6 @@ sisteransi@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/sisteransi/-/sisteransi-1.0.5.tgz"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
-
-siwe@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/siwe/-/siwe-2.3.2.tgz"
-  integrity sha512-aSf+6+Latyttbj5nMu6GF3doMfv2UYj83hhwZgUF20ky6fTS83uVhkQABdIVnEuS8y1bBdk7p6ltb9SmlhTTlA==
-  dependencies:
-    "@spruceid/siwe-parser" "^2.1.2"
-    "@stablelib/random" "^1.0.1"
-    uri-js "^4.4.1"
-    valid-url "^1.0.9"
 
 siwe@^3.0.0:
   version "3.0.0"
@@ -11159,7 +11052,7 @@ update-browserslist-db@^1.1.1:
     escalade "^3.2.0"
     picocolors "^1.1.1"
 
-uri-js@^4.2.2, uri-js@^4.4.1:
+uri-js@^4.2.2:
   version "4.4.1"
   resolved "https://registry.npmjs.org/uri-js/-/uri-js-4.4.1.tgz"
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
@@ -11227,11 +11120,6 @@ v8-to-istanbul@^8.1.0:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
     source-map "^0.7.3"
-
-valid-url@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/valid-url/-/valid-url-1.0.9.tgz"
-  integrity sha512-QQDsV8OnSf5Uc30CKSwG9lnhMPe6exHtTXLRYX8uMwKENy640pU+2BgBL0LRbDh/eYRahNCS7aewCx0wf3NYVA==
 
 vary@~1.1.2:
   version "1.1.2"
@@ -11823,7 +11711,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zod@*, zod@^3.22.4, zod@^3.24.2:
+zod@^3.24.2:
   version "3.24.2"
   resolved "https://registry.npmjs.org/zod/-/zod-3.24.2.tgz"
   integrity sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==
