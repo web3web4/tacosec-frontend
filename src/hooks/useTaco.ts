@@ -27,7 +27,6 @@ export default function useTaco({
 }) {
   const [isInit, setIsInit] = useState(false);
   const { signer  } = useWallet();
-  //console.log("signer",signer);
   useEffect(() => {
     initialize().then(() => setIsInit(true));
   }, []);
@@ -50,9 +49,6 @@ export default function useTaco({
         domain: domain,
         uri: window.origin,
       });
-      console.log("signer22",signer);
-      console.log("authProvider",authProvider);
-
       conditionContext.addAuthProvider(USER_ADDRESS_PARAM_DEFAULT, authProvider);
 
       return decrypt(provider, domain, messageKit, conditionContext);

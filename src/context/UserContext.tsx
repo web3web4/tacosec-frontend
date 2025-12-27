@@ -72,7 +72,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const secretId = parts[0];
       const tabName = parts[1];
       const childId = parts[2] || null;
-      console.log(secretId, tabName, childId);
       setDirectLinkData({
         secretId,
         tabName: tabName as TabType,
