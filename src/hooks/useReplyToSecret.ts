@@ -1,4 +1,4 @@
-import { conditions, toHexString } from "@nucypher-experimental2/taco";
+import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/services";
 import { useWallet } from "@/wallet/walletContext";
 import { SelectedSecretType } from "@/types/types";

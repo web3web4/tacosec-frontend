@@ -1,6 +1,6 @@
 import { parseTelegramInitData, showError, createAppError, recordUserAction, config } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
-import { conditions, toHexString } from "@nucypher-experimental2/taco";
+import { conditions, toHexString } from "@nucypher/taco";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { storageEncryptedData } from "@/services";
 import { DataPayload } from "@/types/component";

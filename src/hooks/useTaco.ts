@@ -5,11 +5,11 @@ import {
   encrypt,
   initialize,
   ThresholdMessageKit,
-} from '@nucypher-experimental2/taco';
+} from '@nucypher/taco';
 import {
   EIP4361AuthProvider,
   USER_ADDRESS_PARAM_DEFAULT,
-} from '@nucypher-experimental2/taco-auth';
+} from '@nucypher/taco-auth';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from '../wallet/walletContext';
