@@ -5,6 +5,7 @@ import { noUserImage, userNotFoundSvg } from "@/assets";
 import { useUser, useNavigationGuard } from "@/context";
 import { MetroSwal, debounce,createAppError, sanitizeTitle, sanitizePlainText } from "@/utils";
 import { utils  } from "ethers";
+import { useWallet } from "@/wallet/walletContext";
 
 const initProfileData = {
   img: { src: noUserImage },
@@ -26,6 +27,7 @@ export default function useAddData() {
   const [shareWith, setShareWith] = useState<string>("");
   const [message, setMessage] = useState("");
   const [name, setName] = useState<string>("");
+  const { address } = useWallet();
 
   useEffect(() => {
     setNavigationCheck(() => {
@@ -80,9 +82,9 @@ export default function useAddData() {
 
   const handleConfirmClick = (data: UserProfileDetailsType): void => {
     const isAlreadyInList = shareList.some(
-      (user) => user.data.publicAddress?.toLocaleLowerCase() === data.publicAddress?.toLocaleLowerCase()
+      (user) => user.data.publicAddress?.toLowerCase() === data.publicAddress?.toLowerCase()
     );
-
+    
     if (!isAlreadyInList) {
         const updatedProfile = {
           ...userProfile,
@@ -152,8 +154,10 @@ const handleAddShare = (input: string): void => {
   if (!sanitizedInput.trim()) return;
 
   if (utils.isAddress(sanitizedInput)) {
-    const isAlreadyInList = shareList.some((user) => user.data.publicAddress?.toLocaleLowerCase() === sanitizedInput.toLocaleLowerCase());
-    if(!isAlreadyInList){
+    const isAlreadyInList = shareList.some((user) => user.data.publicAddress?.toLowerCase() === sanitizedInput.toLowerCase());
+    const isSameWalletAddress  = sanitizedInput.toLowerCase() === address?.toLowerCase();
+    
+    if (!isAlreadyInList && !isSameWalletAddress ) {
         const newProfile = {
           data: {
             img: { src: noUserImage },
