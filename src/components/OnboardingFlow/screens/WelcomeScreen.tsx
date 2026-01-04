@@ -9,12 +9,13 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
   const { userData, isBrowser } = useUser();
 
+  const { firstName, lastName, username } = userData?.user || {};
   const displayName =
-    userData?.user?.firstName && userData?.user?.lastName
-      ? `${userData?.user?.firstName} ${userData?.user?.lastName}`
-      : userData?.user?.username
-      ? userData.user.username
-      : "Friend";
+    (firstName && lastName && `${firstName} ${lastName}`) ||
+    firstName ||
+    lastName ||
+    username ||
+    "Friend";
   const address = userData?.user?.publicAddress;
   return (
     <div className="onboarding-screen">
@@ -24,10 +25,9 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
           Welcome {displayName}!
         </h1>
         <p>
-          Welcome <strong>{displayName}</strong> to our secret stashing and
-          sharing service built on TACo! 🎉
+            Start securely stashing and sharing your secrets with <strong>TACo-powered encryption</strong>! 🎉
         </p>
-        <p>You need a wallet to start enjoying our services!</p>
+        <p>Let's set up your wallet to start enjoying the service!</p>
       </div>
 
       <div className="onboarding-content">
@@ -67,7 +67,7 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
               You can <strong>import your existing wallet</strong> if you
               already have one.
               <br />
-              Creating a new wallet will generate new secrets for you and you will lose your old ones..
+              Creating a new wallet will generate new secrets for you and you will lose your old ones.
             </div>
           )}
         </div>
