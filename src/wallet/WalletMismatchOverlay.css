@@ -6,7 +6,7 @@
     height: 100vh;
     background: rgba(0, 0, 0, 0.95);
     backdrop-filter: blur(10px);
-    z-index: 10001;
+    z-index: 9990;
     display: flex;
     flex-direction: column;
     color: var(--success);
@@ -83,7 +83,7 @@
     font-weight: 600;
 }
 
-.address-value {
+.wallet-mismatch-overlay .address-value {
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
     color: var(--success);
@@ -102,7 +102,7 @@
     transform: translateY(-1px);
 }
 
-.onboarding-actions {
+.wallet-mismatch-overlay .onboarding-actions {
     margin-top: auto;
     padding-top: 30px;
     display: flex;
