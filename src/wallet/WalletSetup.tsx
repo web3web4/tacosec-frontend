@@ -1,8 +1,9 @@
-import { shouldShowBackup, getIdentifier, MetroSwal, getEncryptedSeed } from "@/utils";
+import { shouldShowBackup, getIdentifier, MetroSwal, getEncryptedSeed, handleClearAllData } from "@/utils";
 import { OnboardingFlow } from "@/components";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
+import WalletMismatchOverlay from "./WalletMismatchOverlay";
 
 
 export default function WalletSetup() {
@@ -15,6 +16,8 @@ export default function WalletSetup() {
   const [showBackup, setShowBackup] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showDecrypt, setShowDecrypt] = useState(false);
+  const [showMismatchOverlay, setShowMismatchOverlay] = useState(false);
+  const [showBackupFromMismatch, setShowBackupFromMismatch] = useState(false);
   const { userData, isBrowser } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
@@ -22,16 +25,16 @@ export default function WalletSetup() {
   // Check if we need to show decrypt flow (wallet exists but not unlocked)
   useEffect(() => {
     if (!identifier) return;
-    
+
     const encrypted = getEncryptedSeed(identifier);
     const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
-    
+
     // Don't show decrypt if backup flow is already showing
     if (showBackup) {
       setShowDecrypt(false);
       return;
     }
-    
+
     // Show decrypt if:
     // 1. Encrypted seed exists (has wallet)
     // 2. No signer (wallet not unlocked)
@@ -43,7 +46,7 @@ export default function WalletSetup() {
       setShowDecrypt(false);
     }
   }, [identifier, signer, hasWallet, isBrowser, userData?.user?.telegramId, showBackup]);
-      
+
   useEffect(() => {
     // Show onboarding only if:
     // 1. No wallet exists (!hasWallet)
@@ -75,6 +78,21 @@ export default function WalletSetup() {
     }
   }, [identifier]);
 
+  // Check for address mismatch between local wallet and backend
+  useEffect(() => {
+    // Only check for mismatch if wallet is unlocked (has signer) and backend data is available
+    if (signer && userData?.user?.publicAddress) {
+      const currentAddr = address || addressweb;
+      if (currentAddr && currentAddr.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
+        setShowMismatchOverlay(true);
+      } else {
+        setShowMismatchOverlay(false);
+      }
+    } else {
+      setShowMismatchOverlay(false);
+    }
+  }, [signer, userData?.user?.publicAddress, address, addressweb]);
+
   useEffect(() => {
     const checkBackup = () => {
       // Don't show backup popups if user is in onboarding flow or decrypt flow
@@ -82,7 +100,7 @@ export default function WalletSetup() {
         setShowBackup(false);
         return;
       }
-      
+
       // Only show backup if wallet is unlocked (has signer)
       if (signer && shouldShowBackup(identifier, hasWallet)) {
         setShowBackup(true);
@@ -96,7 +114,7 @@ export default function WalletSetup() {
     window.addEventListener("wallet-imported", checkBackup);
     return () => {
       window.removeEventListener("focus", checkBackup);
-      window.removeEventListener("wallet-imported", checkBackup); 
+      window.removeEventListener("wallet-imported", checkBackup);
     };
   }, [identifier, hasWallet, showOnboarding, showDecrypt, signer]);
 
@@ -121,6 +139,34 @@ export default function WalletSetup() {
     // The backup flow will automatically show if seedBackupDone is false
     // No need to reload - the state will update naturally
   };
+
+  const handleClearData = () => {
+    handleClearAllData(isBrowser);
+  };
+
+  // Show mismatch overlay if addresses don't match
+  if (showMismatchOverlay && !showBackupFromMismatch) {
+    return (
+      <WalletMismatchOverlay
+        currentAddress={address || addressweb || ""}
+        activeAddress={userData?.user?.publicAddress || ""}
+        onBackup={() => setShowBackupFromMismatch(true)}
+        onClearData={handleClearData}
+      />
+    );
+  }
+
+  // Show backup flow from mismatch overlay
+  if (showBackupFromMismatch) {
+    return (
+      <OnboardingFlow
+        initialStep="decrypt"
+        onComplete={() => setShowBackupFromMismatch(false)}
+        viewSeedOnly={true}
+        viewBack={false}
+      />
+    );
+  }
 
   // Show decrypt flow (wallet exists but not unlocked)
   if (showDecrypt) {
@@ -152,6 +198,5 @@ export default function WalletSetup() {
       />
     );
   }
-
   return null;
 }
