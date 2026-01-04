@@ -50,7 +50,7 @@ const WalletMismatchOverlay: React.FC<WalletMismatchOverlayProps> = ({
                     </button>
                     <button className="onboarding-btn danger" onClick={onClearData}>
                         <MdDeleteForever />
-                        Clear All Data
+                        Reset & Re-setup
                     </button>
                 </div>
             </div>
