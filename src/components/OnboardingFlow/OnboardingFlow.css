@@ -164,8 +164,10 @@
   color: rgba(149, 255, 93, 0.5);
 }
 
-.onboarding-input.error {
-  border-color: #ff6b6b;
+.onboarding-input--error {
+  color: #ff5d5d;
+  background-color: rgba(255, 93, 93, 0.1);
+  border: 2px solid rgba(255, 93, 93, 0.5) !important;
 }
 
 .onboarding-textarea {

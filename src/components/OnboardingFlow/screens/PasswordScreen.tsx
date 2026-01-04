@@ -10,13 +10,13 @@ interface PasswordScreenProps {
 export function PasswordScreen({ onPasswordSet, onBack, isImporting = false }: PasswordScreenProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [savePassword, setSavePassword] = useState(false);
-  const [showSaveOption, setShowSaveOption] = useState(false);
+  
+  const previouslySaved = localStorage.getItem('savePasswordInBackend') === 'true';
+  // Initialize savePassword based on previous user preference
+  const [savePassword, setSavePassword] = useState(previouslySaved);
+  // If user has previously saved their password, show the option to highlight the security notes
+  const [showSaveOption, setShowSaveOption] = useState(previouslySaved);
   const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
-
-  // Only show save option if it hasn't been set before
-  const canShowSaveOption =
-    localStorage.getItem('savePasswordInBackend') === null;
 
   const validateForm = () => {
     const newErrors: { password?: string; confirm?: string } = {};
@@ -69,7 +69,7 @@ export function PasswordScreen({ onPasswordSet, onBack, isImporting = false }: P
           <label className="onboarding-label">Password</label>
           <input
             type="password"
-            className={`onboarding-input ${errors.password ? 'error' : ''}`}
+            className={`onboarding-input ${errors.password ? 'onboarding-input--error' : ''}`}
             placeholder="Enter a secure password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -85,7 +85,7 @@ export function PasswordScreen({ onPasswordSet, onBack, isImporting = false }: P
           <label className="onboarding-label">Confirm Password</label>
           <input
             type="password"
-            className={`onboarding-input ${errors.confirm ? 'error' : ''}`}
+            className={`onboarding-input ${errors.confirm ? 'onboarding-input--error' : ''}`}
             placeholder="Confirm your password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -96,8 +96,7 @@ export function PasswordScreen({ onPasswordSet, onBack, isImporting = false }: P
           )}
         </div>
 
-        {canShowSaveOption && (
-          <div>
+        <div>
             <button
               type="button"
               onClick={() => setShowSaveOption(!showSaveOption)}
@@ -201,8 +200,7 @@ export function PasswordScreen({ onPasswordSet, onBack, isImporting = false }: P
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
       
       <div className={`onboarding-actions ${onBack ? 'with-back' : 'single'}`}>
         {onBack && (
