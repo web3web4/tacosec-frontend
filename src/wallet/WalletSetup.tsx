@@ -78,21 +78,6 @@ export default function WalletSetup() {
     }
   }, [identifier]);
 
-  // Check for address mismatch between local wallet and backend
-  useEffect(() => {
-    // Only check for mismatch if wallet is unlocked (has signer) and backend data is available
-    if (signer && userData?.user?.publicAddress) {
-      const currentAddr = address || addressweb;
-      if (currentAddr && currentAddr.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
-        setShowMismatchOverlay(true);
-      } else {
-        setShowMismatchOverlay(false);
-      }
-    } else {
-      setShowMismatchOverlay(false);
-    }
-  }, [signer, userData?.user?.publicAddress, address, addressweb]);
-
   useEffect(() => {
     const checkBackup = () => {
       // Don't show backup popups if user is in onboarding flow or decrypt flow
@@ -138,6 +123,19 @@ export default function WalletSetup() {
     // After successful decryption, wallet will be unlocked
     // The backup flow will automatically show if seedBackupDone is false
     // No need to reload - the state will update naturally
+    // ---------------------------------------------------------------------
+    checkAddressMismatch();
+  };
+
+  const checkAddressMismatch = () => {
+    // Check for address mismatch between local wallet and backend
+    if (!isBrowser && userData?.user?.publicAddress) {
+      if (address && address.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
+        setShowMismatchOverlay(true);
+      } else {
+        setShowMismatchOverlay(false);
+      }
+    }
   };
 
   const handleClearData = () => {
