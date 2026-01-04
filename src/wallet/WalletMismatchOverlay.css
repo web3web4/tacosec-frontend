@@ -1,0 +1,111 @@
+.wallet-mismatch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 9990;
+    display: flex;
+    flex-direction: column;
+    color: var(--success);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.wallet-mismatch-overlay .onboarding-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.wallet-mismatch-overlay .onboarding-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.wallet-mismatch-overlay .onboarding-header p {
+    color: rgba(149, 255, 93, 0.8);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.mismatch-address-section {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mismatch-address-box {
+    background: rgba(149, 255, 93, 0.1);
+    border: 1px solid rgba(149, 255, 93, 0.2);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: left;
+}
+
+.mismatch-address-box.active {
+    border-left: 4px solid var(--success);
+    box-shadow: 0 0 15px rgba(149, 255, 93, 0.1);
+}
+
+.mismatch-address-box.current {
+    border-left: 4px solid var(--danger);
+    background: rgba(255, 77, 77, 0.1);
+    border-color: rgba(255, 77, 77, 0.2);
+    border-left-color: var(--danger);
+}
+
+.mismatch-address-box.current .address-label {
+    color: var(--danger);
+}
+
+.mismatch-address-box.current .address-value {
+    color: var(--danger);
+}
+
+.address-label {
+    font-size: 12px;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+}
+
+.wallet-mismatch-overlay .address-value {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: var(--success);
+    word-break: break-all;
+    opacity: 0.9;
+}
+
+.onboarding-btn.danger {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.onboarding-btn.danger:hover:not(:disabled) {
+    background: rgba(255, 77, 77, 0.1);
+    transform: translateY(-1px);
+}
+
+.wallet-mismatch-overlay .onboarding-actions {
+    margin-top: auto;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
