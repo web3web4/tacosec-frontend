@@ -3,6 +3,7 @@ import { OnboardingFlow } from "@/components";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
+import { utils } from "ethers";
 import WalletMismatchOverlay from "./WalletMismatchOverlay";
 
 
@@ -130,7 +131,7 @@ export default function WalletSetup() {
   const checkAddressMismatch = () => {
     // Check for address mismatch between local wallet and backend
     if (!isBrowser && userData?.user?.publicAddress) {
-      if (address && address.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
+      if (address && utils.isAddress(address) && address.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
         setShowMismatchOverlay(true);
       } else {
         setShowMismatchOverlay(false);
