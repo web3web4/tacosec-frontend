@@ -18,7 +18,7 @@ export default function WalletSetup() {
   const [showDecrypt, setShowDecrypt] = useState(false);
   const [showMismatchOverlay, setShowMismatchOverlay] = useState(false);
   const [showBackupFromMismatch, setShowBackupFromMismatch] = useState(false);
-  const { userData, isBrowser } = useUser();
+  const { userData, isBrowser, signUserData, getUserData } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
@@ -109,14 +109,19 @@ export default function WalletSetup() {
       }
     };
 
+    const handleWalletImported = () => {
+      if (!isBrowser) signUserData();
+      checkBackup();
+    };
+
     checkBackup();
     window.addEventListener("focus", checkBackup);
-    window.addEventListener("wallet-imported", checkBackup);
+    window.addEventListener("wallet-imported", handleWalletImported);
     return () => {
       window.removeEventListener("focus", checkBackup);
-      window.removeEventListener("wallet-imported", checkBackup);
+      window.removeEventListener("wallet-imported", handleWalletImported);
     };
-  }, [identifier, hasWallet, showOnboarding, showDecrypt, signer]);
+  }, [identifier, hasWallet, showOnboarding, showDecrypt, signer, isBrowser, getUserData, signUserData]);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
