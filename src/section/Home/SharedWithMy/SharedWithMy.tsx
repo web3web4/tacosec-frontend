@@ -36,7 +36,9 @@ export default function SharedWithMy() {
     toggleChildExpand,
     handleDirectLink,
     toggleExpand,
-    directLinkData
+    directLinkData,
+    isLoading,
+    activeTab
   } = useHome();
   const {
     showViewReportsPopup,
@@ -58,8 +60,10 @@ export default function SharedWithMy() {
   const { address, signer } = useWallet();
 
   useEffect(() => {
-    if (address && signer) handleDirectLink();
-  }, [address, signer, directLinkData]);
+    if (address && signer && !isLoading && activeTab === "shared" && sharedWithMyData.length > 0) {
+      handleDirectLink();
+    }
+  }, [address, signer, directLinkData, isLoading, activeTab, sharedWithMyData]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
