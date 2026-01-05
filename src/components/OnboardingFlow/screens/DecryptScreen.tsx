@@ -157,7 +157,7 @@ export function DecryptScreen({ onSuccess, onForgotPassword, onBack }: DecryptSc
           <label className="onboarding-label">Password</label>
           <input
             type="password"
-            className={`onboarding-input ${error ? 'error' : ''}`}
+            className={`onboarding-input ${error ? 'onboarding-input--error ' : ''}`}
             placeholder="Your encryption password"
             value={password}
             onChange={(e) => {

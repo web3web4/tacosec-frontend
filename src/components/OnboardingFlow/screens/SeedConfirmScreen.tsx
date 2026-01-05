@@ -90,7 +90,7 @@ export function SeedConfirmScreen({ words, indices, onSuccess, onBack }: SeedCon
                 id={`word-${wordIndex}`}
                 type="text"
                 className={`onboarding-input ${
-                  errors[wordIndex] ? 'error' : ''
+                  errors[wordIndex] ? 'onboarding-input--error' : ''
                 }`}
                 placeholder={`Enter word #${wordIndex + 1}`}
                 value={inputs[wordIndex] || ''}
