@@ -86,7 +86,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     switch (method) {
       case "telegram":
         signUserData();
-        getStartParams();
         break;
 
       case "web":
@@ -105,6 +104,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     initDataRaw,
     directLinkData,
     setDirectLinkData,
+    getStartParams,
     error,
     isBrowser,
     signUserData,

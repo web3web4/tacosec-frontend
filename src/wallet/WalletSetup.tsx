@@ -20,7 +20,7 @@ export default function WalletSetup() {
   const [showMismatchOverlay, setShowMismatchOverlay] = useState(false);
   const [showBackupFromMismatch, setShowBackupFromMismatch] = useState(false);
   const [addressIsReady, setAddressIsReady] = useState(false);
-  const { userData, isBrowser } = useUser();
+  const { userData, isBrowser, getStartParams } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
@@ -135,12 +135,15 @@ export default function WalletSetup() {
     // The backup flow will automatically show if seedBackupDone is false
     // No need to reload - the state will update naturally
     // ---------------------------------------------------------------------
-    setAddressIsReady(true);
+    if (!isBrowser) {
+      setAddressIsReady(true);
+      getStartParams();
+    }
   };
 
   const checkAddressMismatch = (address: string) => {
     // Check for address mismatch between local wallet and backend
-    if (!isBrowser && userData?.user?.publicAddress) {
+    if (userData?.user?.publicAddress) {
       if (address.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
         setShowMismatchOverlay(true);
       } else {
