@@ -16,13 +16,15 @@ export default function ChildrenSection({
   handleDirectLinkForChildren,
   itemRefs
 }: ChildrenSectionProps) {
-  const { handleGetSecretViews, secretViews, directLinkData } = useHome();
+  const { handleGetSecretViews, secretViews, directLinkData, activeTab } = useHome();
   const [copied, setCopied] = useState(false);
   const { address, signer } = useWallet();
 
   useEffect(() => {
-    if (address && signer) handleDirectLinkForChildren();
-  }, [address, signer, directLinkData]);
+    if (address && signer && activeTab === directLinkData?.tabName && children.length > 0) {
+      handleDirectLinkForChildren();
+    }
+  }, [address, signer, directLinkData, activeTab, children]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
