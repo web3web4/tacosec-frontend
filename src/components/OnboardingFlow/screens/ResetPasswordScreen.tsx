@@ -110,7 +110,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
             <div>
               <label className="onboarding-label">12-Word Seed Phrase</label>
               <textarea
-                className={`onboarding-input ${errors.seedPhrase ? 'error' : ''}`}
+                className={`onboarding-input ${errors.seedPhrase ? 'onboarding-input--error ' : ''}`}
                 placeholder="Enter your 12-word seed phrase separated by spaces"
                 value={seedPhrase}
                 onChange={(e) => {
@@ -136,7 +136,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className={`onboarding-input ${errors.newPassword ? 'error' : ''}`}
+                  className={`onboarding-input ${errors.newPassword ? 'onboarding-input--error ' : ''}`}
                   placeholder="Enter new password (min 4 characters)"
                   value={newPassword}
                   onChange={(e) => {
@@ -177,7 +177,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
               <div style={{ position: 'relative' }}>
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
-                  className={`onboarding-input ${errors.confirmPassword ? 'error' : ''}`}
+                  className={`onboarding-input ${errors.confirmPassword ? 'onboarding-input--error ' : ''}`}
                   placeholder="Confirm your new password"
                   value={confirmPassword}
                   onChange={(e) => {
