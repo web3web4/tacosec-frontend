@@ -27,14 +27,17 @@ export default function useSetting() {
         MetroSwal.fire({
           title: "Max Privacy Mode Activated",
           html: `
-            <p>With Max Privacy Mode enabled:</p>
-            <ul style="text-align:left; margin-left:25px">
-              <li>Viewing any secret will not be tracked or recorded.</li>
-              <li>Your own secret views will remain anonymous; others cannot see if you've viewed theirs.</li>
-              <li>Reply timestamps and details about shared secrets are hidden from all users.</li>
-              <li>Notifications will only display: <em>"Please check your data."</em></li>
-              <li>No metadata or activity logs are saved during this mode.</li>
-            </ul>
+            <div style="text-align: left; line-height: 1.6;">
+              <p style="margin-bottom: 16px; color: #555;">You've activated an extra measure of privacy. Here's what changes:</p>
+              <ul style="list-style: none; padding-left: 0; margin: 0;">
+                <li style="margin-bottom: 10px;">👤 <strong>Mutual anonymity</strong> &mdash; Your activity stays hidden from others, and you won't see theirs either</li>
+                <li style="margin-bottom: 10px;">⏱️ <strong>No metadata</strong> &mdash; Reply timestamps and view statuses become unavailable for everyone</li>
+                <li style="margin-bottom: 10px;">🔒 <strong>Minimal footprint</strong> &mdash; Your secret views leave no traces</li>
+                <li style="margin-bottom: 10px;">🔕 <strong>Generic alerts</strong> &mdash; All notifications display only: <em>"Please check your data"</em></li>
+              </ul>
+              <p style="color: #666;"><strong>Note:</strong> This creates a privacy shield for everyone &mdash; you'll stay private, but you also won't see if others viewed your secrets or when they replied.</p>
+              <p style="color: #666;">Toggle anytime in Settings to adjust your privacy level.</p>
+            </div>
           `,
           showCancelButton: true,
           confirmButtonText: "Got it",

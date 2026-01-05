@@ -3,6 +3,7 @@ import { OnboardingFlow } from "@/components";
 import { useEffect, useState } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
+import { utils } from "ethers";
 import WalletMismatchOverlay from "./WalletMismatchOverlay";
 
 
@@ -18,6 +19,7 @@ export default function WalletSetup() {
   const [showDecrypt, setShowDecrypt] = useState(false);
   const [showMismatchOverlay, setShowMismatchOverlay] = useState(false);
   const [showBackupFromMismatch, setShowBackupFromMismatch] = useState(false);
+  const [addressIsReady, setAddressIsReady] = useState(false);
   const { userData, isBrowser } = useUser();
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
@@ -78,21 +80,6 @@ export default function WalletSetup() {
     }
   }, [identifier]);
 
-  // Check for address mismatch between local wallet and backend
-  useEffect(() => {
-    // Only check for mismatch if wallet is unlocked (has signer) and backend data is available
-    if (signer && userData?.user?.publicAddress) {
-      const currentAddr = address || addressweb;
-      if (currentAddr && currentAddr.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
-        setShowMismatchOverlay(true);
-      } else {
-        setShowMismatchOverlay(false);
-      }
-    } else {
-      setShowMismatchOverlay(false);
-    }
-  }, [signer, userData?.user?.publicAddress, address, addressweb]);
-
   useEffect(() => {
     const checkBackup = () => {
       // Don't show backup popups if user is in onboarding flow or decrypt flow
@@ -118,6 +105,15 @@ export default function WalletSetup() {
     };
   }, [identifier, hasWallet, showOnboarding, showDecrypt, signer, isBrowser]);
 
+  useEffect(() => {
+    if (!addressIsReady) return;
+
+    if (address && utils.isAddress(address)) {
+      checkAddressMismatch(address);
+      setAddressIsReady(false);
+    }
+  }, [addressIsReady, address]);
+
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
     // Prevent backup popups from showing immediately after onboarding
@@ -138,6 +134,19 @@ export default function WalletSetup() {
     // After successful decryption, wallet will be unlocked
     // The backup flow will automatically show if seedBackupDone is false
     // No need to reload - the state will update naturally
+    // ---------------------------------------------------------------------
+    setAddressIsReady(true);
+  };
+
+  const checkAddressMismatch = (address: string) => {
+    // Check for address mismatch between local wallet and backend
+    if (!isBrowser && userData?.user?.publicAddress) {
+      if (address.toLowerCase() !== userData.user.publicAddress.toLowerCase()) {
+        setShowMismatchOverlay(true);
+      } else {
+        setShowMismatchOverlay(false);
+      }
+    }
   };
 
   const handleClearData = () => {

@@ -9,12 +9,13 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
   const { userData, isBrowser } = useUser();
 
+  const { firstName, lastName, username } = userData?.user || {};
   const displayName =
-    userData?.user?.firstName && userData?.user?.lastName
-      ? `${userData?.user?.firstName} ${userData?.user?.lastName}`
-      : userData?.user?.username
-      ? userData.user.username
-      : "Friend";
+    (firstName && lastName && `${firstName} ${lastName}`) ||
+    firstName ||
+    lastName ||
+    username ||
+    "Friend";
   const address = userData?.user?.publicAddress;
   return (
     <div className="onboarding-screen">
@@ -24,10 +25,9 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
           Welcome {displayName}!
         </h1>
         <p>
-          Welcome {displayName} to our secret stashing and sharing service built
-          on TACoSec! 🎉
+            Start securely stashing and sharing your secrets with <strong>TACo-powered encryption</strong>! 🎉
         </p>
-        <p>You need a wallet to start enjoying our services!</p>
+        <p>Let's set up your wallet to start enjoying the service!</p>
       </div>
 
       <div className="onboarding-content">
@@ -35,6 +35,7 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
           style={{
             textAlign: "center",
             marginBottom: "30px",
+            marginTop: "30px",
             backgroundColor: "rgba(255, 165, 0, 0.1)",
             border: "1px solid rgba(255, 165, 0, 0.3)",
             borderRadius: "12px",
@@ -46,13 +47,13 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
         >
           {!isBrowser ? (
             <>
-              <p style={{ marginBottom: "10px", fontWeight: "500" }}>
+              <div style={{ marginBottom: "10px", fontWeight: "500" }}>
                 You already have a wallet address:
                 <br />
                 <span style={{ fontWeight: "bold", color: "#ff8c00" }}>
                   {formatAddress(8,address as string)}
                 </span>
-              </p>
+              </div>
               <p style={{ marginBottom: "0" }}>
                 We recommend <strong>importing your existing wallet</strong> if
                 you still have your seed phrase.
@@ -62,12 +63,12 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
               </p>
             </>
           ) : (
-            <p style={{ marginBottom: "0" }}>
+            <div>
               You can <strong>import your existing wallet</strong> if you
               already have one.
               <br />
-              Creating a new wallet will generate new secrets for you and you will lose your old ones..
-            </p>
+              Creating a new wallet will generate new secrets for you and you will lose your old ones.
+            </div>
           )}
         </div>
       </div>
