@@ -32,7 +32,9 @@ export default function MyData() {
     secretViews,
     childrenLoading,
     itemRefs,
-    directLinkData
+    directLinkData,
+    isLoading,
+    activeTab
   } = useHome();
   const [selectedSecret, setSelectedSecret] = useState<SelectedSecretType>({ parentSecretId: "", parentAddress: "", shareWith: [] });
   const [showReplyPopup, setShowReplyPopup] = useState<boolean>(false);
@@ -42,8 +44,10 @@ export default function MyData() {
   const { address, signer } = useWallet();
 
   useEffect(() => {
-    if (address && signer) handleDirectLink();
-  }, [address, signer, directLinkData]);
+    if (address && signer && !isLoading && activeTab === "mydata" && myData.length > 0) {
+      handleDirectLink();
+    }
+  }, [address, signer, directLinkData, isLoading, activeTab, myData]);
 
   const handleCopy = (text: string) => {
     copyToClipboard(
