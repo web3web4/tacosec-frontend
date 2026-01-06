@@ -25,7 +25,7 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
           Welcome {displayName}!
         </h1>
         <p>
-            Start securely stashing and sharing your secrets with <strong>TACo-powered encryption</strong>! 🎉
+          Start securely stashing and sharing your secrets with <strong>TACo-powered encryption</strong>! 🎉
         </p>
         <p>Let's set up your wallet to start enjoying the service!</p>
       </div>
@@ -45,20 +45,20 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
             lineHeight: "1.6",
           }}
         >
-          {!isBrowser ? (
+          {!isBrowser && address ? (
             <>
               <div style={{ marginBottom: "10px", fontWeight: "500" }}>
                 You already have a wallet address:
                 <br />
                 <span style={{ fontWeight: "bold", color: "#ff8c00" }}>
-                  {formatAddress(8,address as string)}
+                  {formatAddress(8, address as string)}
                 </span>
               </div>
               <p style={{ marginBottom: "0" }}>
                 We recommend <strong>importing your existing wallet</strong> if
                 you still have your seed phrase.
                 <br />
-                Creating a new wallet will generate new secrets and you’ll lose
+                Creating a new wallet will generate new secrets and you will lose
                 access to your previous ones.
               </p>
             </>
@@ -67,7 +67,7 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
               You can <strong>import your existing wallet</strong> if you
               already have one.
               <br />
-              Creating a new wallet will generate new secrets for you and you will lose your old ones.
+              Creating a new wallet will generate new secrets and you will lose access to your previous ones.
             </div>
           )}
         </div>
