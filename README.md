@@ -19,7 +19,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 - Individuals and teams who need to securely share credentials
 - Organizations requiring granular access control for sensitive information
 - Users who want decentralized, trustless secret sharing
-- Developers and security-conscious users
+- Developers and security-conscious and decentralization users
 
 ## Features
 
@@ -36,7 +36,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 - **👤 Privacy Mode**: Control visibility of your profile information
 - **📱 Telegram Integration**: Native Telegram Mini App support with seamless authentication by initData
 - **🌐 Web Support**: Standalone web application with JWT authentication
-- **🌐Wallet Support**
+- **🌐Wallet Internal Support**
 
 ### Security Features
 
@@ -45,6 +45,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 - **Password Management**: Optional password storage with server-side encryption
 - **Report System**: Report inappropriate content or security issues
 - **Access Logging**: Comprehensive logging of user actions and secret access
+- **Max privacy mode**: hide any information with you.
 
 ### Admin Features
 
@@ -92,7 +93,7 @@ TacoSec follows a component-based React architecture with clear separation of co
 ### Data Flow
 
 1. **Secret Creation**:
-   - User enters secret data and selects recipients
+   - User enters secret data (and selects recipients or no) 
    - Data is encrypted using TACO with recipient public addresses as conditions
    - Encrypted data is sent to backend API
    - Backend stores encrypted payload (cannot decrypt)
@@ -104,8 +105,8 @@ TacoSec follows a component-based React architecture with clear separation of co
    - Decrypted secret is displayed to user
 
 3. **Authentication Flow**:
-   - **Telegram**: Uses Telegram WebApp initData for authentication
-   - **Web**: Uses Ethereum wallet signature challenge-response
+   - **Telegram**: Uses Telegram WebApp initData for authentication with initData.
+   - **Web**: Uses Ethereum wallet signature challenge-response and use JWT Token.
 
 ### Key Files and Responsibilities
 
@@ -205,8 +206,8 @@ TacoSec follows a component-based React architecture with clear separation of co
    Edit `.env` and configure the following variables:
    ```env
    REACT_APP_TG_SECRET_SALT=your_telegram_secret_salt
-   REACT_APP_TACO_DOMAIN=tapir
-   REACT_APP_TACO_RITUAL_ID=6
+   REACT_APP_TACO_DOMAIN=tapir //for testnet network
+   REACT_APP_TACO_RITUAL_ID=6 //for test
    REACT_APP_RPC_PROVIDER_URL=https://rpc-amoy.polygon.technology
    REACT_APP_API_BASE_URL=https://your-backend-api-url.com
    REACT_APP_BOT_USER_NAME=@YourTelegramBot
