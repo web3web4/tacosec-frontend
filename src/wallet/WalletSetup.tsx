@@ -1,6 +1,6 @@
 import { shouldShowBackup, getIdentifier, MetroSwal, getEncryptedSeed, handleClearAllData } from "@/utils";
 import { OnboardingFlow } from "@/components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useWallet } from "./walletContext";
 import { useUser } from "@/context";
 import { utils } from "ethers";
@@ -24,9 +24,29 @@ export default function WalletSetup() {
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
+  // Helper function to check for multiple wallets.
+  const checkMultipleWallets = (identifier: string | null): boolean => {
+    if (!identifier) return false;
+    const allKeys = Object.keys(localStorage);
+    return allKeys.some(
+      (key) => key.startsWith("encryptedSeed-") && key !== `encryptedSeed-${identifier}`
+    );
+  };
+
+  // Use useMemo to calculate hasMultipleWallets (single source of truth, performance optimization)
+  const hasMultipleWallets = useMemo(() => {
+    return checkMultipleWallets(identifier);
+  }, [identifier]);
+
   // Check if we need to show decrypt flow (wallet exists but not unlocked)
   useEffect(() => {
     if (!identifier) return;
+    
+    // Early return: prevent decrypt flow if multiple wallets detected
+    if (hasMultipleWallets) {
+      setShowDecrypt(false);
+      return;
+    }
 
     const encrypted = getEncryptedSeed(identifier);
     const recentWalletCreation = sessionStorage.getItem('recentWalletCreation');
@@ -47,9 +67,15 @@ export default function WalletSetup() {
     } else {
       setShowDecrypt(false);
     }
-  }, [identifier, signer, hasWallet, isBrowser, userData?.user?.telegramId, showBackup]);
+  }, [identifier, signer, hasWallet, isBrowser, userData?.user?.telegramId, showBackup, hasMultipleWallets]);
 
   useEffect(() => {
+    // Early return: prevent onboarding flow if multiple wallets detected
+    if (hasMultipleWallets) {
+      setShowOnboarding(false);
+      return;
+    }
+
     // Show onboarding only if:
     // 1. No wallet exists (!hasWallet)
     // 2. User is authenticated (telegramId or browser)
@@ -59,17 +85,13 @@ export default function WalletSetup() {
     } else {
       setShowOnboarding(false);
     }
-  }, [hasWallet, isBrowser, userData?.user?.telegramId, showDecrypt]);
+  }, [hasWallet, isBrowser, userData?.user?.telegramId, showDecrypt, hasMultipleWallets]);
 
   useEffect(() => {
     if (!identifier) return;
 
-    const allKeys = Object.keys(localStorage);
-    const otherWalletKey = allKeys.find(
-      (key) => key.startsWith("encryptedSeed-") && key !== `encryptedSeed-${identifier}`
-    );
-
-    if (otherWalletKey) {
+    // Show alert if multiple wallets detected
+    if (hasMultipleWallets) {
       MetroSwal.fire({
         icon: "error",
         title: "Access Denied",
@@ -78,10 +100,16 @@ export default function WalletSetup() {
         allowEscapeKey: false,
       });
     }
-  }, [identifier]);
+  }, [identifier, hasMultipleWallets]);
 
   useEffect(() => {
     const checkBackup = () => {
+      // Early return: prevent backup flow if multiple wallets detected
+      if (hasMultipleWallets) {
+        setShowBackup(false);
+        return;
+      }
+
       // Don't show backup popups if user is in onboarding flow or decrypt flow
       if (showOnboarding || showDecrypt) {
         setShowBackup(false);
@@ -103,7 +131,7 @@ export default function WalletSetup() {
       window.removeEventListener("focus", checkBackup);
       window.removeEventListener("wallet-imported", checkBackup);
     };
-  }, [identifier, hasWallet, showOnboarding, showDecrypt, signer, isBrowser]);
+  }, [identifier, hasWallet, showOnboarding, showDecrypt, signer, isBrowser, hasMultipleWallets]);
 
   useEffect(() => {
     if (!addressIsReady) return;
