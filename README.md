@@ -178,7 +178,7 @@ TacoSec follows a component-based React architecture with clear separation of co
 ### Prerequisites
 
 - **Node.js**: Version 18.x or higher
-- **Yarn**: Package manager (npm can be used as alternative)
+- **Yarn**: Package manager
 - **Git**: Version control
 
 ### Step-by-Step Installation
@@ -192,10 +192,6 @@ TacoSec follows a component-based React architecture with clear separation of co
 2. **Install dependencies**
    ```bash
    yarn install
-   ```
-   or
-   ```bash
-   npm install
    ```
 
 3. **Set up environment variables**
@@ -218,11 +214,6 @@ TacoSec follows a component-based React architecture with clear separation of co
    ```bash
    yarn start
    ```
-   or
-   ```bash
-   npm start
-   ```
-
 5. **Open your browser**
    - The application will automatically open at `http://localhost:3000`
    - For Telegram Mini App testing, use Telegram's WebApp environment
@@ -330,7 +321,7 @@ Launches the test runner in interactive watch mode
 3. Access different sections:
    - **Dashboard**: Overview statistics
    - **Users**: User management and moderation
-   - **Secrets**: All secrets in the system
+   - **Secrets**: All secrets in the system (encrypted)
    - **Reports**: User reports and moderation
    - **Notifications**: System notifications
    - **Logger**: Activity logs
@@ -350,34 +341,6 @@ Launches the test runner in interactive watch mode
 3. Sign a challenge message to authenticate
 4. Create or import wallet
 5. Use the application normally
-
-## Screenshots
-
-<!-- Add screenshots here when available -->
-
-### Home Page - My Data Tab
-![Home - My Data](screenshots/home-mydata.png)
-*View and manage your created secrets*
-
-### Home Page - Shared With Me Tab
-![Home - Shared](screenshots/home-shared.png)
-*View secrets shared with you*
-
-### Add Data Page
-![Add Data](screenshots/add-data.png)
-*Create and encrypt new secrets*
-
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
-*Admin overview and statistics*
-
-### Secret View Statistics
-![View Statistics](screenshots/secret-views.png)
-*Track who viewed your secrets*
-
----
-
-**Note**: Replace the placeholder image paths above with actual screenshot paths once screenshots are added to the repository.
 
 ## Folder Structure
 
