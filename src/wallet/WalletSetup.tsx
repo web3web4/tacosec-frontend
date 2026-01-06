@@ -24,7 +24,7 @@ export default function WalletSetup() {
 
   const identifier = getIdentifier(isBrowser, address, addressweb, userData?.user?.telegramId);
 
-  // Helper function to check for multiple wallets
+  // Helper function to check for multiple wallets.
   const checkMultipleWallets = (identifier: string | null): boolean => {
     if (!identifier) return false;
     const allKeys = Object.keys(localStorage);

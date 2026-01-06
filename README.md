@@ -73,7 +73,7 @@ TacoSec follows a component-based React architecture with clear separation of co
    - `secretsService`: Secret CRUD operations
    - `usersService`: User profile and search operations
    - `adminService`: Admin dashboard operations
-   - `supportService`: Support ticket management
+   - `supportService`: Support ticket management.
 
 3. **Hooks Layer**: Reusable business logic
    - `useTaco`: TACO encryption/decryption operations
