@@ -28,15 +28,15 @@ export default function useSetting() {
           title: "Max Privacy Mode Activated",
           html: `
             <div style="text-align: left; line-height: 1.6;">
-              <p style="margin-bottom: 16px; color: #555;">You've activated an extra measure of privacy. Here's what changes:</p>
+              <p style="margin-bottom: 12px; color: #cfcfcfff;">Max Privacy is on. Effects:</p>
               <ul style="list-style: none; padding-left: 0; margin: 0;">
-                <li style="margin-bottom: 10px;">👤 <strong>Mutual anonymity</strong> &mdash; Your activity stays hidden from others, and you won't see theirs either</li>
-                <li style="margin-bottom: 10px;">⏱️ <strong>No metadata</strong> &mdash; Reply timestamps and view statuses become unavailable for everyone</li>
-                <li style="margin-bottom: 10px;">🔒 <strong>Minimal footprint</strong> &mdash; Your secret views leave no traces</li>
-                <li style="margin-bottom: 10px;">🔕 <strong>Generic alerts</strong> &mdash; All notifications display only: <em>"Please check your data"</em></li>
+                <li style="margin-bottom: 8px;">👤 <strong>Anonymity</strong> &mdash; Activity is hidden</li>
+                <li style="margin-bottom: 8px;">⏱️ <strong>No metadata</strong> &mdash; Timestamps and views hidden</li>
+                <li style="margin-bottom: 8px;">🔒 <strong>Minimal footprint</strong> &mdash; Secret views leave no trace</li>
+                <li style="margin-bottom: 8px;">🔕 <strong>Generic alerts</strong> &mdash; Notifications say: <em>"Please check your data"</em></li>
               </ul>
-              <p style="color: #666;"><strong>Note:</strong> This creates a privacy shield for everyone &mdash; you'll stay private, but you also won't see if others viewed your secrets or when they replied.</p>
-              <p style="color: #666;">Toggle anytime in Settings to adjust your privacy level.</p>
+              <p style="color: #cfcfcfff;">You won't see others' views or reply times.</p>
+              <p style="color: #cfcfcfff;">Change this anytime in Settings.</p>
             </div>
           `,
           showCancelButton: true,
