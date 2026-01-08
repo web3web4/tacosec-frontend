@@ -19,7 +19,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 - Individuals and teams who need to securely share credentials
 - Organizations requiring granular access control for sensitive information
 - Users who want decentralized, trustless secret sharing
-- Developers and security-conscious users
+- Developers and security-conscious and decentralization users
 
 ## Features
 
@@ -36,7 +36,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 - **👤 Privacy Mode**: Control visibility of your profile information
 - **📱 Telegram Integration**: Native Telegram Mini App support with seamless authentication by initData
 - **🌐 Web Support**: Standalone web application with JWT authentication
-- **🌐Wallet Support**
+- **🌐Wallet Internal Support**
 
 ### Security Features
 
@@ -45,6 +45,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 - **Password Management**: Optional password storage with server-side encryption
 - **Report System**: Report inappropriate content or security issues
 - **Access Logging**: Comprehensive logging of user actions and secret access
+- **Max privacy mode**: hide any information with you.
 
 ### Admin Features
 
@@ -73,7 +74,7 @@ TacoSec follows a component-based React architecture with clear separation of co
    - `secretsService`: Secret CRUD operations
    - `usersService`: User profile and search operations
    - `adminService`: Admin dashboard operations
-   - `supportService`: Support ticket management
+   - `supportService`: Support ticket management.
 
 3. **Hooks Layer**: Reusable business logic
    - `useTaco`: TACO encryption/decryption operations
@@ -92,7 +93,7 @@ TacoSec follows a component-based React architecture with clear separation of co
 ### Data Flow
 
 1. **Secret Creation**:
-   - User enters secret data and selects recipients
+   - User enters secret data (and selects recipients or no) 
    - Data is encrypted using TACO with recipient public addresses as conditions
    - Encrypted data is sent to backend API
    - Backend stores encrypted payload (cannot decrypt)
@@ -104,8 +105,8 @@ TacoSec follows a component-based React architecture with clear separation of co
    - Decrypted secret is displayed to user
 
 3. **Authentication Flow**:
-   - **Telegram**: Uses Telegram WebApp initData for authentication
-   - **Web**: Uses Ethereum wallet signature challenge-response
+   - **Telegram**: Uses Telegram WebApp initData for authentication with initData.
+   - **Web**: Uses Ethereum wallet signature challenge-response and use JWT Token.
 
 ### Key Files and Responsibilities
 
@@ -177,7 +178,7 @@ TacoSec follows a component-based React architecture with clear separation of co
 ### Prerequisites
 
 - **Node.js**: Version 18.x or higher
-- **Yarn**: Package manager (npm can be used as alternative)
+- **Yarn**: Package manager
 - **Git**: Version control
 
 ### Step-by-Step Installation
@@ -192,10 +193,6 @@ TacoSec follows a component-based React architecture with clear separation of co
    ```bash
    yarn install
    ```
-   or
-   ```bash
-   npm install
-   ```
 
 3. **Set up environment variables**
    ```bash
@@ -205,8 +202,8 @@ TacoSec follows a component-based React architecture with clear separation of co
    Edit `.env` and configure the following variables:
    ```env
    REACT_APP_TG_SECRET_SALT=your_telegram_secret_salt
-   REACT_APP_TACO_DOMAIN=tapir
-   REACT_APP_TACO_RITUAL_ID=6
+   REACT_APP_TACO_DOMAIN=tapir //for testnet network
+   REACT_APP_TACO_RITUAL_ID=6 //for test
    REACT_APP_RPC_PROVIDER_URL=https://rpc-amoy.polygon.technology
    REACT_APP_API_BASE_URL=https://your-backend-api-url.com
    REACT_APP_BOT_USER_NAME=@YourTelegramBot
@@ -217,11 +214,6 @@ TacoSec follows a component-based React architecture with clear separation of co
    ```bash
    yarn start
    ```
-   or
-   ```bash
-   npm start
-   ```
-
 5. **Open your browser**
    - The application will automatically open at `http://localhost:3000`
    - For Telegram Mini App testing, use Telegram's WebApp environment
@@ -329,7 +321,7 @@ Launches the test runner in interactive watch mode
 3. Access different sections:
    - **Dashboard**: Overview statistics
    - **Users**: User management and moderation
-   - **Secrets**: All secrets in the system
+   - **Secrets**: All secrets in the system (encrypted)
    - **Reports**: User reports and moderation
    - **Notifications**: System notifications
    - **Logger**: Activity logs
@@ -349,34 +341,6 @@ Launches the test runner in interactive watch mode
 3. Sign a challenge message to authenticate
 4. Create or import wallet
 5. Use the application normally
-
-## Screenshots
-
-<!-- Add screenshots here when available -->
-
-### Home Page - My Data Tab
-![Home - My Data](screenshots/home-mydata.png)
-*View and manage your created secrets*
-
-### Home Page - Shared With Me Tab
-![Home - Shared](screenshots/home-shared.png)
-*View secrets shared with you*
-
-### Add Data Page
-![Add Data](screenshots/add-data.png)
-*Create and encrypt new secrets*
-
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
-*Admin overview and statistics*
-
-### Secret View Statistics
-![View Statistics](screenshots/secret-views.png)
-*Track who viewed your secrets*
-
----
-
-**Note**: Replace the placeholder image paths above with actual screenshot paths once screenshots are added to the repository.
 
 ## Folder Structure
 
