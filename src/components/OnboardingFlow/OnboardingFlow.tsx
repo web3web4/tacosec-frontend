@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useWallet } from '@/wallet/walletContext';
 import { useUser } from '@/context';
 import { handleWalletImport, MetroSwal, createAppError, handleSilentError } from '@/utils';
+import Swal from 'sweetalert2';
 import {
   WelcomeScreen,
   PasswordScreen,
@@ -114,6 +115,18 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         }
       } else if (onboardingData.choice === 'import' && onboardingData.seedPhrase) {
         // Import existing wallet
+        // Show loading spinner
+        MetroSwal.fire({
+          title: 'Importing Wallet',
+          text: 'Please wait while we import your wallet...',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
         await handleWalletImport({
           importedMnemonic: onboardingData.seedPhrase,
           isBrowser,
@@ -130,6 +143,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
           providedSavePassword: saveInBackend,
           initDataRaw,
           onDone: () => {
+            Swal.close();
             MetroSwal.fire({
               icon: 'success',
               title: 'Success',
@@ -138,6 +152,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
             onComplete();
           },
           onError: (msg) => {
+            Swal.close();
             MetroSwal.fire({
               icon: 'error',
               title: 'Error',
@@ -147,6 +162,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
         });
       }
     } catch (error) {
+      Swal.close();
       const appError = createAppError(error, 'unknown', 'Wallet operation failed');
       handleSilentError(appError, 'OnboardingFlow wallet operation');
       MetroSwal.fire({
