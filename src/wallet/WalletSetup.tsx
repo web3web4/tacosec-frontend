@@ -28,9 +28,30 @@ export default function WalletSetup() {
   const checkMultipleWallets = (identifier: string | null): boolean => {
     if (!identifier) return false;
     const allKeys = Object.keys(localStorage);
-    return allKeys.some(
-      (key) => key.startsWith("encryptedSeed-") && key !== `encryptedSeed-${identifier}`
-    );
+    
+    // Check for temporary identifier during import process
+    const browserUserId = localStorage.getItem("browser-user-id");
+    const hasTemporaryIdentifier = browserUserId && browserUserId.startsWith("web-");
+    
+    const isCurrentIdentifierWalletAddress = identifier.startsWith("0x") && identifier.length === 42;
+    
+    return allKeys.some((key) => {
+      if (!key.startsWith("encryptedSeed-")) return false;
+      if (key === `encryptedSeed-${identifier}`) return false;
+      
+      // Ignore temporary identifier keys during import transition
+      if (isCurrentIdentifierWalletAddress && hasTemporaryIdentifier) {
+        const tempKey = `encryptedSeed-${browserUserId}`;
+        if (key === tempKey) return false;
+      }
+      
+      // This handles the case where temporary keys might still exist briefly
+      if (isCurrentIdentifierWalletAddress && key.match(/^encryptedSeed-web-[a-z0-9]+$/)) {
+        return false;
+      }
+      
+      return true;
+    });
   };
 
   // Use useMemo to calculate hasMultipleWallets (single source of truth, performance optimization)
