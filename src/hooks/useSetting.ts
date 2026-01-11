@@ -92,20 +92,7 @@ export default function useSetting() {
       };
       await addInformationUser(payload);
   
-      // reflect name updates locally if available
-      setUserData((prev: initDataType | null) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          user: {
-            ...prev.user,
-            email: payload.email,
-            phone: payload.phone,
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-          },
-        };
-      });
+      await getUserData();
   
       await MetroSwal.fire({
         icon: "success",
