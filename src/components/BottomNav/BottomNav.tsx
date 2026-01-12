@@ -41,7 +41,7 @@ export default function BottomNav() {
         className={`nav-item ${location.pathname === "/add" ? "active" : ""}`}
         onClick={() => handleNavClick("/add")}>
         <FiPlusSquare className="bottom-nav-icon" />
-        <span className="bottom-nav-text">Add</span>
+        <span className="bottom-nav-text">New</span>
       </div>
        <div
         className={`nav-item ${location.pathname === "/alerts" ? "active" : ""}`}

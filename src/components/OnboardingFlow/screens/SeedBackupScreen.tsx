@@ -67,7 +67,7 @@ export function SeedBackupScreen({ mnemonic, onConfirm, onBack, viewOnly = false
                   background: 'rgba(149, 255, 93, 0.1)',
                   border: '2px solid rgba(149, 255, 93, 0.3)',
                   borderRadius: '8px',
-                  padding: '16px 12px',
+                  padding: '14px 10px',
                   textAlign: 'center',
                   fontFamily: 'Courier New, monospace',
                   fontSize: '16px',
@@ -91,9 +91,29 @@ export function SeedBackupScreen({ mnemonic, onConfirm, onBack, viewOnly = false
             </div>
           </div>
           
+          
+          <div style={{ 
+            background: 'rgba(255, 243, 205, 0.1)', 
+            border: '1px solid rgba(255, 234, 167, 0.3)', 
+            borderRadius: '6px', 
+            padding: '12px',
+            flexShrink: 0,
+            marginBottom: '12px',
+          }}>
+            <p style={{ 
+              margin: 0, 
+              fontSize: '12px', 
+              color: 'rgba(149, 255, 93, 0.8)',
+              textAlign: 'center',
+              lineHeight: '1.4'
+            }}>
+              <strong>⚠️ Important:</strong> Never share your seed phrase with anyone. 
+              Store it safely offline.
+            </p>
+          </div>
+          
           <div style={{ 
             textAlign: 'center',
-            marginBottom: '12px',
             flexShrink: 0
           }}>
             <button 
@@ -120,52 +140,34 @@ export function SeedBackupScreen({ mnemonic, onConfirm, onBack, viewOnly = false
               )}
             </button>
           </div>
+        </div>
+
+        <div className={`onboarding-actions ${onBack && viewBack ? 'with-back' : 'single'}`}>
+          {onBack && viewBack && (
+            <button className="onboarding-btn back" onClick={onBack}>
+              <MdArrowBack />
+              Back
+            </button>
+          )}
           
-          <div style={{ 
-            background: 'rgba(255, 243, 205, 0.1)', 
-            border: '1px solid rgba(255, 234, 167, 0.3)', 
-            borderRadius: '6px', 
-            padding: '12px',
-            flexShrink: 0
-          }}>
-            <p style={{ 
-              margin: 0, 
-              fontSize: '12px', 
-              color: 'rgba(149, 255, 93, 0.8)',
-              textAlign: 'center',
-              lineHeight: '1.4'
-            }}>
-              <strong>⚠️ Important:</strong> Never share your seed phrase with anyone. 
-              Store it safely offline.
-            </p>
-          </div>
+          {viewOnly ? (
+            <button 
+              className="onboarding-btn secondary"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          ) : (
+            <button 
+              className="onboarding-btn primary"
+              onClick={handleNext}
+            >
+              I've Saved It Securely
+            </button>
+          )}
         </div>
       </div>
       
-      <div className={`onboarding-actions ${onBack && viewBack ? 'with-back' : 'single'}`}>
-        {onBack && viewBack && (
-          <button className="onboarding-btn back" onClick={onBack}>
-            <MdArrowBack />
-            Back
-          </button>
-        )}
-        
-        {viewOnly ? (
-          <button 
-            className="onboarding-btn secondary"
-            onClick={onClose}
-          >
-            Close
-          </button>
-        ) : (
-          <button 
-            className="onboarding-btn primary"
-            onClick={handleNext}
-          >
-            I've Saved It Securely
-          </button>
-        )}
-      </div>
       
       {showManualCopy && (
         <div style={{
