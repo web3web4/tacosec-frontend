@@ -7,7 +7,7 @@ const TelegramInviteButton: React.FC<TelegramInviteButtonProps> = ({
   className = '',
   children
 }) => {
-  const inviteMessage = `I've shared some private files with you. Please open the bot to view them: ${botUserName}`;
+  const inviteMessage = `🔐 I'd like to share something with you securely. Open ${botUserName} to get started ✨`;
   
   return (
     <a

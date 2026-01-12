@@ -22,7 +22,7 @@ const Home: React.FC = () => {
             handleSetActiveTabClick("mydata");
           }}
         >
-          My Data
+          Saved Secrets
         </button>
         <button
           className={`tab-button ${activeTab === "shared" ? "active" : ""}`}
@@ -31,7 +31,7 @@ const Home: React.FC = () => {
             handleSetActiveTabClick("shared");
           }}
         >
-          Shared with Me
+          Received Secrets
         </button>
       </div>
       <div className="tab-content">

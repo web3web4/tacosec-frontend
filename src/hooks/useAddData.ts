@@ -209,7 +209,7 @@ const handleAddShare = (input: string): void => {
       MetroSwal.fire({
         icon: "warning",
         title: "Warning",
-        text: "The Title Field Is Required. Please Enter The Title.",
+        text: "Please enter a title for your secret.",
       });
       return false;
     }
@@ -217,7 +217,7 @@ const handleAddShare = (input: string): void => {
       MetroSwal.fire({
         icon: "warning",
         title: "Warning",
-        text: "The Secret Field Is Required. Please Enter The Secret.",
+        text: "Please enter your secret message or data.",
       });
       return false;
     }
