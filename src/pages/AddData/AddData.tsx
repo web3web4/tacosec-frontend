@@ -1,17 +1,19 @@
 import { parseTelegramInitData, showError, createAppError, recordUserAction, config } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
 import { conditions, toHexString } from "@nucypher/taco";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { storageEncryptedData } from "@/services";
 import { DataPayload } from "@/types/component";
-import { noUserImage, deleteIcon } from "@/assets";
+import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
 import { MetroSwal } from "@/utils/metroSwal";
 import { useAddData, useTaco } from "@/hooks";
 import React, { useState } from "react";
 import { useUser } from "@/context";
+import { TimeConditionSection } from "./TimeConditionSection";
 import "./AddData.css";
 import { sanitizeTitle, sanitizePlainText } from "@/utils";
+import { RiDeleteBinLine } from 'react-icons/ri';
+import { MdLock, MdShield, MdInfo, MdVpnKey, MdCloud, MdLockOpen, MdDns, MdFingerprint } from 'react-icons/md';
 
 
 const ritualId = config.TACO_RITUAL_ID;
@@ -41,11 +43,14 @@ const AddData: React.FC = () => {
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
-  const [seconds, setSeconds] = useState<number>(0);
-  const [minutes, setMinutes] = useState<number>(0);
-  const [hours, setHours] = useState<number>(0);
-  const [months, setMonths] = useState<number>(0);
-  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [showEncryptionDetails, setShowEncryptionDetails] = useState(false);
+
+  const [timeValues, setTimeValues] = useState({
+    seconds: 0,
+    minutes: 0,
+    hours: 0,
+    months: 0,
+  });
   const [useTimeCondition, setUseTimeCondition] = useState(false);
   const [timeConditionType, setTimeConditionType] = useState<"unlock" | "expire">("unlock");
   const { provider, signer, address } = useWallet();
@@ -98,10 +103,10 @@ const AddData: React.FC = () => {
       const currentTimestamp = Math.floor(now.getTime() / 1000); // always UTC-based
 
       // Convert all inputs to seconds
-      const secondsToAdd = Number(seconds) || 0;
-      const minutesToAdd = (Number(minutes) || 0) * 60;
-      const hoursToAdd = (Number(hours) || 0) * 60 * 60;
-      const monthsToAdd = (Number(months) || 0) * 30 * 24 * 60 * 60; // Approximate months as 30 days
+      const secondsToAdd = Number(timeValues.seconds) || 0;
+      const minutesToAdd = (Number(timeValues.minutes) || 0) * 60;
+      const hoursToAdd = (Number(timeValues.hours) || 0) * 60 * 60;
+      const monthsToAdd = (Number(timeValues.months) || 0) * 30 * 24 * 60 * 60; // Approximate months as 30 days
 
       // Final timestamp (no timezone offset added, blockchain uses UTC!)
       let adjustedTimestamp =
@@ -194,17 +199,18 @@ const AddData: React.FC = () => {
 
         if (res) {
           MetroSwal.success(
-            "All set",
-            "Your data was encrypted and saved securely."
+            "🔐 Encrypted Successfully",
+            "Your secret is now secured with end-to-end encryption. Only you and authorized recipients can decrypt it."
           );
 
           cleanFields();
           // Reset time period inputs
-          setSeconds(0);
-          setMinutes(0);
-          setHours(0);
-          setMonths(0);
-          setShowMoreOptions(false);
+          setTimeValues({
+            seconds: 0,
+            minutes: 0,
+            hours: 0,
+            months: 0,
+          });
         }
       }
     } catch (e: unknown) {
@@ -213,6 +219,46 @@ const AddData: React.FC = () => {
     }
     setEncrypting(false);
   };
+
+  const handleClear = () => {
+    const hasData =
+      name ||
+      message ||
+      shareList.length > 0 ||
+      timeValues.seconds > 0 ||
+      timeValues.minutes > 0 ||
+      timeValues.hours > 0 ||
+      timeValues.months > 0;
+
+    const resetForm = () => {
+      cleanFields();
+      setUseTimeCondition(false);
+      setTimeConditionType("unlock");
+      setTimeValues({
+        seconds: 0,
+        minutes: 0,
+        hours: 0,
+        months: 0,
+      });
+    };
+
+    if (hasData) {
+      MetroSwal.fire({
+        title: "Clear all fields?",
+        text: "This action cannot be undone.",
+        showCancelButton: true,
+        confirmButtonText: "Yes, clear it",
+        icon: "warning",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          resetForm();
+        }
+      });
+    } else {
+      resetForm();
+    }
+  };
+
   return (
     <div className="add-data-container">
       {isOpenPopup && (
@@ -258,7 +304,7 @@ const AddData: React.FC = () => {
         </CustomPopup>
       )}
       <div className="add-data-content-wrapper">
-        <h2 className="page-title">Add New Data</h2>
+        <h2 className="page-title">🔐 Save New Encrypted Secret</h2>
         <label>Title</label>
         <input
           type="text"
@@ -268,257 +314,192 @@ const AddData: React.FC = () => {
           className="input-field"
         />
 
-        <label>Secret</label>
+        <label>
+          Secret
+          <span className="security-badge">
+            <MdLock size={14} /> End-to-end encrypted
+          </span>
+        </label>
         <textarea
-          placeholder="New Data ..."
+          placeholder="Enter your secret message, key, or data here..."
           className="input-field-textarea"
           rows={3}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
 
-        <div className="checkbox-time-condition">
-          <label>
-            <input
-              type="checkbox"
-              checked={useTimeCondition}
-              onChange={(e) => setUseTimeCondition(e.target.checked)}
-            />
-            Do you want to add a date/time condition to unlock this secret?
-          </label>
-        </div>
-        {useTimeCondition && (
-          <>
-            <div className="time-condition-type">
-              <label>
-                <input
-                  type="radio"
-                  value="unlock"
-                  checked={timeConditionType === "unlock"}
-                  onChange={() => setTimeConditionType("unlock")}
-                />
-                Unlock after specific time
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="expire"
-                  checked={timeConditionType === "expire"}
-                  onChange={() => setTimeConditionType("expire")}
-                />
-                Expire after specific time
-              </label>
-            </div>
-            <div className="more-options-section">
-              <button
-                className="more-options-toggle"
-                onClick={() => setShowMoreOptions(!showMoreOptions)}
-              >
-                <span>
-                  Time Period{" "}
-                  {showMoreOptions ? <FiChevronUp /> : <FiChevronDown />}
-                </span>
-              </button>
-
-              {showMoreOptions && (
-                <div className="more-options-content">
-                  <p className="more-options-description">
-                    Set when your secret will be unlocked. Enter values in
-                    seconds, minutes, hours, or months.
-                  </p>
-                  <div className="time-period-container">
-                    <div className="time-input-group">
-                      <input
-                        type="number"
-                        min="0"
-                        value={seconds}
-                        onChange={(e) =>
-                          setSeconds(parseInt(e.target.value) )
-                        }
-                        className="time-input"
-                      />
-                      <label className="time-label">Seconds</label>
-                    </div>
-                    <div className="time-input-group">
-                      <input
-                        type="number"
-                        min="0"
-                        value={minutes}
-                        onChange={(e) =>
-                          setMinutes(parseInt(e.target.value) )
-                        }
-                        className="time-input"
-                      />
-                      <label className="time-label">Minutes</label>
-                    </div>
-                    <div className="time-input-group">
-                      <input
-                        type="number"
-                        min="0"
-                        value={hours}
-                        onChange={(e) =>
-                          setHours(parseInt(e.target.value) )
-                        }
-                        className="time-input"
-                      />
-                      <label className="time-label">Hours</label>
-                    </div>
-                    <div className="time-input-group">
-                      <input
-                        type="number"
-                        min="0"
-                        value={months}
-                        onChange={(e) =>
-                          setMonths(parseInt(e.target.value) )
-                        }
-                        className="time-input"
-                      />
-                      <label className="time-label">Months</label>
-                    </div>
-                  </div>
-                  {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
-                    <div className="time-summary">
-                      Unlocks after:{" "}
-                      {months > 0
-                        ? `${months} month${months !== 1 ? "s" : ""} `
-                        : ""}
-                      {hours > 0
-                        ? `${hours} hour${hours !== 1 ? "s" : ""} `
-                        : ""}
-                      {minutes > 0
-                        ? `${minutes} minute${minutes !== 1 ? "s" : ""} `
-                        : ""}
-                      {seconds > 0
-                        ? `${seconds} second${seconds !== 1 ? "s" : ""}`
-                        : ""}
-                    </div>
-                  ) : null}
-                </div>
-              )}
-            </div>
-          </>
-        )}
-
-        {encrypting && (
-          <div
-            style={{
-              marginTop: "5px",
-              color: "var(--danger)",
-              fontWeight: "bold",
-            }}
+        <div className="encryption-details-section">
+          <button 
+            type="button"
+            className="encryption-details-toggle"
+            onClick={() => setShowEncryptionDetails(!showEncryptionDetails)}
           >
-            Encrypting your secret...
-          </div>
-        )}
-        <label>Share with (optional)</label>
-        <SectionErrorBoundary sectionName="ShareWithSection">
-          <div className="share-with-row">
-            <div className="autocomplete-wrapper">
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  value={shareWith}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder="@username or address"
-                  className="input-field"
-                />
-                {isSearch && <span className="spinner" />}
-              </div>
-
-              {searchData.length > 0 && (
-                <ul className="autocomplete-list">
-                  {/* It was shared  previously */}
-                  {searchData.some((item) => item.isPreviouslyShared) && (
-                    <>
-                      <li className="group-title">It was shared previously</li>
-                      {searchData
-                        .filter((item) => item.isPreviouslyShared)
-                        .map((item, index) => (
-                          <li
-                            key={`shared-${index}`}
-                            onClick={() => handleSearchSelect(item)}
-                          >
-                            <p>
-                              {item.firstName} {item.lastName}
-                            </p>
-                            <p>@{item.username}</p>
-                          </li>
-                        ))}
-                    </>
-                  )}
-
-                  {/* Others */}
-                  {searchData.some((item) => !item.isPreviouslyShared) && (
-                    <>
-                      <li className="group-title">Others</li>
-                      {searchData
-                        .filter((item) => !item.isPreviouslyShared)
-                        .map((item, index) => (
-                          <li
-                            key={`others-${index}`}
-                            onClick={() => handleSearchSelect(item)}
-                          >
-                            <p>
-                              {item.firstName} {item.lastName}
-                            </p>
-                            <p>@{item.username}</p>
-                          </li>
-                        ))}
-                    </>
-                  )}
-                </ul>
-              )}
+            <MdInfo size={16} />
+            Encryption Details
+            <span className={`toggle-icon ${showEncryptionDetails ? 'open' : ''}`}>▼</span>
+          </button>
+          {showEncryptionDetails && (
+            <div className="encryption-details-content">
+              <ul>
+                <li><MdShield size={16} /> <strong>Protection:</strong> End-to-end encrypted</li>
+                <li><MdLock size={16} /> <strong>Infra:</strong> TACo (Threshold Access Control)</li>
+                <li><MdDns size={16} /> <strong>Protocol:</strong> Ferveo (threshold encryption)</li>
+                <li><MdVpnKey size={16} /> <strong>Cryptography:</strong> BLS12-381 elliptic curves</li>
+                <li><MdLockOpen size={16} /> <strong>Decryption:</strong> Multi-party computation (MPC)</li>
+                <li>
+                  <MdCloud size={16} /> <strong>Network:</strong> Decentralized node cohort
+                </li>
+                <li className="sub-list">
+                  <ul>
+                    <li>TACo Domain:&nbsp;<span className="sub-info">{domain}</span></li>
+                    <li>Ritual ID:&nbsp;<span className="sub-info">{ritualId}</span></li>
+                  </ul>
+                </li></ul>
+              <p className="encryption-info">
+                🛡️ Your data is encrypted client-side. Decryption requires threshold consensus from independent nodes — no single party can access your secrets.
+              </p>
             </div>
-            <button
-              className="add-share-button"
-              onClick={() => {
-                recordUserAction("Button click: Add share recipient");
-                handleAddShare(shareWith);
-              }}
-            >
-              +
-            </button>
-          </div>
-        </SectionErrorBoundary>
+          )}
+        </div>
 
-        {shareList.length > 0 && (
-          <SectionErrorBoundary sectionName="ShareList">
-            <div className="share-list">
-              <p>Sharing with:</p>
-              {shareList.map((user, i) => (
-                <div className="user_container" key={i}>
-                  <div className="user-content">
-                    - <UserDisplayToggle userData={user.data} />
-                  </div>
-                  <div className="user-content-buttons">
-                    <div
-                      className="delete-user-btn"
-                      onClick={() =>
-                        handleDeleteUser(
-                          user.data.publicAddress!
-                        )
-                      }
-                    >
-                      <img
-                        src={deleteIcon}
-                        alt="delete icon"
-                        width={20}
-                        height={20}
-                      />
-                    </div>
-                  </div>
+        <div className="form-divider" />
+
+        <label>Share with?</label>
+        <p className="field-helper">Leave empty to keep your secret private</p>
+        <div className="share-section-wrapper">
+          <SectionErrorBoundary sectionName="ShareWithSection">
+            <div className="share-with-row">
+              <div className="autocomplete-wrapper">
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    value={shareWith}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    placeholder="@username or 0x address"
+                    className="input-field"
+                  />
+                  {isSearch && <span className="spinner" />}
                 </div>
-              ))}
+
+                {searchData.length > 0 && (
+                  <ul className="autocomplete-list">
+                    {/* It was shared  previously */}
+                    {searchData.some((item) => item.isPreviouslyShared) && (
+                      <>
+                        <li className="group-title">It was shared previously</li>
+                        {searchData
+                          .filter((item) => item.isPreviouslyShared)
+                          .map((item, index) => (
+                            <li
+                              key={`shared-${index}`}
+                              onClick={() => handleSearchSelect(item)}
+                            >
+                              <p>
+                                {item.firstName} {item.lastName}
+                              </p>
+                              <p>@{item.username}</p>
+                            </li>
+                          ))}
+                      </>
+                    )}
+
+                    {/* Others */}
+                    {searchData.some((item) => !item.isPreviouslyShared) && (
+                      <>
+                        <li className="group-title">Others</li>
+                        {searchData
+                          .filter((item) => !item.isPreviouslyShared)
+                          .map((item, index) => (
+                            <li
+                              key={`others-${index}`}
+                              onClick={() => handleSearchSelect(item)}
+                            >
+                              <p>
+                                {item.firstName} {item.lastName}
+                              </p>
+                              <p>@{item.username}</p>
+                            </li>
+                          ))}
+                      </>
+                    )}
+                  </ul>
+                )}
+              </div>
+              <button
+                className="add-share-button"
+                onClick={() => {
+                  recordUserAction("Button click: Add share recipient");
+                  handleAddShare(shareWith);
+                }}
+              >
+                +
+              </button>
             </div>
           </SectionErrorBoundary>
-        )}
 
-        <button className="save-button" onClick={() => {
-          recordUserAction("Button click: Save new data");
-          encryptMessage();
-        }}>
-          Save
-        </button>
+          {shareList.length > 0 && (
+            <SectionErrorBoundary sectionName="ShareList">
+              <div className="share-list">
+                <div className="title">Sharing with:</div>
+                {shareList.map((user, i) => (
+                  <div className="user-container" key={i}>
+                    <div className="user-content">
+                      - <UserDisplayToggle userData={user.data} />
+                    </div>
+                    <div className="user-content-buttons">
+                      <div
+                        className="delete-user-btn"
+                        onClick={() =>
+                          handleDeleteUser(
+                            user.data.publicAddress!
+                          )
+                        }
+                      >
+                        <RiDeleteBinLine size={20} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SectionErrorBoundary>
+          )}
+        </div>
+
+
+       <TimeConditionSection
+          useTimeCondition={useTimeCondition}
+          setUseTimeCondition={setUseTimeCondition}
+          timeConditionType={timeConditionType}
+          setTimeConditionType={setTimeConditionType}
+          timeValues={timeValues}
+          setTimeValues={setTimeValues}
+        />
+
+
+        <div className="form-actions">
+          <button className="clear-button" onClick={handleClear}>
+            Clear
+          </button>
+          <button className="save-button" onClick={() => {
+            recordUserAction("Button click: Save new data");
+            encryptMessage();
+          }}
+            disabled={encrypting}>
+            {encrypting ? (
+              <>
+                <span className="spinner-small" />
+                Encrypting
+              </>
+            ) : (
+              <>
+                <MdLock size={18} />
+                Encrypt 
+                <br />
+                & Save
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

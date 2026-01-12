@@ -253,3 +253,14 @@
 .metro-swal-popup .swal2-close:hover {
   color: #95ff5d !important;
 }
+
+.gdpr-content ul {
+  list-style-type: disc !important;
+  padding-left: 20px !important;
+}
+
+.gdpr-content li {
+  padding: 1px 0 !important;
+  display: list-item !important;
+  margin-left: 10px !important;
+}

@@ -49,6 +49,11 @@
   gap: 10px;
 }
 
+.onboarding-header h1 svg {
+  font-size: 1em;
+  flex-shrink: 0;
+}
+
 .onboarding-header p {
   font-size: 16px;
   color: #95ff5d;
@@ -101,6 +106,11 @@
   justify-content: center;
   gap: 8px;
   min-height: 48px;
+}
+
+.onboarding-btn svg {
+  font-size: 1.2em;
+  flex-shrink: 0;
 }
 
 .onboarding-btn:disabled {
@@ -290,6 +300,12 @@
 
 .validation-success {
   color: #95ff5d;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.validation-hint {
+  color: #ff6b6b;
   font-size: 12px;
   font-weight: 500;
 }

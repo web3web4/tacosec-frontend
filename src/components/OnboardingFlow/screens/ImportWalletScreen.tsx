@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdDownload, MdArrowBack } from 'react-icons/md';
 import { ethers } from 'ethers';
 
@@ -10,10 +10,24 @@ interface ImportWalletScreenProps {
 export function ImportWalletScreen({ onImport, onBack }: ImportWalletScreenProps) {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [error, setError] = useState('');
-
-  const words = seedPhrase.trim().split(/\s+/).filter(word => word.length > 0);
+  const [showInvalid12WordsError, setShowInvalid12WordsError] = useState(false);
+  
+  const words = seedPhrase.trim().split(/\s+/).filter((word: string) => word.length > 0);
   const wordCount = words.length;
-  const isValid = wordCount === 12 && ethers.utils.isValidMnemonic(seedPhrase.trim());
+  const isMnemonicValid = ethers.utils.isValidMnemonic(seedPhrase.trim());
+  const isValid = wordCount === 12 && isMnemonicValid;
+
+  useEffect(() => {
+    // Only show "Invalid seed phrase. Check spelling!" error if there is exactly 12 words but it's not valid
+    if (wordCount === 12 && !isMnemonicValid) {
+      const timer = setTimeout(() => {
+        setShowInvalid12WordsError(true);
+      }, 1500); // 1.5s delay while typing the last word
+      return () => clearTimeout(timer);
+    } else {
+      setShowInvalid12WordsError(false);
+    }
+  }, [seedPhrase, wordCount, isMnemonicValid]);
 
   const handleSeedPhraseChange = (value: string) => {
     setSeedPhrase(value);
@@ -90,6 +104,9 @@ export function ImportWalletScreen({ onImport, onBack }: ImportWalletScreenProps
             
             {isValid && (
               <span className="validation-success">✓ Ready to import</span>
+            )}
+            {showInvalid12WordsError && (
+              <span className="validation-hint">Invalid seed phrase. Check spelling!</span>
             )}
           </div>
           
