@@ -5,7 +5,7 @@ import { SelectedSecretType } from "@/types/types";
 import { handleSilentError , config, sanitizePlainText } from "@/utils";
 import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
-import MetroSwal from "sweetalert2";
+import { MetroSwal } from "@/utils";
 import { v4 as uuidv4 } from 'uuid';
 import { SetStateAction, useState } from "react";
 
@@ -100,7 +100,7 @@ export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: Re
       }
     } catch (error) {
       handleSilentError(error, 'submitting reply');
-      MetroSwal.showValidationMessage('Failed to submit reply. Please try again.');
+      MetroSwal.warning('Failed to submit reply. Please try again.');
       return false;
     } finally {
       setIsSubmittingReply(false);
