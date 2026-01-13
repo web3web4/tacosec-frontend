@@ -21,7 +21,7 @@
   background: var(--surface);
   border: 2px solid var(--metro-green);
   border-radius: 20px;
-  padding: 40px;
+  padding: 5px;
   box-shadow: 0 0 30px rgba(149, 255, 93, 0.3);
 }
 
@@ -46,8 +46,8 @@
 
 .logo-container {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;

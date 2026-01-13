@@ -39,6 +39,9 @@
     "styled-components": "^6.1.17",
     "sweetalert2": "^11.19.1",
     "uuid": "^11.1.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -76,5 +79,24 @@
   },
   "peerDependencies": {
     "ethers": "^5.7.2"
+  },
+  "overrides": {
+    "schema-utils@4.3.0": {
+      "ajv": "^8.17.1",
+      "ajv-keywords": "^5.1.0",
+      "ajv-formats": "^2.1.1"
+    },
+    "schema-utils@3.3.0": {
+      "ajv": "6.12.6",
+      "ajv-keywords": "3.5.2"
+    },
+    "schema-utils@2.7.1": {
+      "ajv": "6.12.6",
+      "ajv-keywords": "3.5.2"
+    },
+    "schema-utils@2.7.0": {
+      "ajv": "6.12.6",
+      "ajv-keywords": "3.5.2"
+    }
   }
 }
