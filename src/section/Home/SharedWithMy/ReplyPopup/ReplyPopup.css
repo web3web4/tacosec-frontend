@@ -85,7 +85,7 @@
 
 .reply-actions .submit-btn {
   background-color: var(--primary-color);
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .reply-actions .submit-btn:hover:not(:disabled) {
