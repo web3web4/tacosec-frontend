@@ -86,13 +86,6 @@ export default function MyData() {
                   </div>
                 </div>
               </div>
-              <div onClick={(e) => e.stopPropagation()}>
-                <div onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenu
-                    options={[]}
-                  />
-                </div>
-              </div>
             </div>{" "}
             <p
               className="item-status"
@@ -148,8 +141,8 @@ export default function MyData() {
                         }}
                         title="Reply to this secret"
                       >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M3 8H13M3 8L7 4M3 8L7 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 14.4183 14.4183 18 10 18C8.9 18 7.85 17.78 6.9 17.39L2 19L3.61 14.1C3.22 13.15 3 12.1 3 11C3 10.66 3.02 10.33 3.06 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                         Reply
                       </button>
@@ -179,9 +172,12 @@ export default function MyData() {
                         }}
                         title="Delete this secret"
                       >
-                        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M14 5L13.5 17C13.5 18.1046 12.6046 19 11.5 19H6.5C5.39543 19 4.5 18.1046 4.5 17L4 5M1 5H17M12 5V3C12 1.89543 11.1046 1 10 1H8C6.89543 1 6 1.89543 6 3V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M7 9V15M11 9V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M3 6L4 19C4 20.1046 4.89543 21 6 21H14C15.1046 21 16 20.1046 16 19L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M1 6H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M7 6V3C7 1.89543 7.89543 1 9 1H11C12.1046 1 13 1.89543 13 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <circle cx="10" cy="11" r="1.5" fill="currentColor"/>
+                          <circle cx="10" cy="16" r="1.5" fill="currentColor"/>
                         </svg>
                       </button>
                     )}

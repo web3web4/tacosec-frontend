@@ -106,13 +106,6 @@ export default function SharedWithMy() {
                       <DropdownMenu
                         options={[
                           {
-                            label: "Reply",
-                            onClick: () => {
-                              setSelectedSecret({ parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith });
-                              setShowReplyPopup(true);
-                            }
-                          },
-                          {
                             label: "Report",
                             onClick: () => handleReportUser(pass.id, item.sharedBy.publicAddress),
                           },
@@ -164,8 +157,8 @@ export default function SharedWithMy() {
                             }}
                             title="Reply to this secret"
                           >
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M3 8H13M3 8L7 4M3 8L7 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 14.4183 14.4183 18 10 18C8.9 18 7.85 17.78 6.9 17.39L2 19L3.61 14.1C3.22 13.15 3 12.1 3 11C3 10.66 3.02 10.33 3.06 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
                             Reply
                           </button>

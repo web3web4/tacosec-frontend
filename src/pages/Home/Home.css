@@ -402,8 +402,8 @@
 }
 
 .reply-button svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .reply-button:hover {
@@ -440,8 +440,8 @@
 }
 
 .delete-icon-button svg {
-  width: 18px;
-  height: 20px;
+  width: 20px;
+  height: 22px;
 }
 
 .delete-icon-button:hover {
