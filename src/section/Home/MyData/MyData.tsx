@@ -86,7 +86,7 @@ export default function MyData() {
                   </div>
                 </div>
               </div>
-            </div>{" "}
+            </div>
             <p
               className="item-status"
               data-status={
