@@ -89,15 +89,7 @@ export default function MyData() {
               <div onClick={(e) => e.stopPropagation()}>
                 <div onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu
-                    options={[
-                      {
-                        label: "Reply",
-                        onClick: () => {
-                          setSelectedSecret({ parentSecretId: item.id, shareWith: item.sharedWith });
-                          setShowReplyPopup(true);
-                        }
-                      }
-                    ]}
+                    options={[]}
                   />
                 </div>
               </div>
@@ -135,7 +127,7 @@ export default function MyData() {
 
 
                 <div className="button-group">
-                  <div>
+                  <div className="action-buttons-left">
                     <button
                       className="copy-button"
                       onClick={(e) => {
@@ -146,29 +138,54 @@ export default function MyData() {
                     >
                       {copied ? "Copied!" : "Copy"}
                     </button>
-                    <button
-                      className="delete-button"
-                      onClick={() => {
-                        recordUserAction(`Button click: Delete item ${item.id}`);
-                        handleDelete(item.id, item.sharedWith.length > 0);
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                  {item.sharedWith.length > 0 && (
-                    <div className="secret-view-section">
-                      <button className="view-icon-button" onClick={(e) => {
-                        recordUserAction(`Button click: View stats for ${item.id}`);
-                        handleGetSecretViews(e, item.id);
-                      }}>
-                        <img src={showIcon} alt="view-icon" width={15} height={15} />
+                    {decryptedMessages[item.id] && (
+                      <button
+                        className="reply-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedSecret({ parentSecretId: item.id, shareWith: item.sharedWith });
+                          setShowReplyPopup(true);
+                        }}
+                        title="Reply to this secret"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M3 8H13M3 8L7 4M3 8L7 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Reply
                       </button>
-                      <span>
-                        {secretViews[item.id] ? secretViews[item.id].totalViews : 0}
-                      </span>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  <div className="action-buttons-right">
+                    {item.sharedWith.length > 0 && (
+                      <div className="secret-view-section">
+                        <button className="view-icon-button" onClick={(e) => {
+                          recordUserAction(`Button click: View stats for ${item.id}`);
+                          handleGetSecretViews(e, item.id);
+                        }}>
+                          <img src={showIcon} alt="view-icon" width={15} height={15} />
+                        </button>
+                        <span>
+                          {secretViews[item.id] ? secretViews[item.id].totalViews : 0}
+                        </span>
+                      </div>
+                    )}
+                    {decryptedMessages[item.id] && (
+                      <button
+                        className="delete-icon-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          recordUserAction(`Button click: Delete item ${item.id}`);
+                          handleDelete(item.id, item.sharedWith.length > 0);
+                        }}
+                        title="Delete this secret"
+                      >
+                        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M14 5L13.5 17C13.5 18.1046 12.6046 19 11.5 19H6.5C5.39543 19 4.5 18.1046 4.5 17L4 5M1 5H17M12 5V3C12 1.89543 11.1046 1 10 1H8C6.89543 1 6 1.89543 6 3V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M7 9V15M11 9V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {item.sharedWith.length > 0 && (
                   <div className="shared-section">
@@ -214,7 +231,18 @@ export default function MyData() {
           </div>
         ))
       ) : (
-        <p className="no-data-message">No data available.</p>
+        <div className="no-data-message">
+          <div className="empty-icon">
+            <svg width="48" height="54" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="8" width="14" height="9" stroke="currentColor" strokeWidth="2" />
+              <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <h3 className="empty-title">No Saved Secrets</h3>
+          <p className="empty-description">
+            You haven't created any secrets yet. Start by creating your first secret to securely store and share information.
+          </p>
+        </div>
       )}
       {showManualCopy && (
         <div className="manual-copy-modal">

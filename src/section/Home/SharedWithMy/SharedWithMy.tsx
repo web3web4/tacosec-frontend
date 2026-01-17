@@ -144,25 +144,45 @@ export default function SharedWithMy() {
                     </p>
 
                     <div className="button-group">
-                      <button
-                        className="copy-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (decryptedMessages[pass.id])
-                            handleCopy(decryptedMessages[pass.id]);
-                        }}>
-                        {copied ? "Copied!" : "Copy"}
-                      </button>
-                      <div className="secret-view-section">
-                        <button className="view-icon-button" onClick={(e) => {
-                          recordUserAction(`Button click: View stats for shared item ${pass.id}`);
-                          handleGetSecretViews(e, pass.id);
-                        }}>
-                          <img src={showIcon} alt="view-icon" width={15} height={15} />
+                      <div className="action-buttons-left">
+                        <button
+                          className="copy-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (decryptedMessages[pass.id])
+                              handleCopy(decryptedMessages[pass.id]);
+                          }}>
+                          {copied ? "Copied!" : "Copy"}
                         </button>
-                        <span>
-                          {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}
-                        </span>
+                        {decryptedMessages[pass.id] && (
+                          <button
+                            className="reply-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSecret({ parentSecretId: pass.id, parentAddress: item.sharedBy.publicAddress, shareWith: pass.sharedWith });
+                              setShowReplyPopup(true);
+                            }}
+                            title="Reply to this secret"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M3 8H13M3 8L7 4M3 8L7 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Reply
+                          </button>
+                        )}
+                      </div>
+                      <div className="action-buttons-right">
+                        <div className="secret-view-section">
+                          <button className="view-icon-button" onClick={(e) => {
+                            recordUserAction(`Button click: View stats for shared item ${pass.id}`);
+                            handleGetSecretViews(e, pass.id);
+                          }}>
+                            <img src={showIcon} alt="view-icon" width={15} height={15} />
+                          </button>
+                          <span>
+                            {secretViews[pass.id] ? secretViews[pass.id].totalViews : 0}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
@@ -208,7 +228,18 @@ export default function SharedWithMy() {
           })
         )
       ) : (
-        <p className="no-data-message">No data available.</p>
+        <div className="no-data-message">
+          <div className="empty-icon">
+            <svg width="54" height="42" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="1" width="16" height="12" stroke="currentColor" strokeWidth="2" />
+              <path d="M1 1L9 8L17 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h3 className="empty-title">No Received Secrets</h3>
+          <p className="empty-description">
+            You haven't received any secrets yet. When someone shares a secret with you, it will appear here.
+          </p>
+        </div>
       )}
 
       {showManualCopy && (
