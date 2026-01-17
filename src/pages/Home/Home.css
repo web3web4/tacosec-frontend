@@ -254,7 +254,6 @@
 .item-toggle {
   position: relative;
   top: 5px;
-  left: 22px;
   font-size: 14px;
   color: #6c757d;
   transition: transform 0.2s ease;
