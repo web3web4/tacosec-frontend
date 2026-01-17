@@ -72,7 +72,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     const encrypted = getEncryptedSeed(identifier);
     setHasWallet(!!encrypted);
-    
+
     // Note: Decrypt prompt is now handled by WalletSetup.tsx using OnboardingFlow
     // We just need to ensure hasWallet state is correct
   }, [identifier]);
@@ -131,9 +131,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     }
 
     if (!initDataRaw && isTelegram) throw new Error("initData is required");
-    
 
-    const publicAddressChallangeResponse = await publicAddressChallange(wallet.address , initDataRaw || "");
+
+    const publicAddressChallangeResponse = await publicAddressChallange(wallet.address, initDataRaw || "");
     const message = publicAddressChallangeResponse.data.challange;
     const signature = await wallet.signMessage(message);
 
@@ -145,9 +145,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         const SALT = config.TG_SECRET_SALT || "default_salt";
         const encryptionKey = wallet.address + "|" + SALT;
         const encryptedPassword = CryptoJS.AES.encrypt(password, encryptionKey).toString();
-        return { publicKey: wallet.address, signature:signature , secret: encryptedPassword };
+        return { publicKey: wallet.address, signature: signature, secret: encryptedPassword };
       })()
-      : { publicKey: wallet.address , signature:signature };
+      : { publicKey: wallet.address, signature: signature };
 
     try {
       await storagePublicKeyAndPassword(data, initDataRaw || "");

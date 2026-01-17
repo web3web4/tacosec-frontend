@@ -90,7 +90,7 @@ const AddData: React.FC = () => {
       ];
 
       const checkUsersCondition =
-      new conditions.base.contextVariable.ContextVariableCondition({
+        new conditions.base.contextVariable.ContextVariableCondition({
           contextVariable: ":userAddress",
           returnValueTest: {
             comparator: "in",
@@ -329,7 +329,7 @@ const AddData: React.FC = () => {
         />
 
         <div className="encryption-details-section">
-          <button 
+          <button
             type="button"
             className="encryption-details-toggle"
             onClick={() => setShowEncryptionDetails(!showEncryptionDetails)}
@@ -466,7 +466,7 @@ const AddData: React.FC = () => {
         </div>
 
 
-       <TimeConditionSection
+        <TimeConditionSection
           useTimeCondition={useTimeCondition}
           setUseTimeCondition={setUseTimeCondition}
           timeConditionType={timeConditionType}
@@ -493,7 +493,7 @@ const AddData: React.FC = () => {
             ) : (
               <>
                 <MdLock size={18} />
-                Encrypt 
+                Encrypt
                 <br />
                 & Save
               </>

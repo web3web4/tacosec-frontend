@@ -1,10 +1,17 @@
-# TacoSec Frontend
+# TACoSec Frontend
 
-A secure, decentralized secret sharing platform built with React and TypeScript, leveraging NuCypher's Threshold Access Control Objects (TACO) for end-to-end encryption. TacoSec enables users to securely share passwords, API keys, and other sensitive data with granular access control and time-based conditions.
+A secure, decentralized secret sharing platform built with React and TypeScript, leveraging NuCypher's Threshold Access Control Objects (TACo) for end-to-end encryption. TACoSec enables users to securely share passwords, API keys, and other sensitive data with granular access control and time-based conditions.
 
 ## Project Description
 
-TacoSec is a web application that provides a secure way to share sensitive information (passwords, API keys, credentials) with others using threshold cryptography. The platform uses NuCypher TACO technology to encrypt secrets that can only be decrypted by authorized recipients, ensuring that even the platform itself cannot access the shared data.
+TACoSec is a web application that provides a secure way to share sensitive information (passwords, API keys, credentials) with others using threshold cryptography. The platform uses NuCypher TACo technology to encrypt secrets that can only be decrypted by authorized recipients, ensuring that even the platform itself cannot access the shared data.
+
+## Built With
+
+[![TACo](https://img.shields.io/badge/Powered%20by-TACo-95FF5D)](https://taco.build)
+[![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![ethers.js](https://img.shields.io/badge/ethers.js-2535a0?logo=ethereum&logoColor=white)](https://docs.ethers.org/)
+[![Telegram](https://img.shields.io/badge/Telegram-Mini%20App-26A5E4?logo=telegram)](https://core.telegram.org/bots/webapps)
 
 ### Main Purpose
 
@@ -25,7 +32,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 
 ### Core Features
 
-- **🔐 Threshold Encryption**: Secrets are encrypted using NuCypher TACO, ensuring only authorized recipients can decrypt
+- **🔐 Threshold Encryption**: Secrets are encrypted using NuCypher TACo, ensuring only authorized recipients can decrypt
 - **👥 Multi-User Sharing**: Share secrets with multiple users simultaneously using their public addresses
 - **⏰ Time-Based Access Control**: 
   - Set unlock times (secrets become accessible at a future date)
@@ -58,67 +65,7 @@ TacoSec is a web application that provides a secure way to share sensitive infor
 
 ## Technical Overview
 
-### Architecture
-
-TacoSec follows a component-based React architecture with clear separation of concerns:
-
-1. **Context Layer**: Global state management using React Context API
-   - `UserContext`: User authentication and profile data
-   - `WalletContext`: Ethereum wallet management and encryption keys
-   - `HomeContext`: Home page state and data management
-   - `SnackbarContext`: Global notification system
-   - `NavigationGuardContext`: Route protection and navigation
-
-2. **Service Layer**: API communication abstraction
-   - `authService`: Authentication and token management
-   - `secretsService`: Secret CRUD operations
-   - `usersService`: User profile and search operations
-   - `adminService`: Admin dashboard operations
-   - `supportService`: Support ticket management.
-
-3. **Hooks Layer**: Reusable business logic
-   - `useTaco`: TACO encryption/decryption operations
-   - `useSecretDecryption`: Secret decryption workflow
-   - `useSecrets`: Secret data management
-   - `useAddData`: Secret creation workflow
-   - `useUser`: User data management
-   - Custom hooks for alerts, reports, notifications, etc.
-
-4. **Component Layer**: UI components organized by feature
-   - Pages: Main application routes
-   - Sections: Feature-specific UI sections
-   - Components: Reusable UI components
-   - Error Boundaries: Error handling at multiple levels
-
-### Data Flow
-
-1. **Secret Creation**:
-   - User enters secret data (and selects recipients or no) 
-   - Data is encrypted using TACO with recipient public addresses as conditions
-   - Encrypted data is sent to backend API
-   - Backend stores encrypted payload (cannot decrypt)
-
-2. **Secret Decryption**:
-   - User requests secret from backend
-   - Encrypted payload is retrieved
-   - TACO decrypts using user's wallet signature
-   - Decrypted secret is displayed to user
-
-3. **Authentication Flow**:
-   - **Telegram**: Uses Telegram WebApp initData for authentication with initData.
-   - **Web**: Uses Ethereum wallet signature challenge-response and use JWT Token.
-
-### Key Files and Responsibilities
-
-- `src/App.tsx`: Main application entry point, routing, and provider setup
-- `src/wallet/walletContext.tsx`: Wallet creation, encryption, and management
-- `src/hooks/useTaco.ts`: TACO encryption/decryption wrapper
-- `src/services/secrets/secretsService.ts`: API calls for secret operations
-- `src/pages/Home/Home.tsx`: Main user interface for viewing secrets
-- `src/pages/AddData/AddData.tsx`: Secret creation interface
-- `src/pages/Dashboard/`: Admin dashboard components
-- `src/utils/config.ts`: Environment configuration management
-- `craco.config.js`: Webpack configuration for crypto polyfills
+TACoSec follows a component-based React architecture with clear separation of concerns using Context API for state management, service layers for API communication, custom hooks for business logic, and a structured component hierarchy.
 
 ## Tech Stack
 
@@ -132,7 +79,7 @@ TacoSec follows a component-based React architecture with clear separation of co
 ### Encryption & Security
 
 - **@nucypher/taco**: `0.7.0-alpha.5` - Threshold Access Control Objects
-- **@nucypher/taco-auth**: `0.4.0-alpha.5` - TACO authentication
+- **@nucypher/taco-auth**: `0.4.0-alpha.5` - TACo authentication
 - **@nucypher/shared**: `0.6.0-alpha.5` - Shared NuCypher utilities
 - **crypto-js**: `^4.2.0` - Additional cryptographic functions
 - **crypto-browserify**: `^3.12.1` - Node.js crypto polyfill for browser
@@ -229,11 +176,11 @@ All environment variables must be prefixed with `REACT_APP_` to be accessible in
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `REACT_APP_TG_SECRET_SALT` | Salt for encrypting Telegram user passwords | `your_secret_salt_string` |
-| `REACT_APP_TACO_DOMAIN` | NuCypher TACO domain name | `tapir` (testnet) |
-| `REACT_APP_TACO_RITUAL_ID` | TACO ritual ID for encryption | `6` |
-| `REACT_APP_RPC_PROVIDER_URL` | Ethereum RPC provider URL | `https://rpc-amoy.polygon.technology` |
-| `REACT_APP_API_BASE_URL` | Backend API base URL | `https://api.tacosec.com` |
-| `REACT_APP_BOT_USER_NAME` | Telegram bot username | `@TacoSecBot` |
+| `REACT_APP_TACO_DOMAIN` | NuCypher TACo domain name | e.g. `tapir` (testnet) |
+| `REACT_APP_TACO_RITUAL_ID` | TACo ritual ID for encryption | e.g. `6` |
+| `REACT_APP_RPC_PROVIDER_URL` | Ethereum RPC provider URL | e.g. `https://rpc-amoy.polygon.technology` |
+| `REACT_APP_API_BASE_URL` | Backend API base URL | e.g. `https://api.tacosec.com` |
+| `REACT_APP_BOT_USER_NAME` | Telegram bot username | e.g. `@@tacosec_bot` (live) or `@Taco_Sec_Staging_bot` (staging) |
 
 #### Optional Variables
 
@@ -279,7 +226,7 @@ yarn test
 ```
 Launches the test runner in interactive watch mode
 
-### Common Workflows
+### Common User Workflows
 
 #### 1. Creating a Secret
 
@@ -291,7 +238,7 @@ Launches the test runner in interactive watch mode
    - Unlock time: Secret becomes accessible at a future date
    - Expiration time: Secret becomes inaccessible after a date
 6. Click "Encrypt and Save"
-7. Wait for encryption to complete (uses TACO threshold encryption)
+7. Wait for encryption to complete (uses TACo threshold encryption)
 
 #### 2. Viewing Shared Secrets
 
@@ -326,7 +273,9 @@ Launches the test runner in interactive watch mode
    - **Notifications**: System notifications
    - **Logger**: Activity logs
 
-### Telegram Mini App Usage
+### Platform-Specific Usage
+
+#### Telegram Mini App
 
 1. Open the bot in Telegram
 2. Launch the Mini App
@@ -334,104 +283,13 @@ Launches the test runner in interactive watch mode
 4. Create or import wallet
 5. Use the application normally
 
-### Web Application Usage
+#### Web Application
 
 1. Open the web application
 2. Connect your Ethereum wallet
 3. Sign a challenge message to authenticate
 4. Create or import wallet
 5. Use the application normally
-
-## Folder Structure
-
-```
-taco-front/
-├── public/                 # Static assets
-│   ├── .well-known/       # Well-known files (Farcaster, etc.)
-│   ├── favicon.ico        # Site favicon
-│   ├── index.html         # HTML template
-│   └── manifest.json      # PWA manifest
-├── src/
-│   ├── assets/            # Images, icons, and static assets
-│   │   ├── icons/         # Application icons
-│   │   └── images/        # Image assets
-│   ├── components/        # Reusable UI components
-│   │   ├── AdminSidebar/  # Admin navigation sidebar
-│   │   ├── BottomNav/     # Bottom navigation bar
-│   │   ├── ErrorBoundary/ # Error boundary components
-│   │   ├── OnboardingFlow/# Wallet onboarding screens
-│   │   ├── CustomPopup/   # Custom popup components
-│   │   └── ...            # Other components
-│   ├── context/           # React Context providers
-│   │   ├── UserContext.tsx      # User authentication state
-│   │   ├── HomeContext.tsx      # Home page state
-│   │   ├── NavigationGuardContext.tsx  # Route protection
-│   │   └── SnackbarContext.tsx  # Global notifications
-│   ├── hooks/             # Custom React hooks
-│   │   ├── useTaco.ts           # TACO encryption/decryption
-│   │   ├── useSecretDecryption.ts  # Secret decryption logic
-│   │   ├── useSecrets.ts        # Secret data management
-│   │   ├── useAddData.ts        # Secret creation logic
-│   │   └── ...                  # Other hooks
-│   ├── localstorage/     # LocalStorage utilities
-│   │   └── walletStorage.ts     # Wallet data storage
-│   ├── pages/            # Page components (routes)
-│   │   ├── Home/         # Main home page
-│   │   ├── AddData/      # Secret creation page
-│   │   ├── Settings/     # User settings page
-│   │   ├── Dashboard/    # Admin dashboard
-│   │   └── Alerts/       # Alerts/notifications page
-│   ├── section/          # Feature-specific sections
-│   │   ├── Home/         # Home page sections
-│   │   │   ├── MyData/           # User's secrets section
-│   │   │   ├── SharedWithMy/     # Shared secrets section
-│   │   │   └── ChildrenSection/  # Child secrets section
-│   │   └── Setting/      # Settings sections
-│   ├── services/         # API service layer
-│   │   ├── auth/         # Authentication services
-│   │   ├── secrets/      # Secret CRUD services
-│   │   ├── users/        # User services
-│   │   ├── admin/        # Admin services
-│   │   └── support/      # Support services
-│   ├── types/            # TypeScript type definitions
-│   │   ├── types.ts      # Main type definitions
-│   │   ├── context.ts    # Context types
-│   │   ├── component.ts  # Component prop types
-│   │   └── wallet.ts     # Wallet types
-│   ├── utils/            # Utility functions
-│   │   ├── config.ts           # Environment config
-│   │   ├── authManager.ts      # Token management
-│   │   ├── cookieManager.ts    # Cookie utilities
-│   │   ├── errorHandler.ts     # Error handling
-│   │   ├── walletUtils.ts      # Wallet utilities
-│   │   └── ...                 # Other utilities
-│   ├── wallet/            # Wallet management
-│   │   ├── walletContext.tsx   # Wallet context provider
-│   │   ├── WalletSetup.tsx     # Wallet setup component
-│   │   └── ImportWallet.tsx    # Wallet import component
-│   ├── App.tsx           # Main application component
-│   ├── index.tsx        # Application entry point
-│   └── index.css        # Global styles
-├── .env-example          # Environment variables template
-├── .eslintrc.json        # ESLint configuration
-├── .gitignore            # Git ignore rules
-├── craco.config.js       # CRACO webpack configuration
-├── package.json          # Dependencies and scripts
-├── tsconfig.json         # TypeScript configuration
-└── README.md             # This file
-```
-
-### Key Directories Explained
-
-- **`src/components/`**: Reusable UI components used across the application
-- **`src/pages/`**: Top-level page components corresponding to routes
-- **`src/section/`**: Feature-specific UI sections used within pages
-- **`src/services/`**: API communication layer, organized by domain
-- **`src/hooks/`**: Custom React hooks encapsulating business logic
-- **`src/context/`**: Global state management using React Context
-- **`src/utils/`**: Shared utility functions and helpers
-- **`src/wallet/`**: Ethereum wallet creation, encryption, and management
-- **`src/types/`**: TypeScript type definitions for type safety
 
 ## Security Notes
 
@@ -444,7 +302,7 @@ taco-front/
 
 ### Encryption
 
-- **Secrets**: Encrypted using NuCypher TACO threshold encryption
+- **Secrets**: Encrypted using NuCypher TACo threshold encryption
   - Only authorized recipients (by public address) can decrypt
   - Backend cannot decrypt secrets
   - Encryption uses blockchain-based conditions
@@ -475,7 +333,7 @@ taco-front/
 
 ## Contribution
 
-We welcome contributions to TacoSec! Please follow these guidelines:
+We welcome contributions to TACoSec! Please follow these guidelines:
 
 ### Getting Started
 
@@ -517,6 +375,18 @@ This project is licensed under the MIT License - see the `package.json` file for
 
 ---
 
-**Built with ❤️ by Web3Web4**
+## Powered By
 
-For more information, visit [TacoSec.com](https://tacosec.com) or contact the development team.
+🔐 **[TACo (Threshold Access Control)](https://taco.build)** — Client-side, threshold-based, decentralized encryption & access control  
+⚡ **[React](https://react.dev/)** — JavaScript library for building user interfaces  
+🔑 **[ethers.js](https://docs.ethers.org/)** — Wallet management & seed phrase authentication  
+💬 **[Telegram Mini Apps](https://core.telegram.org/bots/webapps)** — In-chat application platform
+
+### Authentication
+
+- **Web Users:** Validated via seed phrase wallet signatures.
+- **Telegram Access:** Telegram Mini App & Bot API authentication + seed phrase wallet signatures for the data access.
+
+---
+
+**TACoSec** • [Frontend](https://github.com/yourorg/tacosec-frontend) (you are here) • [Backend](https://github.com/yourorg/tacosec-backend) • *Powered by [TACo](https://taco.build) 💚* • **Built with ❤️ by [Web3Web4](https://web3web4.com)**
