@@ -147,10 +147,6 @@ export default function useAlerts() {
     return tabName === "shared" ? "sh" : "m";
   };
 
-  const getTabIcon = (tabName: TabType) => {
-    return tabName === "shared" ? "📨" : "🔒";
-  };
-
   const getDateText = (createdAt: string) => formatRelativeDate(createdAt);
 
   const getPlainTextMessage = (htmlMessage: string) => stripHtml(htmlMessage);
@@ -185,7 +181,6 @@ export default function useAlerts() {
     isPulling,
     pullDistance,
     getTabLabel,
-    getTabIcon,
     getDateText,
     getPlainTextMessage,
     isClickable,

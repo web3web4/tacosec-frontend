@@ -1,6 +1,7 @@
 import RenderContent from "@/components/RenderContent/RenderContent";
 import { DotsLoader, SkeletonLoader } from "@/components";
 import useAlerts from "@/hooks/useAlerts";
+import { MdLock, MdSend } from 'react-icons/md';
 import "./Alerts.css";
 
 export default function Alerts() {
@@ -93,7 +94,7 @@ export default function Alerts() {
             aria-label={isClickable(item.type) ? `Alert: ${getPlainTextMessage(item.message)}. Click to view` : `Notification: ${getPlainTextMessage(item.message)}`}
           >
             <div className="alert-avatar" aria-label={getTabLabel(item.tabName)}>
-              <span className="alert-avatar-emoji">{getTabIcon(item.tabName)}</span>
+              {item.tabName === "shared" ? <MdSend size={20} /> : <MdLock size={20} />}
             </div>
             <div className="alert-content">
               <div 
