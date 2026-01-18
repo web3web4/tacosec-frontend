@@ -22,19 +22,19 @@
 
 .tabs-row {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: var(--background);
-  border: 2px solid var(--metro-green);
+  gap: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-bottom: none !important;
   border-radius: 0;
-  box-shadow: var(--box-shadow);
+  box-shadow: none;
   backdrop-filter: none;
   position: sticky;
-    top: -1px;
+  top: -1px;
   z-index: 1000;
   overflow: visible;
-  margin-bottom: 25px;
-
+  margin-bottom: 0;
 }
 
 .tabs-row::before {
@@ -44,7 +44,8 @@
 .tab-button {
   flex: 1;
   border: 2px solid var(--metro-green);
-  background: var(--background);
+  border-bottom: 2px solid var(--metro-green);
+  background: rgba(20, 20, 20, 0.5);
   color: var(--metro-green);
   font-weight: 600;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -55,7 +56,7 @@
   transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: 8px 8px 0 0;
   backdrop-filter: none;
   padding: 1rem;
   height: 60px;
@@ -63,8 +64,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: var(--box-shadow);
-  opacity: 0.5;
+  box-shadow: none;
+  opacity: 0.6;
 }
 
 .tab-button .tab-icon {
@@ -114,13 +115,18 @@
 }
 
 .tab-button.active {
-  color: var(--background);
+  color: var(--metro-green) !important;
   font-weight: 700;
-  background: var(--metro-green);
+  background: var(--background) !important;
   border-color: var(--metro-green);
-  box-shadow: 0 6px 16px rgba(149, 255, 93, 0.6), 0 0 20px rgba(149, 255, 93, 0.4);
-  transform: translateY(-2px);
+  border-bottom: none;
+  border-radius: 0px 0px 0 0;
+  box-shadow: none;
+  transform: translateY(0);
   opacity: 1;
+  z-index: 1001;
+  margin-bottom: -2px;
+  padding-bottom: calc(1rem + 2px);
 }
 
 .tab-button.active .tab-icon {
@@ -128,10 +134,7 @@
 }
 
 .tab-button.active::after {
-  width: 95%;
-  height: 5px;
-  background: var(--background);
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+  display: none;
 }
 
 /* Focus indicator for keyboard navigation */
@@ -147,22 +150,7 @@
 
 /* Pure ambient glow beneath active tab */
 .tabs-row::after {
-  content: '';
-  position: absolute;
-  bottom: -20px;
-  left: 25%;
-  width: 50%;
-  height: 40px;
-  background: radial-gradient(ellipse at center, 
-    rgba(149, 255, 93, 0.6) 0%, 
-    rgba(149, 255, 93, 0.3) 30%, 
-    rgba(149, 255, 93, 0.1) 60%, 
-    transparent 100%);
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: all 0.3s ease;
-  z-index: 101;
-  filter: blur(8px);
+  display: none;
 }
 
 .tabs-row[data-active-tab="mydata"]::after {
@@ -180,7 +168,27 @@
 .tab-content {
   flex: 1;
   overflow-y: auto;
-   overflow-x: hidden;
+  overflow-x: hidden;
+  border: 2px solid var(--metro-green);
+  border-top: none;
+  background: var(--background);
+  padding-top: 1rem;
+  border-bottom: none;
+  position: relative;
+}
+
+.tab-content::after {
+  content: '';
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 400px;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 50%, var(--background) 100%);
+  pointer-events: none;
+  z-index: 10;
 }
 
 .data-list {

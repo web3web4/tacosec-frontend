@@ -68,7 +68,7 @@ const Home: React.FC = () => {
             <rect x="1" y="8" width="14" height="9" stroke="currentColor" strokeWidth="2" />
             <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
-          <span className="tab-label">Saved Secrets</span>
+          <span className="tab-label">My Secrets</span>
         </button>
         <button
           ref={sharedTabRef}
