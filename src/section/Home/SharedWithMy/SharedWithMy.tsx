@@ -25,6 +25,7 @@ export default function SharedWithMy() {
     secretViews,
     expandedId,
     decrypting,
+    decryptErrors,
     itemRefs,
     childrenLoading,
     userData,
