@@ -13,7 +13,6 @@ export default function Alerts() {
     isPulling,
     pullDistance,
     getTabLabel,
-    getTabIcon,
     getDateText,
     getPlainTextMessage,
     isClickable,
