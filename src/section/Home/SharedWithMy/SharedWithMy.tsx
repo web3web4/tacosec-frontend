@@ -195,11 +195,6 @@ export default function SharedWithMy() {
                         }}
                       />
                     )}
-                    {!pass.unlockTime && decryptErrors[pass.id]?.includes("conditions not satisfied") && (
-                      <div className="unlock-time-warning">
-                        ⚠️ This secret has time-based conditions but unlock time is not available. Please refresh to see the countdown.
-                      </div>
-                    )}
                     <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
@@ -210,16 +205,8 @@ export default function SharedWithMy() {
                             <span>.</span>
                           </span>
                         </span>
-                      ) : decryptedMessages[pass.id] ? (
-                        decryptedMessages[pass.id]
-                      ) : decryptErrors[pass.id]?.includes("conditions not satisfied") && !pass.unlockTime ? (
-                        "⏳ Cannot decrypt yet, please wait until the unlock time."
-                      ) : decryptErrors[pass.id]?.includes("conditions not satisfied") && pass.unlockTime ? (
-                        `⏳ Locked until ${new Date(pass.unlockTime).toLocaleString()}`
-                      ) : decryptErrors[pass.id] ? (
-                        `❌ ${decryptErrors[pass.id]}`
                       ) : (
-                        "❌ Failed to decrypt"
+                        decryptedMessages[pass.id] || "Failed to decrypt"
                       )}
                     </p>
 

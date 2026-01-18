@@ -218,8 +218,6 @@ export interface Secret {
   hidden: boolean;
   reports: unknown[];
   viewsCount: number;
-  unlockTime?: string | null;
-  lastViewed?: string | null;
 }
 
 export interface SharedWithMeResponse {
