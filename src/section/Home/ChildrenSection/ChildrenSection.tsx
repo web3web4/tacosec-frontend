@@ -58,7 +58,9 @@ export default function ChildrenSection({
                   <div className="child-date">
                     <UserDisplayToggle userData={child} />
                   </div>
-                  {secretViews[child._id] && secretViews[child._id].isNewSecret && <div className="child-status">new</div>}
+                  {secretViews[child._id] && secretViews[child._id].isNewSecret && (
+                    <span className="child-status">NEW</span>
+                  )}
                 </div>
                 <div className="child-meta">
                   <strong>At:</strong>

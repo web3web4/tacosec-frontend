@@ -171,7 +171,6 @@ body {
 
 .tabs-row {
   display: flex;
-  background: var(--surface);
   border-bottom: 1px solid var(--metro-green);
   box-shadow: var(--box-shadow);
   position: sticky;
@@ -218,7 +217,6 @@ body {
 .tab-button:hover {
   background: var(--metro-green);
   color: var(--background);
-  box-shadow: 0 4px 12px rgba(0, 200, 81, 0.3);
   transform: translateY(-1px);
 }
 
@@ -229,7 +227,6 @@ body {
 .tab-button.active {
   background: var(--metro-green);
   color: var(--background);
-  box-shadow: 0 4px 12px rgba(0, 200, 81, 0.4);
   transform: translateY(-1px);
 }
 
