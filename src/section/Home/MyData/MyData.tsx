@@ -1,6 +1,6 @@
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle, DotsLoader } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader } from "@/components";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
@@ -8,6 +8,7 @@ import { useHome } from "@/context/HomeContext";
 import { useEffect, useState } from "react";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction, copyToClipboard } from "@/utils";
+import { useNavigate } from "react-router-dom";
 import "@/pages/Home/Home.css";
 
 export default function MyData() {
@@ -41,7 +42,9 @@ export default function MyData() {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const [copied, setCopied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { address, signer } = useWallet();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (address && signer && !isLoading && activeTab === "mydata" && myData.length > 0) {
@@ -63,12 +66,62 @@ export default function MyData() {
     );
   };
 
+  // Filter data based on search query
+  const filteredData = myData.filter((item) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const titleMatch = item.key.toLowerCase().includes(query);
+    const dateMatch = formatDate(item.createdAt).toLowerCase().includes(query);
+    return titleMatch || dateMatch;
+  });
+
   return (
     <div className="data-list">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {decrypting && "Decrypting secret..."}
+      </div>
+      
       <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />
       <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />
-      {myData.length > 0 ? (
-        myData.map((item, i) => (
+      
+      {isLoading ? (
+        <SkeletonLoader count={3} />
+      ) : myData.length > 0 ? (
+        <>
+          <div className="search-filter-container">
+            <div className="search-input-wrapper">
+              <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search by title or date..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search secrets"
+              />
+              {searchQuery && (
+                <button
+                  className="search-clear-btn"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="search-results-count">
+                {filteredData.length} {filteredData.length === 1 ? 'result' : 'results'} found
+              </div>
+            )}
+          </div>
+          {filteredData.length > 0 ? (
+            filteredData.map((item, i) => (
           <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
             <div className="item-container" onClick={() => {
               recordUserAction(`Expand item: ${item.id}`);
@@ -93,14 +146,14 @@ export default function MyData() {
                 item.sharedWith.length > 0 ? "Shared" : "Private"
               }
             >
-              {item.sharedWith.length > 0 ? "Shared" : "Private"}
+              <span>{item.sharedWith.length > 0 ? "Shared" : "Private"}</span>
             </p>
             {expandedId === item.id && (
               <div className="expanded-box">
                 <p className="password-text">
                   {decrypting ? (
                     <span className="decrypting-animation">
-                      🗝️ Unlocking your secret
+                      Decrypting
                       <span className="dots">
                         <span>.</span>
                         <span>.</span>
@@ -227,6 +280,22 @@ export default function MyData() {
           </div>
         ))
       ) : (
+        <div className="no-results-message">
+          <div className="no-results-icon">🔍</div>
+          <h3 className="no-results-title">No matches found</h3>
+          <p className="no-results-description">
+            No secrets match "{searchQuery}". Try a different search term.
+          </p>
+          <button 
+            className="search-clear-btn-large"
+            onClick={() => setSearchQuery("")}
+          >
+            Clear Search
+          </button>
+        </div>
+      )}
+        </>
+      ) : (
         <div className="no-data-message">
           <div className="empty-icon">
             <svg width="48" height="54" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -238,6 +307,12 @@ export default function MyData() {
           <p className="empty-description">
             You haven't created any secrets yet. Start by creating your first secret to securely store and share information.
           </p>
+          <button 
+            className="empty-cta-button"
+            onClick={() => navigate('/add')}
+          >
+            Create Your First Secret
+          </button>
         </div>
       )}
       {showManualCopy && (

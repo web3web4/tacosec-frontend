@@ -39,7 +39,12 @@ const Home: React.FC = () => {
     }, []);
     
   if (!isInit || !provider) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loading-container-home" role="status" aria-live="polite">
+        <DotsLoader size="large" />
+        <span className="sr-only">Loading application...</span>
+      </div>
+    );
   }
   
   return (
@@ -92,14 +97,10 @@ const Home: React.FC = () => {
         role="tabpanel"
         id={`${activeTab}-panel`}
         aria-labelledby={`${activeTab}-tab`}
+        aria-label={activeTab === "mydata" ? "Your saved secrets" : "Secrets received from others"}
       >
         <div>  
         {
-        isLoading ? (
-          <div className="loading-container-home" role="status" aria-label="Loading secrets">
-            <DotsLoader size="large" />
-          </div>
-        ) :
         activeTab === "mydata" ? (
           <SectionErrorBoundary sectionName="MyData">
             <MyData />

@@ -60,17 +60,21 @@
   gap: 7px;
   font-size: 12px;
   margin-bottom: 0.25rem;
+  align-items: center;
 }
 
 .child-status {
   color: var(--danger);
-    position: absolute;
-    right: -13px;
-    top: -18px;
-    padding: 25px 15px 6px 15px;
-    border-radius: 50%;
-    border-bottom: 1.8px var(--danger) solid;
-    transform: rotate(32deg);
+  position: static;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid var(--danger);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-left: 8px;
 }
 
 .child-username{

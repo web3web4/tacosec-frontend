@@ -2,7 +2,7 @@ import ViewReportsPopup from "@/section/Home/SharedWithMy/ViewReportsPopup/ViewR
 import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle, DotsLoader } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader } from "@/components";
 import { useReportUser } from "@/hooks/useReportUser";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction } from "@/utils";
 import { useHome } from "@/context";
+import { useNavigate } from "react-router-dom";
 import "@/pages/Home/Home.css";
 
 export default function SharedWithMy() {
@@ -57,7 +58,9 @@ export default function SharedWithMy() {
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [manualCopyText, setManualCopyText] = useState("");
   const [copied, setCopied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { address, signer } = useWallet();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (address && signer && !isLoading && activeTab === "shared" && sharedWithMyData.length > 0) {
@@ -75,11 +78,65 @@ export default function SharedWithMy() {
     });
   };
 
+  // Filter data based on search query
+  const filteredData = sharedWithMyData.map(item => ({
+    ...item,
+    passwords: item.passwords.filter((pass) => {
+      if (!searchQuery.trim()) return true;
+      const query = searchQuery.toLowerCase();
+      const titleMatch = pass.key.toLowerCase().includes(query);
+      const dateMatch = pass.createdAt ? formatDate(pass.createdAt).toLowerCase().includes(query) : false;
+      return titleMatch || dateMatch;
+    })
+  })).filter(item => item.passwords.length > 0);
+
+  const totalResults = filteredData.reduce((sum, item) => sum + item.passwords.length, 0);
+
   return (
     <div className="data-list">
-      {sharedWithMyData.length > 0 ? (
-        sharedWithMyData.map((item) =>
-          item.passwords.map((pass) => {
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {decrypting && "Decrypting secret..."}
+      </div>
+      
+      {isLoading ? (
+        <SkeletonLoader count={3} />
+      ) : sharedWithMyData.length > 0 ? (
+        <>
+          <div className="search-filter-container">
+            <div className="search-input-wrapper">
+              <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search by title or date..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search secrets"
+              />
+              {searchQuery && (
+                <button
+                  className="search-clear-btn"
+                  onClick={() => setSearchQuery("")}
+                  aria-label="Clear search"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="search-results-count">
+                {totalResults} {totalResults === 1 ? 'result' : 'results'} found
+              </div>
+            )}
+          </div>
+          {filteredData.length > 0 ? (
+            filteredData.map((item) =>
+              item.passwords.map((pass) => {
             return (
               <div ref={(el) => { itemRefs.current[pass.id] = el }} key={pass.id} className="data-item" >
                 <div className="item-container" onClick={() => {
@@ -118,13 +175,15 @@ export default function SharedWithMy() {
                     </div>
                   </div>
                 </div>{" "}
-                <p className="item-status" data-status="Shared"> Shared </p>
+                <p className="item-status" data-status="Shared">
+                  <span>Shared</span>
+                </p>
                 {expandedId === pass.id && (
                   <div className="expanded-box">
                     <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
-                          🗝️ Unlocking your secret
+                          Decrypting
                           <span className="dots">
                             <span>.</span>
                             <span>.</span>
@@ -221,6 +280,22 @@ export default function SharedWithMy() {
           })
         )
       ) : (
+          <div className="no-results-message">
+            <div className="no-results-icon">🔍</div>
+            <h3 className="no-results-title">No matches found</h3>
+            <p className="no-results-description">
+              No secrets match "{searchQuery}". Try a different search term.
+            </p>
+            <button 
+              className="search-clear-btn-large"
+              onClick={() => setSearchQuery("")}
+            >
+              Clear Search
+            </button>
+          </div>
+        )}
+        </>
+      ) : (
         <div className="no-data-message">
           <div className="empty-icon">
             <svg width="54" height="42" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -232,6 +307,12 @@ export default function SharedWithMy() {
           <p className="empty-description">
             You haven't received any secrets yet. When someone shares a secret with you, it will appear here.
           </p>
+          <button 
+            className="empty-cta-button"
+            onClick={() => navigate('/add')}
+          >
+            Create Your First Secret
+          </button>
         </div>
       )}
 
