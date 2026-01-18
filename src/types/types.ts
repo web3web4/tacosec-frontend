@@ -68,6 +68,7 @@ export interface DataItem {
   sharedWith: ShareWith[];
   shareWithDetails?: UserProfileDetailsType[]; // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
   children?: ChildDataItem[]; // also this for help my to store children for each secret
+  lastViewed?: string | null;
 }
 interface ShareWith {
   publicAddress: string;
@@ -104,6 +105,7 @@ export interface SharedWithMyDataType {
     sharedWith: ShareWith[];
     createdAt: string;
     children?: ChildDataItem[]; // also this for help my to store children for each secret
+    lastViewed?: string | null;
   }[];
 }
 
