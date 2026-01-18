@@ -85,6 +85,69 @@ export async function copyToClipboard(
       return 'Invalid date';
     }
   };
+
+  /**
+   * Format date as relative time (e.g., "2 hours ago", "Yesterday")
+   * Falls back to absolute date for older timestamps
+   */
+  export const formatRelativeDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffSecs = Math.floor(diffMs / 1000);
+      const diffMins = Math.floor(diffSecs / 60);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      // Just now (< 1 minute)
+      if (diffSecs < 60) {
+        return 'Just now';
+      }
+      
+      // Minutes ago (< 1 hour)
+      if (diffMins < 60) {
+        return `${diffMins}m ago`;
+      }
+      
+      // Hours ago (< 24 hours)
+      if (diffHours < 24) {
+        return `${diffHours}h ago`;
+      }
+      
+      // Yesterday
+      if (diffDays === 1) {
+        return 'Yesterday';
+      }
+      
+      // Within last week
+      if (diffDays < 7) {
+        return `${diffDays}d ago`;
+      }
+      
+      // This year - show date without year
+      if (date.getFullYear() === now.getFullYear()) {
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+      
+      // Older - show full date
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  /**
+   * Strip HTML tags from string to get plain text
+   * Useful for tooltips and previews
+   */
+  export const stripHtml = (html: string): string => {
+    if (!html) return '';
+    // Create a temporary div to parse HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || '';
+  };
   
 export const formatAddress = (formatNumber: number, addr: string | undefined) => {
     if (!addr) return "";
