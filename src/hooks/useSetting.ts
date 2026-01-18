@@ -9,18 +9,28 @@ export default function useSetting() {
   const { userData, initDataRaw, setUserData, getUserData } = useUser();
   const [profileImage, setProfileImage] = useState<string | null>();
   const [privacyModOn, setPrivacyModOn] = useState<boolean>(userData?.user?.privacyMode || false);
+  const [privacyUpdateStatus, setPrivacyUpdateStatus] = useState<'updating' | 'success' | null>(null);
   const [showSupportPopup, setShowSupportPopup] = useState(false);
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [firstName, setFirstName] = useState<string>(userData?.user?.firstName || "");
   const [lastName, setLastName] = useState<string>(userData?.user?.lastName || "");
   const [isSavingUserInfo, setIsSavingUserInfo] = useState<boolean>(false);
+  
+  // Track initial values for navigation guard
+  const [initialUserInfo, setInitialUserInfo] = useState({
+    email: "",
+    phone: "",
+    firstName: userData?.user?.firstName || "",
+    lastName: userData?.user?.lastName || "",
+  });
 
   const handleTogglePrivacyMod = async (): Promise<void> => {
     const previousStatus = privacyModOn;
     try {
       const newStatus = !privacyModOn;
       setPrivacyModOn(newStatus);
+      setPrivacyUpdateStatus('updating');
 
       // Show message only if enabling and not hidden before
       if (newStatus && !localStorage.getItem("hidePrivacyModeMessage")) {
@@ -63,6 +73,10 @@ export default function useSetting() {
           },
         };
       });
+      
+      // Show success feedback
+      setPrivacyUpdateStatus('success');
+      setTimeout(() => setPrivacyUpdateStatus(null), 2000);
     } catch (error) {
       // Revert to previous state on error
       setPrivacyModOn(previousStatus);
@@ -76,6 +90,7 @@ export default function useSetting() {
           },
         };
       });
+      setPrivacyUpdateStatus(null);
       handleSilentError(error, 'setting privacy mode');
     }
   };
@@ -93,6 +108,14 @@ export default function useSetting() {
       await addInformationUser(payload);
   
       await getUserData();
+      
+      // Update initial values after successful save
+      setInitialUserInfo({
+        email: email.trim(),
+        phone: phone.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+      });
   
       await MetroSwal.fire({
         icon: "success",
@@ -135,10 +158,12 @@ export default function useSetting() {
     isSavingUserInfo,
     profileImage,
     privacyModOn,
+    privacyUpdateStatus,
     firstName,
     lastName,
     email,
     phone,
+    initialUserInfo,
     handleTogglePrivacyMod,
     setShowSupportPopup,
     setFirstName,

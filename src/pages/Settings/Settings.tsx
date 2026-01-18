@@ -1,9 +1,11 @@
-import { formatAddress, getIdentifier, recordUserAction, copyToClipboard, getEncryptedSeed } from "@/utils";
+import { formatAddress, getIdentifier, recordUserAction, copyToClipboard, getEncryptedSeed, sanitizePlainText } from "@/utils";
 import { SectionErrorBoundary, OnboardingFlow, SheetModal } from "@/components";
+import { useNavigationGuard } from "@/context/NavigationGuardContext";
 import { clearTokens } from "@/utils/cookieManager";
 import { useWallet } from "@/wallet/walletContext";
-import { MdDeleteForever, MdShield, MdContentCopy, MdLock } from "react-icons/md";
+import { MdDeleteForever, MdShield, MdContentCopy, MdLock, MdWarning, MdInfo } from "react-icons/md";
 import { MetroSwal, showGDPR } from "@/utils";
+import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import { ContactSupport } from "@/section";
 import { noUserImage } from "@/assets";
@@ -14,12 +16,61 @@ import "./Settings.css";
 
 
 const Settings: React.FC = () => {
-  const { profileImage, privacyModOn, handleTogglePrivacyMod, showSupportPopup, setShowSupportPopup, email, setEmail, phone, setPhone, firstName, setFirstName, lastName, setLastName, saveUserInfo, isSavingUserInfo } = useSetting();
-  const [showManualCopy, setShowManualCopy] = useState(false);
+  const { profileImage, privacyModOn, handleTogglePrivacyMod, showSupportPopup, setShowSupportPopup, email, setEmail, phone, setPhone, firstName, setFirstName, lastName, setLastName, saveUserInfo, isSavingUserInfo, initialUserInfo, privacyUpdateStatus } = useSetting();
   const [showSeedFlow, setShowSeedFlow] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [emailError, setEmailError] = useState<string>("");
+  const [phoneError, setPhoneError] = useState<string>("");
   const { address, addressweb } = useWallet();
   const { userData, isBrowser } = useUser();
+  const { setNavigationCheck } = useNavigationGuard();
+
+  // Track if user info has been modified
+  const hasUnsavedChanges = () => {
+    if (!isBrowser) return false;
+    return (
+      email !== initialUserInfo.email ||
+      phone !== initialUserInfo.phone ||
+      firstName !== initialUserInfo.firstName ||
+      lastName !== initialUserInfo.lastName
+    );
+  };
+
+  // Setup navigation guard
+  useEffect(() => {
+    setNavigationCheck(hasUnsavedChanges);
+    return () => setNavigationCheck(() => false);
+  }, [email, phone, firstName, lastName, initialUserInfo, setNavigationCheck]);
+
+  // Email validation
+  const validateEmail = (value: string): boolean => {
+    if (!value.trim()) {
+      setEmailError("");
+      return true;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setEmailError("Invalid email format");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
+
+  // Phone validation
+  const validatePhone = (value: string): boolean => {
+    if (!value.trim()) {
+      setPhoneError("");
+      return true;
+    }
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
+    if (!phoneRegex.test(value)) {
+      setPhoneError("Invalid phone format");
+      return false;
+    }
+    setPhoneError("");
+    return true;
+  };
 
   // Hide the "Copied" message after 2 seconds
   useEffect(() => {
@@ -79,74 +130,85 @@ const Settings: React.FC = () => {
     });
   };
 
-  // Function to copy address to clipboard
-  const copyAddressToClipboard = () => {
+  // Function to copy address to clipboard (simplified, no modal fallback)
+  const copyAddressToClipboard = async () => {
     const addressToCopy = address || addressweb;
-    if (addressToCopy) {
-      copyToClipboard(
+    if (!addressToCopy) return;
+    
+    try {
+      await copyToClipboard(
         addressToCopy,
         () => setShowCopied(true),
-        () => setShowManualCopy(true)
-      ).catch(err => {
-        console.error("Failed to copy address: ", err);
-        MetroSwal.error("Error", "We couldn't copy your address. Please try again.");
-      });
+        () => {
+          // If clipboard API fails, show in MetroSwal
+          MetroSwal.fire({
+            icon: 'info',
+            title: 'Copy Address',
+            html: `<input type="text" value="${addressToCopy}" readonly style="width:100%; padding:8px; background:var(--surface); border:2px solid var(--border-color); color:var(--text-primary); font-family:monospace;" onfocus="this.select()" />`,
+            confirmButtonText: 'Close'
+          });
+        }
+      );
+    } catch (err) {
+      console.error("Failed to copy address: ", err);
     }
   };
 
-  const retryCopy = () => {
-    const addressToCopy = address || addressweb;
-    if (!addressToCopy) return;
-    copyToClipboard(
-      addressToCopy,
-      () => {
-        setShowCopied(true);
-        setShowManualCopy(false);
-      },
-      () => {}
-    ).catch(() => {
-      MetroSwal.fire({
-        icon: 'error',
-        title: 'Copy failed',
-        text: 'Please copy manually using the text below.'
-      });
-    });
-  };
-
-  // Handle clear data functionality
+  // Handle clear data functionality with progressive disclosure
   const handleClearData = () => {
     MetroSwal.fire({
       icon: "warning",
-      title: "Delete all data?",
-      html: "This will permanently remove your wallet and all related data from this device. This action cannot be undone.",
-      confirmButtonText: "Delete",
+      title: "⚠️ Danger Zone",
+      html: "This will permanently remove your wallet and all related data from this device. <strong>This action cannot be undone.</strong>",
+      confirmButtonText: "I understand, continue",
       showCancelButton: true,
-      cancelButtonText: "Keep data",
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Delete the specified localStorage items
-        Object.keys(localStorage).forEach((key) => {
-          if (
-            key.startsWith("seedBackupDone-") ||
-            key.startsWith("encryptedSeed-") ||
-            key === "savePasswordInBackend" ||
-            key === "publicAddress"
-          ) {
-            localStorage.removeItem(key);
+        // Second confirmation
+        MetroSwal.fire({
+          icon: "error",
+          title: "Final Confirmation",
+          html: "Are you absolutely sure? All your secrets and wallet data will be permanently deleted.",
+          input: 'text',
+          inputPlaceholder: 'Type DELETE to confirm',
+          confirmButtonText: "Delete Everything",
+          showCancelButton: true,
+          cancelButtonText: "Cancel",
+          preConfirm: (inputValue) => {
+            if (inputValue !== 'DELETE') {
+              Swal.showValidationMessage('Please type DELETE to confirm');
+              return false;
+            }
+            return true;
+          }
+        }).then((finalResult) => {
+          if (finalResult.isConfirmed) {
+            // Delete the specified localStorage items
+            Object.keys(localStorage).forEach((key) => {
+              if (
+                key.startsWith("seedBackupDone-") ||
+                key.startsWith("encryptedSeed-") ||
+                key === "savePasswordInBackend" ||
+                key === "publicAddress"
+              ) {
+                localStorage.removeItem(key);
+              }
+            });
+
+            // For web users: clear auth cookies (access_token, refresh_token)
+            if (isBrowser) {
+              try {
+                clearTokens();
+              } catch (err) {
+                console.error("Failed to clear auth tokens:", err);
+              }
+            }
+
+            // Reload the page to reflect changes
+            window.location.reload();
           }
         });
-
-        // For web users: clear auth cookies (access_token, refresh_token)
-        if (isBrowser) {
-          try {
-            clearTokens();
-          } catch (err) {
-            console.error("Failed to clear auth tokens:", err);
-          }
-        }
-
-        // Reload the page to reflect changes
-        window.location.reload();
       }
     });
   };
@@ -155,6 +217,7 @@ const Settings: React.FC = () => {
     <>
       <div className="settings-container">
         <h2 className="page-title">Settings</h2>
+        
         <SectionErrorBoundary sectionName="ProfileSection">
           <div className="profile-section">
             <div className="photo-preview">
@@ -171,63 +234,107 @@ const Settings: React.FC = () => {
             <div className="profile-name">
               {userData?.user?.firstName} {userData?.user?.lastName}
             </div>
-            <div className="address-container" aria-live="polite" aria-atomic="true">
+            <div 
+              className="address-container clickable" 
+              onClick={() => {
+                recordUserAction("Button click: Copy wallet address");
+                copyAddressToClipboard();
+              }}
+              title="Click to copy full address"
+              aria-live="polite" 
+              aria-atomic="true"
+            >
               <span>Address: </span>
               <span className="address-value">{formatAddress(4, address || addressweb || undefined)}</span>
-              <button
-                className="copy-address-btn"
-                onClick={() => {
-                  recordUserAction("Button click: Copy wallet address");
-                  copyAddressToClipboard();
-                }}
-                title="Copy full address"
-              >
-                <MdContentCopy />
-              </button>
-              {showCopied && <span className="copied-message">Copied</span>}
+              <MdContentCopy className="copy-icon" />
+              {showCopied && <span className="copied-message">✓ Copied!</span>}
             </div>
+            <p className="field-helper">Click address to copy</p>
           </div>
         </SectionErrorBoundary>
-        <h3 className="section-title">Security & Privacy</h3>
-        <div className="checkbox-row">
-          <span className="privacy-label">
-            Max privacy mode
-            <span
-              className={`security-badge ${privacyModOn ? "on" : "off"}`}
-              aria-live="polite"
-            >
-              {privacyModOn ? (
-                <>
-                  <MdShield style={{ marginRight: 4 }} /> Secure
-                </>
-              ) : (
-                "Standard"
-              )}
+
+        <div className="form-divider" />
+
+        <h3 className="section-title">
+          <MdShield style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+          Security & Privacy
+        </h3>
+        <div className="privacy-section-card">
+          <div className="checkbox-row">
+            <span className="privacy-label">
+              Max privacy mode
+              <span
+                className={`security-badge ${privacyModOn ? "on" : "off"}`}
+                aria-live="polite"
+              >
+                {privacyModOn ? (
+                  <>
+                    <MdShield style={{ marginRight: 4 }} /> Secure
+                  </>
+                ) : (
+                  "Standard"
+                )}
+              </span>
             </span>
-          </span>
-          <label className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={privacyModOn}
-              onChange={handleTogglePrivacyMod}
-            />
-            <span className="slider round"></span>
-          </label>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={privacyModOn}
+                onChange={handleTogglePrivacyMod}
+                disabled={privacyUpdateStatus === 'updating'}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+          {privacyUpdateStatus && (
+            <div className={`privacy-feedback ${privacyUpdateStatus}`}>
+              {privacyUpdateStatus === 'updating' && (
+                <><span className="spinner-small" /> Updating...</>
+              )}
+              {privacyUpdateStatus === 'success' && (
+                <>✓ Privacy mode {privacyModOn ? 'enabled' : 'disabled'}</>
+              )}
+            </div>
+          )}
+          <p className="field-helper" style={{ marginTop: '0.5rem' }}>
+            <MdInfo style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+            Max privacy hides activity, timestamps, and views from others
+          </p>
         </div>
 
-        {/* New: Browser-only user info fields under notifications */}
+        {/* Browser-only user info fields with validation */}
         {isBrowser && (
           <>
+            <div className="form-divider" />
+            
             <h3 className="section-title">Contact & Identity</h3>
-            <div className="user-info-section">
+            <fieldset className="user-info-section">
+              <legend className="fieldset-legend">
+                Browser-Only Information
+                <span className="field-helper" style={{ marginLeft: '0.5rem', fontWeight: 'normal' }}>
+                  (Not shared with Telegram)
+                </span>
+              </legend>
+              
               <div className="input-row">
                 <label>Email address</label>
                 <input
                   type="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    const sanitized = sanitizePlainText(e.target.value, { maxLength: 128 });
+                    setEmail(sanitized);
+                    validateEmail(sanitized);
+                  }}
+                  onBlur={(e) => validateEmail(e.target.value)}
+                  className={emailError ? 'input-error' : ''}
                 />
+                {emailError && (
+                  <span className="validation-error">
+                    <MdWarning size={14} /> {emailError}
+                  </span>
+                )}
               </div>
 
               <div className="input-row">
@@ -236,8 +343,19 @@ const Settings: React.FC = () => {
                   type="tel"
                   placeholder="+1234567890"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    const sanitized = sanitizePlainText(e.target.value, { maxLength: 20 });
+                    setPhone(sanitized);
+                    validatePhone(sanitized);
+                  }}
+                  onBlur={(e) => validatePhone(e.target.value)}
+                  className={phoneError ? 'input-error' : ''}
                 />
+                {phoneError && (
+                  <span className="validation-error">
+                    <MdWarning size={14} /> {phoneError}
+                  </span>
+                )}
               </div>
 
               <div className="input-row">
@@ -246,7 +364,7 @@ const Settings: React.FC = () => {
                   type="text"
                   placeholder="First name"
                   value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) => setFirstName(sanitizePlainText(e.target.value, { maxLength: 50 }))}
                 />
               </div>
 
@@ -256,26 +374,39 @@ const Settings: React.FC = () => {
                   type="text"
                   placeholder="Last name"
                   value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => setLastName(sanitizePlainText(e.target.value, { maxLength: 50 }))}
                 />
               </div>
+
+              {hasUnsavedChanges() && (
+                <div className="unsaved-changes-warning">
+                  <MdWarning size={16} /> You have unsaved changes
+                </div>
+              )}
 
               <button
                 className="seed-button"
                 onClick={() => {
-                  recordUserAction("Button click: Save user info");
-                  saveUserInfo();
+                  if (!emailError && !phoneError) {
+                    recordUserAction("Button click: Save user info");
+                    saveUserInfo();
+                  }
                 }}
-                disabled={isSavingUserInfo}
-                title="Save user information"
+                disabled={isSavingUserInfo || !!emailError || !!phoneError}
+                title={emailError || phoneError ? "Fix validation errors first" : "Save user information"}
               >
                 {isSavingUserInfo ? "Saving..." : "Save"}
               </button>
-            </div>
+            </fieldset>
           </>
         )}
 
-        <h3 className="section-title">Wallet Management</h3>
+        <div className="form-divider" />
+
+        <h3 className="section-title">
+          <MdLock style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+          Wallet Management
+        </h3>
         <div className="seed-section">
           <button className="seed-button" onClick={() => {
             recordUserAction("Button click: View seed phrase");
@@ -283,20 +414,37 @@ const Settings: React.FC = () => {
           }}>
             <MdLock style={{ marginRight: 6 }} /> Show Seed Phrase
           </button>
+          <p className="field-helper" style={{ marginTop: '0.5rem' }}>
+            Reveals your recovery phrase (requires password)
+          </p>
         </div>
 
-        {/* New Clear Data section */}
-        <div className="seed-section">
-          <button
-            className="seed-button"
-            onClick={() => {
-              recordUserAction("Button click: Clear wallet data");
-              handleClearData();
-            }}
-          >
-            <MdDeleteForever style={{ marginRight: '4px' }} />
-            Clear All Data
-          </button>
+        <div className="form-divider" style={{ margin: '2rem 0' }} />
+
+        {/* Danger Zone */}
+        <div className="danger-zone">
+          <h3 className="danger-zone-title">
+            <MdWarning style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+            Danger Zone
+          </h3>
+          <div className="danger-zone-content">
+            <div className="danger-zone-item">
+              <div className="danger-zone-description">
+                <strong>Delete All Data</strong>
+                <p>Permanently removes your wallet and all secrets from this device</p>
+              </div>
+              <button
+                className="danger-button"
+                onClick={() => {
+                  recordUserAction("Button click: Clear wallet data");
+                  handleClearData();
+                }}
+              >
+                <MdDeleteForever style={{ marginRight: '4px' }} />
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
 
         <SectionErrorBoundary sectionName="SupportSection">
@@ -329,26 +477,6 @@ const Settings: React.FC = () => {
           viewSeedOnly={true}
           viewBack={false}
         />
-      )}
-
-      {/* Manual Copy Modal Fallback */}
-      {showManualCopy && (
-        <div className="manual-copy-modal">
-          <div className="manual-copy-modal-content">
-            <h3>Manual Copy</h3>
-            <p>Copy your address manually:</p>
-            <textarea
-              className="manual-copy-textarea"
-              value={address || addressweb || ""}
-              readOnly
-              onFocus={e => e.target.select()}
-            />
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '10px' }}>
-              <button className="seed-button" onClick={retryCopy}>Copy Again</button>
-              <button className="seed-button" onClick={() => setShowManualCopy(false)}>Close</button>
-            </div>
-          </div>
-        </div>
       )}
 
       <SheetModal open={showSupportPopup} onClose={setShowSupportPopup} title="Contact Support">
