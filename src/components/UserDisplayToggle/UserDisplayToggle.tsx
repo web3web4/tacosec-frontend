@@ -29,16 +29,17 @@ export default function UserDisplayToggle({ userData }: UserDisplayToggleProps) 
   }
   
   // Now TypeScript knows userData has the required fields
-  // Check if the required fields exist - prioritize name field over firstName/lastName
+  // Check if the required fields exist - prioritize name field over firstName/lastName, then username
   const hasNameField = userData.name && userData.name.trim() !== "" && userData.username !== "Unknown";
   const hasFirstLastName = userData.firstName && userData.username !== "Unknown";
-  const hasName = hasNameField || hasFirstLastName;
+  const hasUsername = userData.username && userData.username.trim() !== "" && userData.username !== "Unknown";
+  const hasName = hasNameField || hasFirstLastName || hasUsername;
   const addressValue = userData.latestPublicAddress || userData.publicAddress;
   const hasAddress = !!addressValue;
   
-  // Determine what to display - prioritize name field over firstName/lastName
+  // Determine what to display - prioritize name field over firstName/lastName, then username
   const displayName = hasName ? 
-    (hasNameField ? userData.name : `${userData.firstName} ${userData.lastName}`) : null;
+    (hasNameField ? userData.name : (hasFirstLastName ? `${userData.firstName} ${userData.lastName}` : userData.username)) : null;
   const displayAddress = hasAddress ? formatAddress(8, addressValue as string) : null;
   
   // If only one display option is available, show it without toggle
