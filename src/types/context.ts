@@ -36,6 +36,8 @@ export interface HomeContextType {
   childrenLoading: Record<string, boolean>;
   itemRefs: React.RefObject<{ [key: string]: HTMLDivElement | null }>;
   directLinkData: DirectLinkData | null;
+  fetchMyData: () => Promise<void>;
+  fetchSharedWithMyData: () => Promise<void>;
 }
 
 export interface UserContextType {
