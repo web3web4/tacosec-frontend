@@ -161,15 +161,11 @@ const Home: React.FC = () => {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={{
-          transform: `translateY(${pullDistance}px)`,
-          transition: isPulling ? 'none' : 'transform 0.3s ease-out'
-        }}
       >
         {(isPulling || isRefreshing) && pullDistance > 20 && (
           <div className="pull-to-refresh-indicator" style={{
             opacity: Math.min(pullDistance / 80, 1),
-            transform: `translateY(-${Math.max(0, 40 - pullDistance)}px)`
+            top: `${Math.min(pullDistance - 40, 40)}px`
           }}>
             {isRefreshing ? (
               <DotsLoader size="small" />
@@ -183,7 +179,13 @@ const Home: React.FC = () => {
             </span>
           </div>
         )}
-        <div>  
+        <div 
+          className="tab-content-inner"
+          style={{
+            transform: `translateY(${pullDistance}px)`,
+            transition: isPulling ? 'none' : 'transform 0.3s ease-out'
+          }}
+        >  
         {
         activeTab === "mydata" ? (
           <SectionErrorBoundary sectionName="MyData">
