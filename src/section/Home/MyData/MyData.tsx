@@ -246,19 +246,19 @@ export default function MyData() {
                           index === self.findIndex((u) => u.publicAddress === user.publicAddress)
                         )
                         .map((user, index) => (
-                        <div className="shared-user" key={user.publicAddress || index}>
-                          <img
-                            src={user.img?.src}
-                            alt="img"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.onerror = null;
-                              target.src = noUserImage;
-                            }}
-                          />
-                          <span><UserDisplayToggle userData={user} /></span>
-                        </div>
-                      ))}
+                          <div className="shared-user" key={user.publicAddress || index}>
+                            <img
+                              src={user.img?.src}
+                              alt="img"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.onerror = null;
+                                target.src = noUserImage;
+                              }}
+                            />
+                            <span><UserDisplayToggle userData={user} /></span>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 )}
