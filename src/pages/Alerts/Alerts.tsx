@@ -4,6 +4,27 @@ import useAlerts from "@/hooks/useAlerts";
 import { MdLock, MdSend } from 'react-icons/md';
 import "./Alerts.css";
 
+// Function to replace emoji icons with green MD icons
+const MessageWithIcons = ({ message }: { message: string }) => {
+  // Parse message and replace emojis with MD icons
+  const parts = message.split(/(📨|🔒|📩|🔓|🔐)/g);
+  
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part === '📨' || part === '📩') {
+          return <MdSend key={index} size={16} style={{ color: 'var(--metro-green)', verticalAlign: 'middle', margin: '0 2px' }} />;
+        } else if (part === '🔒' || part === '🔓' || part === '🔐') {
+          return <MdLock key={index} size={16} style={{ color: 'var(--metro-green)', verticalAlign: 'middle', margin: '0 2px' }} />;
+        } else if (part) {
+          return <RenderContent key={index} htmlContent={part} />;
+        }
+        return null;
+      })}
+    </>
+  );
+};
+
 export default function Alerts() {
   const {
     data,
@@ -100,7 +121,7 @@ export default function Alerts() {
                 className="alert-message" 
                 title={getPlainTextMessage(item.message)}
               >
-                <RenderContent htmlContent={item.message} />
+                <MessageWithIcons message={item.message} />
               </div>
               <div className="alert-meta">
                 <span className="alert-date">{getDateText(item.createdAt)}</span>
