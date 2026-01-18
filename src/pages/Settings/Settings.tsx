@@ -166,7 +166,7 @@ const Settings: React.FC = () => {
   const handleClearData = () => {
     MetroSwal.fire({
       icon: "warning",
-      title: "⚠️ Danger Zone",
+      title: '<span style="color: var(--metro-green);">⚠</span> DANGER ZONE',
       html: "This will permanently remove your wallet and all related data from this device. <strong>This action cannot be undone.</strong>",
       confirmButtonText: "I understand, continue",
       showCancelButton: true,
