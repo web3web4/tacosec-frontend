@@ -235,6 +235,10 @@
   letter-spacing: 0.5px;
 }
 
+.data-item:has(.expanded-box)::after {
+  display: none;
+}
+
 
 
 .item-container{
