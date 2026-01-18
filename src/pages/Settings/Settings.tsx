@@ -1,6 +1,6 @@
 import { formatAddress, getIdentifier, recordUserAction, copyToClipboard, getEncryptedSeed, sanitizePlainText } from "@/utils";
 import { SectionErrorBoundary, OnboardingFlow, SheetModal } from "@/components";
-import { useNavigationGuard } from "@/context/NavigationGuardContext";
+// import { useNavigationGuard } from "@/context/NavigationGuardContext";
 import { clearTokens } from "@/utils/cookieManager";
 import { useWallet } from "@/wallet/walletContext";
 import { MdDeleteForever, MdShield, MdContentCopy, MdLock, MdWarning, MdInfo } from "react-icons/md";
@@ -23,24 +23,32 @@ const Settings: React.FC = () => {
   const [phoneError, setPhoneError] = useState<string>("");
   const { address, addressweb } = useWallet();
   const { userData, isBrowser } = useUser();
-  const { setNavigationCheck } = useNavigationGuard();
+  // const { setNavigationCheck } = useNavigationGuard();
 
   // Track if user info has been modified
-  const hasUnsavedChanges = () => {
-    if (!isBrowser) return false;
-    return (
-      email !== initialUserInfo.email ||
-      phone !== initialUserInfo.phone ||
-      firstName !== initialUserInfo.firstName ||
-      lastName !== initialUserInfo.lastName
-    );
-  };
+  // const hasUnsavedChanges = () => {
+  //   if (!isBrowser) return false;
+  //   return (
+  //     email !== initialUserInfo.email ||
+  //     phone !== initialUserInfo.phone ||
+  //     firstName !== initialUserInfo.firstName ||
+  //     lastName !== initialUserInfo.lastName
+  //   );
+  // };
 
-  // Setup navigation guard
-  useEffect(() => {
-    setNavigationCheck(hasUnsavedChanges);
-    return () => setNavigationCheck(() => false);
-  }, [email, phone, firstName, lastName, initialUserInfo, setNavigationCheck]);
+  // Setup navigation guard - temporarily disabled due to navigation blocking issues
+  // useEffect(() => {
+  //   const checkFunction = () => {
+  //     if (!isBrowser) return false;
+  //     return hasUnsavedChanges();
+  //   };
+  //   
+  //   setNavigationCheck(checkFunction);
+  //   
+  //   return () => {
+  //     setNavigationCheck(() => false);
+  //   };
+  // }, [email, phone, firstName, lastName, initialUserInfo, isBrowser, setNavigationCheck]);
 
   // Email validation
   const validateEmail = (value: string): boolean => {
@@ -378,11 +386,13 @@ const Settings: React.FC = () => {
                 />
               </div>
 
+              {/* Temporarily disabled unsaved changes warning
               {hasUnsavedChanges() && (
                 <div className="unsaved-changes-warning">
                   <MdWarning size={16} /> You have unsaved changes
                 </div>
               )}
+              */}
 
               <button
                 className="seed-button"
