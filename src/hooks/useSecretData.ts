@@ -25,6 +25,8 @@ export default function useSecretData() {
         value: item.value,
         sharedWith: item.sharedWith,
         createdAt: item.createdAt,
+        unlockTime: item.unlockTime,
+        lastViewed: item.lastViewed,
       }));
       setMyData(data);
       if (data.length > 0) getProfilesDetailsForUsers(data);

@@ -165,6 +165,11 @@ export default function MyData() {
                     }}
                   />
                 )}
+                {!item.unlockTime && decryptErrors[item.id]?.includes("conditions not satisfied") && (
+                  <div className="unlock-time-warning">
+                    ⚠️ This secret has time-based conditions but unlock time is not available. Please refresh to see the countdown.
+                  </div>
+                )}
                 <p className="password-text">
                   {decrypting ? (
                     <span className="decrypting-animation">
@@ -177,8 +182,10 @@ export default function MyData() {
                     </span>
                   ) : decryptedMessages[item.id] ? (
                     decryptedMessages[item.id]
-                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") ? (
+                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") && !item.unlockTime ? (
                     "⏳ Cannot decrypt yet, please wait until the unlock time."
+                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") && item.unlockTime ? (
+                    `⏳ Locked until ${new Date(item.unlockTime).toLocaleString()}`
                   ) : decryptErrors[item.id] ? (
                     `❌ ${decryptErrors[item.id]}`
                   ) : (
