@@ -1,6 +1,6 @@
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader, Countdown } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader } from "@/components";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
@@ -156,20 +156,6 @@ export default function MyData() {
             </p>
             {expandedId === item.id && (
               <div className="expanded-box">
-                {item.unlockTime && new Date(item.unlockTime) > new Date() && (
-                  <Countdown 
-                    unlockTime={item.unlockTime} 
-                    onUnlock={() => {
-                      // Retry decryption when unlocked
-                      toggleExpand(item.value, item.id, true);
-                    }}
-                  />
-                )}
-                {!item.unlockTime && decryptErrors[item.id]?.includes("conditions not satisfied") && (
-                  <div className="unlock-time-warning">
-                    ⚠️ This secret has time-based conditions but unlock time is not available. Please refresh to see the countdown.
-                  </div>
-                )}
                 <p className="password-text">
                   {decrypting ? (
                     <span className="decrypting-animation">
@@ -182,10 +168,8 @@ export default function MyData() {
                     </span>
                   ) : decryptedMessages[item.id] ? (
                     decryptedMessages[item.id]
-                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") && !item.unlockTime ? (
+                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") ? (
                     "⏳ Cannot decrypt yet, please wait until the unlock time."
-                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") && item.unlockTime ? (
-                    `⏳ Locked until ${new Date(item.unlockTime).toLocaleString()}`
                   ) : decryptErrors[item.id] ? (
                     `❌ ${decryptErrors[item.id]}`
                   ) : (

@@ -2,7 +2,7 @@ import ViewReportsPopup from "@/section/Home/SharedWithMy/ViewReportsPopup/ViewR
 import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader, Countdown } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader } from "@/components";
 import { useReportUser } from "@/hooks/useReportUser";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
@@ -187,20 +187,6 @@ export default function SharedWithMy() {
                 </p>
                 {expandedId === pass.id && (
                   <div className="expanded-box">
-                    {pass.unlockTime && new Date(pass.unlockTime) > new Date() && (
-                      <Countdown 
-                        unlockTime={pass.unlockTime} 
-                        onUnlock={() => {
-                          // Retry decryption when unlocked
-                          toggleExpand(pass.value, pass.id, true);
-                        }}
-                      />
-                    )}
-                    {!pass.unlockTime && decryptErrors[pass.id]?.includes("conditions not satisfied") && (
-                      <div className="unlock-time-warning">
-                        ⚠️ This secret has time-based conditions but unlock time is not available. Please refresh to see the countdown.
-                      </div>
-                    )}
                     <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
@@ -211,16 +197,8 @@ export default function SharedWithMy() {
                             <span>.</span>
                           </span>
                         </span>
-                      ) : decryptedMessages[pass.id] ? (
-                        decryptedMessages[pass.id]
-                      ) : decryptErrors[pass.id]?.includes("conditions not satisfied") && !pass.unlockTime ? (
-                        "⏳ Cannot decrypt yet, please wait until the unlock time."
-                      ) : decryptErrors[pass.id]?.includes("conditions not satisfied") && pass.unlockTime ? (
-                        `⏳ Locked until ${new Date(pass.unlockTime).toLocaleString()}`
-                      ) : decryptErrors[pass.id] ? (
-                        `❌ ${decryptErrors[pass.id]}`
                       ) : (
-                        "❌ Failed to decrypt"
+                        decryptedMessages[pass.id] || "Failed to decrypt"
                       )}
                     </p>
 
