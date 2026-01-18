@@ -1,6 +1,6 @@
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader, Countdown } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader } from "@/components";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
@@ -156,15 +156,6 @@ export default function MyData() {
             </p>
             {expandedId === item.id && (
               <div className="expanded-box">
-                {item.unlockTime && new Date(item.unlockTime) > new Date() && (
-                  <Countdown 
-                    unlockTime={item.unlockTime} 
-                    onUnlock={() => {
-                      // Retry decryption when unlocked
-                      toggleExpand(item.value, item.id, true);
-                    }}
-                  />
-                )}
                 <p className="password-text">
                   {decrypting ? (
                     <span className="decrypting-animation">
