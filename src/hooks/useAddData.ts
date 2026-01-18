@@ -134,7 +134,7 @@ export default function useAddData() {
       }finally{
         setIsSearch(false);
       }
-    }, 500),
+    }, 300),
     []
   );
 
@@ -157,21 +157,32 @@ const handleAddShare = (input: string): void => {
     const isAlreadyInList = shareList.some((user) => user.data.publicAddress?.toLowerCase() === sanitizedInput.toLowerCase());
     const isSameWalletAddress  = sanitizedInput.toLowerCase() === address?.toLowerCase();
     
-    if (!isAlreadyInList && !isSameWalletAddress ) {
-        const newProfile = {
-          data: {
-            img: { src: noUserImage },
-            name: "",
-            username: "",   
-            publicAddress: sanitizedInput,
-            invited: true,  
-            existsInPlatform: false,
-          },
-          error: null,
-        };
-        setShareList((prev) => [...prev, newProfile]);
-     }
+    if (isAlreadyInList) {
+      MetroSwal.info("Already Added", "This address is already in your share list.");
+      setShareWith("");
+      setSearchData([]);
+      return;
+    }
     
+    if (isSameWalletAddress) {
+      MetroSwal.warning("Cannot Share With Self", "You cannot share a secret with your own wallet address.");
+      setShareWith("");
+      setSearchData([]);
+      return;
+    }
+    
+    const newProfile = {
+      data: {
+        img: { src: noUserImage },
+        name: "",
+        username: "",   
+        publicAddress: sanitizedInput,
+        invited: true,  
+        existsInPlatform: false,
+      },
+      error: null,
+    };
+    setShareList((prev) => [...prev, newProfile]);
     setShareWith("");
     setSearchData([]);
     return;
