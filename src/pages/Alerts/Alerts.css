@@ -97,7 +97,7 @@
   border-radius: 9999px;
   background-color: var(--card-bg);
   border: 2px solid var(--metro-green);
-  color: var(--text-primary);
+  color: var(--metro-green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,10 +105,8 @@
   letter-spacing: 0.5px;
 }
 
-.alert-avatar-emoji {
-  font-size: 1.25rem;
-  position: relative;
-  top: -1px;
+.alert-avatar svg {
+  color: var(--metro-green);
 }
 
 .alert-item-report .alert-avatar {
