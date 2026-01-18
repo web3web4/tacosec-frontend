@@ -57,7 +57,7 @@ export default function useSecretData() {
                 return {
                   img: { src: noUserImage },
                   name: "",
-                  username: null,
+                  username: user.username || null,
                   existsInPlatform: false,
                   publicAddress: user.publicAddress,
                   invited: false,
@@ -69,11 +69,12 @@ export default function useSecretData() {
                 return {
                   ...profile,
                   publicAddress: user.publicAddress,
+                  username: user.username || profile.username,
                   img: { src: noUserImage },
                 };
               }
 
-              return profile ? { ...profile, publicAddress: user.publicAddress } : null;
+              return profile ? { ...profile, publicAddress: user.publicAddress, username: user.username || profile.username } : null;
             })
           );
 
