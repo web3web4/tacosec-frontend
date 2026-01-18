@@ -1034,3 +1034,14 @@
     transform: rotate(360deg);
   }
 }
+
+.unlock-time-warning {
+  padding: 10px 12px;
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 6px;
+  color: #ff9800;
+  font-size: 0.85rem;
+  margin: 8px 0;
+  line-height: 1.4;
+}
