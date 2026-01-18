@@ -2,7 +2,7 @@ import ViewReportsPopup from "@/section/Home/SharedWithMy/ViewReportsPopup/ViewR
 import ReportUserPopup from "@/section/Home/SharedWithMy/ReportUserPopup/ReportUserPopup";
 import ReplyPopup from "@/section/Home/SharedWithMy/ReplyPopup/ReplyPopup";
 import ViewersPopup from "@/section/Home/ViewersPopup/ViewersPopup";
-import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader } from "@/components";
+import { DropdownMenu, UserDisplayToggle, DotsLoader, SkeletonLoader, Countdown } from "@/components";
 import { useReportUser } from "@/hooks/useReportUser";
 import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
@@ -186,6 +186,15 @@ export default function SharedWithMy() {
                 </p>
                 {expandedId === pass.id && (
                   <div className="expanded-box">
+                    {pass.unlockTime && new Date(pass.unlockTime) > new Date() && (
+                      <Countdown 
+                        unlockTime={pass.unlockTime} 
+                        onUnlock={() => {
+                          // Retry decryption when unlocked
+                          toggleExpand(pass.value, pass.id, true);
+                        }}
+                      />
+                    )}
                     <p className="password-text">
                       {decrypting ? (
                         <span className="decrypting-animation">
