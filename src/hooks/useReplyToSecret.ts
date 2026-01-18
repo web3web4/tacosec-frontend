@@ -7,7 +7,7 @@ import { useUser, useHome } from "@/context";
 import useTaco from "@/hooks/useTaco";
 import { MetroSwal } from "@/utils";
 import { v4 as uuidv4 } from 'uuid';
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 
 const ritualId = config.TACO_RITUAL_ID;
 const domain = config.TACO_DOMAIN;
@@ -30,8 +30,35 @@ export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: Re
     ritualId,
   });
 
+  // Draft key based on parent secret ID
+  const draftKey = `reply_draft_${selectedSecret.parentSecretId}`;
+
+  // Load draft when component mounts or selectedSecret changes
+  useEffect(() => {
+    if (selectedSecret.parentSecretId) {
+      const savedDraft = localStorage.getItem(draftKey);
+      if (savedDraft) {
+        setReplyMessage(savedDraft);
+      }
+    }
+  }, [selectedSecret.parentSecretId, draftKey]);
+
+  // Save draft whenever reply message changes
+  useEffect(() => {
+    if (replyMessage && selectedSecret.parentSecretId) {
+      localStorage.setItem(draftKey, replyMessage);
+    }
+  }, [replyMessage, draftKey, selectedSecret.parentSecretId]);
+
  const handleReplyMessageChange = (value: string) => {
     setReplyMessage(value);
+  };
+
+  const clearDraft = () => {
+    if (selectedSecret.parentSecretId) {
+      localStorage.removeItem(draftKey);
+      setReplyMessage("");
+    }
   };
 
   const handleReplayToSecret = async () => {
@@ -85,6 +112,7 @@ export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: Re
         );
         triggerGetChildrenForSecret(selectedSecret.parentSecretId);
         setShowReplyPopup(false);
+        clearDraft(); // Clear draft after successful submission
         MetroSwal.fire({
         icon: "success",
         title: `Reply submitted successfully!`,
@@ -112,6 +140,7 @@ export default function useReplyToSecret({setShowReplyPopup, selectedSecret}: Re
     errorMessage,
     isSubmittingReply,
     handleReplyMessageChange,
-    handleReplayToSecret
+    handleReplayToSecret,
+    clearDraft
   };
 }
