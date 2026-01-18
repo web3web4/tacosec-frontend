@@ -1,7 +1,9 @@
+import { useState } from "react";
 import RenderContent from "@/components/RenderContent/RenderContent";
 import { DotsLoader, SkeletonLoader } from "@/components";
 import useAlerts from "@/hooks/useAlerts";
-import { MdLock, MdSend } from 'react-icons/md';
+import { MdLock, MdSend, MdArrowForward } from 'react-icons/md';
+import { AlertsDetails } from "@/types";
 import "./Alerts.css";
 
 // Function to replace emoji icons with green MD icons
@@ -26,6 +28,8 @@ const MessageWithIcons = ({ message }: { message: string }) => {
 };
 
 export default function Alerts() {
+  const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
+  
   const {
     data,
     isLoading,
@@ -44,6 +48,23 @@ export default function Alerts() {
     observerTarget,
     isFetchingMore
   } = useAlerts();
+
+  const handleAlertClick = (item: AlertsDetails) => {
+    if (!isClickable(item.type)) return;
+    
+    // Toggle expand/collapse
+    if (expandedAlertId === item._id) {
+      setExpandedAlertId(null);
+    } else {
+      setExpandedAlertId(item._id);
+    }
+  };
+
+  const handleGoToSecret = (e: React.MouseEvent, item: AlertsDetails) => {
+    e.stopPropagation();
+    setExpandedAlertId(null);
+    handleClick(item);
+  };
 
   if (isLoading) {
     return (
@@ -104,37 +125,53 @@ export default function Alerts() {
         )}
 
         {/* Alert items */}
-        {data?.notifications.map((item) => (
-          <div
-            key={item._id}
-            className={`alert-item ${!isClickable(item.type) ? 'alert-item-disabled' : ''} ${item.type === 'report_notification' ? 'alert-item-report' : 'alert-item-shared'}`}
-            onClick={() => handleClick(item)}
-            role={isClickable(item.type) ? "button" : "article"}
-            tabIndex={isClickable(item.type) ? 0 : -1}
-            aria-label={isClickable(item.type) ? `Alert: ${getPlainTextMessage(item.message)}. Click to view` : `Notification: ${getPlainTextMessage(item.message)}`}
-          >
-            <div className="alert-avatar" aria-label={getTabLabel(item.tabName)}>
-              {item.tabName === "shared" ? <MdSend size={20} /> : <MdLock size={20} />}
-            </div>
-            <div className="alert-content">
-              <div 
-                className="alert-message" 
-                title={getPlainTextMessage(item.message)}
-              >
-                <MessageWithIcons message={item.message} />
+        {data?.notifications.map((item) => {
+          const isExpanded = expandedAlertId === item._id;
+          return (
+            <div
+              key={item._id}
+              className={`alert-item ${!isClickable(item.type) ? 'alert-item-disabled' : ''} ${item.type === 'report_notification' ? 'alert-item-report' : 'alert-item-shared'} ${isExpanded ? 'alert-item-expanded' : ''}`}
+              onClick={() => handleAlertClick(item)}
+              role={isClickable(item.type) ? "button" : "article"}
+              tabIndex={isClickable(item.type) ? 0 : -1}
+              aria-label={isClickable(item.type) ? `Alert: ${getPlainTextMessage(item.message)}. Click to view` : `Notification: ${getPlainTextMessage(item.message)}`}
+              aria-expanded={isExpanded}
+            >
+              <div className="alert-avatar" aria-label={getTabLabel(item.tabName)}>
+                {item.tabName === "shared" ? <MdSend size={20} /> : <MdLock size={20} />}
               </div>
-              <div className="alert-meta">
-                <span className="alert-date">{getDateText(item.createdAt)}</span>
-                {item.type === "report_notification" && (
-                  <span className="alert-badge alert-badge-info">Info</span>
+              <div className="alert-content">
+                <div 
+                  className={`alert-message ${isExpanded ? 'alert-message-expanded' : ''}`}
+                  title={!isExpanded ? getPlainTextMessage(item.message) : undefined}
+                >
+                  <MessageWithIcons message={item.message} />
+                </div>
+                <div className="alert-meta">
+                  <span className="alert-date">{getDateText(item.createdAt)}</span>
+                  {item.type === "report_notification" && (
+                    <span className="alert-badge alert-badge-info">Info</span>
+                  )}
+                </div>
+                
+                {/* Expanded view with button */}
+                {isExpanded && isClickable(item.type) && (
+                  <button 
+                    className="alert-action-button"
+                    onClick={(e) => handleGoToSecret(e, item)}
+                    aria-label="Go to secret"
+                  >
+                    <span>Open Secret</span>
+                    <MdArrowForward size={18} />
+                  </button>
                 )}
               </div>
+              {!isClickable(item.type) && (
+                <div className="alert-disabled-indicator" aria-hidden="true">ℹ️</div>
+              )}
             </div>
-            {!isClickable(item.type) && (
-              <div className="alert-disabled-indicator" aria-hidden="true">ℹ️</div>
-            )}
-          </div>
-        ))}
+          );
+        })}
 
         {/* Infinite scroll observer */}
         {data?.pagination.hasNextPage && (
