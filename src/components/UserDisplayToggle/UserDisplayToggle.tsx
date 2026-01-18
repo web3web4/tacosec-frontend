@@ -12,7 +12,7 @@ const hasUserFields = (obj: unknown): obj is {
   firstName?: string; 
   lastName?: string; 
   name?: string;
-  username: string;
+  username?: string | null;
   latestPublicAddress?: string;
   publicAddress?: string;
 } => {
@@ -28,10 +28,19 @@ export default function UserDisplayToggle({ userData }: UserDisplayToggleProps) 
     return <div className="user-display">Unknown User</div>;
   }
   
+  // Temporary debug logging
+  console.log('UserDisplayToggle data:', {
+    name: userData.name,
+    username: userData.username,
+    firstName: userData.firstName,
+    publicAddress: userData.publicAddress,
+    latestPublicAddress: userData.latestPublicAddress
+  });
+  
   // Now TypeScript knows userData has the required fields
   // Check if the required fields exist - prioritize name field over firstName/lastName, then username
-  const hasNameField = userData.name && userData.name.trim() !== "" && userData.username !== "Unknown";
-  const hasFirstLastName = userData.firstName && userData.username !== "Unknown";
+  const hasNameField = userData.name && userData.name.trim() !== "";
+  const hasFirstLastName = userData.firstName && userData.firstName.trim() !== "";
   const hasUsername = userData.username && userData.username.trim() !== "" && userData.username !== "Unknown";
   const hasName = hasNameField || hasFirstLastName || hasUsername;
   const addressValue = userData.latestPublicAddress || userData.publicAddress;
