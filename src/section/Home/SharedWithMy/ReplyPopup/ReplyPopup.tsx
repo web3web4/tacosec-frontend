@@ -22,7 +22,7 @@ export default function ReplyPopup({ showReplyPopup, setShowReplyPopup, selected
               id="reply-message"
               value={replyMessage}
               onChange={(e) => handleReplyMessageChange(e.target.value)}
-              placeholder="Enter y..."
+              placeholder="Enter your reply here..."
               rows={5}
               maxLength={1000}
             />

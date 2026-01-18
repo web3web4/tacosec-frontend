@@ -153,6 +153,12 @@ export default function SharedWithMy() {
                           {pass.createdAt ? formatDate(pass.createdAt) : "Hidden for privacy"}
                         </span>
                       </div>
+                      {pass.lastViewed && (
+                        <div className="created-at-container">
+                          <strong>Last Viewed:</strong>
+                          <span className="child-date">{" "}{formatDate(pass.lastViewed)}</span>
+                        </div>
+                      )}
                       <div className="item-toggle">
                         {expandedId === pass.id ? '▼' : '▶'}
                       </div>

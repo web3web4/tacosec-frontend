@@ -134,6 +134,12 @@ export default function MyData() {
                     <strong>Created At:</strong>
                     <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
                   </div>
+                  {item.lastViewed && (
+                    <div className="created-at-container">
+                      <strong>Last Viewed:</strong>
+                      <span className="child-date">{" "}{formatDate(item.lastViewed)}</span>
+                    </div>
+                  )}
                   <div className="item-toggle">
                     {expandedId === item.id ? '▼' : '▶'}
                   </div>
