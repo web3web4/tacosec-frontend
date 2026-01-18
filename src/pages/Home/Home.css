@@ -3,7 +3,7 @@
   background: var(--background);
   min-height: calc(100vh - 160px);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   backdrop-filter: none;
 }
 
@@ -30,11 +30,10 @@
   box-shadow: var(--box-shadow);
   backdrop-filter: none;
   position: sticky;
-  top: 0;
-  z-index: 100;
+  top: -1px;
+  z-index: 1000;
   overflow: visible;
   margin-bottom: 25px;
-
 }
 
 .tabs-row::before {
@@ -178,10 +177,9 @@
 
 
 .tab-content {
-  height: calc(100vh - 140px);
-  padding: 1rem;
+  flex: 1;
   overflow-y: auto;
-  display: contents;
+  overflow-x: hidden;
 }
 
 .data-list {

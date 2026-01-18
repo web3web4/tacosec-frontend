@@ -241,8 +241,12 @@ export default function MyData() {
                     {" "}
                     <h4 className="shared-title">Shared with:</h4>
                     <div className="shared-users">
-                      {item.shareWithDetails?.map((user, index) => (
-                        <div className="shared-user" key={index}>
+                      {item.shareWithDetails
+                        ?.filter((user, index, self) => 
+                          index === self.findIndex((u) => u.publicAddress === user.publicAddress)
+                        )
+                        .map((user, index) => (
+                        <div className="shared-user" key={user.publicAddress || index}>
                           <img
                             src={user.img?.src}
                             alt="img"
