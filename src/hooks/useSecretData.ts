@@ -56,19 +56,24 @@ export default function useSecretData() {
               if (!user.username) {
                 return {
                   img: { src: noUserImage },
+                  name: "",
+                  username: null,
+                  existsInPlatform: false,
                   publicAddress: user.publicAddress,
-                }
+                  invited: false,
+                } as UserProfileDetailsType;
               }
               const profile = await getUserProfileDetails(user.username);
 
               if (profile && (!profile.img || !profile.img.src || profile.img.src.trim() === "")) {
                 return {
                   ...profile,
+                  publicAddress: user.publicAddress,
                   img: { src: noUserImage },
                 };
               }
 
-              return profile;
+              return profile ? { ...profile, publicAddress: user.publicAddress } : null;
             })
           );
 
