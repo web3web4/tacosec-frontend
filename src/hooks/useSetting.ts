@@ -40,10 +40,10 @@ export default function useSetting() {
             <div style="text-align: left; line-height: 1.6;">
               <p style="margin-bottom: 12px; color: #cfcfcfff;">Max Privacy is on. Effects:</p>
               <ul style="list-style: none; padding-left: 0; margin: 0;">
-                <li style="margin-bottom: 8px;">👤 <strong>Anonymity</strong> &mdash; Activity is hidden</li>
-                <li style="margin-bottom: 8px;">⏱️ <strong>No metadata</strong> &mdash; Timestamps and views hidden</li>
-                <li style="margin-bottom: 8px;">🔒 <strong>Minimal footprint</strong> &mdash; Secret views leave no trace</li>
-                <li style="margin-bottom: 8px;">🔕 <strong>Generic alerts</strong> &mdash; Notifications say: <em>"Please check your data"</em></li>
+                <li style="margin-bottom: 8px;"><span style="color: var(--metro-green); font-weight: bold;">●</span> <strong>Anonymity</strong> &mdash; Activity is hidden</li>
+                <li style="margin-bottom: 8px;"><span style="color: var(--metro-green); font-weight: bold;">●</span> <strong>No metadata</strong> &mdash; Timestamps and views hidden</li>
+                <li style="margin-bottom: 8px;"><span style="color: var(--metro-green); font-weight: bold;">●</span> <strong>Minimal footprint</strong> &mdash; Secret views leave no trace</li>
+                <li style="margin-bottom: 8px;"><span style="color: var(--metro-green); font-weight: bold;">●</span> <strong>Generic alerts</strong> &mdash; Notifications say: <em>"Please check your data"</em></li>
               </ul>
               <p style="color: #cfcfcfff;">You won't see others' views or reply times.</p>
               <p style="color: #cfcfcfff;">Change this anytime in Settings.</p>
