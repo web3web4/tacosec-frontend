@@ -6,6 +6,7 @@ import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction, copyToClipboard } from "@/utils";
 import { useNavigate } from "react-router-dom";
@@ -325,7 +326,7 @@ export default function MyData() {
           </button>
         </div>
       )}
-      {showManualCopy && (
+      {showManualCopy && createPortal(
         <div className="manual-copy-modal">
           <div className="manual-copy-modal-content">
             <h3>Manual Copy</h3>
@@ -338,7 +339,8 @@ export default function MyData() {
             />
             <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

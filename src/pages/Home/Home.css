@@ -240,11 +240,6 @@
   background: rgba(26, 26, 26, 0.8);
 }
 
-.data-item:focus-within {
-  outline: 2px solid var(--metro-green);
-  outline-offset: 2px;
-}
-
 .data-item::after {
   content: 'Tap to expand';
   position: absolute;
