@@ -383,7 +383,7 @@ export function OnboardingFlow({ onComplete, initialStep = 'welcome', initialDat
           <PasswordScreen
             isImporting={onboardingData.choice === 'import'}
             onPasswordSet={handlePasswordSet}
-            onBack={canGoBack ? goBack : undefined}
+            onBack={canGoBack && viewBack !== false ? goBack : undefined}
           />
         );
 

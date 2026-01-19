@@ -8,6 +8,7 @@ import { SelectedSecretType } from "@/types/types";
 import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction } from "@/utils";
 import { useHome } from "@/context";
@@ -323,7 +324,7 @@ export default function SharedWithMy() {
         </div>
       )}
 
-      {showManualCopy && (
+      {showManualCopy && createPortal(
         <div className="manual-copy-modal">
           <div className="manual-copy-modal-content">
             <h3>Manual Copy</h3>
@@ -336,7 +337,8 @@ export default function SharedWithMy() {
             />
             <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />
 
