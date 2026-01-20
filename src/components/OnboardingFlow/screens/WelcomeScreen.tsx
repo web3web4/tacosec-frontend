@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { MdAccountBalanceWallet, MdDownload, MdAdd, MdInfo, MdContentCopy, MdHelpOutline, MdShield, MdWarning } from "react-icons/md";
+import { MdAccountBalanceWallet, MdDownload, MdAdd, MdHelpOutline, MdShield } from "react-icons/md";
 import { useUser } from "@/context";
-import { formatAddress } from '@/utils';
 import Swal from 'sweetalert2';
+import TacoLogo from '@/assets/images/TACoSec.jpg';
 
 interface WelcomeScreenProps {
   onChoice: (choice: "create" | "import") => void;
@@ -10,7 +10,6 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
   const { userData, isBrowser } = useUser();
-  const [copiedAddress, setCopiedAddress] = useState(false);
   const [isLoading] = useState(false);
 
   const { firstName, lastName, username } = userData?.user || {};
@@ -19,72 +18,7 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
     firstName ||
     lastName ||
     username ||
-    (isBrowser ? "Web User" : "Telegram User");
-  
-  const address = userData?.user?.publicAddress;
-  const hasExistingAddress = Boolean(address);
-
-  const handleCopyAddress = async () => {
-    if (!address) return;
-    try {
-      await navigator.clipboard.writeText(address);
-      setCopiedAddress(true);
-      setTimeout(() => setCopiedAddress(false), 2000);
-    } catch (err) {
-      // Fallback for browsers that don't support clipboard API
-      const textArea = document.createElement('textarea');
-      textArea.value = address;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopiedAddress(true);
-      setTimeout(() => setCopiedAddress(false), 2000);
-    }
-  };
-
-  const handleCreateChoice = () => {
-    if (hasExistingAddress) {
-      // Show progressive disclosure warning for users with existing wallet
-      Swal.fire({
-        icon: 'warning',
-        title: 'Create New Wallet?',
-        html: `
-          <div style="text-align: left; padding: 10px 0;">
-            <p style="margin-bottom: 16px; color: #e0e0e0;">
-              <strong style="color: #ff9800;">⚠️ Important:</strong> Creating a new wallet will generate a NEW 12-word seed phrase.
-            </p>
-            <p style="margin-bottom: 16px; color: #e0e0e0;">
-              If you have secrets from your previous wallet, you will permanently lose access to them unless you have your old seed phrase saved.
-            </p>
-            <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 12px; margin: 16px 0; border-radius: 4px;">
-              <p style="margin: 0; color: #ff9800; font-size: 14px;">
-                <strong>We recommend "Restore My Wallet"</strong> if you still have your 12-word seed phrase.
-              </p>
-            </div>
-          </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'I understand, create new',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#ff9800',
-        cancelButtonColor: '#95ff5d',
-        background: '#1a1a1a',
-        color: '#fff',
-        customClass: {
-          confirmButton: 'swal-warning-btn',
-          cancelButton: 'swal-cancel-btn'
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          onChoice("create");
-        }
-      });
-    } else {
-      // New users proceed directly
-      onChoice("create");
-    }
-  };
+    (isBrowser ? "Friend" : "Friend");
 
   const showHelpModal = () => {
     Swal.fire({
@@ -150,77 +84,55 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
 
   return (
     <div className="onboarding-screen welcome-screen-animated">
-      {/* User State Badge */}
-      {hasExistingAddress && (
-        <div className="user-state-badge returning-user">
-          <MdAccountBalanceWallet style={{ fontSize: '18px' }} />
-          <span>Returning User</span>
-        </div>
-      )}
-      
       <div className="onboarding-header">
         <h1>
           <MdAccountBalanceWallet style={{ fontSize: '32px' }} />
           Welcome {displayName}!
         </h1>
-        <p style={{ marginBottom: '8px' }}>
+        <p>
           Secure your secrets with <strong>threshold encryption</strong>
-        </p>
-        <p style={{ opacity: 0.7, fontSize: '14px' }}>
-          Your wallet is the key to encrypting and accessing your data
         </p>
       </div>
 
       <div className="onboarding-content">
-        {/* Contextual Information Box */}
-        {hasExistingAddress ? (
-          <div className="info-box existing-wallet-info">
-            <div className="info-box-header">
-              <MdInfo style={{ fontSize: '20px' }} />
-              <span>Wallet Detected</span>
+        {/* Action Cards Container */}
+        <div className="action-card-container">
+          {/* Create New Wallet Card */}
+          <div className="action-card">
+            <div className="action-card-icon">
+              <MdAdd style={{ fontSize: '32px' }} />
             </div>
-            <div className="info-box-content">
-              <p style={{ marginBottom: '12px' }}>
-                We found a wallet associated with your account:
-              </p>
-              <div className="address-display">
-                <code className="wallet-address">{formatAddress(6, address as string)}</code>
-                <button 
-                  className="copy-btn" 
-                  onClick={handleCopyAddress}
-                  title="Copy full address"
-                >
-                  <MdContentCopy style={{ fontSize: '16px' }} />
-                  {copiedAddress && <span className="copied-tooltip">Copied!</span>}
-                </button>
-              </div>
-              <div className="info-box-recommendation">
-                <MdShield style={{ fontSize: '18px' }} />
-                <div>
-                  <strong>Recommendation:</strong> If this is your wallet from another device, 
-                  choose "Restore My Wallet" and enter your 12-word seed phrase.
-                </div>
-              </div>
-            </div>
+            <h3 className="action-card-title">Create New Wallet</h3>
+            <p className="action-card-description">
+              <strong>New to TacoSec?</strong> Start fresh with a new 12-word seed phrase. Perfect if this is your first time here.
+            </p>
+            <button
+              className="action-card-button"
+              onClick={() => onChoice("create")}
+            >
+              <MdAdd style={{ fontSize: '18px' }} />
+              Create New Wallet
+            </button>
           </div>
-        ) : (
-          <div className="info-box new-user-info">
-            <div className="info-box-header">
-              <MdInfo style={{ fontSize: '20px' }} />
-              <span>First Time Setup</span>
+
+          {/* Restore Wallet Card */}
+          <div className="action-card">
+            <div className="action-card-icon">
+              <MdDownload style={{ fontSize: '32px' }} />
             </div>
-            <div className="info-box-content">
-              <ul className="info-list">
-                <li>
-                  <strong>New to TacoSec?</strong> Choose "Create New Wallet"
-                </li>
-                <li>
-                  <strong>Have a seed phrase?</strong> Choose "Restore My Wallet"
-                </li>
-              </ul>
-            </div>
+            <h3 className="action-card-title">Restore My Wallet</h3>
+            <p className="action-card-description">
+              <strong>Have a seed phrase?</strong> Restore your existing wallet from another device or backup using your 12-word recovery phrase.
+            </p>
+            <button
+              className="action-card-button"
+              onClick={() => onChoice("import")}
+            >
+              <MdDownload style={{ fontSize: '18px' }} />
+              Restore My Wallet
+            </button>
           </div>
-        )}
+        </div>
 
         {/* Privacy & Security Note */}
         <div className="privacy-note">
@@ -231,37 +143,33 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
         {/* Help Link */}
         <button className="help-link" onClick={showHelpModal}>
           <MdHelpOutline style={{ fontSize: '18px' }} />
-          <span>Not sure? Help me choose</span>
-        </button>
-      </div>
-
-      <div className="onboarding-actions">
-        <button
-          className={`onboarding-btn ${hasExistingAddress ? 'secondary' : 'primary'}`}
-          onClick={handleCreateChoice}
-        >
-          <MdAdd style={{ fontSize: '20px' }} />
-          Create New Wallet
-        </button>
-
-        <button
-          className={`onboarding-btn ${hasExistingAddress ? 'primary' : 'secondary'}`}
-          onClick={() => onChoice("import")}
-        >
-          <MdDownload style={{ fontSize: '20px' }} />
-          Restore My Wallet
+          <span>Help me Decide</span>
         </button>
       </div>
 
       {/* Credits Footer */}
       <div className="welcome-credits">
-        <div className="credits-label">Made With Love By</div>
-        <div className="credits-logo-container">
-          <div className="credits-logo">
-            <div className="logo-text-top">W3</div>
-            <div className="logo-text-bottom">W4</div>
+        <div className="credits-row">
+          <div className="made-by">
+            <div className="credits-label">Made With Love By</div>
+            <div className="credits-logo-container">
+              <div className="credits-logo">
+                <div className="logo-text-top">W3</div>
+                <div className="logo-text-bottom">W4</div>
+              </div>
+              <div className="credits-brand">WEB3WEB4</div>
+            </div>
           </div>
-          <div className="credits-brand">WEB3WEB4</div>
+
+          <div className="powered-by">
+            <div className="credits-label">Powered By</div>
+            <div className="credits-logo-container">
+              <div className="powered-logo">
+                <img src={TacoLogo} alt="TACoSec" className="powered-logo-img" />
+              </div>
+              <div className="powered-brand">TACoSec</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
