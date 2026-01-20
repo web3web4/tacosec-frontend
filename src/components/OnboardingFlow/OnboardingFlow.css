@@ -39,7 +39,6 @@
   flex-direction: column;
   padding: 40px 20px 20px 20px;
   box-sizing: border-box;
-  flex: 1;
 }
 
 .onboarding-header {
@@ -525,6 +524,119 @@
   color: #95ff5d;
 }
 
+/* Action Cards Container */
+.action-card-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.action-card {
+  background: rgba(149, 255, 93, 0.05);
+  border: 2px solid rgba(149, 255, 93, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #95ff5d, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.action-card:hover {
+  border-color: rgba(149, 255, 93, 0.4);
+  background: rgba(149, 255, 93, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(149, 255, 93, 0.15);
+}
+
+.action-card:hover::before {
+  opacity: 1;
+}
+
+.action-card-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(149, 255, 93, 0.08);
+  border: 2px solid rgba(149, 255, 93, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #95ff5d;
+  margin-bottom: 8px;
+  transition: all 0.22s ease;
+}
+
+.action-card:hover .action-card-icon {
+  background: rgba(149, 255, 93, 0.2);
+  border-color: rgba(149, 255, 93, 0.5);
+  transform: scale(1.1) rotate(5deg);
+}
+
+.action-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #95ff5d;
+  margin: 6px 0;
+  letter-spacing: 0.4px;
+}
+
+.action-card-description {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+  margin-bottom: 12px;
+}
+
+.action-card-description strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.action-card-button {
+  width: 100%;
+  padding: 10px 18px;
+  background: #95ff5d;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.action-card-button:hover {
+  background: #a8ff70;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(149, 255, 93, 0.3);
+}
+
+.action-card-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(149, 255, 93, 0.2);
+}
+
 .privacy-note {
   display: flex;
   align-items: center;
@@ -691,6 +803,41 @@
   .onboarding-container {
     margin: 0;
     padding: 0;
+  }
+
+  /* Action cards stack vertically on mobile */
+  .action-card-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .action-card {
+    padding: 20px;
+  }
+
+  .action-card-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .action-card-icon svg {
+    font-size: 28px !important;
+  }
+
+  .action-card-title {
+    font-size: 16px;
+  }
+
+  .action-card-description {
+    font-size: 13px;
+  }
+
+  .action-card-button {
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+
+  .onboarding-container {
     min-height: 100vh;
   }
 
@@ -761,8 +908,9 @@
   justify-content: center;
   gap: 6px;
   padding: 6px;
-  margin: 8px auto 4px;
-  max-width: fit-content;
+  margin: 24px auto 4px;
+  max-width: 100%;
+  margin-top: auto;
 }
 
 .credits-label {
@@ -776,6 +924,53 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.credits-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.made-by, .powered-by {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.powered-logo {
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  min-height: 22px;
+  border-radius: 0;
+}
+
+.powered-logo-text {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 6px;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
+}
+
+.powered-brand {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 6px;
+  color: #95ff5d;
+}
+
+.powered-logo-img {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .credits-logo {
@@ -802,6 +997,6 @@
   font-family: 'Press Start 2P', cursive;
   font-size: 6px;
   font-weight: 400;
-  color: #ffffff;
+  color: #00ffd1;
   letter-spacing: 0px;
 }
