@@ -167,7 +167,7 @@ export function WelcomeScreen({ onChoice }: WelcomeScreenProps) {
               <div className="powered-logo">
                 <img src={TacoLogo} alt="TACoSec" className="powered-logo-img" />
               </div>
-              <div className="powered-brand">TACoSec</div>
+              <div className="powered-brand">TACo</div>
             </div>
           </div>
         </div>
