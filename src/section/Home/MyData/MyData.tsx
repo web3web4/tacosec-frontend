@@ -146,6 +146,20 @@ export default function MyData() {
                   </div>
                 </div>
               </div>
+              {/* Add Tap to Expand clickable text */}
+              {expandedId !== item.id && (
+                <span
+                  className="tap-to-expand-text"
+                  style={{ position: 'absolute', bottom: 8, right: 12, fontSize: '0.7rem', color: 'var(--text-secondary)', opacity: 0.5, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    recordUserAction(`Expand item: ${item.id} (tap to expand)`);
+                    toggleExpand(item.value, item.id, false);
+                  }}
+                >
+                  TAP TO EXPAND
+                </span>
+              )}
             </div>
             <p
               className="item-status"

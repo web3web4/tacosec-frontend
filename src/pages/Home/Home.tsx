@@ -53,9 +53,12 @@ const Home: React.FC = () => {
         const currentY = e.touches[0].clientY;
         const distance = currentY - pullStartY;
         
-        if (distance > 0) {
+        // Only activate pull-to-refresh if pulling down with significant distance
+        if (distance > 15) {
           e.preventDefault();
-          setPullDistance(Math.min(distance, 120));
+          // Apply resistance to make it feel more natural
+          const resistance = 0.4;
+          setPullDistance(Math.min(distance * resistance, 100));
         }
       }
     };
@@ -65,7 +68,7 @@ const Home: React.FC = () => {
       
       setIsPulling(false);
       
-      if (pullDistance > 80 && !isRefreshing && !isLoading) {
+      if (pullDistance > 60 && !isRefreshing && !isLoading) {
         setIsRefreshing(true);
         recordUserAction("Pull to refresh");
         
