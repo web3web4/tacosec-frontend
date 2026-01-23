@@ -277,7 +277,7 @@ const Settings: React.FC = () => {
               >
                 {privacyModOn ? (
                   <>
-                    <MdShield style={{ marginRight: 4 }} /> Secure
+                    <MdShield style={{ marginRight: 4 }} /> MAX
                   </>
                 ) : (
                   "Standard"
@@ -306,7 +306,7 @@ const Settings: React.FC = () => {
           )}
           <p className="field-helper" style={{ marginTop: '0.5rem' }}>
             <MdInfo style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-            Max privacy hides activity, timestamps, and views from others
+            Whether to save and your view timestamps, and other metadata alike.
           </p>
         </div>
 
@@ -461,7 +461,6 @@ const Settings: React.FC = () => {
         <SectionErrorBoundary sectionName="SupportSection">
           <h3 className="section-title">Support</h3>
           <div className="support-section">
-            <p>Support and Help</p>
             <button className="support-button" onClick={() => {
               recordUserAction("Button click: Contact support");
               setShowSupportPopup(true);
