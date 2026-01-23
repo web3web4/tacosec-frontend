@@ -315,75 +315,76 @@ const Settings: React.FC = () => {
           <>
             <div className="form-divider" />
             
-            <h3 className="section-title">Contact & Identity</h3>
-            <fieldset className="user-info-section">
-              <legend className="fieldset-legend">
-                Browser-Only Information
-                <span className="field-helper" style={{ marginLeft: '0.5rem', fontWeight: 'normal' }}>
-                  (Not shared with Telegram)
-                </span>
-              </legend>
+            <div className="user-info-section">
+              <div className="section-header">
+                <h3 className="section-title">Contact & Identity</h3>
+                <p className="section-subtitle">
+                  Browser-Only Information (Not shared with Telegram)
+                </p>
+              </div>
               
-              <div className="input-row">
-                <label>Email address</label>
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => {
-                    const sanitized = sanitizePlainText(e.target.value, { maxLength: 128 });
-                    setEmail(sanitized);
-                    validateEmail(sanitized);
-                  }}
-                  onBlur={(e) => validateEmail(e.target.value)}
-                  className={emailError ? 'input-error' : ''}
-                />
-                {emailError && (
-                  <span className="validation-error">
-                    <MdWarning size={14} /> {emailError}
-                  </span>
-                )}
-              </div>
+              <div className="input-grid">
+                <div className="input-row">
+                  <label>Email address</label>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => {
+                      const sanitized = sanitizePlainText(e.target.value, { maxLength: 128 });
+                      setEmail(sanitized);
+                      validateEmail(sanitized);
+                    }}
+                    onBlur={(e) => validateEmail(e.target.value)}
+                    className={emailError ? 'input-error' : ''}
+                  />
+                  {emailError && (
+                    <span className="validation-error">
+                      <MdWarning size={14} /> {emailError}
+                    </span>
+                  )}
+                </div>
 
-              <div className="input-row">
-                <label>Phone number</label>
-                <input
-                  type="tel"
-                  placeholder="+1234567890"
-                  value={phone}
-                  onChange={(e) => {
-                    const sanitized = sanitizePlainText(e.target.value, { maxLength: 20 });
-                    setPhone(sanitized);
-                    validatePhone(sanitized);
-                  }}
-                  onBlur={(e) => validatePhone(e.target.value)}
-                  className={phoneError ? 'input-error' : ''}
-                />
-                {phoneError && (
-                  <span className="validation-error">
-                    <MdWarning size={14} /> {phoneError}
-                  </span>
-                )}
-              </div>
+                <div className="input-row">
+                  <label>Phone number</label>
+                  <input
+                    type="tel"
+                    placeholder="+1234567890"
+                    value={phone}
+                    onChange={(e) => {
+                      const sanitized = sanitizePlainText(e.target.value, { maxLength: 20 });
+                      setPhone(sanitized);
+                      validatePhone(sanitized);
+                    }}
+                    onBlur={(e) => validatePhone(e.target.value)}
+                    className={phoneError ? 'input-error' : ''}
+                  />
+                  {phoneError && (
+                    <span className="validation-error">
+                      <MdWarning size={14} /> {phoneError}
+                    </span>
+                  )}
+                </div>
 
-              <div className="input-row">
-                <label>First name</label>
-                <input
-                  type="text"
-                  placeholder="First name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(sanitizePlainText(e.target.value, { maxLength: 50 }))}
-                />
-              </div>
+                <div className="input-row">
+                  <label>First name</label>
+                  <input
+                    type="text"
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(sanitizePlainText(e.target.value, { maxLength: 50 }))}
+                  />
+                </div>
 
-              <div className="input-row">
-                <label>Last name</label>
-                <input
-                  type="text"
-                  placeholder="Last name"
-                  value={lastName}
-                  onChange={(e) => setLastName(sanitizePlainText(e.target.value, { maxLength: 50 }))}
-                />
+                <div className="input-row">
+                  <label>Last name</label>
+                  <input
+                    type="text"
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(sanitizePlainText(e.target.value, { maxLength: 50 }))}
+                  />
+                </div>
               </div>
 
               {/* Temporarily disabled unsaved changes warning
@@ -407,7 +408,7 @@ const Settings: React.FC = () => {
               >
                 {isSavingUserInfo ? "Saving..." : "Save"}
               </button>
-            </fieldset>
+            </div>
           </>
         )}
 

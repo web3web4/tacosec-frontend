@@ -2,7 +2,7 @@ import { useState } from "react";
 import RenderContent from "@/components/RenderContent/RenderContent";
 import { DotsLoader, SkeletonLoader } from "@/components";
 import useAlerts from "@/hooks/useAlerts";
-import { MdLock, MdSend, MdArrowForward } from 'react-icons/md';
+import { MdLock, MdSend, MdArrowForward, MdNotifications } from 'react-icons/md';
 import { AlertsDetails } from "@/types";
 import "./Alerts.css";
 
@@ -116,7 +116,9 @@ export default function Alerts() {
         {/* Empty state with icon */}
         {data?.notifications.length === 0 && (
           <div className="alerts-empty">
-            <div className="empty-icon">🔔</div>
+            <div className="empty-icon">
+              <MdNotifications size={64} />
+            </div>
             <div className="empty-title">No alerts yet</div>
             <div className="empty-description">
               You'll be notified when someone shares a secret with you
