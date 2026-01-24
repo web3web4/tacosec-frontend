@@ -80,7 +80,7 @@ TACoSec uses **threshold cryptography** to ensure your secrets remain private:
    ```bash
    git clone <repository-url>
    cd tacosec-frontend
-   yarn install
+   pnpm install
    ```
 
 2. **Configure environment**
@@ -102,7 +102,7 @@ All variables must be prefixed with `REACT_APP_`.
 
 3. **Start development server**
    ```bash
-   yarn start
+   pnpm start
    ```
    Open `http://localhost:3000`
 
