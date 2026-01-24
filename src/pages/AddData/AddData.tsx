@@ -211,16 +211,8 @@ const AddData: React.FC = () => {
             title: "🔐 Encrypted Successfully",
             html: "Your secret is now secured with end-to-end encryption. Only you and authorized recipients can decrypt it.",
             icon: "success",
-            showCancelButton: true,
-            confirmButtonText: "Create Another",
+            confirmButtonText: "Ok",
             confirmButtonColor: "var(--metro-green)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // User wants to create another - form already cleared below
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-              // Navigate to home/secrets view
-              window.location.href = "/";
-            }
           });
 
           cleanFields();
