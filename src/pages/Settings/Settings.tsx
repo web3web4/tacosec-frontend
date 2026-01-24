@@ -166,11 +166,18 @@ const Settings: React.FC = () => {
   const handleClearData = () => {
     MetroSwal.fire({
       icon: "warning",
-      title: '<span style="color: var(--metro-green);">⚠</span> DANGER ZONE',
+      title: '<span style="color: #ff5252;">⚠</span> DANGER ZONE',
       html: "This will permanently remove your wallet and all related data from this device. <strong>This action cannot be undone.</strong>",
       confirmButtonText: "I understand, continue",
       showCancelButton: true,
       cancelButtonText: "Cancel",
+      customClass: {
+        popup: 'danger-zone-popup',
+        title: 'danger-zone-title',
+        htmlContainer: 'danger-zone-content',
+        confirmButton: 'danger-zone-confirm',
+        cancelButton: 'danger-zone-cancel'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         // Second confirmation
@@ -183,6 +190,13 @@ const Settings: React.FC = () => {
           confirmButtonText: "Delete Everything",
           showCancelButton: true,
           cancelButtonText: "Cancel",
+          customClass: {
+            popup: 'danger-zone-popup',
+            title: 'danger-zone-title',
+            htmlContainer: 'danger-zone-content',
+            confirmButton: 'danger-zone-confirm-final',
+            cancelButton: 'danger-zone-cancel'
+          },
           preConfirm: (inputValue) => {
             if (inputValue !== 'DELETE') {
               Swal.showValidationMessage('Please type DELETE to confirm');

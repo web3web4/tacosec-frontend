@@ -213,7 +213,6 @@ const AddData: React.FC = () => {
             icon: "success",
             showCancelButton: true,
             confirmButtonText: "Create Another",
-            cancelButtonText: "View Secrets",
             confirmButtonColor: "var(--metro-green)",
           }).then((result) => {
             if (result.isConfirmed) {
