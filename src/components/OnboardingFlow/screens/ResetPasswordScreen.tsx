@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { MdLockReset, MdArrowBack, MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import { MdLockReset, MdArrowBack, MdVisibility, MdVisibilityOff, MdDeleteForever } from 'react-icons/md';
 import { ethers } from 'ethers';
+import Swal from 'sweetalert2';
+import { MetroSwal } from '@/utils';
+import { clearTokens } from '@/utils/cookieManager';
 
 interface ResetPasswordScreenProps {
   onSuccess: (seedPhrase: string, newPassword: string, saveInBackend: boolean) => void;
@@ -74,6 +77,82 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
     if (e.key === 'Enter' && seedPhrase && newPassword && confirmPassword && !isLoading) {
       handleSubmit();
     }
+  };
+
+  // Handle clear data functionality
+  const handleClearData = () => {
+    MetroSwal.fire({
+      icon: "warning",
+      title: '<span style="color: #ff5252;">⚠</span> DANGER ZONE',
+      html: "This will permanently remove your wallet and all related data from this device. <strong>This action cannot be undone.</strong>",
+      confirmButtonText: "I understand, continue",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: 'danger-zone-popup',
+        title: 'danger-zone-title',
+        htmlContainer: 'danger-zone-content',
+        confirmButton: 'danger-zone-confirm',
+        cancelButton: 'danger-zone-cancel'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Second confirmation
+        MetroSwal.fire({
+          icon: "error",
+          title: "Final Confirmation",
+          html: "Are you absolutely sure? All your secrets and wallet data will be permanently deleted.",
+          input: 'text',
+          inputPlaceholder: 'Type DELETE to confirm',
+          confirmButtonText: "Delete Everything",
+          showCancelButton: true,
+          cancelButtonText: "Cancel",
+          customClass: {
+            popup: 'danger-zone-popup',
+            title: 'danger-zone-title',
+            htmlContainer: 'danger-zone-content',
+            confirmButton: 'danger-zone-confirm-final',
+            cancelButton: 'danger-zone-cancel'
+          },
+          preConfirm: (inputValue) => {
+            if (inputValue !== 'DELETE') {
+              Swal.showValidationMessage('Please type DELETE to confirm');
+              return false;
+            }
+            return true;
+          }
+        }).then((finalResult) => {
+          if (finalResult.isConfirmed) {
+            // Delete the specified localStorage items
+            Object.keys(localStorage).forEach((key) => {
+              if (
+                key.startsWith("seedBackupDone-") ||
+                key.startsWith("encryptedSeed-") ||
+                key === "savePasswordInBackend" ||
+                key === "publicAddress"
+              ) {
+                localStorage.removeItem(key);
+              }
+            });
+
+            // Check if running in browser (web app) vs Telegram Mini App
+            const isBrowser = !window.Telegram?.WebApp?.initData;
+            
+            // For web users: clear auth cookies (access_token, refresh_token)
+            if (isBrowser) {
+              try {
+                clearTokens();
+              } catch (err) {
+                console.error("Failed to clear auth tokens:", err);
+              }
+            }
+
+            // Reload the page to reflect changes
+            window.location.reload();
+          }
+        });
+      }
+    });
   };
 
   const isFormValid = seedPhrase.trim() && newPassword && confirmPassword && newPassword === confirmPassword;
@@ -226,6 +305,62 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
                 </label>
               </div>
             )}
+
+            {/* Clear Data Option */}
+            <div style={{
+              marginTop: '24px',
+              padding: '16px',
+              background: 'rgba(255, 82, 82, 0.1)',
+              border: '1px solid rgba(255, 82, 82, 0.3)',
+              borderRadius: '8px'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '12px'
+              }}>
+                <MdDeleteForever style={{ fontSize: '24px', color: '#ff5252' }} />
+                <div>
+                  <h4 style={{ margin: 0, color: '#ff5252', fontSize: '14px', fontWeight: 600 }}>
+                    Don't have your seed phrase?
+                  </h4>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#999' }}>
+                    Clear all wallet data and start fresh
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleClearData}
+                disabled={isLoading}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: 'transparent',
+                  border: '2px solid #ff5252',
+                  borderRadius: '6px',
+                  color: '#ff5252',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.5 : 1,
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isLoading) {
+                    e.currentTarget.style.background = '#ff5252';
+                    e.currentTarget.style.color = 'white';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#ff5252';
+                }}
+              >
+                Clear All Data
+              </button>
+            </div>
           </div>
 
         </div>

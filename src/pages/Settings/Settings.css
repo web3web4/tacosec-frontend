@@ -476,6 +476,82 @@ input:checked + .slider:before {
   background: rgba(0, 0, 0, 0.8) !important;
 }
 
+/* Danger Zone Popup Styling */
+.danger-zone-popup {
+  background: #1a1a1a !important;
+  border: 3px solid #ff5252 !important;
+  box-shadow: 0 0 30px rgba(255, 82, 82, 0.5) !important;
+}
+
+.danger-zone-popup .swal2-actions {
+  gap: 12px !important;
+  margin-top: 20px !important;
+}
+
+.danger-zone-title {
+  color: #ff5252 !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+.danger-zone-content {
+  color: #e0e0e0 !important;
+  font-size: 1rem !important;
+}
+
+.danger-zone-confirm {
+  background: transparent !important;
+  border: 2px solid #ff5252 !important;
+  color: #ff5252 !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.danger-zone-confirm:hover {
+  background: #ff5252 !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4) !important;
+}
+
+.danger-zone-confirm-final {
+  background: transparent !important;
+  border: 2px solid #ff5252 !important;
+  color: #ff5252 !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.danger-zone-confirm-final:hover {
+  background: #ff5252 !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(255, 82, 82, 0.4) !important;
+}
+
+.danger-zone-cancel {
+  background: transparent !important;
+  border: 2px solid var(--metro-green) !important;
+  color: var(--metro-green) !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.danger-zone-cancel:hover {
+  background: var(--metro-green) !important;
+  color: #000 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(149, 255, 93, 0.4) !important;
+}
+
 .user-info-section {
   margin-top: 1rem;
   padding: 1.5rem;
@@ -715,5 +791,9 @@ input:checked + .slider:before {
   }
   .user-info-section .input-grid {
     grid-template-columns: 1fr;
+  }
+  .support-section {
+    margin-bottom: 50px;
+    padding-bottom: 2rem;
   }
 }
