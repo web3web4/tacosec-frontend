@@ -1,6 +1,29 @@
+<p align="center">
+  <img src="public/logo512.png" width="128" alt="TACoSec Logo" />
+</p>
+
 # TACoSec
 
-**Secret Stashing and Sharing** — A secure utility for managing sensitive data with cryptographic privacy and intuitive UX. Built with React and TypeScript, leveraging NuCypher TACo (Threshold Access Control) for decentralized end-to-end encryption. Available as a Telegram Mini App and web application.
+**Secret Stashing and Sharing** — A secure utility for managing sensitive data with cryptographic privacy and intuitive UX. Built with React and TypeScript, leveraging NuCypher TACo (Threshold Access Control) for decentralized end-to-end encryption.
+
+> **Frontend Repository** (you are here) | [Backend Repository](https://github.com/web3web4/tacosec-backend)
+
+## Access & Deployments
+
+### Production
+The stable, primary distribution of TACoSec.
+- **Telegram Mini App**: [@tacosec_bot](https://t.me/tacosec_bot)
+- **Web Application**: [app.tacosec.com](https://app.tacosec.com)
+
+---
+
+### Staging
+Used for internal testing and validation of upcoming features.
+- **Telegram Mini App**: [@taco_sec_staging_bot](https://t.me/taco_sec_staging_bot)
+- **Web Application**: [staging.tacosec.com](https://staging.tacosec.com)
+
+> [!NOTE]
+> **Legacy Version**: An earlier MVP using Telegram-only authentication is available at [@tacosec_v1_bot](https://t.me/tacosec_v1_bot). This version has been superseded by the current wallet-signature authentication.
 
 ## About
 
@@ -14,16 +37,6 @@ TACoSec combines **security-first architecture** with **user-friendly design** f
 [![ethers.js](https://img.shields.io/badge/ethers.js-2535a0?logo=ethereum&logoColor=white)](https://docs.ethers.org/)
 [![Telegram](https://img.shields.io/badge/Telegram-Mini%20App-26A5E4?logo=telegram)](https://core.telegram.org/bots/webapps)
 
-**Accessibility:**
-- **Telegram Mini App**: Native integration within Telegram at [tacosec_bot](https://t.me/tacosec_bot)
-- **Web Application**: Standalone access at [tacosec.com](https://tacosec.com)
-
-## Built With
-
-[![TACo](https://img.shields.io/badge/Powered%20by-TACo-95FF5D)](https://taco.build)
-[![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![ethers.js](https://img.shields.io/badge/ethers.js-2535a0?logo=ethereum&logoColor=white)](https://docs.ethers.org/)
-[![Telegram](https://img.shields.io/badge/Telegram-Mini%20App-26A5E4?logo=telegram)](https://core.telegram.org/bots/webapps)
 
 ## Features
 
@@ -67,7 +80,7 @@ TACoSec uses **threshold cryptography** to ensure your secrets remain private:
    ```bash
    git clone <repository-url>
    cd tacosec-frontend
-   yarn install
+   pnpm install
    ```
 
 2. **Configure environment**
@@ -89,7 +102,7 @@ All variables must be prefixed with `REACT_APP_`.
 
 3. **Start development server**
    ```bash
-   yarn start
+   pnpm start
    ```
    Open `http://localhost:3000`
 
