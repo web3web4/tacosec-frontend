@@ -179,7 +179,7 @@ const Loading: React.FC = () => {
 
       <div className="loading-content">
         <div className="logo-container">
-          <img src={Logo} alt="TACO Sec Logo" className="logo-image" />
+          <img src={Logo} alt="TACoSec Logo" className="logo-image" />
           <div className="logo-pulse"></div>
         </div>
         
