@@ -1,7 +1,7 @@
 {
   "name": "tacosec-frontend",
   "version": "0.1.0",
-  "description": "TACoSec.com Frontend",
+  "description": "TACoSec.com Frontend - Secret Stashing & Sharing App •Private vault for passwords, keys, recovery phrases and more. Every secret is encrypted and decrypted on your device . Thanks to TACo threshold cryptography and decentralized nodes, so no one other than you —including this bot—ever holds the plaintext it is end-to-end encrypted by TACo 💚 • Built with ❤️ by https://Web3Web4.com • Also available at: https://TACoSec.com",
   "author": "Web3Web4",
   "license": "MIT",
   "dependencies": {
