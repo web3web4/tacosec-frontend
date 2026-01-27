@@ -104,7 +104,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={seconds}
+                  value={seconds === 0 ? "" : seconds}
                   onChange={(e) =>
                     handleTimeChange("seconds", parseInt(e.target.value) || 0)
                   }
@@ -116,7 +116,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={minutes}
+                  value={minutes === 0 ? "" : minutes}
                   onChange={(e) =>
                     handleTimeChange("minutes", parseInt(e.target.value) || 0)
                   }
@@ -128,7 +128,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={hours}
+                  value={hours === 0 ? "" : hours}
                   onChange={(e) =>
                     handleTimeChange("hours", parseInt(e.target.value) || 0)
                   }
@@ -140,7 +140,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={months}
+                  value={months === 0 ? "" : months}
                   onChange={(e) =>
                     handleTimeChange("months", parseInt(e.target.value) || 0)
                   }
@@ -155,15 +155,15 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                   {months > 0 ? `${months} month${months !== 1 ? "s" : ""} ` : ""}
                   {hours > 0
                     ? (months > 0 ? "+ " : "") +
-                      `${hours} hour${hours !== 1 ? "s" : ""} `
+                    `${hours} hour${hours !== 1 ? "s" : ""} `
                     : ""}
                   {minutes > 0
                     ? (hours > 0 || months > 0 ? "+ " : "") +
-                      `${minutes} minute${minutes !== 1 ? "s" : ""} `
+                    `${minutes} minute${minutes !== 1 ? "s" : ""} `
                     : ""}
                   {seconds > 0
                     ? (minutes > 0 || hours > 0 || months > 0 ? "+ " : "") +
-                      `${seconds} second${seconds !== 1 ? "s" : ""}`
+                    `${seconds} second${seconds !== 1 ? "s" : ""}`
                     : ""}
                 </div>
                 {dateTimePreview && (
