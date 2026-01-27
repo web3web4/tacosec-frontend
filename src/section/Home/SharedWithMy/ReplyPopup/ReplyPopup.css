@@ -7,6 +7,25 @@
   align-items: center;
 }
 
+.draft-indicator {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(149, 255, 93, 0.1);
+  border: 1px solid var(--metro-green);
+  border-radius: 6px;
+  color: var(--metro-green);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.draft-indicator svg {
+  flex-shrink: 0;
+}
+
 .reply-popup h3 {
   margin: 0 0 20px 0;
   color: var(--text-primary);

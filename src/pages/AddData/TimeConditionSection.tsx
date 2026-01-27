@@ -1,4 +1,5 @@
 import React from "react";
+import { MdSchedule, MdWarning } from 'react-icons/md';
 import "./AddData.css";
 
 interface TimeValues {
@@ -28,11 +29,38 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
   const { seconds, minutes, hours, months } = timeValues;
 
   const handleTimeChange = (field: keyof TimeValues, value: number) => {
+    // Prevent negative values
+    const safeValue = Math.max(0, value);
     setTimeValues((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: safeValue,
     }));
   };
+
+  // Calculate the actual date/time based on time values
+  const calculateDateTime = () => {
+    const now = new Date();
+    const totalSeconds =
+      (seconds || 0) +
+      (minutes || 0) * 60 +
+      (hours || 0) * 60 * 60 +
+      (months || 0) * 30 * 24 * 60 * 60;
+
+    if (totalSeconds === 0) return null;
+
+    const futureDate = new Date(now.getTime() + totalSeconds * 1000);
+    return futureDate.toLocaleString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const dateTimePreview = calculateDateTime();
+  const hasTimeValue = seconds > 0 || minutes > 0 || hours > 0 || months > 0;
 
   return (
     <>
@@ -76,7 +104,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={seconds}
+                  value={seconds === 0 ? "" : seconds}
                   onChange={(e) =>
                     handleTimeChange("seconds", parseInt(e.target.value) || 0)
                   }
@@ -88,7 +116,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={minutes}
+                  value={minutes === 0 ? "" : minutes}
                   onChange={(e) =>
                     handleTimeChange("minutes", parseInt(e.target.value) || 0)
                   }
@@ -100,7 +128,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={hours}
+                  value={hours === 0 ? "" : hours}
                   onChange={(e) =>
                     handleTimeChange("hours", parseInt(e.target.value) || 0)
                   }
@@ -112,7 +140,7 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 <input
                   type="number"
                   min="0"
-                  value={months}
+                  value={months === 0 ? "" : months}
                   onChange={(e) =>
                     handleTimeChange("months", parseInt(e.target.value) || 0)
                   }
@@ -120,24 +148,35 @@ export const TimeConditionSection: React.FC<TimeConditionSectionProps> = ({
                 />
               </div>
             </div>
-            {seconds > 0 || minutes > 0 || hours > 0 || months > 0 ? (
-              <div className="time-summary">
-                Unlocks after:{" "}
-                {months > 0 ? `${months} month${months !== 1 ? "s" : ""} ` : ""}
-                {hours > 0
-                  ? (months > 0 ? " + " : "") +
+            {hasTimeValue ? (
+              <>
+                <div className="time-summary">
+                  {timeConditionType === "unlock" ? "Secret unlocks after: " : "Secret expires after: "}
+                  {months > 0 ? `${months} month${months !== 1 ? "s" : ""} ` : ""}
+                  {hours > 0
+                    ? (months > 0 ? "+ " : "") +
                     `${hours} hour${hours !== 1 ? "s" : ""} `
-                  : ""}
-                {minutes > 0
-                  ? (hours > 0 || months > 0 ? " + " : "") +
+                    : ""}
+                  {minutes > 0
+                    ? (hours > 0 || months > 0 ? "+ " : "") +
                     `${minutes} minute${minutes !== 1 ? "s" : ""} `
-                  : ""}
-                {seconds > 0
-                  ? (minutes > 0 || hours > 0 || months > 0 ? " + " : "") +
+                    : ""}
+                  {seconds > 0
+                    ? (minutes > 0 || hours > 0 || months > 0 ? "+ " : "") +
                     `${seconds} second${seconds !== 1 ? "s" : ""}`
-                  : ""}
+                    : ""}
+                </div>
+                {dateTimePreview && (
+                  <div className="time-preview">
+                    <MdSchedule size={16} /> {timeConditionType === "unlock" ? "Unlocks on" : "Expires on"}: <strong>{dateTimePreview}</strong>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="time-warning">
+                <MdWarning size={16} /> Please enter a time period above to activate time restrictions
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { FaArrowLeft } from "react-icons/fa6";
 import "./SheetModal.css";
 
@@ -66,7 +67,7 @@ export default function SheetModal({
 
     if (!shouldRender) return null;
 
-    return (
+    const modalContent = (
         <div className={`sheet-modal ${isAnimating ? "active" : ""}`}>
             <div className="sheet-header">
                 <button className="back-button" onClick={handleClose} aria-label="Go back">
@@ -77,4 +78,6 @@ export default function SheetModal({
             <div className="sheet-content">{children}</div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 }

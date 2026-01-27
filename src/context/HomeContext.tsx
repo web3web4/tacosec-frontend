@@ -161,7 +161,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
     handleSetActiveTabClick,
     handleDelete,
     triggerGetChildrenForSecret,
-    handleDirectLink: () => directLinkHook.handleDirectLink(secretDataHook.myData, secretDataHook.sharedWithMyData, decryptionHook.toggleExpand),
+    handleDirectLink: () => directLinkHook.handleDirectLink(secretDataHook.myData, secretDataHook.sharedWithMyData, decryptionHook.toggleExpand, secretDataHook.activeTab),
     handleDirectLinkForChildren: () => directLinkHook.handleDirectLinkForChildren(secretDataHook.myData, secretDataHook.sharedWithMyData, secretDataHook.activeTab, decryptionHook.toggleChildExpand),
     isInit,
     provider,

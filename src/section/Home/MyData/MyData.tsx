@@ -6,6 +6,7 @@ import { useWallet } from "@/wallet/walletContext";
 import { noUserImage, showIcon } from "@/assets";
 import { useHome } from "@/context/HomeContext";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChildrenSection } from "@/section";
 import { formatDate, recordUserAction, copyToClipboard } from "@/utils";
 import { useNavigate } from "react-router-dom";
@@ -134,11 +135,31 @@ export default function MyData() {
                     <strong>Created At:</strong>
                     <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
                   </div>
+                  {item.lastViewed && (
+                    <div className="created-at-container">
+                      <strong>Last Viewed:</strong>
+                      <span className="child-date">{" "}{formatDate(item.lastViewed)}</span>
+                    </div>
+                  )}
                   <div className="item-toggle">
                     {expandedId === item.id ? '▼' : '▶'}
                   </div>
                 </div>
               </div>
+              {/* Add Tap to Expand clickable text */}
+              {expandedId !== item.id && (
+                <span
+                  className="tap-to-expand-text"
+                  style={{ position: 'absolute', bottom: 8, right: 12, fontSize: '0.7rem', color: 'var(--text-secondary)', opacity: 0.5, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    recordUserAction(`Expand item: ${item.id} (tap to expand)`);
+                    toggleExpand(item.value, item.id, false);
+                  }}
+                >
+                  TAP TO EXPAND
+                </span>
+              )}
             </div>
             <p
               className="item-status"
@@ -319,7 +340,7 @@ export default function MyData() {
           </button>
         </div>
       )}
-      {showManualCopy && (
+      {showManualCopy && createPortal(
         <div className="manual-copy-modal">
           <div className="manual-copy-modal-content">
             <h3>Manual Copy</h3>
@@ -332,7 +353,8 @@ export default function MyData() {
             />
             <button className="cancel-btn" onClick={() => setShowManualCopy(false)}>Close</button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

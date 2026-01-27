@@ -11,9 +11,10 @@ export default function useDirectLink() {
   const handleDirectLink = (
     myData: DataItem[],
     sharedWithMyData: SharedWithMyDataType[],
-    toggleExpand: (value: string, id: string, isIgnored: boolean) => Promise<void>
+    toggleExpand: (value: string, id: string, isIgnored: boolean) => Promise<void>,
+    activeTab: TabType,
   ) => {
-    if (directLinkData && processingRef.current !== directLinkData.secretId) {
+    if (directLinkData && processingRef.current !== directLinkData.secretId && activeTab === directLinkData.tabName) {
       const currentId = directLinkData.secretId;
       const element = itemRefs.current[currentId];
       

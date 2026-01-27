@@ -1,9 +1,38 @@
 {
   "name": "tacosec-frontend",
   "version": "0.1.0",
-  "description": "TACoSec.com Frontend",
-  "author": "Web3Web4",
+  "private": true,
+  "description": "TACoSec.com Frontend - Secret Stashing & Sharing App. Private, end-to-end encrypted vault for passwords, keys, and recovery phrases. Every secret is encrypted and decrypted on your device using TACo threshold cryptography and decentralized nodes. Built with ❤️ by Web3Web4 (https://web3web4.com). Also available at: https://tacosec.com",
+  "homepage": "https://tacosec.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3web4/tacosec-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/web3web4/tacosec-frontend/issues"
+  },
+  "author": {
+    "name": "Web3Web4",
+    "url": "https://web3web4.com"
+  },
   "license": "MIT",
+  "keywords": [
+    "encryption",
+    "taco",
+    "threshold-cryptography",
+    "secrets-management",
+    "decentralized",
+    "web3",
+    "privacy",
+    "vault",
+    "password-manager",
+    "end-to-end-encryption",
+    "telegram-mini-app"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "dependencies": {
     "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.14.0",
@@ -23,10 +52,14 @@
     "@types/node": "^20.11.24",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.3.1",
     "ethers": "^5.7.2",
     "js-cookie": "^3.0.5",
     "process": "^0.11.10",
@@ -39,9 +72,6 @@
     "styled-components": "^6.1.17",
     "sweetalert2": "^11.19.1",
     "uuid": "^11.1.0",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^2.1.1",
-    "ajv-keywords": "^5.1.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -70,8 +100,10 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
+    "@types/dompurify": "^3.2.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "prettier": "^3.8.0",
     "typescript": "^5.8.3"
   },
   "resolutions": {

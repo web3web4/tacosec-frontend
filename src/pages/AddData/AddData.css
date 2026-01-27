@@ -12,7 +12,7 @@
 .add-data-content-wrapper {
   position: relative;
   z-index: 1;
-  padding-bottom: 100px;
+  padding-bottom: 80px;
 }
 
 .page-title {
@@ -42,9 +42,9 @@
   align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.95rem;
 }
 
 .security-badge {
@@ -148,6 +148,59 @@
   background: var(--background);
 }
 
+.input-field.has-pending-value {
+  border-color: #ffa500;
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: #ffa500;
+  }
+  50% {
+    border-color: var(--metro-green);
+  }
+}
+
+.pending-share-hint {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  font-size: 0.75rem;
+  color: #ffa500;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pending-share-hint svg {
+  flex-shrink: 0;
+}
+
+.empty-state-hint {
+  background: rgba(0, 200, 81, 0.08);
+  border-left: 3px solid var(--metro-green);
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 
 .time-period-container {
@@ -200,6 +253,49 @@
   border-radius: var(--border-radius);
   color: var(--metro-green);
   font-weight: 600;
+}
+
+.time-preview {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 200, 81, 0.15);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--metro-green);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.time-preview svg {
+  color: var(--metro-green);
+  flex-shrink: 0;
+}
+
+.time-preview strong {
+  color: var(--metro-green);
+  font-weight: 700;
+}
+
+.time-warning {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 200, 81, 0.1);
+  border-radius: var(--border-radius);
+  border-left: 3px solid var(--metro-green);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-warning svg {
+  color: var(--metro-green);
+  flex-shrink: 0;
 }
 
 .time-condition-checkbox {
@@ -263,10 +359,9 @@
 }
 
 .time-condition-wrapper {
-  background: var(--surface);
-  /* Subtle background */
+  background: rgba(0, 200, 81, 0.03);
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 200, 81, 0.15);
 }
 
 /* Media queries for mobile responsiveness */
@@ -292,7 +387,8 @@
   display: flex;
   gap: 0;
   margin-top: 0.5rem;
-  align-items: center;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
 }
 
 .share-with-row .autocomplete-wrapper {
@@ -307,11 +403,11 @@
 }
 
 .share-section-wrapper {
-  background: var(--surface);
+  background: rgba(0, 200, 81, 0.03);
   border-radius: var(--border-radius);
   padding: 1rem;
   margin-top: 0.5rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(0, 200, 81, 0.15);
 }
 
 .autocomplete-wrapper {
@@ -390,17 +486,16 @@
 }
 
 .save-button {
-  flex: 1;
-  /* Match width of Clear button */
+  flex: 1.2; /* Slightly larger than Clear button */
   background: var(--metro-green);
   color: var(--background);
-  padding: 1rem;
+  padding: 1.1rem 1rem;
   border: 2px solid var(--metro-green);
   border-radius: var(--border-radius);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -410,38 +505,53 @@
   gap: 0.5rem;
 }
 
-.save-button:hover {
+.save-button:hover:not(:disabled) {
   background: #00a65a;
-  box-shadow: 0 4px 12px rgba(0, 200, 81, 0.4);
+  box-shadow: 0 6px 16px rgba(0, 200, 81, 0.5);
+  transform: translateY(-2px);
 }
 
 .save-button:disabled {
-  background: rgba(0, 200, 81, 0.4);
-  border-color: rgba(0, 200, 81, 0.4);
+  background: rgba(0, 200, 81, 0.3);
+  border-color: rgba(0, 200, 81, 0.3);
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .save-button:disabled:hover {
-  background: rgba(0, 200, 81, 0.4);
+  background: rgba(0, 200, 81, 0.3);
   box-shadow: none;
+  transform: none;
 }
 
-.save-button .spinner-small {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  margin-right: 0.5rem;
-  border: 2px solid var(--background);
-  border-top: 2px solid transparent;
+.encryption-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid var(--background);
   border-radius: 50%;
-  animation: spin-small 0.8s linear infinite;
+  animation: spin-progress 0.8s linear infinite;
 }
 
-@keyframes spin-small {
+@keyframes spin-progress {
   to {
     transform: rotate(360deg);
   }
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .group-title {
@@ -651,6 +761,10 @@
 .encryption-details-section {
   margin-top: 0.75rem;
   margin-bottom: 0.5rem;
+  background: rgba(0, 200, 81, 0.05);
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(0, 200, 81, 0.2);
 }
 
 .encryption-details-toggle {
@@ -659,17 +773,20 @@
   gap: 0.5rem;
   background: transparent;
   border: none;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 500;
+  color: var(--metro-green);
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0.5rem 0;
-  transition: color 0.2s ease;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;
 }
 
 .encryption-details-toggle:hover {
-  color: var(--metro-green);
+  color: #00a65a;
+  background: rgba(0, 200, 81, 0.08);
+  border-radius: var(--border-radius);
 }
 
 .encryption-details-toggle .toggle-icon {

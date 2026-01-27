@@ -2,15 +2,22 @@ import { MyData , SharedWithMy} from "@/section";
 import { useHome } from "@/context";
 import { SectionErrorBoundary, DotsLoader } from "@/components";
 import { recordUserAction } from "@/utils";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import "./Home.css";
 
 
 const Home: React.FC = () => {
-    const { activeTab, isLoading, handleSetActiveTabClick, isInit, provider } = useHome();
+    const { activeTab, isLoading, handleSetActiveTabClick, isInit, provider, fetchMyData, fetchSharedWithMyData } = useHome();
     const tabListRef = useRef<HTMLDivElement>(null);
     const myDataTabRef = useRef<HTMLButtonElement>(null);
     const sharedTabRef = useRef<HTMLButtonElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    
+    // Pull to refresh state
+    const [pullStartY, setPullStartY] = useState(0);
+    const [pullDistance, setPullDistance] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [isPulling, setIsPulling] = useState(false);
 
     // Keyboard navigation for tabs
     const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, tab: "mydata" | "shared") => {
@@ -27,6 +34,61 @@ const Home: React.FC = () => {
           }
         }, 0);
       }
+    };
+
+    // Pull to refresh handlers
+    const handleTouchStart = (e: React.TouchEvent) => {
+      const content = contentRef.current;
+      if (content && content.scrollTop === 0 && !isRefreshing && !isLoading) {
+        setPullStartY(e.touches[0].clientY);
+        setIsPulling(true);
+      }
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+      if (!isPulling || isRefreshing || isLoading) return;
+      
+      const content = contentRef.current;
+      if (content && content.scrollTop === 0) {
+        const currentY = e.touches[0].clientY;
+        const distance = currentY - pullStartY;
+        
+        // Only activate pull-to-refresh if pulling down with significant distance
+        if (distance > 15) {
+          e.preventDefault();
+          // Apply resistance to make it feel more natural
+          const resistance = 0.4;
+          setPullDistance(Math.min(distance * resistance, 100));
+        }
+      }
+    };
+
+    const handleTouchEnd = async () => {
+      if (!isPulling) return;
+      
+      setIsPulling(false);
+      
+      if (pullDistance > 60 && !isRefreshing && !isLoading) {
+        setIsRefreshing(true);
+        recordUserAction("Pull to refresh");
+        
+        try {
+          if (activeTab === "mydata") {
+            await fetchMyData();
+          } else {
+            await fetchSharedWithMyData();
+          }
+        } finally {
+          setTimeout(() => {
+            setIsRefreshing(false);
+            setPullDistance(0);
+          }, 500);
+        }
+      } else {
+        setPullDistance(0);
+      }
+      
+      setPullStartY(0);
     };
 
     // Focus active tab on mount
@@ -93,13 +155,40 @@ const Home: React.FC = () => {
       </div>
 
       <div 
+        ref={contentRef}
         className="tab-content"
         role="tabpanel"
         id={`${activeTab}-panel`}
         aria-labelledby={`${activeTab}-tab`}
         aria-label={activeTab === "mydata" ? "Your saved secrets" : "Secrets received from others"}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        <div>  
+        {(isPulling || isRefreshing) && pullDistance > 20 && (
+          <div className="pull-to-refresh-indicator" style={{
+            opacity: Math.min(pullDistance / 80, 1),
+            top: `${Math.min(pullDistance - 40, 40)}px`
+          }}>
+            {isRefreshing ? (
+              <DotsLoader size="small" />
+            ) : (
+              <span className="refresh-icon">
+                {pullDistance > 80 ? '↻' : '↓'}
+              </span>
+            )}
+            <span className="refresh-text">
+              {isRefreshing ? 'Refreshing...' : pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+            </span>
+          </div>
+        )}
+        <div 
+          className="tab-content-inner"
+          style={{
+            transform: `translateY(${pullDistance}px)`,
+            transition: isPulling ? 'none' : 'transform 0.3s ease-out'
+          }}
+        >  
         {
         activeTab === "mydata" ? (
           <SectionErrorBoundary sectionName="MyData">

@@ -6,6 +6,7 @@ import { DataPayload } from "@/types/component";
 import { noUserImage } from "@/assets";
 import { useWallet } from "@/wallet/walletContext";
 import { MetroSwal } from "@/utils/metroSwal";
+import Swal from "sweetalert2";
 import { useAddData, useTaco } from "@/hooks";
 import React, { useState } from "react";
 import { useUser } from "@/context";
@@ -13,7 +14,7 @@ import { TimeConditionSection } from "./TimeConditionSection";
 import "./AddData.css";
 import { sanitizeTitle, sanitizePlainText } from "@/utils";
 import { RiDeleteBinLine } from 'react-icons/ri';
-import { MdLock, MdShield, MdInfo, MdVpnKey, MdCloud, MdLockOpen, MdDns, MdFingerprint } from 'react-icons/md';
+import { MdLock, MdShield, MdInfo, MdVpnKey, MdCloud, MdLockOpen, MdDns, MdFingerprint, MdWarning } from 'react-icons/md';
 
 
 const ritualId = config.TACO_RITUAL_ID;
@@ -43,6 +44,7 @@ const AddData: React.FC = () => {
   } = useAddData();
 
   const [encrypting, setEncrypting] = useState(false);
+  const [encryptionStage, setEncryptionStage] = useState<'preparing' | 'encrypting' | 'saving' | null>(null);
   const [showEncryptionDetails, setShowEncryptionDetails] = useState(false);
 
   const [timeValues, setTimeValues] = useState({
@@ -76,11 +78,16 @@ const AddData: React.FC = () => {
     const safeName = sanitizeTitle(name);
 
     setEncrypting(true);
+    setEncryptionStage('preparing');
+    
     try {
       if (!signer) {
         console.error("Signer not found", signer);
         return;
       }
+
+      // Simulate preparation stage
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       let publicAddresses: string[] = [
         address!,
@@ -166,6 +173,7 @@ const AddData: React.FC = () => {
       }
 
       console.log("Encrypting message...");
+      setEncryptionStage('encrypting');
       const encryptedBytes = await encryptDataToBytes(
         safeMessage,
         compoundCondition,
@@ -173,6 +181,7 @@ const AddData: React.FC = () => {
       );
 
       if (encryptedBytes) {
+        setEncryptionStage('saving');
         const encryptedHex = toHexString(encryptedBytes);
         const parsedInitData = parseTelegramInitData(initDataRaw!);
         const sharedWithList: { publicAddress: string; invited: boolean }[] =
@@ -198,10 +207,13 @@ const AddData: React.FC = () => {
         const res = await storageEncryptedData(payload, initDataRaw!);
 
         if (res) {
-          MetroSwal.success(
-            "🔐 Encrypted Successfully",
-            "Your secret is now secured with end-to-end encryption. Only you and authorized recipients can decrypt it."
-          );
+          await MetroSwal.fire({
+            title: "🔐 Encrypted Successfully",
+            html: "Your secret is now secured with end-to-end encryption. Only you and authorized recipients can decrypt it.",
+            icon: "success",
+            confirmButtonText: "Ok",
+            confirmButtonColor: "var(--metro-green)",
+          });
 
           cleanFields();
           // Reset time period inputs
@@ -211,13 +223,17 @@ const AddData: React.FC = () => {
             hours: 0,
             months: 0,
           });
+          setUseTimeCondition(false);
         }
       }
     } catch (e: unknown) {
       const appError = createAppError(e, "unknown");
-      showError(appError, "Error");
+      showError(appError, "Encryption Failed");
+      // Keep form data so user can retry
+    } finally {
+      setEncrypting(false);
+      setEncryptionStage(null);
     }
-    setEncrypting(false);
   };
 
   const handleClear = () => {
@@ -304,8 +320,14 @@ const AddData: React.FC = () => {
         </CustomPopup>
       )}
       <div className="add-data-content-wrapper">
-        <h2 className="page-title">🔐 Save New Encrypted Secret</h2>
-        <label>Title</label>
+        <h2 className="page-title">
+          <svg className="tab-icon" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--metro-green)', marginRight: '0.5rem' }}>
+            <rect x="1" y="8" width="14" height="9" stroke="currentColor" strokeWidth="2" />
+            <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          Save New Encrypted Secret
+        </h2>
+        <label>Title <span style={{ color: 'var(--danger)' }}>*</span></label>
         <input
           type="text"
           value={name}
@@ -315,7 +337,7 @@ const AddData: React.FC = () => {
         />
 
         <label>
-          Secret
+          Secret <span style={{ color: 'var(--danger)' }}>*</span>
           <span className="security-badge">
             <MdLock size={14} /> End-to-end encrypted
           </span>
@@ -376,9 +398,14 @@ const AddData: React.FC = () => {
                     value={shareWith}
                     onChange={(e) => handleSearch(e.target.value)}
                     placeholder="@username or 0x address"
-                    className="input-field"
+                    className={`input-field ${shareWith.trim() ? 'has-pending-value' : ''}`}
                   />
                   {isSearch && <span className="spinner" />}
+                  {shareWith.trim() && !isSearch && (
+                    <div className="pending-share-hint">
+                      <MdWarning size={14} /> Click + to add or clear field
+                    </div>
+                  )}
                 </div>
 
                 {searchData.length > 0 && (
@@ -478,24 +505,36 @@ const AddData: React.FC = () => {
 
         <div className="form-actions">
           <button className="clear-button" onClick={handleClear}>
-            Clear
+            Clear Form
           </button>
-          <button className="save-button" onClick={() => {
-            recordUserAction("Button click: Save new data");
-            encryptMessage();
-          }}
-            disabled={encrypting}>
+          <button 
+            className="save-button" 
+            onClick={() => {
+              recordUserAction("Button click: Save new data");
+              encryptMessage();
+            }}
+            disabled={encrypting || !name.trim() || !message.trim() || shareWith.trim() !== ""}
+            title={
+              shareWith.trim() !== "" 
+                ? "Please add or clear the pending share first"
+                : !name.trim() || !message.trim()
+                ? "Please fill in required fields (Title and Secret)"
+                : ""
+            }
+          >
             {encrypting ? (
-              <>
-                <span className="spinner-small" />
-                Encrypting
-              </>
+              <div className="encryption-progress">
+                <div className="progress-spinner" />
+                <div className="progress-text">
+                  {encryptionStage === 'preparing' && 'Preparing...'}
+                  {encryptionStage === 'encrypting' && 'Encrypting...'}
+                  {encryptionStage === 'saving' && 'Saving...'}
+                </div>
+              </div>
             ) : (
               <>
                 <MdLock size={18} />
-                Encrypt
-                <br />
-                & Save
+                Encrypt & Save
               </>
             )}
           </button>
