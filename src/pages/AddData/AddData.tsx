@@ -1,4 +1,4 @@
-import { parseTelegramInitData, showError, createAppError, recordUserAction, config } from "@/utils";
+import { parseTelegramInitData, showError, createAppError, recordUserAction, config, formatAddress } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
 import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/services";
@@ -79,7 +79,7 @@ const AddData: React.FC = () => {
 
     setEncrypting(true);
     setEncryptionStage('preparing');
-    
+
     try {
       if (!signer) {
         console.error("Signer not found", signer);
@@ -323,7 +323,7 @@ const AddData: React.FC = () => {
         <h2 className="page-title">
           <svg className="tab-icon" width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--metro-green)', marginRight: '0.5rem' }}>
             <rect x="1" y="8" width="14" height="9" stroke="currentColor" strokeWidth="2" />
-            <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
           Save New Encrypted Secret
         </h2>
@@ -422,9 +422,11 @@ const AddData: React.FC = () => {
                               onClick={() => handleSearchSelect(item)}
                             >
                               <p>
-                                {item.firstName} {item.lastName}
+                                {item.firstName ? `${item.firstName} ${item.lastName}` : formatAddress(8, item.latestPublicAddress)}
                               </p>
-                              <p>@{item.username}</p>
+                              <p>
+                                {item.username && `@${item.username}`}
+                              </p>
                             </li>
                           ))}
                       </>
@@ -442,9 +444,11 @@ const AddData: React.FC = () => {
                               onClick={() => handleSearchSelect(item)}
                             >
                               <p>
-                                {item.firstName} {item.lastName}
+                                {item.firstName ? `${item.firstName} ${item.lastName}` : formatAddress(8, item.latestPublicAddress)}
                               </p>
-                              <p>@{item.username}</p>
+                              <p>
+                                {item.username && `@${item.username}`}
+                              </p>
                             </li>
                           ))}
                       </>
@@ -507,19 +511,19 @@ const AddData: React.FC = () => {
           <button className="clear-button" onClick={handleClear}>
             Clear Form
           </button>
-          <button 
-            className="save-button" 
+          <button
+            className="save-button"
             onClick={() => {
               recordUserAction("Button click: Save new data");
               encryptMessage();
             }}
             disabled={encrypting || !name.trim() || !message.trim() || shareWith.trim() !== ""}
             title={
-              shareWith.trim() !== "" 
+              shareWith.trim() !== ""
                 ? "Please add or clear the pending share first"
                 : !name.trim() || !message.trim()
-                ? "Please fill in required fields (Title and Secret)"
-                : ""
+                  ? "Please fill in required fields (Title and Secret)"
+                  : ""
             }
           >
             {encrypting ? (
