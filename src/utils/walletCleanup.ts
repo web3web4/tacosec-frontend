@@ -1,5 +1,6 @@
 import { clearTokens } from "./cookieManager";
 import { MetroSwal } from "./metroSwal";
+import { clearCache } from "./secretDb";
 
 /**
  * Clears all wallet-related data from localStorage and cookies,
@@ -17,6 +18,7 @@ export const handleClearAllData = (isBrowser: boolean) => {
     cancelButtonText: "Keep data",
   }).then((result) => {
     if (result.isConfirmed) {
+      clearCache();
       // Delete the specified localStorage items
       Object.keys(localStorage).forEach((key) => {
         if (

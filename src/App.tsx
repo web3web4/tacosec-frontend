@@ -6,7 +6,7 @@ import { BottomNav, Loading, AppErrorBoundary, PageErrorBoundary } from "@/compo
 import { Home, AddData, Settings, Dashboard, Users, Secrets, Reports, Notifications, Logger, Alerts } from "@/pages";
 import WalletSetup from "@/wallet/WalletSetup";
 import { useState, useEffect } from "react";
-import { config, getAccessToken } from "@/utils";
+import { config, getAccessToken, initializeDatabase } from "@/utils";
 import { resetAppOnce, startTokenAutoRefresh, stopTokenAutoRefresh } from "@/utils/authManager";
 
 const App: React.FC = () => {
@@ -51,6 +51,13 @@ const App: React.FC = () => {
       console.warn("⚠️ No access token found on startup.");
     }
     return () => stopTokenAutoRefresh();
+  }, []);
+
+  // Initialize SQL.js database on app startup
+  useEffect(() => {
+    initializeDatabase().catch((err) => {
+      console.error("Failed to initialize secret database:", err);
+    });
   }, []);
 
 

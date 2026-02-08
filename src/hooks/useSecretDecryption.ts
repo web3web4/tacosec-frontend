@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { fromHexString } from '@nucypher/shared';
 import { fromBytes } from '@nucypher/taco';
-import { createAppError, handleSilentError, config } from '@/utils';
+import { createAppError, handleSilentError, config, getSecretFromCache, saveSecretToCache, encryptSecretWithPublicKey, decryptSecretWithPrivateKey } from '@/utils';
 import { useWallet } from '@/wallet/walletContext';
 import { useUser } from '@/context';
 import { useTaco } from '@/hooks';
@@ -41,13 +41,28 @@ export default function useSecretDecryption({
     if (!encryptedText || !provider || !signer) return;
     try {
       setDecrypting(true);
-      console.log("Decrypting message...");
+      
+      // First, check if secret is already cached
+      const cachedSecret = await getSecretFromCache(id);
+      
+      if (cachedSecret) {
+        const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
+        if (decrypted) {
+          setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+          return;
+        } else {
+          console.warn(`[Cache] Failed to decrypt cached secret ${id}, falling back to taco`);
+        }
+      }
+      
       const decryptedBytes = await decryptDataFromBytes(
         fromHexString(encryptedText)
       );
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+        const encryptedForCache = await encryptSecretWithPublicKey(decrypted, signer);
+        await saveSecretToCache(id, encryptedForCache);
       }
     } catch (err: unknown) {
       const appError = createAppError(err, 'unknown');
@@ -83,6 +98,22 @@ export default function useSecretDecryption({
     if (!encryptedText || !provider || !signer) return;
     try {
       setDecryptingChild(true);
+      
+      // First, check if secret is already cached
+      const { getSecretFromCache, saveSecretToCache, encryptSecretWithPublicKey, decryptSecretWithPrivateKey } = await import('@/utils');
+      const cachedSecret = await getSecretFromCache(childId);
+      
+      if (cachedSecret) {
+        const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
+        if (decrypted) {
+          setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
+          if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+          return;
+        } else {
+          console.warn(`[Cache] Failed to decrypt cached child secret ${childId}, falling back to taco`);
+        }
+      }
+      
       const decryptedBytes = await decryptDataFromBytes(
         fromHexString(encryptedText)
       );
@@ -90,6 +121,8 @@ export default function useSecretDecryption({
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
         if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+        const encryptedForCache = await encryptSecretWithPublicKey(decrypted, signer);
+        await saveSecretToCache(childId, encryptedForCache);
       }
     } catch (e) {
       console.error("Error decrypting child:", e);
