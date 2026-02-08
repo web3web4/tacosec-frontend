@@ -29,15 +29,13 @@ export default function useDirectLink() {
 
         let pass;
         if (currentData.tabName === "shared") {
-          pass = sharedWithMyData
-            .flatMap(item => item.passwords)
-            .find(p => p.id === currentId);
+          pass = sharedWithMyData.find(p => p._id === currentId);
         } else {
-          pass = myData.find(p => p.id === currentId);
+          pass = myData.find(p => p._id === currentId);
         }
 
         if (pass) {
-          toggleExpand(pass.value, pass.id, true);
+          toggleExpand(pass.value, pass._id, true);
         }
 
         // Use requestAnimationFrame or a very short timeout for the scroll
@@ -77,13 +75,11 @@ export default function useDirectLink() {
 
       let pass;
       if (activeTab === "mydata") {
-        pass = myData.find(p => p.id === directLinkData.secretId)
+        pass = myData.find(p => p._id === directLinkData.secretId)
           ?.children?.find(e => e._id === targetId);
 
       } else {
-        pass = sharedWithMyData
-          .flatMap(item => item.passwords)
-          .find(p => p.id === directLinkData.secretId)
+        pass = sharedWithMyData.find(p => p._id === directLinkData.secretId)
           ?.children?.find(e => e._id === targetId);
       }
 
