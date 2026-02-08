@@ -61,7 +61,7 @@ export type TelegramUser = {
 };
 
 export interface DataItem {
-  id: string;
+  _id: string;
   key: string;
   value: string;
   createdAt: string;
@@ -89,26 +89,24 @@ export interface ChildDataItem {
   publicAddress: string;
 }
 export interface SharedWithMyDataType {
+  _id: string;
+  key: string;
+  value: string;
   sharedBy: {
     userId: string;
     username: string;
     telegramId: string;
-    publicAddress: string;
+    PublicAddress: string;
     // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
     img?: { src: string } | null;
     name?: string;
   };
-  passwords: {
-    id: string;
-    key: string;
-    value: string;
-    reports: ReportsResponse[];
-    sharedWith: ShareWith[];
-    createdAt: string;
-    children?: ChildDataItem[]; // also this for help my to store children for each secret
-    lastViewed?: string | null;
-    unlockTime?: string | null;
-  }[];
+  sharedWith: ShareWith[];
+  reports: ReportsResponse[];
+  createdAt: string;
+  children?: ChildDataItem[]; // also this for help my to store children for each secret
+  lastViewed?: string | null;
+  unlockTime?: string | null;
 }
 
 export type TabType = "mydata" | "shared";
@@ -221,8 +219,7 @@ export interface Secret {
 }
 
 export interface SharedWithMeResponse {
-  sharedWithMe: SharedWithMyDataType[];
-  userCount: number;
+  data: SharedWithMyDataType[];
 }
 
 export interface StoragePublicKeyData {

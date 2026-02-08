@@ -65,7 +65,7 @@ export async function getDataSharedWithMy(initData?: string): Promise<SharedWith
   }
   
   return handleApiCall(async () => {
-    const response = await fetch(`${API_BASE_URL}/passwords/shared-with-me`, {
+    const response = await fetch(`${API_BASE_URL}/passwords/shared-with-me?page=1&limit=1000`, {
       method: "GET",
       headers,
     });

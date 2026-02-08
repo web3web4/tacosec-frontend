@@ -36,14 +36,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
       if ("message" in response) {
         if (secretDataHook.activeTab === "mydata") {
           secretDataHook.setMyData((prev) => prev.map((item) =>
-            item.id === id ? { ...item, children: [] } : item));
+            item._id === id ? { ...item, children: [] } : item));
         } else {
-          secretDataHook.setSharedWithMyData((prev) => prev.map((item) => ({
-            ...item,
-            passwords: item.passwords.map((pw) =>
-              pw.id === id ? { ...pw, children: [] } : pw)
-          }))
-          );
+          secretDataHook.setSharedWithMyData((prev) => prev.map((item) =>
+            item._id === id ? { ...item, children: [] } : item));
         }
         return;
       }
@@ -65,14 +61,10 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
 
       if (secretDataHook.activeTab === "mydata") {
         secretDataHook.setMyData((prev) => prev.map((item) =>
-          item.id === id ? { ...item, children: response } : item));
+          item._id === id ? { ...item, children: response } : item));
       } else {
-        secretDataHook.setSharedWithMyData((prev) => prev.map((item) => ({
-          ...item,
-          passwords: item.passwords.map((pw) =>
-            pw.id === id ? { ...pw, children: response } : pw)
-        }))
-        );
+        secretDataHook.setSharedWithMyData((prev) => prev.map((item) =>
+          item._id === id ? { ...item, children: response } : item));
       }
     } finally {
       setChildrenLoading((prev) => ({ ...prev, [id]: false }));
@@ -145,7 +137,7 @@ export function HomeProvider({ children }: { children: React.ReactNode }) {
         } else {
           await deletePassword(initDataRaw || "", id);
         }
-        secretDataHook.setMyData((prev) => prev.filter((secret) => secret.id !== id));
+        secretDataHook.setMyData((prev) => prev.filter((secret) => secret._id !== id));
       } catch (error) {
         const appError = createAppError(error, 'unknown');
         showError(appError, 'Delete Secret Error');
