@@ -23,6 +23,9 @@ export function getPrivateKey(wallet: ethers.Wallet): string {
   return wallet.privateKey;
 }
 
+/**
+ * Get Ethereum Wallet from signer
+ */
 function getWalletFromSigner(signer: ethers.Signer): ethers.Wallet {
   if (signer instanceof ethers.Wallet) {
     return signer;
@@ -35,9 +38,10 @@ function getWalletFromSigner(signer: ethers.Signer): ethers.Wallet {
 /* ------------------------------------------------------------------ */
 
 /**
- * Encrypt secret using recipient PUBLIC KEY
- * @param secret plaintext secret
- * @param wallet ethers.Wallet (recipient)
+ * Encrypt a secret using the recipient's PUBLIC KEY.
+ * @param secret The plaintext string to encrypt.
+ * @param signer An ethers.Signer instance that must be a local Wallet (owns the public key).
+ * @returns Encrypted string safe for storage or transmission.
  */
 export async function encryptSecretWithPublicKey(
   secret: string,
@@ -59,9 +63,10 @@ export async function encryptSecretWithPublicKey(
 }
 
 /**
- * Decrypt secret using wallet PRIVATE KEY
- * @param encryptedSecret encrypted payload
- * @param wallet ethers.Wallet (owner)
+ * Decrypt a secret using the wallet's PRIVATE KEY.
+ * @param encryptedSecret The encrypted payload to decrypt.
+ * @param signer An ethers.Signer instance that must be a local Wallet (owns the private key).
+ * @returns The decrypted plaintext string.
  */
 export async function decryptSecretWithPrivateKey(
   encryptedSecret: string,
