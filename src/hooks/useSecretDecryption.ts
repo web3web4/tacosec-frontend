@@ -38,7 +38,6 @@ export default function useSecretDecryption({
   const { decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
 
   const decryptMessage = async (id: string, encryptedText: string) => {
-      // ✅ Validation مع معالجة صحيحة للأخطاء
     if (!id || typeof id !== 'string' || id.trim() === '') {
       setDecryptErrors((prev) => ({
         ...prev,
