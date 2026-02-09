@@ -19,15 +19,8 @@ export default function useSecretData() {
       // Pass initDataRaw which might be null for web login
       setIsLoading(true);
       const response: Secret[] = await GetMyData(initDataRaw || undefined);
-      const data: DataItem[] = response.map((item: Secret) => ({
-        id: item._id,
-        key: item.key,
-        value: item.value,
-        sharedWith: item.sharedWith,
-        createdAt: item.createdAt,
-      }));
-      setMyData(data);
-      if (data.length > 0) getProfilesDetailsForUsers(data);
+      setMyData(response);
+      if (response.length > 0) getProfilesDetailsForUsers(response);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       const appError = createAppError(err, 'unknown');
@@ -49,7 +42,7 @@ export default function useSecretData() {
 
   const getProfilesDetailsForUsers = async (data: DataItem[]) => {
     try {
-      const enrichedData: DataItem[] = await Promise.all(
+      const enrichedData = await Promise.all(
         data.map(async (item) => {
           const userDetails = await Promise.all(
             item.sharedWith.map(async (user) => {
@@ -82,8 +75,13 @@ export default function useSecretData() {
           };
         })
       );
-
-      setMyData(enrichedData);
+      
+      setMyData((prev) => 
+        prev.map((originalItem) => {
+          const enrichedItem = enrichedData.find((e) => e._id === originalItem._id);
+          return enrichedItem ? { ...originalItem, shareWithDetails: enrichedItem.shareWithDetails } : originalItem;
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -92,9 +90,9 @@ export default function useSecretData() {
   const fetchSharedWithMyData = async () => {
     try {
       setIsLoading(true);
-      const data = await getDataSharedWithMy(initDataRaw || undefined);
-      setSharedWithMyData(data.sharedWithMe);
-      if (data.sharedWithMe.length > 0) getProfilesDetailsForUsersSharedBy(data.sharedWithMe);
+      const response = await getDataSharedWithMy(initDataRaw || undefined);
+      setSharedWithMyData(response.data);
+      if (response.data.length > 0) getProfilesDetailsForUsersSharedBy(response.data);
       setAuthError(null); // Clear any previous auth errors on success
     } catch (err) {
       const appError = createAppError(err, 'unknown');
@@ -133,7 +131,9 @@ export default function useSecretData() {
 
         const profileWithDefaultImg = {
           ...profile,
-          img: profile.img ?? { src: noUserImage },
+          img: (profile.img && profile.img.src && profile.img.src.trim() !== "") 
+            ? profile.img 
+            : { src: noUserImage },
         };
 
         const enhancedSharedBy = {
@@ -148,7 +148,13 @@ export default function useSecretData() {
         };
       })
     );
-    setSharedWithMyData(enrichedData);
+    
+    setSharedWithMyData((prev) => 
+      prev.map((originalItem) => {
+        const enrichedItem = enrichedData.find((e) => e._id === originalItem._id);
+        return enrichedItem ? { ...originalItem, sharedBy: enrichedItem.sharedBy } : originalItem;
+      })
+    );
   };
 
   const handleSetActiveTab = (tabActive: TabType): void => {

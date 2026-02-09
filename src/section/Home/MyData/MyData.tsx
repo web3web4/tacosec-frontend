@@ -81,10 +81,10 @@ export default function MyData() {
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {decrypting && "Decrypting secret..."}
       </div>
-      
+
       <ReplyPopup showReplyPopup={showReplyPopup} setShowReplyPopup={setShowReplyPopup} selectedSecret={selectedSecret} />
       <ViewersPopup showViewersPopup={showViewersPopup} setShowViewersPopup={setShowViewersPopup} secretViews={currentSecretViews} />
-      
+
       {isLoading ? (
         <SkeletonLoader count={3} />
       ) : myData.length > 0 ? (
@@ -92,8 +92,8 @@ export default function MyData() {
           <div className="search-filter-container">
             <div className="search-input-wrapper">
               <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <input
                 type="text"
@@ -110,7 +110,7 @@ export default function MyData() {
                   aria-label="Clear search"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </button>
               )}
@@ -123,216 +123,216 @@ export default function MyData() {
           </div>
           {filteredData.length > 0 ? (
             filteredData.map((item, i) => (
-          <div ref={(el) => { itemRefs.current[item.id] = el }} key={i} className="data-item" >
-            <div className="item-container" onClick={() => {
-              recordUserAction(`Expand item: ${item.id}`);
-              toggleExpand(item.value, item.id, false);
-            }}>
-              <div className="item-header-info">
-                <p className="item-title">{item.key}</p>
-                <div className="item-group">
-                  <div className="created-at-container">
-                    <strong>Created At:</strong>
-                    <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
-                  </div>
-                  {item.lastViewed && (
-                    <div className="created-at-container">
-                      <strong>Last Viewed:</strong>
-                      <span className="child-date">{" "}{formatDate(item.lastViewed)}</span>
+              <div ref={(el) => { itemRefs.current[item._id] = el }} key={i} className="data-item" >
+                <div className="item-container" onClick={() => {
+                  recordUserAction(`Expand item: ${item._id}`);
+                  toggleExpand(item.value, item._id, false);
+                }}>
+                  <div className="item-header-info">
+                    <p className="item-title">{item.key}</p>
+                    <div className="item-group">
+                      <div className="created-at-container">
+                        <strong>Created At:</strong>
+                        <span className="child-date">{" "}{formatDate(item.createdAt)}</span>
+                      </div>
+                      {item.lastViewed && (
+                        <div className="created-at-container">
+                          <strong>Last Viewed:</strong>
+                          <span className="child-date">{" "}{formatDate(item.lastViewed)}</span>
+                        </div>
+                      )}
+                      <div className="item-toggle">
+                        {expandedId === item._id ? '▼' : '▶'}
+                      </div>
                     </div>
-                  )}
-                  <div className="item-toggle">
-                    {expandedId === item.id ? '▼' : '▶'}
                   </div>
-                </div>
-              </div>
-              {/* Add Tap to Expand clickable text */}
-              {expandedId !== item.id && (
-                <span
-                  className="tap-to-expand-text"
-                  style={{ position: 'absolute', bottom: 8, right: 12, fontSize: '0.7rem', color: 'var(--text-secondary)', opacity: 0.5, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    recordUserAction(`Expand item: ${item.id} (tap to expand)`);
-                    toggleExpand(item.value, item.id, false);
-                  }}
-                >
-                  TAP TO EXPAND
-                </span>
-              )}
-            </div>
-            <p
-              className="item-status"
-              data-status={
-                item.sharedWith.length > 0 ? "Shared" : "Private"
-              }
-            >
-              <span>{item.sharedWith.length > 0 ? "Shared" : "Private"}</span>
-            </p>
-            {expandedId === item.id && (
-              <div className="expanded-box">
-                <p className="password-text">
-                  {decrypting ? (
-                    <span className="decrypting-animation">
-                      Decrypting
-                      <span className="dots">
-                        <span>.</span>
-                        <span>.</span>
-                        <span>.</span>
-                      </span>
-                    </span>
-                  ) : decryptedMessages[item.id] ? (
-                    decryptedMessages[item.id]
-                  ) : decryptErrors[item.id]?.includes("conditions not satisfied") ? (
-                    "⏳ Cannot decrypt yet, please wait until the unlock time."
-                  ) : decryptErrors[item.id] ? (
-                    `❌ ${decryptErrors[item.id]}`
-                  ) : (
-                    "❌ Failed to decrypt"
-                  )}
-                </p>
-
-
-                <div className="button-group">
-                  <div className="action-buttons-left">
-                    <button
-                      className="copy-button"
+                  {/* Add Tap to Expand clickable text */}
+                  {expandedId !== item._id && (
+                    <span
+                      className="tap-to-expand-text"
+                      style={{ position: 'absolute', bottom: 8, right: 12, fontSize: '0.7rem', color: 'var(--text-secondary)', opacity: 0.5, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px' }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (decryptedMessages[item.id])
-                          handleCopy(decryptedMessages[item.id]);
+                        recordUserAction(`Expand item: ${item._id} (tap to expand)`);
+                        toggleExpand(item.value, item._id, false);
                       }}
                     >
-                      {copied ? "Copied!" : "Copy"}
-                    </button>
-                    {decryptedMessages[item.id] && (
-                      <button
-                        className="reply-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedSecret({ parentSecretId: item.id, shareWith: item.sharedWith });
-                          setShowReplyPopup(true);
-                        }}
-                        title="Reply to this secret"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 14.4183 14.4183 18 10 18C8.9 18 7.85 17.78 6.9 17.39L2 19L3.61 14.1C3.22 13.15 3 12.1 3 11C3 10.66 3.02 10.33 3.06 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        Reply
-                      </button>
-                    )}
-                  </div>
-                  <div className="action-buttons-right">
-                    {item.sharedWith.length > 0 && (
-                      <div className="secret-view-section">
-                        <button className="view-icon-button" onClick={(e) => {
-                          recordUserAction(`Button click: View stats for ${item.id}`);
-                          handleGetSecretViews(e, item.id);
-                        }}>
-                          <img src={showIcon} alt="view-icon" width={15} height={15} />
-                        </button>
-                        <span>
-                          {secretViews[item.id] ? secretViews[item.id].totalViews : 0}
+                      TAP TO EXPAND
+                    </span>
+                  )}
+                </div>
+                <p
+                  className="item-status"
+                  data-status={
+                    item.sharedWith.length > 0 ? "Shared" : "Private"
+                  }
+                >
+                  <span>{item.sharedWith.length > 0 ? "Shared" : "Private"}</span>
+                </p>
+                {expandedId === item._id && (
+                  <div className="expanded-box">
+                    <p className="password-text">
+                      {decrypting ? (
+                        <span className="decrypting-animation">
+                          Decrypting
+                          <span className="dots">
+                            <span>.</span>
+                            <span>.</span>
+                            <span>.</span>
+                          </span>
                         </span>
+                      ) : decryptedMessages[item._id] ? (
+                        decryptedMessages[item._id]
+                      ) : decryptErrors[item._id]?.includes("conditions not satisfied") ? (
+                        "⏳ Cannot decrypt yet, please wait until the unlock time."
+                      ) : decryptErrors[item._id] ? (
+                        `❌ ${decryptErrors[item._id]}`
+                      ) : (
+                        "❌ Failed to decrypt"
+                      )}
+                    </p>
+
+
+                    <div className="button-group">
+                      <div className="action-buttons-left">
+                        <button
+                          className="copy-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (decryptedMessages[item._id])
+                              handleCopy(decryptedMessages[item._id]);
+                          }}
+                        >
+                          {copied ? "Copied!" : "Copy"}
+                        </button>
+                        {decryptedMessages[item._id] && (
+                          <button
+                            className="reply-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSecret({ parentSecretId: item._id, shareWith: item.sharedWith });
+                              setShowReplyPopup(true);
+                            }}
+                            title="Reply to this secret"
+                          >
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M2 10C2 5.58172 5.58172 2 10 2C14.4183 2 18 5.58172 18 10C18 14.4183 14.4183 18 10 18C8.9 18 7.85 17.78 6.9 17.39L2 19L3.61 14.1C3.22 13.15 3 12.1 3 11C3 10.66 3.02 10.33 3.06 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            Reply
+                          </button>
+                        )}
+                      </div>
+                      <div className="action-buttons-right">
+                        {item.sharedWith.length > 0 && (
+                          <div className="secret-view-section">
+                            <button className="view-icon-button" onClick={(e) => {
+                              recordUserAction(`Button click: View stats for ${item._id}`);
+                              handleGetSecretViews(e, item._id);
+                            }}>
+                              <img src={showIcon} alt="view-icon" width={15} height={15} />
+                            </button>
+                            <span>
+                              {secretViews[item._id] ? secretViews[item._id].totalViews : 0}
+                            </span>
+                          </div>
+                        )}
+                        {decryptedMessages[item._id] && (
+                          <button
+                            className="delete-icon-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              recordUserAction(`Button click: Delete item ${item._id}`);
+                              handleDelete(item._id, item.sharedWith.length > 0);
+                            }}
+                            title="Delete this secret"
+                          >
+                            <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M3 6L4 19C4 20.1046 4.89543 21 6 21H14C15.1046 21 16 20.1046 16 19L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                              <path d="M1 6H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                              <path d="M7 6V3C7 1.89543 7.89543 1 9 1H11C12.1046 1 13 1.89543 13 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                              <circle cx="10" cy="11" r="1.5" fill="currentColor" />
+                              <circle cx="10" cy="16" r="1.5" fill="currentColor" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {item.sharedWith.length > 0 && (
+                      <div className="shared-section">
+                        {" "}
+                        <h4 className="shared-title">Shared with:</h4>
+                        <div className="shared-users">
+                          {item.shareWithDetails
+                            ?.filter((user, index, self) =>
+                              index === self.findIndex((u) => u.publicAddress === user.publicAddress)
+                            )
+                            .map((user, index) => (
+                              <div className="shared-user" key={user.publicAddress || index}>
+                                <img
+                                  src={user.img?.src}
+                                  alt="img"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.onerror = null;
+                                    target.src = noUserImage;
+                                  }}
+                                />
+                                <span><UserDisplayToggle userData={user} /></span>
+                              </div>
+                            ))}
+                        </div>
                       </div>
                     )}
-                    {decryptedMessages[item.id] && (
-                      <button
-                        className="delete-icon-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          recordUserAction(`Button click: Delete item ${item.id}`);
-                          handleDelete(item.id, item.sharedWith.length > 0);
-                        }}
-                        title="Delete this secret"
-                      >
-                        <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M3 6L4 19C4 20.1046 4.89543 21 6 21H14C15.1046 21 16 20.1046 16 19L17 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M1 6H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <path d="M7 6V3C7 1.89543 7.89543 1 9 1H11C12.1046 1 13 1.89543 13 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <circle cx="10" cy="11" r="1.5" fill="currentColor"/>
-                          <circle cx="10" cy="16" r="1.5" fill="currentColor"/>
-                        </svg>
-                      </button>
+
+                    {childrenLoading[item._id] && (
+                      <div className="children-loading">
+                        <DotsLoader />
+                      </div>
+                    )}
+                    {item.children && item.children.length > 0 && (
+                      <ChildrenSection
+                        children={item.children}
+                        toggleChildExpand={toggleChildExpand}
+                        expandedChildId={expandedChildId}
+                        decryptingChild={decryptingChild}
+                        decryptedChildMessages={decryptedChildMessages}
+                        handleDirectLinkForChildren={handleDirectLinkForChildren}
+                        itemRefs={itemRefs}
+                      />
                     )}
                   </div>
-                </div>
-                {item.sharedWith.length > 0 && (
-                  <div className="shared-section">
-                    {" "}
-                    <h4 className="shared-title">Shared with:</h4>
-                    <div className="shared-users">
-                      {item.shareWithDetails
-                        ?.filter((user, index, self) => 
-                          index === self.findIndex((u) => u.publicAddress === user.publicAddress)
-                        )
-                        .map((user, index) => (
-                        <div className="shared-user" key={user.publicAddress || index}>
-                          <img
-                            src={user.img?.src}
-                            alt="img"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.onerror = null;
-                              target.src = noUserImage;
-                            }}
-                          />
-                          <span><UserDisplayToggle userData={user} /></span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {childrenLoading[item.id] && (
-                  <div className="children-loading">
-                    <DotsLoader />
-                  </div>
-                )}
-                {item.children && item.children.length > 0 && (
-                  <ChildrenSection
-                    children={item.children}
-                    toggleChildExpand={toggleChildExpand}
-                    expandedChildId={expandedChildId}
-                    decryptingChild={decryptingChild}
-                    decryptedChildMessages={decryptedChildMessages}
-                    handleDirectLinkForChildren={handleDirectLinkForChildren}
-                    itemRefs={itemRefs}
-                  />
                 )}
               </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div className="no-results-message">
-          <div className="no-results-icon">🔍</div>
-          <h3 className="no-results-title">No matches found</h3>
-          <p className="no-results-description">
-            No secrets match "{searchQuery}". Try a different search term.
-          </p>
-          <button 
-            className="search-clear-btn-large"
-            onClick={() => setSearchQuery("")}
-          >
-            Clear Search
-          </button>
-        </div>
-      )}
+            ))
+          ) : (
+            <div className="no-results-message">
+              <div className="no-results-icon">🔍</div>
+              <h3 className="no-results-title">No matches found</h3>
+              <p className="no-results-description">
+                No secrets match "{searchQuery}". Try a different search term.
+              </p>
+              <button
+                className="search-clear-btn-large"
+                onClick={() => setSearchQuery("")}
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <div className="no-data-message">
           <div className="empty-icon">
             <svg width="48" height="54" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="1" y="8" width="14" height="9" stroke="currentColor" strokeWidth="2" />
-              <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M4 8V5C4 2.79086 5.79086 1 8 1C10.2091 1 12 2.79086 12 5V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
           <h3 className="empty-title">No Saved Secrets</h3>
           <p className="empty-description">
             You haven't created any secrets yet. Start by creating your first secret to securely store and share information.
           </p>
-          <button 
+          <button
             className="empty-cta-button"
             onClick={() => navigate('/add')}
           >

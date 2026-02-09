@@ -423,9 +423,11 @@ const AddData: React.FC = () => {
                               onClick={() => handleSearchSelect(item)}
                             >
                               <p>
-                                {item.firstName} {item.lastName}
+                                {item.firstName ? `${item.firstName} ${item.lastName}` : formatAddress(8, item.latestPublicAddress)}
                               </p>
-                              <p>@{item.username}</p>
+                              <p>
+                                {item.username && `@${item.username}`}
+                              </p>
                             </li>
                           ))}
                       </>
@@ -443,9 +445,11 @@ const AddData: React.FC = () => {
                               onClick={() => handleSearchSelect(item)}
                             >
                               <p>
-                                {item.firstName} {item.lastName}
+                                {item.firstName ? `${item.firstName} ${item.lastName}` : formatAddress(8, item.latestPublicAddress)}
                               </p>
-                              <p>@{item.username}</p>
+                              <p>
+                                {item.username && `@${item.username}`}
+                              </p>
                             </li>
                           ))}
                       </>
