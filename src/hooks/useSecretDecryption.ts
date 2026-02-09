@@ -38,7 +38,33 @@ export default function useSecretDecryption({
   const { decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
 
   const decryptMessage = async (id: string, encryptedText: string) => {
-    if (!encryptedText || !provider || !signer) return;
+      // ✅ Validation مع معالجة صحيحة للأخطاء
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: 'Invalid secret ID',
+      }));
+      setDecrypting(false);
+      return;
+    }
+
+    if (!encryptedText || typeof encryptedText !== 'string' || encryptedText.trim() === '') {
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: 'Invalid encrypted data',
+      }));
+      setDecrypting(false);
+      return;
+    }
+
+    if (!provider || !signer) {
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: 'Wallet not connected',
+      }));
+      setDecrypting(false);
+      return;
+    }
     try {
       setDecrypting(true);
       
