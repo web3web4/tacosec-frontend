@@ -103,6 +103,7 @@ export default function useAddData() {
   };
 
   const handleSearch = async (username: string) => {
+    if(username.trim() === "@") return;
     setSearchData([]);
     const sanitized = sanitizePlainText(username, { maxLength: 64 });
     setShareWith(sanitized);
@@ -127,7 +128,6 @@ export default function useAddData() {
           : username;
 
         const response = await getAutoCompleteUsername(initDataRaw!, cleanedUsername);
-        if(response[0].username === "User has no Telegram account currently") return;
         setSearchData(response);
       }catch(error){
         console.log(error);
@@ -143,8 +143,8 @@ export default function useAddData() {
   };
 
 const handleSearchSelect = (user: SearchDataType) => {
-  setShareWith(user.username);
-  handleAddShare(user.username);
+  setShareWith(user.username || user.latestPublicAddress);
+  handleAddShare(user.username || user.latestPublicAddress);
   setSearchData([]);
 };
 

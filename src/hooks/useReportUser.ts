@@ -82,14 +82,7 @@ export const useReportUser = () => {
       updateSharedData((prevData) =>
         prevData.map((item) => ({
           ...item,
-          passwords: item.passwords.map((pass) =>
-            pass.id === secretId
-              ? {
-                  ...pass,
-                  reports: [...pass.reports, rep],
-                }
-              : pass
-          ),
+          reports: item._id === secretId ? [...item.reports, rep] : item.reports,
         }))
       );
 
