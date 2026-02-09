@@ -168,7 +168,7 @@ export default function SharedWithMy() {
                           options={[
                             {
                               label: "Report",
-                              onClick: () => handleReportUser(pass._id, pass.sharedBy.PublicAddress),
+                              onClick: () => handleReportUser(pass._id, pass.sharedBy.publicAddress),
                             },
                             {
                               label: "View Reports",
@@ -215,7 +215,7 @@ export default function SharedWithMy() {
                               className="reply-button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedSecret({ parentSecretId: pass._id, parentAddress: pass.sharedBy.PublicAddress, shareWith: pass.sharedWith });
+                                setSelectedSecret({ parentSecretId: pass._id, parentAddress: pass.sharedBy.publicAddress, shareWith: pass.sharedWith });
                                 setShowReplyPopup(true);
                               }}
                               title="Reply to this secret"

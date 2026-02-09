@@ -96,7 +96,7 @@ export interface SharedWithMyDataType {
     userId: string;
     username: string;
     telegramId: string;
-    PublicAddress: string;
+    publicAddress: string;
     // this property not get from backend, we add just for help, we store account telegram details according by username here to For ease
     img?: { src: string } | null;
     name?: string;
