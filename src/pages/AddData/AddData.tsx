@@ -1,4 +1,4 @@
-import { parseTelegramInitData, showError, createAppError, recordUserAction, config, encryptSecretWithPublicKey, saveSecretToCache } from "@/utils";
+import { parseTelegramInitData, showError, createAppError, recordUserAction, config, encryptSecretWithPublicKey, saveSecretToCache, formatAddress } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
 import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/services";
