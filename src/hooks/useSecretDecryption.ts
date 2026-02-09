@@ -68,18 +68,20 @@ export default function useSecretDecryption({
       setDecrypting(true);
       
       // First, check if secret is already cached
-      const cachedSecret = await getSecretFromCache(id);
-      
-      if (cachedSecret) {
-        const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
-        if (decrypted) {
-          setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
-          return;
-        } else {
-          console.warn(`[Cache] Failed to decrypt cached secret ${id}, falling back to taco`);
+      try {
+        const cachedSecret = await getSecretFromCache(id);
+        if (cachedSecret) {
+          const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
+          if (decrypted) {
+            setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+            return;
+          }
         }
+      } catch (cacheErr) {
+        console.warn(`[Cache] Error checking cache for secret ${id}:`, cacheErr);
       }
       
+      // Fallback to Taco decryption (or cache miss)
       const decryptedBytes = await decryptDataFromBytes(
         fromHexString(encryptedText)
       );
@@ -125,20 +127,21 @@ export default function useSecretDecryption({
       setDecryptingChild(true);
       
       // First, check if secret is already cached
-      const { getSecretFromCache, saveSecretToCache, encryptSecretWithPublicKey, decryptSecretWithPrivateKey } = await import('@/utils');
-      const cachedSecret = await getSecretFromCache(childId);
-      
-      if (cachedSecret) {
-        const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
-        if (decrypted) {
-          setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
-          if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
-          return;
-        } else {
-          console.warn(`[Cache] Failed to decrypt cached child secret ${childId}, falling back to taco`);
+      try {
+        const cachedSecret = await getSecretFromCache(childId);
+        if (cachedSecret) {
+          const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
+          if (decrypted) {
+            setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
+            if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+            return;
+          }
         }
+      } catch (cacheErr) {
+        console.warn(`[Cache] Error checking cache for child secret ${childId}:`, cacheErr);
       }
       
+      // Fallback to Taco decryption (or cache miss)
       const decryptedBytes = await decryptDataFromBytes(
         fromHexString(encryptedText)
       );
