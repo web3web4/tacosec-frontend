@@ -42,7 +42,7 @@ export default function useSecretData() {
 
   const getProfilesDetailsForUsers = async (data: DataItem[]) => {
     try {
-      const enrichedData: DataItem[] = await Promise.all(
+      const enrichedData = await Promise.all(
         data.map(async (item) => {
           const userDetails = await Promise.all(
             item.sharedWith.map(async (user) => {
@@ -75,7 +75,13 @@ export default function useSecretData() {
           };
         })
       );
-      setMyData(enrichedData);
+      
+      setMyData((prev) => 
+        prev.map((originalItem) => {
+          const enrichedItem = enrichedData.find((e) => e._id === originalItem._id);
+          return enrichedItem ? { ...originalItem, shareWithDetails: enrichedItem.shareWithDetails } : originalItem;
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -125,7 +131,9 @@ export default function useSecretData() {
 
         const profileWithDefaultImg = {
           ...profile,
-          img: profile.img ?? { src: noUserImage },
+          img: (profile.img && profile.img.src && profile.img.src.trim() !== "") 
+            ? profile.img 
+            : { src: noUserImage },
         };
 
         const enhancedSharedBy = {
@@ -140,7 +148,13 @@ export default function useSecretData() {
         };
       })
     );
-    setSharedWithMyData(enrichedData);
+    
+    setSharedWithMyData((prev) => 
+      prev.map((originalItem) => {
+        const enrichedItem = enrichedData.find((e) => e._id === originalItem._id);
+        return enrichedItem ? { ...originalItem, sharedBy: enrichedItem.sharedBy } : originalItem;
+      })
+    );
   };
 
   const handleSetActiveTab = (tabActive: TabType): void => {
