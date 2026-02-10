@@ -1,5 +1,6 @@
 import { clearTokens, getAccessToken, isTokenExpiring } from './cookieManager';
 import { refreshToken } from '@/services';
+import { clearCache } from './secretDb';
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 let lastAttempt = 0;
@@ -36,12 +37,13 @@ export function stopTokenAutoRefresh() {
   }
 }
 
-export function resetAppOnce() {
+export async function resetAppOnce() {
   const flagKey = "firstRunDone";
 
   const alreadyDone = localStorage.getItem(flagKey);
   if (alreadyDone) return; 
-  const handleClearData = () => {
+  const handleClearData = async () => {
+    await clearCache();
     Object.keys(localStorage).forEach((key) => {
       if (
         key.startsWith("seedBackupDone-") ||
@@ -54,7 +56,7 @@ export function resetAppOnce() {
     });
   };
 
-  handleClearData();
+  await handleClearData();
   clearTokens();
 
   localStorage.setItem(flagKey, "true");
