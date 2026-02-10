@@ -10,6 +10,9 @@ module.exports = {
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("stream-browserify"),
         process: require.resolve("process/browser.js"),
+        // sql.js requires these Node.js modules, but they're not needed in the browser
+        path: false,
+        fs: false,
       };
 
       webpackConfig.resolve.alias = {

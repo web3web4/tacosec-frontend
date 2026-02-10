@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { fromHexString } from '@nucypher/shared';
 import { fromBytes } from '@nucypher/taco';
-import { createAppError, handleSilentError, config } from '@/utils';
+import { createAppError, handleSilentError, config, getSecretFromCache, saveSecretToCache, encryptSecretWithPublicKey, decryptSecretWithPrivateKey } from '@/utils';
 import { useWallet } from '@/wallet/walletContext';
 import { useUser } from '@/context';
 import { useTaco } from '@/hooks';
@@ -38,16 +38,58 @@ export default function useSecretDecryption({
   const { decryptDataFromBytes } = useTaco({ domain, provider, ritualId });
 
   const decryptMessage = async (id: string, encryptedText: string) => {
-    if (!encryptedText || !provider || !signer) return;
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: 'Invalid secret ID',
+      }));
+      setDecrypting(false);
+      return;
+    }
+
+    if (!encryptedText || typeof encryptedText !== 'string' || encryptedText.trim() === '') {
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: 'Invalid encrypted data',
+      }));
+      setDecrypting(false);
+      return;
+    }
+
+    if (!provider || !signer) {
+      setDecryptErrors((prev) => ({
+        ...prev,
+        [id]: 'Wallet not connected',
+      }));
+      setDecrypting(false);
+      return;
+    }
     try {
       setDecrypting(true);
-      console.log("Decrypting message...");
+      
+      // First, check if secret is already cached
+      try {
+        const cachedSecret = await getSecretFromCache(id);
+        if (cachedSecret) {
+          const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
+          if (decrypted) {
+            setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+            return;
+          }
+        }
+      } catch (cacheErr) {
+        console.warn(`[Cache] Error checking cache for secret ${id}:`, cacheErr);
+      }
+      
+      // Fallback to Taco decryption (or cache miss)
       const decryptedBytes = await decryptDataFromBytes(
         fromHexString(encryptedText)
       );
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedMessages((prev) => ({ ...prev, [id]: decrypted }));
+        const encryptedForCache = await encryptSecretWithPublicKey(decrypted, signer);
+        await saveSecretToCache(id, encryptedForCache);
       }
     } catch (err: unknown) {
       const appError = createAppError(err, 'unknown');
@@ -83,13 +125,32 @@ export default function useSecretDecryption({
     if (!encryptedText || !provider || !signer) return;
     try {
       setDecryptingChild(true);
+      
+      // First, check if secret is already cached
+      try {
+        const cachedSecret = await getSecretFromCache(childId);
+        if (cachedSecret) {
+          const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
+          if (decrypted) {
+            setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
+            if (secretViews[childId].isNewSecret) setSecretViews(prev => ({...prev, [childId]: {...prev[childId], isNewSecret: false}}));
+            return;
+          }
+        }
+      } catch (cacheErr) {
+        console.warn(`[Cache] Error checking cache for child secret ${childId}:`, cacheErr);
+      }
+      
+      // Fallback to Taco decryption (or cache miss)
       const decryptedBytes = await decryptDataFromBytes(
         fromHexString(encryptedText)
       );
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
-        if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+        if (secretViews[childId].isNewSecret) setSecretViews(prev => ({...prev, [childId]: {...prev[childId], isNewSecret: false}}));
+        const encryptedForCache = await encryptSecretWithPublicKey(decrypted, signer);
+        await saveSecretToCache(childId, encryptedForCache);
       }
     } catch (e) {
       console.error("Error decrypting child:", e);

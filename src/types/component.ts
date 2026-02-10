@@ -85,3 +85,7 @@ export interface DataPayload {
     initData?: InitDataForBackend,
     expirationTime?: number // Unix timestamp for expiration
   }
+
+export interface StorageEncryptedDataType {
+  _id: string
+}
