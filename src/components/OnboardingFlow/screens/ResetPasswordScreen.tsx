@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MdLockReset, MdArrowBack, MdVisibility, MdVisibilityOff, MdDeleteForever } from 'react-icons/md';
 import { ethers } from 'ethers';
 import Swal from 'sweetalert2';
-import { clearCache, MetroSwal } from '@/utils';
+import { MetroSwal } from '@/utils';
 import { clearTokens } from '@/utils/cookieManager';
 
 interface ResetPasswordScreenProps {
@@ -121,9 +121,8 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
             }
             return true;
           }
-        }).then(async (finalResult) => {
+        }).then((finalResult) => {
           if (finalResult.isConfirmed) {
-            await clearCache();
             // Delete the specified localStorage items
             Object.keys(localStorage).forEach((key) => {
               if (
@@ -138,7 +137,7 @@ export function ResetPasswordScreen({ onSuccess, onBack }: ResetPasswordScreenPr
 
             // Check if running in browser (web app) vs Telegram Mini App
             const isBrowser = !window.Telegram?.WebApp?.initData;
-
+            
             // For web users: clear auth cookies (access_token, refresh_token)
             if (isBrowser) {
               try {

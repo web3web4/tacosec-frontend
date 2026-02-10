@@ -1,4 +1,4 @@
-import { parseTelegramInitData, showError, createAppError, recordUserAction, config, encryptSecretWithPublicKey, saveSecretToCache, formatAddress } from "@/utils";
+import { parseTelegramInitData, showError, createAppError, recordUserAction, config, formatAddress } from "@/utils";
 import { CustomPopup, SectionErrorBoundary, TelegramInviteButton, UserDisplayToggle } from "@/components";
 import { conditions, toHexString } from "@nucypher/taco";
 import { storageEncryptedData } from "@/services";
@@ -205,12 +205,7 @@ const AddData: React.FC = () => {
         }
 
         const res = await storageEncryptedData(payload, initDataRaw!);
-        try {
-          const encryptedForCache = await encryptSecretWithPublicKey(safeMessage, signer);
-          await saveSecretToCache(res._id, encryptedForCache);
-        } catch (cacheError) {
-          console.error("Failed to save encrypted secret to local cache:", cacheError);
-        }
+
         if (res) {
           await MetroSwal.fire({
             title: "🔐 Encrypted Successfully",

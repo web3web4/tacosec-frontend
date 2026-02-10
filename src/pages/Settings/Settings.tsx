@@ -1,4 +1,4 @@
-import { formatAddress, getIdentifier, recordUserAction, copyToClipboard, getEncryptedSeed, sanitizePlainText, clearCache } from "@/utils";
+import { formatAddress, getIdentifier, recordUserAction, copyToClipboard, getEncryptedSeed, sanitizePlainText } from "@/utils";
 import { SectionErrorBoundary, OnboardingFlow, SheetModal } from "@/components";
 // import { useNavigationGuard } from "@/context/NavigationGuardContext";
 import { clearTokens } from "@/utils/cookieManager";
@@ -142,7 +142,7 @@ const Settings: React.FC = () => {
   const copyAddressToClipboard = async () => {
     const addressToCopy = address || addressweb;
     if (!addressToCopy) return;
-
+    
     try {
       await copyToClipboard(
         addressToCopy,
@@ -204,9 +204,8 @@ const Settings: React.FC = () => {
             }
             return true;
           }
-        }).then(async (finalResult) => {
+        }).then((finalResult) => {
           if (finalResult.isConfirmed) {
-            await clearCache();
             // Delete the specified localStorage items
             Object.keys(localStorage).forEach((key) => {
               if (
@@ -240,7 +239,7 @@ const Settings: React.FC = () => {
     <>
       <div className="settings-container">
         <h2 className="page-title">Settings</h2>
-
+        
         <SectionErrorBoundary sectionName="ProfileSection">
           <div className="profile-section">
             <div className="photo-preview">
@@ -257,14 +256,14 @@ const Settings: React.FC = () => {
             <div className="profile-name">
               {userData?.user?.firstName} {userData?.user?.lastName}
             </div>
-            <div
-              className="address-container clickable"
+            <div 
+              className="address-container clickable" 
               onClick={() => {
                 recordUserAction("Button click: Copy wallet address");
                 copyAddressToClipboard();
               }}
               title="Click to copy full address"
-              aria-live="polite"
+              aria-live="polite" 
               aria-atomic="true"
             >
               <span>Address: </span>
@@ -329,7 +328,7 @@ const Settings: React.FC = () => {
         {isBrowser && (
           <>
             <div className="form-divider" />
-
+            
             <div className="user-info-section">
               <div className="section-header">
                 <h3 className="section-title">Contact & Identity</h3>
@@ -337,7 +336,7 @@ const Settings: React.FC = () => {
                   Browser-Only Information (Not shared with Telegram)
                 </p>
               </div>
-
+              
               <div className="input-grid">
                 <div className="input-row">
                   <label>Email address</label>

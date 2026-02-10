@@ -1,8 +1,10 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
+  "extends": [
+    "react-app",
+    "react-app/jest"
   ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
@@ -11,9 +13,5 @@
   "rules": {
     "@typescript-eslint/no-explicit-any": "error"
   },
-  "ignorePatterns": [
-    "node_modules/",
-    "build/",
-    "dist/"
-  ]
+  "ignorePatterns": ["node_modules/", "build/", "dist/"]
 }

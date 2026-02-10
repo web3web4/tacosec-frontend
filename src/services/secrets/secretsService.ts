@@ -6,7 +6,7 @@ import type {
   StoragePublicKeyData,
   PublicKeysResponse 
 } from "@/types/types";
-import type { DataPayload, StorageEncryptedDataType } from "@/types/component";
+import type { DataPayload } from "@/types/component";
 import { handleApiCall, createAppError, config } from "@/utils";
 import { getAuthHeaders } from "@/services/auth/authService";
 
@@ -37,14 +37,14 @@ export async function GetMyData(initData?: string): Promise<Secret[]> {
 export async function storageEncryptedData(
   data: DataPayload,
   initData?: string
-): Promise<StorageEncryptedDataType> {
+): Promise<unknown> {
   const headers = await getAuthHeaders(initData);
   
   if (!headers["Authorization"] && !headers["X-Telegram-Init-Data"]) {
     throw createAppError(new Error("Authentication required"), 'auth');
   }
   
-  return handleApiCall<StorageEncryptedDataType>(
+  return handleApiCall<unknown>(
     () => fetch(`${API_BASE_URL}/passwords`, {
       method: "POST",
       headers,
