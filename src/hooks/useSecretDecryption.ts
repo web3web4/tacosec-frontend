@@ -133,7 +133,7 @@ export default function useSecretDecryption({
           const decrypted = await decryptSecretWithPrivateKey(cachedSecret, signer);
           if (decrypted) {
             setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
-            if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+            if (secretViews[childId].isNewSecret) setSecretViews(prev => ({...prev, [childId]: {...prev[childId], isNewSecret: false}}));
             return;
           }
         }
@@ -148,7 +148,7 @@ export default function useSecretDecryption({
       if (decryptedBytes) {
         const decrypted = fromBytes(decryptedBytes);
         setDecryptedChildMessages((prev) => ({ ...prev, [childId]: decrypted }));
-        if (secretViews[childId].isNewSecret) secretViews[childId].isNewSecret = false;
+        if (secretViews[childId].isNewSecret) setSecretViews(prev => ({...prev, [childId]: {...prev[childId], isNewSecret: false}}));
         const encryptedForCache = await encryptSecretWithPublicKey(decrypted, signer);
         await saveSecretToCache(childId, encryptedForCache);
       }

@@ -204,9 +204,9 @@ const Settings: React.FC = () => {
             }
             return true;
           }
-        }).then((finalResult) => {
+        }).then(async (finalResult) => {
           if (finalResult.isConfirmed) {
-            clearCache();
+            await clearCache();
             // Delete the specified localStorage items
             Object.keys(localStorage).forEach((key) => {
               if (

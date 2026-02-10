@@ -16,9 +16,9 @@ export const handleClearAllData = (isBrowser: boolean) => {
     confirmButtonText: "Delete",
     showCancelButton: true,
     cancelButtonText: "Keep data",
-  }).then((result) => {
+  }).then(async (result) => {
     if (result.isConfirmed) {
-      clearCache();
+      await clearCache();
       // Delete the specified localStorage items
       Object.keys(localStorage).forEach((key) => {
         if (

@@ -205,8 +205,12 @@ const AddData: React.FC = () => {
         }
 
         const res = await storageEncryptedData(payload, initDataRaw!);
-        const encryptedForCache = await encryptSecretWithPublicKey(safeMessage, signer);
-        await saveSecretToCache(res._id, encryptedForCache);
+        try {
+          const encryptedForCache = await encryptSecretWithPublicKey(safeMessage, signer);
+          await saveSecretToCache(res._id, encryptedForCache);
+        } catch (cacheError) {
+          console.error("Failed to save encrypted secret to local cache:", cacheError);
+        }
         if (res) {
           await MetroSwal.fire({
             title: "🔐 Encrypted Successfully",

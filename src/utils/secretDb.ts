@@ -12,7 +12,7 @@ let db: Database | null = null;
 export async function initializeDatabase(): Promise<void> {
   try {
     const SQL = await initSqlJs({
-      locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
+      locateFile: (file: string) => `/assets/${file}`,
     });
 
     // Check if database exists
@@ -200,27 +200,6 @@ function saveDatabaseToIndexedDB(dbName: string, data: Uint8Array): Promise<void
       
       putRequest.onsuccess = () => resolve();
       putRequest.onerror = () => reject(putRequest.error);
-    };
-  });
-}
-
-/**
- * Delete database from IndexedDB
- */
-function deleteDatabaseFromIndexedDB(dbName: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('sqljs');
-    
-    request.onerror = () => reject(request.error);
-    
-    request.onsuccess = () => {
-      const db = request.result;
-      const transaction = db.transaction(['databases'], 'readwrite');
-      const store = transaction.objectStore('databases');
-      const deleteRequest = store.delete(dbName);
-      
-      deleteRequest.onsuccess = () => resolve();
-      deleteRequest.onerror = () => reject(deleteRequest.error);
     };
   });
 }
