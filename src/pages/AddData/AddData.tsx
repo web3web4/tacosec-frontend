@@ -296,7 +296,8 @@ const AddData: React.FC = () => {
                 target.src = noUserImage;
               }}
             />
-            <p>{userProfile.error ? userProfile.error : userProfile.data.name}</p>
+            <div>{userProfile.error ? userProfile.error : userProfile.data.name}</div>
+            <div>{userProfile.data.publicAddress && formatAddress(8, userProfile.data.publicAddress)}</div>
             {!userProfile.error && (
               userProfile.data.existsInPlatform ? (
                 <button onClick={() => {
