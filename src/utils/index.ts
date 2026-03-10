@@ -11,3 +11,5 @@ export * from "@/utils/cookieManager";
 export * from "@/utils/gdpr";
 export * from "@/localstorage/walletStorage";
 export * from "@/utils/walletCleanup";
+export * from "@/utils/secretDb";
+export * from "@/utils/secretEncryption";
